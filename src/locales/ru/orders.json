@@ -1,0 +1,59 @@
+{
+  "notFound": {
+    "title": "Заказ не найден",
+    "description": "Заказ, который вы ищете, не существует."
+  },
+  "title": "Заказ #{number}",
+  "placedOn": "Размещен {date}",
+  "success": {
+    "title": "Заказ успешно оформлен",
+    "description": "Спасибо за заказ. Мы получили вашу заявку и скоро свяжемся с вами."
+  },
+  "help": {
+    "title": "Нужна помощь?",
+    "body": "Если у вас есть вопросы по заказу, позвоните нам.",
+    "phoneDisplay": "+374 XX-XX-XXXX"
+  },
+  "footerActions": {
+    "orderAgain": "Заказать снова",
+    "home": "Главная"
+  },
+  "orderStatus": {
+    "title": "Статус заказа",
+    "payment": "Оплата: {status}",
+    "fulfillment": "Выполнение: {status}"
+  },
+  "orderItems": {
+    "title": "Товары заказа"
+  },
+  "purchasedItems": {
+    "title": "Купленные товары"
+  },
+  "shippingAddress": {
+    "title": "Адрес доставки",
+    "phone": "Телефон: {phone}"
+  },
+  "orderSummary": {
+    "title": "Итоги заказа",
+    "subtotal": "Промежуточный итог",
+    "discount": "Скидка",
+    "shipping": "Доставка",
+    "tax": "Налог",
+    "total": "Итого",
+    "loadingTotals": "Загрузка итогов..."
+  },
+  "buttons": {
+    "continueShopping": "Продолжить покупки",
+    "viewCart": "Посмотреть корзину"
+  },
+  "itemDetails": {
+    "color": "Цвет:",
+    "size": "Размер:",
+    "sku": "Артикул: {sku}",
+    "quantity": "Количество: {qty} × {price} = {total}"
+  }
+}
+
+
+
+

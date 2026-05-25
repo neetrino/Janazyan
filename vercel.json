@@ -1,0 +1,21 @@
+{
+  "buildCommand": "corepack pnpm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "corepack pnpm install --frozen-lockfile",
+  "devCommand": "corepack pnpm run dev -- --port $PORT",
+  "functions": {
+    "src/app/api/v1/admin/products/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/v1/admin/products/upload-images/route.ts": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/:path*"
+    }
+  ]
+}
