@@ -2,6 +2,38 @@ import { NextRequest, NextResponse } from "next/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 import * as jose from "jose";
+import { logger } from "@/lib/utils/logger";
+
+type AuthRateLimitDependencies = {
+  limiter: Ratelimit | null;
+  configured: boolean;
+};
+
+let authRateLimitDependencies: AuthRateLimitDependencies | null = null;
+
+function getAuthRateLimiter(): AuthRateLimitDependencies {
+  if (authRateLimitDependencies) {
+    return authRateLimitDependencies;
+  }
+
+  const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  if (!url || !token) {
+    authRateLimitDependencies = { limiter: null, configured: false };
+    return authRateLimitDependencies;
+  }
+
+  const redis = new Redis({ url, token });
+  authRateLimitDependencies = {
+    configured: true,
+    limiter: new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(10, "60 s"),
+      prefix: "ratelimit:auth",
+    }),
+  };
+  return authRateLimitDependencies;
+}
 
 /** Protect /api/v1/admin/* — require valid JWT (signature + expiry). DB check (blocked/deleted) remains in route. */
 async function requireAdminAuth(request: NextRequest): Promise<NextResponse | null> {
@@ -52,34 +84,38 @@ async function requireAdminAuth(request: NextRequest): Promise<NextResponse | nu
 
 /** Rate limit for auth endpoints (login/register) by IP */
 async function checkAuthRateLimit(request: NextRequest): Promise<NextResponse | null> {
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) {
+  const rateLimiter = getAuthRateLimiter();
+  if (!rateLimiter.configured) {
     return null;
   }
-
-  const redis = new Redis({ url, token });
-  const ratelimit = new Ratelimit({
-    redis,
-    limiter: Ratelimit.slidingWindow(10, "60 s"),
-    prefix: "ratelimit:auth",
-  });
+  if (!rateLimiter.limiter) {
+    return null;
+  }
 
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     request.headers.get("x-real-ip") ||
     "unknown";
-  const { success } = await ratelimit.limit(ip);
-  if (!success) {
-    return NextResponse.json(
-      {
-        type: "https://api.shop.am/problems/too-many-requests",
-        title: "Too Many Requests",
-        status: 429,
-        detail: "Too many login/register attempts. Try again later.",
-      },
-      { status: 429 }
-    );
+
+  try {
+    const { success, reset } = await rateLimiter.limiter.limit(ip);
+    if (!success) {
+      const response = NextResponse.json(
+        {
+          type: "https://api.shop.am/problems/too-many-requests",
+          title: "Too Many Requests",
+          status: 429,
+          detail: "Too many login/register attempts. Try again later.",
+        },
+        { status: 429 }
+      );
+      const retryAfterSeconds = Math.max(1, Math.ceil((reset - Date.now()) / 1000));
+      response.headers.set("Retry-After", String(retryAfterSeconds));
+      return response;
+    }
+  } catch (error: unknown) {
+    logger.warn("[MIDDLEWARE] Auth rate limit unavailable, skipping limiter.", error);
+    return null;
   }
   return null;
 }
