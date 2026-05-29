@@ -1,26 +1,31 @@
-import { HeroCarousel } from '../components/HeroCarousel';
-import { FeaturesSection } from '../components/FeaturesSection';
-import { TopCategories } from '../components/TopCategories';
-import { FeaturedProductsTabs } from '../components/FeaturedProductsTabs';
+import {
+  AboutSection,
+  CategoryPosters,
+  FeaturedProducts,
+  HomeFooter,
+  HomeHero,
+  PromoPoster,
+  WhyChooseUs,
+} from '../components/home';
 
-export default async function HomePage() {
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section - Full Width */}
-      <section className="bg-white">
-        <HeroCarousel />
-      </section>
+    <div className="relative isolate overflow-hidden bg-white">
+      <HomeHero />
 
-      {/* Top Categories */}
-      <TopCategories />
+      <div className="relative mx-auto mt-10 w-full lg:-mt-[30px]">
+        <CategoryPosters />
+      </div>
 
-      {/* Featured Products with Tabs */}
-      <FeaturedProductsTabs />
+      <div className="relative mx-auto w-full">
+        <div className="absolute inset-0 -z-10 rounded-[28px] md:rounded-[44px] lg:rounded-[70px] bg-pastel-arc" />
+        <FeaturedProducts />
+        <PromoPoster />
+        <WhyChooseUs />
+      </div>
 
-      {/* Features Section */}
-      <FeaturesSection />
+      <AboutSection />
+      <HomeFooter />
     </div>
   );
 }
-

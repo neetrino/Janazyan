@@ -4,11 +4,18 @@
 
 @layer base {
   body {
-    @apply bg-white text-gray-900;
+    @apply bg-white text-ink-800;
   }
 
   button {
     @apply rounded-xl;
+  }
+
+  .font-display,
+  .font-wide,
+  .font-mono,
+  .font-dmSans {
+    font-feature-settings: 'liga' on;
   }
   
   /* Prevent text selection and caret on all text elements */
