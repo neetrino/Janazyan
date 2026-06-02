@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 import { FEATURED_SECTION_CTA } from './constants';
 import { FeaturedProductCard } from './FeaturedProductCard';
+import { HeroArrowButtonIcon } from './HeroArrowIcon';
 
 const SECTION_HEIGHT_PX = 772;
 const CARD_WIDTH_PX = 283;
@@ -54,10 +54,10 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div className="absolute left-1/2 top-[622px] -translate-x-1/2">
           <Link
             href="/products?filter=featured"
-            className="group inline-flex h-[56px] items-center gap-1 rounded-[72px] bg-white px-6 text-[18px] font-bold leading-6 text-sky-deep transition-transform duration-200 hover:-translate-y-0.5"
+            className="inline-flex h-[56px] items-center gap-1 rounded-[72px] bg-white px-6 text-[18px] font-bold leading-6 text-sky-deep transition-transform duration-700 ease-in-out hover:-translate-y-0.5"
           >
             {FEATURED_SECTION_CTA}
-            <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+            <HeroArrowButtonIcon />
           </Link>
         </div>
       </div>

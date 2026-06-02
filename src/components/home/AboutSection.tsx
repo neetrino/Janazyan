@@ -45,12 +45,14 @@ function MobileAbout() {
       </div>
 
       <div className="relative mx-auto mt-10 h-[420px] w-full max-w-[560px] sm:h-[520px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={ABOUT_IMAGE}
-          alt="Janazyan products"
-          className="mx-auto h-full w-full object-contain mix-blend-screen"
-        />
+        <div className="relative h-full w-full animate-hero-body-wash-showcase">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={ABOUT_IMAGE}
+            alt="Janazyan products"
+            className="mx-auto h-full w-full object-contain mix-blend-screen"
+          />
+        </div>
       </div>
 
       <div className="relative mt-10 grid gap-10 md:mt-12 md:grid-cols-3 md:items-center">
@@ -95,7 +97,7 @@ function DesktopAbout() {
         >
         <div
           aria-hidden
-          className="pointer-events-none absolute left-[403px] top-[118px] z-[3] h-[798px] w-[598px]"
+          className="pointer-events-none absolute left-[403px] top-[118px] z-[3] h-[798px] w-[598px] animate-hero-body-wash-showcase"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

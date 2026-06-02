@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { HeroArrowButtonIcon } from './HeroArrowIcon';
 
 const PROMO_PHOTO = '/figma/promo-poster-photo.webp';
 const PROMO_CTA_HREF = '/products?category=hair';
@@ -135,17 +135,14 @@ function PromoCta({ className }: { className?: string }) {
     <Link
       href={PROMO_CTA_HREF}
       className={[
-        'group inline-flex h-[50px] items-center gap-3 rounded-full bg-ink-800 px-6 text-[12px] uppercase tracking-[0.16em] text-white transition-transform duration-200 hover:-translate-y-0.5',
+        'inline-flex h-[50px] items-center gap-3 rounded-full bg-ink-800 px-6 text-[12px] uppercase tracking-[0.16em] text-white transition-transform duration-700 ease-in-out hover:-translate-y-0.5',
         className,
       ]
         .filter(Boolean)
         .join(' ')}
     >
       <span className="whitespace-nowrap">{PROMO_CTA_LABEL}</span>
-      <ArrowRight
-        aria-hidden
-        className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
-      />
+      <HeroArrowButtonIcon />
     </Link>
   );
 }

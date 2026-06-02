@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isNavLinkActive } from '../lib/nav/is-nav-link-active';
+import { HeaderAccountMenu } from './header/HeaderAccountMenu';
 import { HOME_NAV_LINKS } from './home/constants';
 
 const NAV_LINKS = HOME_NAV_LINKS;
@@ -23,7 +24,6 @@ const HEADER_ACTION_GAP_PX = 16;
 const HEADER_CART_BADGE_COLOR = '#0499c3';
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
-const HEADER_USER_ICON = '/figma/header-user-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
@@ -118,7 +118,7 @@ function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
 
 function HeaderActions() {
   return (
-    <div className="flex shrink-0 items-center overflow-hidden rounded-7xl bg-white px-[22px] py-[10px]">
+    <div className="flex shrink-0 items-center overflow-visible rounded-7xl bg-white px-[22px] py-[10px]">
       <div className="flex items-center" style={{ gap: HEADER_ACTION_GAP_PX }}>
         <Link
           href="/wishlist"
@@ -131,17 +131,7 @@ function HeaderActions() {
         >
           <HeaderActionIcon src={HEADER_HEART_ICON} alt="" />
         </Link>
-        <Link
-          href="/profile"
-          aria-label="Account"
-          className="grid place-items-center rounded-full transition-opacity hover:opacity-80"
-          style={{
-            width: HEADER_ACTION_BUTTON_SIZE_PX,
-            height: HEADER_ACTION_BUTTON_SIZE_PX,
-          }}
-        >
-          <HeaderActionIcon src={HEADER_USER_ICON} alt="" />
-        </Link>
+        <HeaderAccountMenu />
         <Link
           href="/cart"
           aria-label="Cart"

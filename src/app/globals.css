@@ -98,8 +98,24 @@ body {
     animation: hero-jellyfish-float 4s ease-in-out infinite;
   }
 
+  @keyframes hero-body-wash-showcase {
+    0%,
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+    50% {
+      transform: scale(1.035) rotate(1.2deg);
+    }
+  }
+
+  .animate-hero-body-wash-showcase {
+    animation: hero-body-wash-showcase 5.5s ease-in-out infinite;
+    transform-origin: center bottom;
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .animate-hero-jellyfish-float {
+    .animate-hero-jellyfish-float,
+    .animate-hero-body-wash-showcase {
       animation: none;
     }
   }

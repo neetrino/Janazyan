@@ -1,65 +1,129 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import { Header } from '../Header';
+import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
-import { HERO_AUTOPLAY_INTERVAL_MS, HERO_SLIDES } from './hero-slides';
+import { HERO_SLIDES } from './hero-slides';
+import { useHeroImageDrag } from './useHeroImageDrag';
 
 const HERO_TITLE = 'JANAZYAN';
 const HERO_DESCRIPTION =
   'Պրեմիում մանկական խնամքի արտադրանք՝ ստեղծված սիրով, անվտանգությամբ և Ձեր երեխայի հարմարավետության մասին մտածելով.';
 const HERO_KIDS_LABEL = 'Մանկական';
 
+type HeroDraggableShellProps = {
+  slideId: string;
+  isActive: boolean;
+  isDragging: boolean;
+  offset: { x: number; y: number };
+  animationClass: string;
+  wrapperClassName: string;
+  dragHandlers: ReturnType<ReturnType<typeof useHeroImageDrag>['getDragHandlers']>;
+  children: ReactNode;
+};
+
+function HeroDraggableShell({
+  slideId,
+  isActive,
+  isDragging,
+  offset,
+  animationClass,
+  wrapperClassName,
+  dragHandlers,
+  children,
+}: HeroDraggableShellProps) {
+  return (
+    <div
+      className={`${wrapperClassName} ${isActive ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      aria-hidden={!isActive}
+    >
+      <div
+        className={`relative h-full w-full touch-none select-none ${
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
+        style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+        {...dragHandlers}
+        data-slide-id={slideId}
+      >
+        <div className={`relative h-full w-full ${isDragging ? '' : animationClass}`}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
 function HeroProductImages({
   activeSlideIndex,
+  offsets,
+  draggingSlideId,
+  getDragHandlers,
 }: {
   activeSlideIndex: number;
+  offsets: Record<string, { x: number; y: number }>;
+  draggingSlideId: string | null;
+  getDragHandlers: ReturnType<typeof useHeroImageDrag>['getDragHandlers'];
 }) {
+  const bodyWashSlide = HERO_SLIDES[0];
+  const jellyfishSlide = HERO_SLIDES[1];
+
   return (
     <>
-      <div
-        className={`pointer-events-none absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[51.3%] lg:right-auto lg:z-20 ${
+      <HeroDraggableShell
+        slideId={bodyWashSlide.id}
+        isActive={activeSlideIndex === 0}
+        isDragging={draggingSlideId === bodyWashSlide.id}
+        offset={offsets[bodyWashSlide.id] ?? { x: 0, y: 0 }}
+        animationClass={
+          activeSlideIndex === 0 && draggingSlideId !== bodyWashSlide.id
+            ? 'animate-hero-body-wash-showcase'
+            : ''
+        }
+        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[51.3%] lg:right-auto lg:z-20 ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
-        aria-hidden={activeSlideIndex !== 0}
+        dragHandlers={getDragHandlers(bodyWashSlide.id)}
       >
         <Image
-          src={HERO_SLIDES[0].productImage}
-          alt={HERO_SLIDES[0].productAlt}
+          src={bodyWashSlide.productImage}
+          alt={bodyWashSlide.productAlt}
           fill
           priority
           sizes="50vw"
-          className="object-contain object-top"
+          draggable={false}
+          className="pointer-events-none object-contain object-top"
         />
-      </div>
+      </HeroDraggableShell>
 
-      <div
-        className={`pointer-events-none absolute right-[8%] top-[296px] hidden aspect-[773/753] w-[min(640px,46vw)] transition-opacity duration-500 md:block lg:z-20 ${
+      <HeroDraggableShell
+        slideId={jellyfishSlide.id}
+        isActive={activeSlideIndex === 1}
+        isDragging={draggingSlideId === jellyfishSlide.id}
+        offset={offsets[jellyfishSlide.id] ?? { x: 0, y: 0 }}
+        animationClass={
+          activeSlideIndex === 1 && draggingSlideId !== jellyfishSlide.id
+            ? 'animate-hero-jellyfish-float'
+            : ''
+        }
+        wrapperClassName={`absolute right-[8%] top-[296px] hidden aspect-[773/753] w-[min(640px,46vw)] transition-opacity duration-500 md:block lg:z-20 ${
           activeSlideIndex === 1 ? 'opacity-100' : 'opacity-0'
         }`}
-        aria-hidden={activeSlideIndex !== 1}
+        dragHandlers={getDragHandlers(jellyfishSlide.id)}
       >
-        <div className="relative h-full w-full -scale-x-100">
-          <div
-            className={`absolute -left-[4.53%] -top-[7.3%] h-[107.3%] w-[104.53%] ${
-              activeSlideIndex === 1 ? 'animate-hero-jellyfish-float' : ''
-            }`}
-          >
-            <Image
-              src={HERO_SLIDES[1].productImage}
-              alt={HERO_SLIDES[1].productAlt}
-              fill
-              loading="lazy"
-              sizes="46vw"
-              className="object-contain"
-            />
-          </div>
+        <div className="absolute -left-[4.53%] -top-[7.3%] h-[107.3%] w-[104.53%]">
+          <Image
+            src={jellyfishSlide.productImage}
+            alt={jellyfishSlide.productAlt}
+            fill
+            loading="lazy"
+            sizes="46vw"
+            draggable={false}
+            className="pointer-events-none object-contain"
+          />
         </div>
-      </div>
+      </HeroDraggableShell>
     </>
   );
 }
@@ -82,17 +146,17 @@ function HeroActionButtons({ className = '' }: { className?: string }) {
     <div className={`flex flex-wrap items-center gap-3.5 ${className}`}>
       <Link
         href="/products"
-        className="group inline-flex h-[52px] items-center gap-1 rounded-full bg-cream px-6 text-[15px] font-extrabold tracking-[-0.01em] text-sky-deep shadow-soft transition-transform duration-200 hover:-translate-y-0.5 md:h-[56px] md:text-[16px]"
+        className="inline-flex h-[52px] items-center gap-1 rounded-full bg-cream px-6 text-[15px] font-extrabold tracking-[-0.01em] text-sky-deep shadow-soft transition-transform duration-700 ease-in-out hover:-translate-y-0.5 md:h-[56px] md:text-[16px]"
       >
         Գնել Հիմա
-        <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+        <HeroArrowButtonIcon />
       </Link>
       <Link
         href="/about"
-        className="group inline-flex h-[52px] items-center gap-1 rounded-full border-[3px] border-cream px-6 text-[15px] font-semibold tracking-[-0.01em] text-cream transition-colors duration-200 hover:bg-cream/10 md:h-[56px] md:text-[16px]"
+        className="inline-flex h-[52px] items-center gap-1 rounded-full border-[3px] border-cream px-6 text-[15px] font-semibold tracking-[-0.01em] text-cream transition-[transform,background-color] duration-700 ease-in-out hover:-translate-y-0.5 hover:bg-cream/10 md:h-[56px] md:text-[16px]"
       >
         Իմանալ Ավելին
-        <ArrowRight className="h-5 w-5 transition-transform duration-200 group-hover:translate-x-0.5" />
+        <HeroArrowButtonIcon />
       </Link>
     </div>
   );
@@ -101,6 +165,8 @@ function HeroActionButtons({ className = '' }: { className?: string }) {
 export function HomeHero() {
   const [slideIndex, setSlideIndex] = useState(0);
   const activeSlide = HERO_SLIDES[slideIndex];
+  const slideIds = HERO_SLIDES.map((slide) => slide.id);
+  const { offsets, draggingSlideId, getDragHandlers } = useHeroImageDrag(slideIds);
 
   const goToNextSlide = useCallback(() => {
     setSlideIndex((current) => (current + 1) % HERO_SLIDES.length);
@@ -110,15 +176,10 @@ export function HomeHero() {
     setSlideIndex((current) => (current - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
   }, []);
 
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      return;
-    }
-
-    const timer = window.setInterval(goToNextSlide, HERO_AUTOPLAY_INTERVAL_MS);
-    return () => window.clearInterval(timer);
-  }, [slideIndex, goToNextSlide]);
+  const activeAnimationClass =
+    activeSlide.id === 'kids-care'
+      ? 'animate-hero-jellyfish-float'
+      : 'animate-hero-body-wash-showcase';
 
   return (
     <section
@@ -136,15 +197,28 @@ export function HomeHero() {
 
         <Header embedded />
 
-        <HeroProductImages activeSlideIndex={slideIndex} />
+        <HeroProductImages
+          activeSlideIndex={slideIndex}
+          offsets={offsets}
+          draggingSlideId={draggingSlideId}
+          getDragHandlers={getDragHandlers}
+        />
         <HeroKidsLabel visible={activeSlide.showKidsLabel} />
         <HeroNavigationArrows onPrevious={goToPreviousSlide} onNext={goToNextSlide} />
 
         <div className="relative z-20 lg:hidden">
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-16 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-20 md:pt-10">
             <div className="relative -mt-2 h-[280px] w-full overflow-visible rounded-2xl md:hidden">
-              <div
-                className={`relative h-full w-full ${activeSlide.id === 'kids-care' ? 'animate-hero-jellyfish-float' : ''}`}
+              <HeroDraggableShell
+                slideId={activeSlide.id}
+                isActive
+                isDragging={draggingSlideId === activeSlide.id}
+                offset={offsets[activeSlide.id] ?? { x: 0, y: 0 }}
+                animationClass={
+                  draggingSlideId === activeSlide.id ? '' : activeAnimationClass
+                }
+                wrapperClassName="relative h-full w-full"
+                dragHandlers={getDragHandlers(activeSlide.id)}
               >
                 <Image
                   src={activeSlide.productImage}
@@ -152,9 +226,10 @@ export function HomeHero() {
                   fill
                   priority
                   sizes="100vw"
-                  className={`object-contain ${activeSlide.id === 'kids-care' ? '-scale-x-100' : ''}`}
+                  draggable={false}
+                  className="pointer-events-none object-contain"
                 />
-              </div>
+              </HeroDraggableShell>
             </div>
 
             {activeSlide.showKidsLabel ? (

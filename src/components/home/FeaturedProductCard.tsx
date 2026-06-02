@@ -19,6 +19,13 @@ const PRODUCT_IMAGE_WIDTH_PX = 62;
 const PRODUCT_IMAGE_HEIGHT_PX = 255;
 const PRODUCT_IMAGE_TOP_PX = -64;
 
+const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
+const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
+const FEATURED_CART_ICON_TOP_PX = 289;
+const FEATURED_CART_ICON_SIZE_PX = Math.round(
+  CARD_WIDTH_PX * (1 - FEATURED_CART_ICON_LEFT_RATIO - FEATURED_CART_ICON_RIGHT_RATIO),
+);
+
 const FEATURED_CARD_BG = '/figma/featured-card-bg.svg';
 const FEATURED_CARD_CART_CORNER = '/figma/featured-card-cart-corner.svg';
 const FEATURED_STAR_ICON = '/figma/featured-star.svg';
@@ -166,9 +173,20 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         aria-label="Add to cart"
         disabled={!product.inStock}
         onClick={handleAddToCart}
-        className="absolute right-[19px] top-[289px] z-20 grid size-6 place-items-center transition-transform hover:scale-105 disabled:opacity-50"
+        className="absolute z-20 grid place-items-center transition-transform hover:scale-105 disabled:opacity-50"
+        style={{
+          left: `${FEATURED_CART_ICON_LEFT_RATIO * 100}%`,
+          top: FEATURED_CART_ICON_TOP_PX,
+          width: FEATURED_CART_ICON_SIZE_PX,
+          height: FEATURED_CART_ICON_SIZE_PX,
+        }}
       >
-        <Image src={FEATURED_CART_ICON} alt="" width={24} height={24} />
+        <Image
+          src={FEATURED_CART_ICON}
+          alt=""
+          width={FEATURED_CART_ICON_SIZE_PX}
+          height={FEATURED_CART_ICON_SIZE_PX}
+        />
       </button>
     </article>
   );

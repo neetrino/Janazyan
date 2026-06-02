@@ -26,4 +26,5 @@ export const HERO_SLIDES: HeroSlide[] = [
 ];
 
 export const HERO_ARROW_SIZE_PX = 64;
-export const HERO_AUTOPLAY_INTERVAL_MS = 5000;
+/** Max drag distance from the default position (circular boundary). */
+export const HERO_IMAGE_MAX_DRAG_RADIUS_PX = 72;

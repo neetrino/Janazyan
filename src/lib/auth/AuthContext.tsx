@@ -77,24 +77,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (storedToken && storedUser) {
           logger.debug('✅ [AUTH] Found stored auth data');
           const parsedUser = JSON.parse(storedUser);
-          
-          // If user doesn't have roles, fetch from API
-          if (!parsedUser.roles || !Array.isArray(parsedUser.roles)) {
-            logger.debug('⚠️ [AUTH] User data missing roles, fetching from API...');
-            try {
-              const profileData = await apiClient.get<{ roles: string[] }>('/api/v1/users/profile');
-              if (profileData.roles) {
-                parsedUser.roles = profileData.roles;
-                localStorage.setItem(AUTH_USER_KEY, JSON.stringify(parsedUser));
-                logger.debug('✅ [AUTH] Roles updated from API:', profileData.roles);
-              }
-            } catch (fetchError) {
-              console.error('❌ [AUTH] Failed to fetch user roles:', fetchError);
-            }
-          }
-          
+
           setToken(storedToken);
           setUser(parsedUser);
+
+          // Refresh roles in background so header auth is not blocked on API latency
+          if (!parsedUser.roles || !Array.isArray(parsedUser.roles)) {
+            logger.debug('⚠️ [AUTH] User data missing roles, fetching from API...');
+            void apiClient
+              .get<{ roles: string[] }>('/api/v1/users/profile')
+              .then((profileData) => {
+                if (profileData.roles) {
+                  const updatedUser = { ...parsedUser, roles: profileData.roles };
+                  setUser(updatedUser);
+                  localStorage.setItem(AUTH_USER_KEY, JSON.stringify(updatedUser));
+                  logger.debug('✅ [AUTH] Roles updated from API:', profileData.roles);
+                }
+              })
+              .catch((fetchError) => {
+                console.error('❌ [AUTH] Failed to fetch user roles:', fetchError);
+              });
+          }
         } else {
           logger.debug('ℹ️ [AUTH] No stored auth data found');
         }

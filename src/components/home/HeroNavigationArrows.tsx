@@ -1,29 +1,10 @@
+import { HeroArrowIcon } from './HeroArrowIcon';
 import { HERO_ARROW_SIZE_PX } from './hero-slides';
 
 type HeroNavigationArrowsProps = {
   onPrevious: () => void;
   onNext: () => void;
 };
-
-function HeroArrowCircle({ direction }: { direction: 'left' | 'right' }) {
-  return (
-    <svg
-      width={HERO_ARROW_SIZE_PX}
-      height={HERO_ARROW_SIZE_PX}
-      viewBox="0 0 64 64"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-      className={direction === 'right' ? 'rotate-180' : undefined}
-    >
-      <circle cx="32" cy="32" r="32" fill="white" />
-      <path
-        d="M21.9393 30.9393C21.3536 31.5251 21.3536 32.4749 21.9393 33.0607L31.4853 42.6066C32.0711 43.1924 33.0208 43.1924 33.6066 42.6066C34.1924 42.0208 34.1924 41.0711 33.6066 40.4853L25.1213 32L33.6066 23.5147C34.1924 22.9289 34.1924 21.9792 33.6066 21.3934C33.0208 20.8076 32.0711 20.8076 31.4853 21.3934L21.9393 30.9393ZM41 32V30.5L23 30.5V32V33.5H41V32Z"
-        fill="#93B6E3"
-      />
-    </svg>
-  );
-}
 
 export function HeroNavigationArrows({ onPrevious, onNext }: HeroNavigationArrowsProps) {
   return (
@@ -34,7 +15,7 @@ export function HeroNavigationArrows({ onPrevious, onNext }: HeroNavigationArrow
         aria-label="Previous hero slide"
         className="shrink-0 transition-transform duration-200 hover:scale-105"
       >
-        <HeroArrowCircle direction="left" />
+        <HeroArrowIcon direction="left" size={HERO_ARROW_SIZE_PX} />
       </button>
       <button
         type="button"
@@ -42,7 +23,7 @@ export function HeroNavigationArrows({ onPrevious, onNext }: HeroNavigationArrow
         aria-label="Next hero slide"
         className="shrink-0 transition-transform duration-200 hover:scale-105"
       >
-        <HeroArrowCircle direction="right" />
+        <HeroArrowIcon direction="right" size={HERO_ARROW_SIZE_PX} />
       </button>
     </div>
   );
