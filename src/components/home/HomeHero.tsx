@@ -44,7 +44,11 @@ function HeroProductImages({
         aria-hidden={activeSlideIndex !== 1}
       >
         <div className="relative h-full w-full -scale-x-100">
-          <div className="absolute -left-[4.53%] -top-[7.3%] h-[107.3%] w-[104.53%]">
+          <div
+            className={`absolute -left-[4.53%] -top-[7.3%] h-[107.3%] w-[104.53%] ${
+              activeSlideIndex === 1 ? 'animate-hero-jellyfish-float' : ''
+            }`}
+          >
             <Image
               src={HERO_SLIDES[1].productImage}
               alt={HERO_SLIDES[1].productAlt}
@@ -138,15 +142,19 @@ export function HomeHero() {
 
         <div className="relative z-20 lg:hidden">
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-16 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-20 md:pt-10">
-            <div className="relative -mt-2 h-[280px] w-full overflow-hidden rounded-2xl md:hidden">
-              <Image
-                src={activeSlide.productImage}
-                alt={activeSlide.productAlt}
-                fill
-                priority
-                sizes="100vw"
-                className={`object-contain ${activeSlide.id === 'kids-care' ? '-scale-x-100' : ''}`}
-              />
+            <div className="relative -mt-2 h-[280px] w-full overflow-visible rounded-2xl md:hidden">
+              <div
+                className={`relative h-full w-full ${activeSlide.id === 'kids-care' ? 'animate-hero-jellyfish-float' : ''}`}
+              >
+                <Image
+                  src={activeSlide.productImage}
+                  alt={activeSlide.productAlt}
+                  fill
+                  priority
+                  sizes="100vw"
+                  className={`object-contain ${activeSlide.id === 'kids-care' ? '-scale-x-100' : ''}`}
+                />
+              </div>
             </div>
 
             {activeSlide.showKidsLabel ? (
