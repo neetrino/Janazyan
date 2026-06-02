@@ -30,6 +30,7 @@ const config: Config = {
           DEFAULT: '#bcd4ec',
           deep: '#93b6e3',
           soft: '#a3c0e4',
+          mist: '#c6ddf3',
         },
         pink: { DEFAULT: '#f5c8ce' },
         butter: { DEFAULT: '#f3e2be' },
@@ -58,6 +59,8 @@ const config: Config = {
       backgroundImage: {
         'pastel-arc':
           'linear-gradient(39deg, #93b6e3 8%, #fcf8ec 101%)',
+        'products-catalog':
+          'linear-gradient(180deg, #c6ddf3 0%, #c6ddf3 28%, #d4e7f8 42%, #e2eff9 56%, #eef5fc 68%, #f7fafd 82%, #ffffff 94%, #ffffff 100%)',
         'promo-pink':
           'linear-gradient(131deg, #f49395 5%, #b49cc4 82%)',
       },

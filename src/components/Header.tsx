@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isNavLinkActive } from '../lib/nav/is-nav-link-active';
 import { HeaderAccountMenu } from './header/HeaderAccountMenu';
+import { isStorefrontPage } from '../lib/nav/is-storefront-page';
 import { HOME_NAV_LINKS } from './home/constants';
 
 const NAV_LINKS = HOME_NAV_LINKS;
@@ -33,6 +34,8 @@ const HEADER_ACTIONS_TOP_PERCENT = 7.77;
 const HEADER_ACTIONS_RIGHT_PERCENT = 3.6;
 /** Bar height for logo (top + height) and action cluster in flow/embedded shells. */
 const HEADER_SHELL_MIN_HEIGHT_PX = 156;
+
+const STOREFRONT_HEADER_BG_CLASS = 'bg-sky-mist';
 
 type HeaderProps = {
   /** When true, only the overlay bar (parent supplies positioning shell). */
@@ -189,6 +192,24 @@ function HeaderBar({
   );
 }
 
+function HeaderFlowBar({
+  pathname,
+  searchParams,
+}: {
+  pathname: string;
+  searchParams: URLSearchParams;
+}) {
+  return (
+    <>
+      <div className="flex min-w-0 items-center" style={{ gap: HEADER_LOGO_NAV_GAP_PX }}>
+        <HeaderLogo />
+        <HeaderNav pathname={pathname} searchParams={searchParams} />
+      </div>
+      <HeaderActions />
+    </>
+  );
+}
+
 function HeaderOverlayBar({
   pathname,
   searchParams,
@@ -203,11 +224,20 @@ function HeaderOverlayBar({
   );
 }
 
-function HeaderShell({ children }: { children: React.ReactNode }) {
+function HeaderShell({
+  children,
+  storefrontTone,
+}: {
+  children: React.ReactNode;
+  storefrontTone: boolean;
+}) {
+  const outerBgClass = storefrontTone ? STOREFRONT_HEADER_BG_CLASS : 'bg-safe-top';
+  const innerBgClass = storefrontTone ? STOREFRONT_HEADER_BG_CLASS : 'bg-white';
+
   return (
-    <div className="relative z-30 hidden w-full bg-safe-top px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 md:pt-5 lg:block lg:px-0">
+    <div className={`relative z-30 hidden w-full ${outerBgClass} px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 md:pt-5 lg:block lg:px-0`}>
       <div
-        className="relative mx-auto w-full max-w-[1472px] bg-white lg:rounded-t-[36px]"
+        className={`relative mx-auto flex w-full max-w-[1472px] items-center justify-between ${innerBgClass} px-[22px] lg:rounded-t-[36px] lg:pr-[53px]`}
         style={{ minHeight: HEADER_SHELL_MIN_HEIGHT_PX }}
       >
         {children}
@@ -219,14 +249,15 @@ function HeaderShell({ children }: { children: React.ReactNode }) {
 export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const storefrontTone = isStorefrontPage(pathname);
 
   if (embedded) {
     return <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />;
   }
 
   return (
-    <HeaderShell>
-      <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />
+    <HeaderShell storefrontTone={storefrontTone}>
+      <HeaderFlowBar pathname={pathname} searchParams={searchParams} />
     </HeaderShell>
   );
 }
