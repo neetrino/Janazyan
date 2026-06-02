@@ -7,6 +7,7 @@ import { HeaderAccountMenu } from './header/HeaderAccountMenu';
 import { HeaderBrandCluster } from './header/HeaderBrandCluster';
 import { openCartDrawer } from '../lib/cart-drawer-events';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
+import { formatWishlistBadgeCount, useWishlistItemCount } from './hooks/useWishlistItemCount';
 import { isStorefrontPage } from '../lib/nav/is-storefront-page';
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
@@ -44,6 +45,8 @@ function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
 }
 
 function HeaderActions() {
+  const wishlistCount = useWishlistItemCount();
+  const wishlistBadgeLabel = formatWishlistBadgeCount(wishlistCount);
   const cartCount = useCartItemCount();
   const cartBadgeLabel = formatCartBadgeCount(cartCount);
 
@@ -52,14 +55,25 @@ function HeaderActions() {
       <div className="flex items-center" style={{ gap: HEADER_ACTION_GAP_PX }}>
         <Link
           href="/wishlist"
-          aria-label="Wishlist"
-          className="grid place-items-center rounded-full transition-opacity hover:opacity-80"
+          aria-label={
+            wishlistCount === 0
+              ? 'Wishlist'
+              : `Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`
+          }
+          className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
           style={{
             width: HEADER_ACTION_BUTTON_SIZE_PX,
             height: HEADER_ACTION_BUTTON_SIZE_PX,
           }}
         >
           <HeaderActionIcon src={HEADER_HEART_ICON} alt="" />
+          <span
+            className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
+            style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
+            aria-hidden
+          >
+            {wishlistBadgeLabel}
+          </span>
         </Link>
         <HeaderAccountMenu />
         <button

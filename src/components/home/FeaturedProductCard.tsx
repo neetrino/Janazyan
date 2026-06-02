@@ -8,6 +8,7 @@ import { useAuth } from '../../lib/auth/AuthContext';
 import { useAddToCart } from '../hooks/useAddToCart';
 import { useCurrency } from '../hooks/useCurrency';
 import { useWishlist } from '../hooks/useWishlist';
+import { useTranslation } from '../../lib/i18n-client';
 import { formatPrice } from '../../lib/currency';
 import { ProductLabels } from '../ProductLabels';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
@@ -29,8 +30,11 @@ const FEATURED_CART_ICON_SIZE_PX = Math.round(
 const FEATURED_CARD_BG = '/figma/featured-card-bg.svg';
 const FEATURED_CARD_CART_CORNER = '/figma/featured-card-cart-corner.svg';
 const FEATURED_STAR_ICON = '/figma/featured-star.svg';
-const FEATURED_HEART_ICON = '/figma/featured-heart.svg';
 const FEATURED_CART_ICON = '/figma/featured-cart.svg';
+
+const FEATURED_HEART_STROKE_WIDTH = 1.667;
+const FEATURED_HEART_PATH =
+  'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z';
 
 type FeaturedProductCardProps = {
   product: HomeFeaturedProduct;
@@ -39,6 +43,7 @@ type FeaturedProductCardProps = {
 export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
   const router = useRouter();
   const { isLoggedIn } = useAuth();
+  const { t } = useTranslation();
   const currency = useCurrency();
   const { isInWishlist, toggleWishlist } = useWishlist(product.id);
   const { addToCart } = useAddToCart({
@@ -108,12 +113,34 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
 
       <button
         type="button"
-        aria-label="Add to favorites"
+        aria-label={
+          isInWishlist
+            ? t('common.ariaLabels.removeFromWishlist')
+            : t('common.ariaLabels.addToWishlist')
+        }
         aria-pressed={isInWishlist}
         onClick={handleWishlist}
-        className="absolute left-[235px] top-[62px] z-20 grid size-9 place-items-center transition-transform hover:scale-105"
+        className={`absolute left-[235px] top-[62px] z-20 grid size-9 place-items-center transition-transform hover:scale-105 ${
+          isInWishlist ? 'text-red-600' : 'text-[#4a5565]'
+        }`}
       >
-        <Image src={FEATURED_HEART_ICON} alt="" width={24} height={23} />
+        <svg
+          width={24}
+          height={23}
+          viewBox="0 0 24 23"
+          fill="none"
+          aria-hidden
+          className="block"
+        >
+          <path
+            d={FEATURED_HEART_PATH}
+            stroke="currentColor"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={FEATURED_HEART_STROKE_WIDTH}
+            fill={isInWishlist ? 'currentColor' : 'none'}
+          />
+        </svg>
       </button>
 
       <div
