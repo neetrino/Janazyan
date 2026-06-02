@@ -1,3 +1,1 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 74.7679 78.2617" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path id="Rectangle 11" d="M0 29C0 12.9837 12.9837 0 29 0H45.7679C61.7842 0 74.7679 12.9837 74.7679 29V49.2617C74.7679 65.278 61.7842 78.2617 45.7679 78.2617H37.3839H29C12.9837 78.2617 0 65.278 0 49.2617V29Z" fill="var(--fill-0, white)"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" overflow="visible" preserveAspectRatio="none" style="display:block" viewBox="0 0 74.768 78.262"><path fill="var(--fill-0, white)" d="M0 29C0 12.984 12.984 0 29 0h16.768c16.016 0 29 12.984 29 29v20.262c0 16.016-12.984 29-29 29H29c-16.016 0-29-12.984-29-29z"/></svg>

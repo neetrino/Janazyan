@@ -53,7 +53,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '21 ապրանք · NEW',
     caption: 'Body · Lotion · Oil',
     color: 'butter',
-    bottle: '/figma/category-body.png',
+    bottle: '/figma/category-body.webp',
     href: '/products?category=body',
   },
   {
@@ -62,7 +62,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '21 ապրանք · NEW',
     caption: 'Kids · 3M+',
     color: 'pink',
-    bottle: '/figma/category-kids.png',
+    bottle: '/figma/category-kids.webp',
     href: '/products?category=kids',
   },
   {
@@ -71,7 +71,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '21 ապրանք · NEW',
     caption: 'Shampoo · Conditioner',
     color: 'sky',
-    bottle: '/figma/category-hair.png',
+    bottle: '/figma/category-hair.webp',
     href: '/products?category=hair',
   },
   {
@@ -80,7 +80,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '21 ապրանք · NEW',
     caption: 'Հիպոալերգիկ · Մաշկաբանորեն փորձարկված',
     color: 'lavender',
-    bottle: '/figma/category-face.png',
+    bottle: '/figma/category-face.webp',
     href: '/products?category=face',
   },
   {
@@ -89,7 +89,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '12 ապրանք',
     caption: 'SPF 30 → 50+',
     color: 'sage',
-    bottle: '/figma/category-body.png',
+    bottle: '/figma/category-body.webp',
     href: '/products?category=adult',
   },
 ];

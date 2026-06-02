@@ -2,7 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
-const PROMO_PHOTO = '/figma/promo-poster-photo.png';
+const PROMO_PHOTO = '/figma/promo-poster-photo.webp';
 const PROMO_CTA_HREF = '/products?category=hair';
 
 const PROMO_BODY_COLOR = '#3a4452';

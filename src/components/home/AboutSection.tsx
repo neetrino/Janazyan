@@ -3,7 +3,7 @@ import { ABOUT_STATS } from './constants';
 
 /** Figma Mirage 100px — display font at 72px for visual parity without Mirage webfont. */
 const ABOUT_HEADING_CLASS = 'font-display font-normal';
-const ABOUT_IMAGE = '/figma/about-hero.png';
+const ABOUT_IMAGE = '/figma/about-hero.webp';
 
 /** Extra space below desktop about content before footer overlap. */
 const ABOUT_DESKTOP_FOOTER_GAP_PX = 80;

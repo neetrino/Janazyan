@@ -11,10 +11,10 @@ const CATEGORY_IMAGE_CLASS: Record<
   (typeof CATEGORY_FIGMA_GRID_IDS)[number],
   string
 > = {
-  body: 'left-[29%] top-[-25%] h-[149%] w-[72%]',
-  kids: 'left-[12%] top-[-27%] h-[137%] w-[88%]',
-  hair: 'left-[28%] top-[-15%] h-[138%] w-[71%]',
-  face: 'left-[22%] top-[-48%] h-[172%] w-[83%]',
+  body: 'left-[29%] top-[-17%] h-[149%] w-[72%]',
+  kids: 'left-[12%] top-[-19%] h-[137%] w-[88%]',
+  hair: 'left-[28%] top-[-7%] h-[138%] w-[71%]',
+  face: 'left-[22%] top-[-40%] h-[172%] w-[83%]',
 };
 
 const CATEGORY_BG_CLASS: Record<Poster['color'], string> = {
@@ -37,7 +37,7 @@ export function CategoryPosters() {
       aria-label="Categories"
       className="relative w-full bg-white px-4 pb-10 pt-10 sm:px-6 md:px-8 lg:px-0 md:pb-[30px] md:pt-[47px]"
     >
-      <div className="mx-auto grid w-full max-w-[1472px] grid-cols-2 gap-4 md:gap-[16px]">
+      <div className="mx-auto grid w-full max-w-[1416px] grid-cols-2 gap-4 md:gap-[16px]">
         {posters.map((poster) => (
           <CategoryCard key={poster.id} poster={poster} />
         ))}
@@ -50,7 +50,7 @@ function CategoryCard({ poster }: { poster: Poster }) {
   const imageClass =
     CATEGORY_IMAGE_CLASS[
       poster.id as (typeof CATEGORY_FIGMA_GRID_IDS)[number]
-    ] ?? 'left-[20%] top-[-20%] h-[140%] w-[75%]';
+    ] ?? 'left-[20%] top-[-12%] h-[140%] w-[75%]';
 
   return (
     <Link

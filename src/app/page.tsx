@@ -20,7 +20,7 @@ export default function HomePage() {
         <HomeHero />
       </div>
 
-      <div className="hidden lg:block relative mx-auto w-full max-w-[1472px] lg:-mt-[30px]">
+      <div className="hidden lg:block relative mx-auto w-full max-w-[1416px] lg:-mt-[30px]">
         <CategoryPosters />
       </div>
 

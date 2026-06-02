@@ -16,8 +16,8 @@ const FOOTER_TEXT = 'text-black/65';
 const FOOTER_LINK =
   'text-[14px] leading-[21px] text-black/65 transition-colors hover:text-black/80';
 
-const FOOTER_DECORATION = '/figma/footer-decoration.png';
-const FOOTER_LOGO = '/figma/footer-logo.png';
+const FOOTER_DECORATION = '/figma/footer-decoration.webp';
+const FOOTER_LOGO = '/figma/footer-logo.webp';
 
 /** Decorative image on the right side of the footer (scaled down from Figma export). */
 const FOOTER_DECORATION_BASE_WIDTH_PX = 412;

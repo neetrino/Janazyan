@@ -3,7 +3,7 @@ import { formatPrice } from '../currency';
 import type { CurrencyCode } from '../currency';
 import type { HomeFeaturedProduct } from './featured-products-data';
 
-export const HOME_FEATURED_PRODUCT_FALLBACK_IMAGE = '/figma/featured-product.png';
+export const HOME_FEATURED_PRODUCT_FALLBACK_IMAGE = '/figma/featured-product.webp';
 
 export type ProductToFeaturedInput = {
   id: string;

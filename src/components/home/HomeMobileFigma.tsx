@@ -116,7 +116,7 @@ function MobileHeroCard() {
     <div className="relative mt-6 h-[218px] overflow-hidden rounded-[32px] bg-[linear-gradient(149deg,#f5c8ce_0%,#bcd4ec_60%,#f19397_100%)]">
       <div className="absolute -right-8 -top-8 h-[290px] w-[248px]">
         <Image
-          src="/figma/promo-cosmetic.png"
+          src="/figma/promo-cosmetic.webp"
           alt=""
           fill
           sizes="248px"

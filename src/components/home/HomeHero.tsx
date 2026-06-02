@@ -12,16 +12,16 @@ export function HomeHero() {
   return (
     <section
       aria-label="Janazyan hero"
-      className="relative w-full px-4 pt-3 sm:px-6 md:px-8 md:pt-5 lg:px-[58px]"
+      className="relative w-full px-4 pt-3 sm:px-6 md:px-8 md:pt-5 lg:px-0"
     >
-      <div className="relative mx-auto w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         <HeroRectangleBackground />
 
         <Header variant="hero" />
 
         <div className="pointer-events-none absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] md:block lg:left-[51.3%] lg:right-auto lg:z-20">
           <Image
-            src="/figma/hero-product.png"
+            src="/figma/category-body.webp"
             alt=""
             fill
             priority
@@ -34,7 +34,7 @@ export function HomeHero() {
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-12 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-16 md:pt-10">
             <div className="relative -mt-2 h-[280px] w-full overflow-hidden rounded-2xl md:hidden">
               <Image
-                src="/figma/hero-product.png"
+                src="/figma/category-body.webp"
                 alt=""
                 fill
                 priority

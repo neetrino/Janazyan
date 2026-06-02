@@ -22,10 +22,9 @@ const HEADER_ACTION_GAP_PX = 16;
 const HEADER_CART_BADGE_COLOR = '#0499c3';
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
-const HEADER_USER_ICON_BOTTOM = '/figma/header-user-icon.svg';
-const HEADER_USER_ICON_TOP = '/figma/header-user-icon-top.svg';
+const HEADER_USER_ICON = '/figma/header-user-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
-const HEADER_LOGO_SRC = '/figma/header-logo.png';
+const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
 const HERO_HEADER_LEFT_PX = 22;
 const HERO_HEADER_TOP_PX = 53;
@@ -109,29 +108,6 @@ function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
   );
 }
 
-function HeaderUserIcon() {
-  return (
-    <span className="relative block h-5 w-5">
-      <Image
-        src={HEADER_USER_ICON_TOP}
-        alt=""
-        width={HEADER_ACTION_ICON_SIZE_PX}
-        height={HEADER_ACTION_ICON_SIZE_PX}
-        aria-hidden
-        className="absolute inset-0 h-5 w-5"
-      />
-      <Image
-        src={HEADER_USER_ICON_BOTTOM}
-        alt=""
-        width={HEADER_ACTION_ICON_SIZE_PX}
-        height={HEADER_ACTION_ICON_SIZE_PX}
-        aria-hidden
-        className="absolute inset-0 h-5 w-5"
-      />
-    </span>
-  );
-}
-
 function HeaderActions() {
   return (
     <div className="flex shrink-0 items-center overflow-hidden rounded-7xl bg-white px-[22px] py-[10px]">
@@ -156,7 +132,7 @@ function HeaderActions() {
             height: HEADER_ACTION_BUTTON_SIZE_PX,
           }}
         >
-          <HeaderUserIcon />
+          <HeaderActionIcon src={HEADER_USER_ICON} alt="" />
         </Link>
         <Link
           href="/cart"
