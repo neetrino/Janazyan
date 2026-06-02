@@ -8,7 +8,12 @@ import {
   CATEGORY_POSTERS,
   WHY_CARDS,
 } from './constants';
-import { MIRAGE_CATEGORY_TITLE_MOBILE_CLASS } from './mirage-heading-styles';
+import {
+  MIRAGE_CATEGORY_TITLE_MOBILE_CLASS,
+  MIRAGE_MOBILE_HERO_TITLE_CLASS,
+} from './mirage-heading-styles';
+
+const MOBILE_HERO_TITLE = CATEGORY_POSTERS.find((item) => item.id === 'hair')!.title;
 
 type MobileFilter = {
   label: string;
@@ -114,24 +119,28 @@ function CircleButton({
 
 function MobileHeroCard() {
   return (
-    <div className="relative mt-6 h-[218px] overflow-hidden rounded-[32px] bg-[linear-gradient(149deg,#f5c8ce_0%,#bcd4ec_60%,#f19397_100%)]">
-      <div className="absolute -right-8 -top-8 h-[290px] w-[248px]">
+    <div className="relative mt-6 h-[220px] overflow-hidden rounded-[40px] bg-[linear-gradient(148deg,#f5c8ce_0%,#bcd4ec_60%,#f19397_100%)]">
+      <div className="absolute left-[146px] top-[-48px] h-[339px] w-[266px]">
         <Image
           src="/figma/promo-cosmetic.webp"
           alt=""
           fill
-          sizes="248px"
+          sizes="266px"
           className="object-contain"
+          priority
         />
       </div>
-      <div className="relative z-10 px-4 pb-5 pt-6">
-        <p className="font-display text-[44px] leading-[0.78] tracking-[-0.02em] text-white">
-          <span className="block">Մազերի</span>
-          <span className="block">խնամք</span>
+      <div className="absolute left-0 top-[29px] flex w-full flex-col gap-3 px-5 pt-5">
+        <p className={MIRAGE_MOBILE_HERO_TITLE_CLASS}>
+          {MOBILE_HERO_TITLE.map((line) => (
+            <span key={line} className="block">
+              {line}
+            </span>
+          ))}
         </p>
         <Link
           href="/products?category=hair"
-          className="mt-6 inline-flex h-9 items-center gap-1 rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-800"
+          className="inline-flex h-9 w-[217px] items-center justify-center gap-1 rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-ink-800"
         >
           Պատվիրել — 32 400 ֏
           <Menu className="h-3.5 w-3.5" />

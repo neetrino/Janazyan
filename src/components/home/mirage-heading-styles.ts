@@ -24,3 +24,7 @@ export const MIRAGE_CATEGORY_TITLE_CLASS =
 
 export const MIRAGE_CATEGORY_TITLE_MOBILE_CLASS =
   'font-mirage font-normal text-ink-700 tracking-[-0.4492px] text-[30px] leading-[0.8]';
+
+/** Mobile hero promo card — Figma node 49:1695 */
+export const MIRAGE_MOBILE_HERO_TITLE_CLASS =
+  'font-mirage font-normal text-white tracking-[-0.5px] text-[62px] leading-[35px]';
