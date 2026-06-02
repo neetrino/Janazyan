@@ -9,8 +9,8 @@ import { HOME_NAV_LINKS } from './home/constants';
 
 const NAV_LINKS = HOME_NAV_LINKS;
 
-const HEADER_LOGO_WIDTH_PX = 79;
-const HEADER_LOGO_HEIGHT_PX = 66;
+const HEADER_LOGO_WIDTH_PX = 110;
+const HEADER_LOGO_HEIGHT_PX = 92;
 const HEADER_LOGO_NAV_GAP_PX = 37;
 const HEADER_NAV_LINK_GAP_PX = 24;
 const HEADER_ACTIVE_PILL_HEIGHT_PX = 36;
@@ -31,10 +31,11 @@ const HEADER_BRAND_LEFT_PX = 22;
 const HEADER_BRAND_TOP_PX = 53;
 const HEADER_ACTIONS_TOP_PERCENT = 7.77;
 const HEADER_ACTIONS_RIGHT_PERCENT = 3.6;
-const HEADER_STANDALONE_MIN_HEIGHT_PX = 120;
+/** Bar height for logo (top + height) and action cluster in flow/embedded shells. */
+const HEADER_SHELL_MIN_HEIGHT_PX = 156;
 
 type HeaderProps = {
-  /** When true, header is absolutely positioned inside the home hero card. */
+  /** When true, only the overlay bar (parent supplies positioning shell). */
   embedded?: boolean;
 };
 
@@ -50,7 +51,7 @@ function HeaderLogo() {
           alt="Janazyan"
           fill
           priority
-          sizes="80px"
+          sizes="110px"
           className="object-contain object-left"
         />
       </span>
@@ -188,26 +189,44 @@ function HeaderBar({
   );
 }
 
+function HeaderOverlayBar({
+  pathname,
+  searchParams,
+}: {
+  pathname: string;
+  searchParams: URLSearchParams;
+}) {
+  return (
+    <header className="pointer-events-none absolute inset-0 z-30">
+      <HeaderBar pathname={pathname} searchParams={searchParams} />
+    </header>
+  );
+}
+
+function HeaderShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative z-30 hidden w-full bg-safe-top px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 md:pt-5 lg:block lg:px-0">
+      <div
+        className="relative mx-auto w-full max-w-[1472px] bg-white lg:rounded-t-[36px]"
+        style={{ minHeight: HEADER_SHELL_MIN_HEIGHT_PX }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
   if (embedded) {
-    return (
-      <header className="pointer-events-none absolute inset-0 z-30">
-        <HeaderBar pathname={pathname} searchParams={searchParams} />
-      </header>
-    );
+    return <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />;
   }
 
   return (
-    <header className="relative z-30 hidden w-full bg-safe-top px-4 pb-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 lg:block lg:px-[58px]">
-      <div
-        className="relative mx-auto w-full max-w-[1472px]"
-        style={{ minHeight: HEADER_STANDALONE_MIN_HEIGHT_PX }}
-      >
-        <HeaderBar pathname={pathname} searchParams={searchParams} />
-      </div>
-    </header>
+    <HeaderShell>
+      <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />
+    </HeaderShell>
   );
 }
