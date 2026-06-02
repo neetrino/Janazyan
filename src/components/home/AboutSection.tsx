@@ -54,17 +54,14 @@ function DesktopAbout() {
           />
         </div>
 
-        <p
-          className={`absolute left-[316px] top-[118px] z-[2] whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}
-        >
-          Ստեղծված Խնամքով
-        </p>
-
-        <p
-          className={`absolute left-[1059px] top-[48px] z-[2] -translate-x-full whitespace-nowrap text-right ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}
-        >
-          Ծնված Սիրուց
-        </p>
+        <div className="absolute left-1/2 top-[48px] z-[2] flex -translate-x-1/2 flex-col items-center text-center">
+          <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}>
+            Ծնված Սիրուց
+          </p>
+          <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}>
+            Ստեղծված Խնամքով
+          </p>
+        </div>
 
         <p className="absolute left-[950px] top-[323px] z-[2] w-[433px] text-[18px] leading-[29.25px] tracking-[-0.4395px] text-ink-500">
           Փոքրիկ Ծաղիկը հիմնադրվել է ծնողների կողմից, ովքեր հասկանում են նոր կյանքի ճանապարհը։ Մենք հավատում ենք, որ յուրաքանչյուր երեխա արժանի է ամենանուրբ խնամքին, և յուրաքանչյուր ծնող արժանի է հանգստության։
