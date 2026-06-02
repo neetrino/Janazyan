@@ -140,7 +140,6 @@ export function useImageHandling({
             maxSizeMB: 2,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
-            fileType: 'image/jpeg',
             initialQuality: 0.8,
           });
 
@@ -235,7 +234,6 @@ export function useImageHandling({
         maxSizeMB: 2,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
-        fileType: 'image/jpeg',
         initialQuality: 0.8,
       });
 
@@ -285,7 +283,6 @@ export function useImageHandling({
             maxSizeMB: 2,
             maxWidthOrHeight: 1920,
             useWebWorker: true,
-            fileType: 'image/jpeg',
             initialQuality: 0.8,
           });
 

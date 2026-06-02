@@ -30,6 +30,9 @@ function isProductsNestedTabVisible(
   collapsed: boolean,
   productsNestedExpanded: boolean
 ): boolean {
+  if (tab.id === 'products') {
+    return true;
+  }
   if (tab.parentGroupId !== 'products') {
     return true;
   }
@@ -83,8 +86,8 @@ export function AdminSidebar() {
               return (
                 <div
                   key={tab.id}
-                  className={`flex w-full min-w-0 overflow-hidden rounded-md ${
-                    isActive ? 'bg-gray-900 text-white' : 'bg-transparent'
+                  className={`flex w-full rounded-md ${
+                    isActive ? 'bg-gray-900 text-white' : 'text-gray-700'
                   }`}
                 >
                   <button
@@ -93,10 +96,10 @@ export function AdminSidebar() {
                     onClick={() => {
                       router.push(tab.path);
                     }}
-                    className={`flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left text-sm font-medium transition-all ${
+                    className={`flex min-w-0 flex-1 items-center gap-3 rounded-l-md px-4 py-3 text-left text-sm font-medium transition-all ${
                       isActive
                         ? 'text-white hover:bg-gray-800'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        : 'hover:bg-gray-100 hover:text-gray-900'
                     }`}
                   >
                     <span className={`shrink-0 ${isActive ? 'text-white' : 'text-gray-500'}`}>{tab.icon}</span>
@@ -107,14 +110,13 @@ export function AdminSidebar() {
                     aria-expanded={productsNestedExpanded}
                     aria-label={t('admin.sidebar.toggleProductsNested')}
                     title={t('admin.sidebar.toggleProductsNested')}
-                    onClick={(e) => {
-                      e.preventDefault();
+                    onClick={() => {
                       toggleProductsNested();
                     }}
-                    className={`shrink-0 border-l px-2 py-3 transition-colors ${
+                    className={`shrink-0 rounded-r-md px-2 py-3 transition-colors ${
                       isActive
-                        ? 'border-white/25 text-white hover:bg-white/10'
-                        : 'border-gray-200 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'text-white hover:bg-gray-800'
+                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900'
                     }`}
                   >
                     <svg

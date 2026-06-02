@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import {
   Montserrat,
   DM_Serif_Display,
@@ -11,7 +11,7 @@ import {
 import './globals.css';
 import { ClientProviders } from '../components/ClientProviders';
 import { ConditionalHeader } from '../components/ConditionalHeader';
-import { ConditionalFooter } from '../components/ConditionalFooter';
+import { Footer } from '../components/Footer';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 
 const montserrat = Montserrat({
@@ -62,6 +62,12 @@ export const metadata: Metadata = {
     'Premium baby & family skincare crafted with love, safety and your family comfort in mind.',
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -80,13 +86,13 @@ export default function RootLayout({
         notoSansArmenian.variable,
       ].join(' ')}
     >
-      <body className="font-body bg-white text-ink-800 antialiased min-h-full">
+      <body className="font-body text-ink-800 antialiased min-h-full">
         <Suspense fallback={null}>
           <ClientProviders>
             <div className="flex min-h-screen flex-col pb-16 lg:pb-0">
               <ConditionalHeader />
-              <main className="flex-1 w-full">{children}</main>
-              <ConditionalFooter />
+              <main className="relative flex-1 w-full">{children}</main>
+              <Footer />
               <MobileBottomNav />
             </div>
           </ClientProviders>

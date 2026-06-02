@@ -14,11 +14,11 @@ export function WhyChooseUs() {
       className="relative w-full px-4 py-16 font-armenian sm:px-6 md:px-8 lg:px-[58px] md:py-24 lg:h-[588px] lg:py-0"
     >
       <div className="relative mx-auto h-full w-full">
-        <h2 className="text-center text-[clamp(34px,5vw,66px)] font-black leading-[1.05] tracking-[0.0056em] text-cream lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap lg:leading-[40px]">
+        <h2 className="text-center font-display text-[clamp(34px,5vw,66px)] font-normal leading-[40px] tracking-[0.3691px] text-cream lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap">
           Ինչու Ընտրել Մեզ
         </h2>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:left-0 lg:right-0 lg:top-[124px] lg:mt-0 lg:flex lg:gap-[20px]">
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:left-1/2 lg:top-[124px] lg:mt-0 lg:flex lg:w-[1372px] lg:max-w-full lg:-translate-x-1/2 lg:gap-[20px]">
           {WHY_CARDS.map((card) => (
             <Card key={card.index} card={card} />
           ))}
@@ -30,7 +30,7 @@ export function WhyChooseUs() {
 
 function Card({ card }: { card: WhyCard }) {
   return (
-    <article className="relative h-[320px] overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card lg:min-w-0 lg:flex-1">
+    <article className="relative h-[320px] w-full overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card lg:w-[328px] lg:shrink-0">
       <span
         aria-hidden
         className={[

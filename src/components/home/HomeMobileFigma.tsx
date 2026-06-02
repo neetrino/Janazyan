@@ -1,7 +1,14 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Globe, Menu, Phone, Search, ShoppingCart, Star } from 'lucide-react';
-import { CATEGORY_BG, CATEGORY_POSTERS, FEATURED_PRODUCTS, WHY_CARDS } from './constants';
+import { Globe, Menu, Phone, Search } from 'lucide-react';
+import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
+import { FeaturedProductCardSlot } from './FeaturedProductCardSlot';
+import {
+  CATEGORY_BG,
+  CATEGORY_FIGMA_GRID_IDS,
+  CATEGORY_POSTERS,
+  WHY_CARDS,
+} from './constants';
 
 type MobileFilter = {
   label: string;
@@ -33,8 +40,12 @@ const MOBILE_FILTERS: ReadonlyArray<MobileFilter> = [
   { label: 'Արև' },
 ];
 
-export function HomeMobileFigma() {
-  const mobileCategories = CATEGORY_POSTERS.slice(0, 4);
+type HomeMobileFigmaProps = {
+  featuredProducts: HomeFeaturedProduct[];
+};
+
+export function HomeMobileFigma({ featuredProducts }: HomeMobileFigmaProps) {
+  const mobileCategories = [...CATEGORY_FIGMA_GRID_IDS];
   const whyCards = WHY_CARDS.slice(0, 3);
 
   return (
@@ -44,11 +55,11 @@ export function HomeMobileFigma() {
         <MobileTopBar />
         <MobileHeroCard />
         <MobileFilterTabs />
-        <MobileCategoryGrid categoryIds={mobileCategories.map((category) => category.id)} />
+        <MobileCategoryGrid categoryIds={mobileCategories} />
       </div>
 
       <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink px-3 pb-10 pt-9">
-        <MobileFeaturedProducts />
+        <MobileFeaturedProducts products={featuredProducts} />
         <MobileWhyChooseUs cards={whyCards} />
       </div>
     </section>
@@ -202,45 +213,33 @@ function MobileCategoryCard({ categoryId }: { categoryId: string }) {
   );
 }
 
-function MobileFeaturedProducts() {
+function MobileFeaturedProducts({
+  products,
+}: {
+  products: HomeFeaturedProduct[];
+}) {
+  if (products.length === 0) {
+    return null;
+  }
+
   return (
     <div>
       <div className="mb-4 flex items-center justify-between text-white">
         <h2 className="text-[16px] font-bold tracking-[-0.01em]">Հայտնի Ապրանքներ</h2>
-        <Link href="/products" className="text-[13px] font-semibold uppercase">
+        <Link
+          href="/products?filter=featured"
+          className="text-[13px] font-semibold uppercase"
+        >
           Բոլորը
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        {FEATURED_PRODUCTS.slice(0, 4).map((product) => (
-          <article key={product.id} className="relative rounded-3xl bg-white p-3">
-            <div className="relative mx-auto h-[128px] w-[106px]">
-              <Image
-                src={product.image}
-                alt={product.title}
-                fill
-                sizes="106px"
-                className="object-contain"
-              />
-            </div>
-            <p className="mt-2 line-clamp-2 text-[13px] font-semibold leading-[1.25] text-ink-800">
-              {product.title}
-            </p>
-            <div className="mt-1 flex items-center gap-1 text-[13px] text-ink-800">
-              <Star className="h-4 w-4 fill-[#ffb339] text-[#ffb339]" />
-              <span>{product.rating}</span>
-            </div>
-            <p className="mt-1 text-[22px] font-black leading-none text-ink-800">
-              {product.price}
-            </p>
-            <button
-              type="button"
-              aria-label="Add to cart"
-              className="absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-cream text-ink-800"
-            >
-              <ShoppingCart className="h-4 w-4" />
-            </button>
-          </article>
+      <div className="grid grid-cols-2 gap-1 justify-items-center">
+        {products.slice(0, 4).map((product) => (
+          <FeaturedProductCardSlot
+            key={product.id}
+            product={product}
+            scale="mobile-grid"
+          />
         ))}
       </div>
     </div>

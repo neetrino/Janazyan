@@ -43,7 +43,7 @@ export function HomeHero() {
         <div className="pointer-events-none absolute inset-y-0 right-0 hidden w-[48%] md:block bg-gradient-to-r from-transparent via-[#d8e4f2]/12 to-[#f3f1e8]/42" />
 
         {/* product photo */}
-        <div className="pointer-events-none absolute right-0 top-0 hidden h-full w-[50%] md:block lg:left-[39.41%] lg:right-[10.66%] lg:top-0 lg:z-20 lg:h-auto lg:w-auto lg:aspect-[693/859]">
+        <div className="pointer-events-none absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] md:block lg:left-[51.3%] lg:right-auto lg:z-20">
           <Image
             src="/figma/hero-product.png"
             alt=""

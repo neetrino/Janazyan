@@ -332,7 +332,7 @@ export function VariantBuilder({
                                 <img
                                   src={variant.image}
                                   alt="Variant image"
-                                  className="w-12 h-12 object-cover border border-gray-300 rounded-md"
+                                  className="w-12 h-12 object-cover bg-gray-100 border border-gray-300 rounded-md"
                                 />
                                 <button
                                   type="button"

@@ -324,7 +324,7 @@ function ProductsTableLoadedView({
                       <img
                         src={processImageUrl(product.image)}
                         alt={product.title}
-                        className="h-12 w-12 rounded object-cover mr-3"
+                        className="h-12 w-12 rounded object-cover bg-gray-100 mr-3"
                       />
                     )}
                     <div>

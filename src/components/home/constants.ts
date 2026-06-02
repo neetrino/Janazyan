@@ -25,8 +25,16 @@ export const CATEGORY_BG: Record<CategoryColorKey, string> = {
   sky: '#bcd4ec',
   butter: '#f3e2be',
   sage: '#d6dfc2',
-  lavender: '#d6ccea',
+  lavender: '#e7cdff',
 };
+
+/** Desktop / mobile 2×2 grid order (Figma node 45:414). */
+export const CATEGORY_FIGMA_GRID_IDS = [
+  'body',
+  'kids',
+  'hair',
+  'face',
+] as const;
 
 export type CategoryPoster = {
   id: string;
@@ -40,31 +48,31 @@ export type CategoryPoster = {
 
 export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
   {
+    id: 'body',
+    title: ['Մարմնի', 'խնամք'],
+    tag: '21 ապրանք · NEW',
+    caption: 'Body · Lotion · Oil',
+    color: 'butter',
+    bottle: '/figma/category-body.png',
+    href: '/products?category=body',
+  },
+  {
     id: 'kids',
     title: ['Մանկական', 'Խնամք'],
-    tag: '42 ապրանք',
-    caption: 'Serum · Cream · Mask',
+    tag: '21 ապրանք · NEW',
+    caption: 'Kids · 3M+',
     color: 'pink',
-    bottle: '/figma/bottle.png',
+    bottle: '/figma/category-kids.png',
     href: '/products?category=kids',
   },
   {
     id: 'hair',
     title: ['Մազերի', 'խնամք'],
-    tag: '28 ապրանք',
-    caption: 'Body · Lotion · Oil',
+    tag: '21 ապրանք · NEW',
+    caption: 'Shampoo · Conditioner',
     color: 'sky',
-    bottle: '/figma/bottle.png',
+    bottle: '/figma/category-hair.png',
     href: '/products?category=hair',
-  },
-  {
-    id: 'body',
-    title: ['Մարմնի', 'խնամք'],
-    tag: '18 ապրանք',
-    caption: 'Kids · 3M+',
-    color: 'butter',
-    bottle: '/figma/bottle.png',
-    href: '/products?category=body',
   },
   {
     id: 'face',
@@ -72,7 +80,7 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '21 ապրանք · NEW',
     caption: 'Հիպոալերգիկ · Մաշկաբանորեն փորձարկված',
     color: 'lavender',
-    bottle: '/figma/bottle.png',
+    bottle: '/figma/category-face.png',
     href: '/products?category=face',
   },
   {
@@ -81,42 +89,12 @@ export const CATEGORY_POSTERS: ReadonlyArray<CategoryPoster> = [
     tag: '12 ապրանք',
     caption: 'SPF 30 → 50+',
     color: 'sage',
-    bottle: '/figma/bottle.png',
+    bottle: '/figma/category-body.png',
     href: '/products?category=adult',
   },
 ];
 
-export type FeaturedProduct = {
-  id: string;
-  title: string;
-  price: string;
-  rating: string;
-  image: string;
-};
-
-export const FEATURED_PRODUCTS: ReadonlyArray<FeaturedProduct> = [
-  {
-    id: 'p1',
-    title: 'Օրգանիկ Բամբակյա Մեկտեղանի',
-    price: '12000 Դ',
-    rating: '5.0',
-    image: '/figma/product.png',
-  },
-  {
-    id: 'p2',
-    title: 'Օրգանիկ Բամբակյա Մեկտեղանի',
-    price: '12000 Դ',
-    rating: '5.0',
-    image: '/figma/product.png',
-  },
-  {
-    id: 'p3',
-    title: 'Օրգանիկ Բամբակյա Մեկտեղանի',
-    price: '12000 Դ',
-    rating: '5.0',
-    image: '/figma/product.png',
-  },
-];
+export const FEATURED_SECTION_CTA = 'Ավելին';
 
 export type WhyCard = {
   number: string;
@@ -172,40 +150,6 @@ export const ABOUT_STATS: ReadonlyArray<StatItem> = [
   { value: '10հզ+', label: 'Երջանիկ Ընտանիք' },
   { value: '500+', label: 'Արտադրանք' },
   { value: '4.9★', label: 'Գնահատական' },
-];
-
-export const FOOTER_QUICK_LINKS: ReadonlyArray<{
-  label: string;
-  href: string;
-}> = [
-  { label: 'Մեր Մասին', href: '/about' },
-  { label: 'Խանութ', href: '/products' },
-  { label: 'Բլոգ', href: '/blog' },
-  { label: 'Կապ', href: '/contact' },
-];
-
-export const FOOTER_POLICIES: ReadonlyArray<{
-  label: string;
-  href: string;
-}> = [
-  { label: 'Գաղտնիության քաղաքականություն', href: '/privacy' },
-  { label: 'Առաքման քաղաքականություն', href: '/delivery' },
-  { label: 'Վերադարձի քաղաքականություն', href: '/returns' },
-  { label: 'Պայմաններ և դրույթներ', href: '/terms' },
-];
-
-export const FOOTER_CONTACTS: ReadonlyArray<{
-  icon: 'pin' | 'phone' | 'mail';
-  text: string;
-  href?: string;
-}> = [
-  { icon: 'pin', text: 'Երևան, Հայաստան 0001' },
-  { icon: 'phone', text: '+374 (10) 123-456', href: 'tel:+37410123456' },
-  {
-    icon: 'mail',
-    text: 'barev@poqrikcaghik.am',
-    href: 'mailto:barev@poqrikcaghik.am',
-  },
 ];
 
 export const SECTION_BG: CSSProperties = {

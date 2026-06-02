@@ -3,14 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart, ShoppingBag, User } from 'lucide-react';
+import { Search, ShoppingBag, User } from 'lucide-react';
+import { HOME_NAV_LINKS } from './home/constants';
 
-const NAV_LINKS: ReadonlyArray<{ label: string; href: string }> = [
-  { label: 'Գլխավոր', href: '/' },
-  { label: 'Խանութ', href: '/products' },
-  { label: 'Մեր մասին', href: '/about' },
-  { label: 'Կապ', href: '/contact' },
-];
+const NAV_LINKS = HOME_NAV_LINKS;
 
 function HeaderLogo() {
   return (
@@ -31,12 +27,12 @@ function HeaderLogo() {
 
 function HeaderNav({ pathname }: { pathname: string }) {
   return (
-    <nav className="hidden items-center gap-6 lg:flex">
-      {NAV_LINKS.map((link) => {
-        const isActive = pathname === link.href;
+    <nav className="hidden items-center gap-6 lg:flex xl:gap-[24px]">
+      {NAV_LINKS.map((link, index) => {
+        const isActive = link.active ?? pathname === link.href;
         return (
           <Link
-            key={link.href}
+            key={`${link.href}-${index}`}
             href={link.href}
             className={[
               'relative inline-flex items-center text-[16px] font-semibold leading-6 tracking-[-0.01em] transition-colors duration-200',
@@ -59,10 +55,10 @@ function HeaderActions() {
     <div className="flex items-center gap-4 rounded-full bg-[#f8f8f8] px-4 py-2 sm:px-[22px] sm:py-[10px]">
       <button
         type="button"
-        aria-label="Favorites"
+        aria-label="Search"
         className="grid h-5 w-5 place-items-center rounded-full text-ink-700 transition-colors hover:text-sky-deep"
       >
-        <Heart className="h-5 w-5" strokeWidth={1.9} />
+        <Search className="h-5 w-5" strokeWidth={1.9} />
       </button>
       <button
         type="button"
@@ -89,7 +85,7 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="w-full px-4 pt-3 sm:px-6 md:px-8 lg:px-[58px]">
+    <header className="w-full bg-safe-top px-4 pb-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 lg:px-[58px]">
       <div className="mx-auto flex w-full items-center justify-between gap-3 rounded-[24px] bg-white px-4 py-3 shadow-soft sm:px-5 md:px-6 lg:rounded-[28px] lg:px-7">
         <HeaderLogo />
         <HeaderNav pathname={pathname} />

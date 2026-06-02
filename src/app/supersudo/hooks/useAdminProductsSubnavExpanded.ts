@@ -37,6 +37,7 @@ function persistExpanded(next: boolean): void {
 
 function isUnderProductsSubnav(pathname: string): boolean {
   return (
+    pathname.startsWith('/supersudo/products') ||
     pathname.startsWith('/supersudo/categories') ||
     pathname.startsWith('/supersudo/brands') ||
     pathname.startsWith('/supersudo/attributes')

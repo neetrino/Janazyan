@@ -28,7 +28,7 @@ interface ProductsGridProps {
 
 export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps) {
   const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid-2');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid-3');
   const [sortedProducts, setSortedProducts] = useState<Product[]>(products);
 
   // Load view mode from localStorage
@@ -37,9 +37,8 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
     if (stored && ['list', 'grid-2', 'grid-3'].includes(stored)) {
       setViewMode(stored as ViewMode);
     } else {
-      // Default to grid-2 if nothing stored
-      setViewMode('grid-2');
-      localStorage.setItem('products-view-mode', 'grid-2');
+      setViewMode('grid-3');
+      localStorage.setItem('products-view-mode', 'grid-3');
     }
   }, []);
 
@@ -80,17 +79,16 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
     setSortedProducts(sorted);
   }, [products, sortBy]);
 
-  // Get grid classes based on view mode
   const getGridClasses = () => {
     switch (viewMode) {
       case 'list':
-        return 'grid grid-cols-1 gap-4';
+        return 'flex flex-col items-center gap-10';
       case 'grid-2':
-        return 'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3';
+        return 'grid w-full grid-cols-1 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2';
       case 'grid-3':
-        return 'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4';
+        return 'grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
       default:
-        return 'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4';
+        return 'grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
     }
   };
 

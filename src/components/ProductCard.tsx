@@ -1,15 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import type { MouseEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../lib/auth/AuthContext';
-import { useWishlist } from './hooks/useWishlist';
-import { useCompare } from './hooks/useCompare';
-import { useAddToCart } from './hooks/useAddToCart';
-import { useCurrency } from './hooks/useCurrency';
-import { ProductCardList } from './ProductCard/ProductCardList';
-import { ProductCardGrid } from './ProductCard/ProductCardGrid';
+import { FeaturedProductCardSlot } from './home/FeaturedProductCardSlot';
+import type { ProductLabel } from './ProductLabels';
+import { mapToHomeFeaturedProduct } from '../lib/home/map-to-home-featured-product';
 
 interface Product {
   id: string;
@@ -24,12 +17,13 @@ interface Product {
     logoUrl?: string | null;
   } | null;
   defaultVariantId?: string | null;
-  labels?: import('./ProductLabels').ProductLabel[];
+  labels?: ProductLabel[];
   compareAtPrice?: number | null;
   originalPrice?: number | null;
   globalDiscount?: number | null;
   discountPercent?: number | null;
   colors?: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>;
+  categories?: Array<{ title: string }>;
 }
 
 type ViewMode = 'list' | 'grid-2' | 'grid-3';
@@ -40,89 +34,33 @@ interface ProductCardProps {
 }
 
 /**
- * Product card component with Compare, Wishlist and Cart icons
- * Displays product image, title, category, price and action buttons
+ * Product card — uses the same Figma featured card as the home page.
  */
 export function ProductCard({ product, viewMode = 'grid-3' }: ProductCardProps) {
-  const isCompact = viewMode === 'grid-3';
-  const router = useRouter();
-  const { isLoggedIn } = useAuth();
-  const currency = useCurrency();
-  const { isInWishlist, toggleWishlist } = useWishlist(product.id);
-  const { isInCompare, toggleCompare } = useCompare(product.id);
-  const { isAddingToCart, addToCart } = useAddToCart({
-    productId: product.id,
-    productSlug: product.slug,
-    inStock: product.inStock,
-    defaultVariantId: product.defaultVariantId ?? undefined,
+  const featuredProduct = mapToHomeFeaturedProduct({
+    id: product.id,
+    slug: product.slug,
+    title: product.title,
     price: product.price,
+    image: product.image,
+    inStock: product.inStock,
+    defaultVariantId: product.defaultVariantId,
+    labels: product.labels,
+    compareAtPrice: product.compareAtPrice,
+    originalPrice: product.originalPrice,
+    discountPercent: product.discountPercent,
+    brand: product.brand,
+    categories: product.categories,
   });
-  const [imageError, setImageError] = useState(false);
 
-  // Handle wishlist toggle with auth check
-  const handleWishlistToggle = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    if (!isLoggedIn) {
-      router.push(`/login?redirect=/products`);
-      return;
-    }
-    
-    toggleWishlist();
-  };
+  const scale = viewMode === 'list' ? 'full' : 'catalog';
 
-  // Handle compare toggle
-  const handleCompareToggle = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    toggleCompare();
-  };
+  const wrapperClass =
+    viewMode === 'list' ? 'flex w-full justify-center' : 'flex w-auto justify-center';
 
-  // Handle add to cart
-  const handleAddToCart = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const button = e.currentTarget as HTMLElement;
-    const card = button.closest('[data-product-card]');
-    const origin =
-      (card?.querySelector('[data-product-fly-origin]') as HTMLElement | null) ?? button;
-    addToCart({ origin, imageUrl: product.image });
-  };
-
-  // List view layout
-  if (viewMode === 'list') {
-    return (
-      <ProductCardList
-        product={product}
-        currency={currency}
-        isInWishlist={isInWishlist}
-        isInCompare={isInCompare}
-        isAddingToCart={isAddingToCart}
-        imageError={imageError}
-        onImageError={() => setImageError(true)}
-        onWishlistToggle={handleWishlistToggle}
-        onCompareToggle={handleCompareToggle}
-        onAddToCart={handleAddToCart}
-      />
-    );
-  }
-
-  // Grid view layout
   return (
-    <ProductCardGrid
-      product={product}
-      currency={currency}
-      isInWishlist={isInWishlist}
-      isInCompare={isInCompare}
-      isAddingToCart={isAddingToCart}
-      imageError={imageError}
-      isCompact={isCompact}
-      onImageError={() => setImageError(true)}
-      onWishlistToggle={handleWishlistToggle}
-      onCompareToggle={handleCompareToggle}
-      onAddToCart={handleAddToCart}
-    />
+    <div data-product-card className={wrapperClass}>
+      <FeaturedProductCardSlot product={featuredProduct} scale={scale} />
+    </div>
   );
 }
-

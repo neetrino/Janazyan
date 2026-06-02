@@ -314,13 +314,27 @@ export function separateMainAndVariantImages(
   };
 }
 
+const TRANSPARENT_IMAGE_TYPES = new Set(['image/png', 'image/webp', 'image/gif']);
+
+/**
+ * Picks an output MIME type that preserves transparency for PNG/WebP/GIF uploads.
+ */
+export function resolveProcessedImageType(file: File): string {
+  const mime = file.type.toLowerCase();
+  if (TRANSPARENT_IMAGE_TYPES.has(mime)) {
+    return mime;
+  }
+  return 'image/jpeg';
+}
+
 /**
  * Processes an image file with compression, EXIF orientation correction, and size optimization
  * Automatically handles:
  * - EXIF orientation (rotates image correctly)
  * - Resize to max dimensions (1920x1920 by default)
  * - Compression to reduce file size (maxSizeMB: 2MB by default)
- * 
+ * - PNG/WebP/GIF transparency (output format matches input when alpha may be present)
+ *
  * @param file - The image file to process
  * @param options - Processing options
  * @returns Promise<string> - Base64 data URL of processed image
@@ -331,7 +345,7 @@ export async function processImageFile(
     maxSizeMB?: number; // Maximum file size in MB (default: 2)
     maxWidthOrHeight?: number; // Maximum width or height in pixels (default: 1920)
     useWebWorker?: boolean; // Use web worker for processing (default: true)
-    fileType?: string; // Output file type (default: 'image/jpeg')
+    fileType?: string; // Output file type (auto-detected from input when omitted)
     initialQuality?: number; // Initial quality 0-1 (default: 0.8)
   }
 ): Promise<string> {
@@ -346,7 +360,7 @@ export async function processImageFile(
       maxSizeMB = 2,
       maxWidthOrHeight = 1920,
       useWebWorker = true,
-      fileType = 'image/jpeg',
+      fileType = resolveProcessedImageType(file),
       initialQuality = 0.8
     } = options || {};
 

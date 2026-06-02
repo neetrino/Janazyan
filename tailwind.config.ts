@@ -34,7 +34,7 @@ const config: Config = {
         pink: { DEFAULT: '#f5c8ce' },
         butter: { DEFAULT: '#f3e2be' },
         sage: { DEFAULT: '#d6dfc2' },
-        lavender: { DEFAULT: '#d6ccea' },
+        lavender: { DEFAULT: '#e7cdff' },
         purple: { DEFAULT: '#b09fc8' },
         coral: { DEFAULT: '#f49395' },
         plum: { DEFAULT: '#b49cc4' },

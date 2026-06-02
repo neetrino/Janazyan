@@ -2,9 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --safe-area-top: env(safe-area-inset-top, 0px);
+  --safe-top-bg: linear-gradient(139deg, #ecf5ff 2%, #e6cbd5 31%);
+}
+
+html,
+body {
+  min-height: 100%;
+  background: #ffffff;
+}
+
 @layer base {
   body {
-    @apply bg-white text-ink-800;
+    @apply text-ink-800;
   }
 
   button {
@@ -54,6 +65,10 @@
 }
 
 @layer utilities {
+  .bg-safe-top {
+    background: var(--safe-top-bg);
+  }
+
   @keyframes fade-in {
     from {
       opacity: 0;
