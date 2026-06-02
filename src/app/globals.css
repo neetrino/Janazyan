@@ -24,6 +24,7 @@ body {
 
   .font-display,
   .font-wide,
+  .font-mirage,
   .font-mono,
   .font-dmSans {
     font-feature-settings: 'liga' on;

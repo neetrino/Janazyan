@@ -43,6 +43,7 @@ const config: Config = {
         sans: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
         body: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'serif'],
+        mirage: ['var(--font-mirage)', 'var(--font-wide-display)', 'system-ui', 'sans-serif'],
         wide: ['var(--font-wide-display)', 'serif'],
         armenian: ['var(--font-armenian)', 'system-ui', 'sans-serif'],
         mono: ['var(--font-grotesk)', 'system-ui', 'sans-serif'],

@@ -1,4 +1,5 @@
 import { WHY_CARDS, type WhyCard } from './constants';
+import { MIRAGE_SECTION_HEADING_CREAM_CLASS } from './mirage-heading-styles';
 
 const NUMBER_POSITION: Record<WhyCard['index'], string> = {
   '№ 01': 'left-[20.97%] right-[-13%]',
@@ -14,7 +15,7 @@ export function WhyChooseUs() {
       className="relative w-full px-4 py-16 font-armenian sm:px-6 md:px-8 lg:px-[58px] md:py-24 lg:h-[588px] lg:py-0"
     >
       <div className="relative mx-auto h-full w-full">
-        <h2 className="text-center font-display text-[clamp(34px,5vw,66px)] font-normal leading-[40px] tracking-[0.3691px] text-cream lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap">
+        <h2 className={`text-center ${MIRAGE_SECTION_HEADING_CREAM_CLASS} lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap`}>
           Ինչու Ընտրել Մեզ
         </h2>
 

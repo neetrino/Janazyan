@@ -8,6 +8,7 @@ import {
   CATEGORY_POSTERS,
   WHY_CARDS,
 } from './constants';
+import { MIRAGE_CATEGORY_TITLE_MOBILE_CLASS } from './mirage-heading-styles';
 
 type MobileFilter = {
   label: string;
@@ -195,7 +196,7 @@ function MobileCategoryCard({ categoryId }: { categoryId: string }) {
       <span className="inline-flex rounded-full bg-white/65 px-2 py-1 text-[9px] uppercase text-ink-900">
         {category.tag}
       </span>
-      <p className="mt-3 font-display text-[30px] leading-[0.8] text-ink-700">
+      <p className={`mt-3 ${MIRAGE_CATEGORY_TITLE_MOBILE_CLASS}`}>
         <span className="block">{category.title[0]}</span>
         <span className="block">{category.title[1]}</span>
       </p>

@@ -6,6 +6,7 @@ import {
   CATEGORY_POSTERS,
   type CategoryPoster as Poster,
 } from './constants';
+import { MIRAGE_CATEGORY_TITLE_CLASS } from './mirage-heading-styles';
 
 const CATEGORY_IMAGE_CLASS: Record<
   (typeof CATEGORY_FIGMA_GRID_IDS)[number],
@@ -81,7 +82,7 @@ function CategoryCard({ poster }: { poster: Poster }) {
         {poster.tag}
       </span>
 
-      <div className="absolute left-[43px] top-[41px] font-display text-[clamp(44px,5.1vw,75px)] leading-[45px] tracking-[-0.45px] text-ink-700">
+      <div className={`absolute left-[43px] top-[41px] ${MIRAGE_CATEGORY_TITLE_CLASS}`}>
         <span className="block">{poster.title[0]}</span>
         <span className="block">{poster.title[1]}</span>
       </div>

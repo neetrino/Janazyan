@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
+import localFont from 'next/font/local';
 import {
   Montserrat,
   DM_Serif_Display,
@@ -57,6 +58,12 @@ const notoSansArmenian = Noto_Sans_Armenian({
   display: 'swap',
 });
 
+const mirageExpanded = localFont({
+  src: '../assets/fonts/Mirage-Expanded.otf',
+  variable: '--font-mirage',
+  display: 'swap',
+});
+
 export const metadata: Metadata = {
   title: 'Janazyan — Premium Baby & Family Care',
   description:
@@ -85,6 +92,7 @@ export default function RootLayout({
         spaceGrotesk.variable,
         dmSans.variable,
         notoSansArmenian.variable,
+        mirageExpanded.variable,
       ].join(' ')}
     >
       <body className="font-body text-ink-800 antialiased min-h-full">

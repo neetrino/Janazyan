@@ -1,8 +1,10 @@
 import type { CSSProperties } from 'react';
 import { ABOUT_STATS } from './constants';
+import {
+  MIRAGE_ABOUT_HEADING_INK_CLASS,
+  MIRAGE_ABOUT_HEADING_SKY_CLASS,
+} from './mirage-heading-styles';
 
-/** Figma Mirage 100px — display font at 72px for visual parity without Mirage webfont. */
-const ABOUT_HEADING_CLASS = 'font-display font-normal';
 const ABOUT_IMAGE = '/figma/about-hero.webp';
 
 /** Extra space below desktop about content before footer overlap. */
@@ -53,13 +55,13 @@ function DesktopAbout() {
         </div>
 
         <p
-          className={`absolute left-[316px] top-[118px] z-[2] whitespace-nowrap text-[72px] leading-[64px] tracking-[0.3691px] text-sky-soft ${ABOUT_HEADING_CLASS}`}
+          className={`absolute left-[316px] top-[118px] z-[2] whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}
         >
           Ստեղծված Խնամքով
         </p>
 
         <p
-          className={`absolute left-[1059px] top-[48px] z-[2] -translate-x-full whitespace-nowrap text-right text-[72px] leading-[58px] tracking-[0.3691px] text-ink-800 ${ABOUT_HEADING_CLASS}`}
+          className={`absolute left-[1059px] top-[48px] z-[2] -translate-x-full whitespace-nowrap text-right ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}
         >
           Ծնված Սիրուց
         </p>

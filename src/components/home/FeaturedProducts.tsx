@@ -3,6 +3,7 @@ import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data'
 import { FEATURED_SECTION_CTA } from './constants';
 import { FeaturedProductCard } from './FeaturedProductCard';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
+import { MIRAGE_SECTION_HEADING_CLASS } from './mirage-heading-styles';
 
 const SECTION_HEIGHT_PX = 772;
 const CARD_WIDTH_PX = 283;
@@ -34,7 +35,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         className="relative mx-auto w-full max-w-[1470px] overflow-visible"
         style={{ minHeight: SECTION_HEIGHT_PX }}
       >
-        <h2 className="absolute left-1/2 top-[61px] w-full -translate-x-1/2 text-center font-display text-[clamp(34px,5vw,66px)] font-normal leading-[40px] tracking-[0.3691px] text-ink-800">
+        <h2 className={`absolute left-1/2 top-[61px] w-full -translate-x-1/2 text-center ${MIRAGE_SECTION_HEADING_CLASS}`}>
           Առաջարկվող Արտադրանք
         </h2>
 

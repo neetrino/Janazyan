@@ -1,13 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
+import {
+  MIRAGE_DISPLAY_BASE,
+  MIRAGE_LINE_HEIGHT_CLASS,
+} from './mirage-heading-styles';
 
 const PROMO_PHOTO = '/figma/promo-poster-photo.webp';
 const PROMO_CTA_HREF = '/products?category=hair';
 
 const PROMO_BODY_COLOR = '#3a4452';
-const PROMO_HEADING_CLASS =
-  '[font-family:Mirage,var(--font-wide-display),var(--font-armenian),system-ui,sans-serif] font-normal';
+
+/** Figma node 10:358 — Mirage Expanded, scaled up for on-screen parity */
+const PROMO_HEADING_CLASS = `${MIRAGE_DISPLAY_BASE} break-words`;
+const PROMO_HEADING_DESKTOP_CLASS = `${PROMO_HEADING_CLASS} ${MIRAGE_LINE_HEIGHT_CLASS} text-[clamp(72px,7.8vw,122px)]`;
+const PROMO_HEADING_MOBILE_CLASS = `${PROMO_HEADING_CLASS} ${MIRAGE_LINE_HEIGHT_CLASS} text-[clamp(54px,15vw,90px)] tracking-[-0.35px]`;
 
 const PROMO_LABEL = '— Սահմանափակ առաջարկ';
 const PROMO_TITLE_LINES = ['Մազերի', 'խնամք'] as const;
@@ -57,16 +64,14 @@ function MobilePromo() {
           <p className="text-[11px] uppercase tracking-[0.18em] text-ink-800">
             {PROMO_LABEL}
           </p>
-          <h2
-            className={`${PROMO_HEADING_CLASS} mt-3 text-[clamp(52px,14vw,80px)] leading-[0.72] tracking-[-0.004em] text-ink-800`}
-          >
+          <h2 className={`${PROMO_HEADING_MOBILE_CLASS} mt-3`}>
             {PROMO_TITLE_LINES.map((line) => (
               <span key={line} className="block">
                 {line}
               </span>
             ))}
           </h2>
-          <p className="mt-2 text-[clamp(40px,10vw,56px)] font-black leading-[0.88] text-ink-800">
+          <p className="mt-2 text-[clamp(40px,10.5vw,56px)] font-black leading-[0.88] text-ink-800">
             {PROMO_DISCOUNT}
           </p>
         </div>
@@ -102,14 +107,12 @@ function DesktopPromo() {
         {PROMO_DESCRIPTION}
       </p>
 
-      <div className="relative z-10 ml-auto flex min-h-[610px] w-[min(100%,42%)] min-w-[320px] max-w-[520px] flex-col items-end px-6 pb-11 pt-[92px] xl:min-w-[380px] xl:px-10 xl:max-w-[560px]">
+      <div className="relative z-10 ml-auto flex min-h-[610px] w-[min(100%,44%)] min-w-[320px] max-w-[580px] flex-col items-end px-6 pb-11 pt-[92px] xl:min-w-[380px] xl:px-10 xl:max-w-[620px]">
         <div className="w-full min-w-0 text-right">
           <p className="text-[11px] uppercase tracking-[0.18em] text-ink-800">
             {PROMO_LABEL}
           </p>
-          <h2
-            className={`${PROMO_HEADING_CLASS} mt-[22px] text-[clamp(64px,6.5vw,115px)] leading-[0.65] tracking-[-0.004em] text-ink-800`}
-          >
+          <h2 className={`${PROMO_HEADING_DESKTOP_CLASS} mt-[22px]`}>
             {PROMO_TITLE_LINES.map((line) => (
               <span key={line} className="block">
                 {line}
@@ -120,7 +123,7 @@ function DesktopPromo() {
 
         <div aria-hidden className="min-h-[48px] flex-1" />
 
-        <p className="w-full text-right text-[clamp(48px,5vw,68px)] font-black leading-[0.88] text-ink-800">
+        <p className="w-full text-right text-[clamp(48px,5.25vw,68px)] font-black leading-[0.88] text-ink-800">
           {PROMO_DISCOUNT}
         </p>
 
