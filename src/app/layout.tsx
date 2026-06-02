@@ -13,6 +13,7 @@ import { ClientProviders } from '../components/ClientProviders';
 import { ConditionalHeader } from '../components/ConditionalHeader';
 import { Footer } from '../components/Footer';
 import { MobileBottomNav } from '../components/MobileBottomNav';
+import { StorefrontBackground, StorefrontMain } from '../components/StorefrontLayoutShell';
 
 const montserrat = Montserrat({
   subsets: ['latin', 'latin-ext'],
@@ -89,9 +90,10 @@ export default function RootLayout({
       <body className="font-body text-ink-800 antialiased min-h-full">
         <Suspense fallback={null}>
           <ClientProviders>
+            <StorefrontBackground />
             <div className="flex min-h-screen flex-col pb-16 lg:pb-0">
               <ConditionalHeader />
-              <main className="relative flex-1 w-full">{children}</main>
+              <StorefrontMain>{children}</StorefrontMain>
               <Footer />
               <MobileBottomNav />
             </div>
