@@ -17,7 +17,7 @@ export function HeroRectangleBackground({ variant, className = '' }: HeroRectang
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 transition-opacity duration-500 ${className}`}
+      className={`pointer-events-none absolute inset-x-0 z-[1] transition-opacity duration-500 ${className}`}
       style={{
         bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
         top: `${HERO_RECTANGLE_TOP_PERCENT}%`,

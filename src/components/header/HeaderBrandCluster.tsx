@@ -2,8 +2,15 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { isNavLinkActive } from '../../lib/nav/is-nav-link-active';
 import { HOME_NAV_LINKS } from '../home/constants';
+import {
+  HEADER_ACTIVE_PILL_HEIGHT_PX,
+  HEADER_ACTIVE_PILL_RADIUS_PX,
+  HEADER_ACTIVE_PILL_WIDTH_PX,
+  HEADER_NAV_ACTIVE_PILL_CLASS,
+  HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS,
+} from './header-nav-pill.constants';
+import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
 const NAV_LINKS = HOME_NAV_LINKS;
 
@@ -11,11 +18,6 @@ const HEADER_LOGO_WIDTH_PX = 110;
 const HEADER_LOGO_HEIGHT_PX = 92;
 const HEADER_LOGO_NAV_GAP_PX = 37;
 const HEADER_NAV_LINK_GAP_PX = 24;
-const HEADER_ACTIVE_PILL_HEIGHT_PX = 36;
-const HEADER_ACTIVE_PILL_WIDTH_PX = 96;
-const HEADER_ACTIVE_PILL_RADIUS_PX = 20;
-const HEADER_ACTIVE_PILL_OFFSET_X_PX = -7;
-const HEADER_ACTIVE_PILL_OFFSET_Y_PX = -6;
 
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
@@ -51,36 +53,63 @@ function HeaderNav({
   pathname: string;
   searchParams: URLSearchParams;
 }) {
+  const {
+    navRef,
+    setLinkRef,
+    pillPosition,
+    isDragging,
+    highlightedIndex,
+    activeIndex,
+    pillPointerHandlers,
+  } = useHeaderNavActivePill({
+    links: NAV_LINKS,
+    pathname,
+    searchParams,
+  });
+
   return (
     <nav
-      className="hidden items-center lg:flex"
+      ref={navRef}
+      className="relative hidden items-center lg:flex"
       style={{ gap: HEADER_NAV_LINK_GAP_PX }}
       aria-label="Main navigation"
     >
-      {NAV_LINKS.map((link) => {
-        const isActive = isNavLinkActive(pathname, link.href, searchParams);
+      <span
+        aria-hidden
+        className={`absolute touch-none select-none ${HEADER_NAV_ACTIVE_PILL_CLASS} ${
+          isDragging ? 'z-30 cursor-grabbing bg-sky/50' : 'z-20 cursor-grab'
+        }`}
+        style={{
+          borderRadius: HEADER_ACTIVE_PILL_RADIUS_PX,
+          height: HEADER_ACTIVE_PILL_HEIGHT_PX,
+          width: HEADER_ACTIVE_PILL_WIDTH_PX,
+          left: pillPosition.left,
+          top: pillPosition.top,
+          transition: isDragging ? 'none' : 'left 200ms ease, top 200ms ease',
+        }}
+        {...pillPointerHandlers}
+      />
+      {NAV_LINKS.map((link, index) => {
+        const isHighlighted = highlightedIndex === index;
+        const isCurrentPage = activeIndex === index;
 
         return (
           <Link
             key={link.href}
+            ref={setLinkRef(index)}
             href={link.href}
-            aria-current={isActive ? 'page' : undefined}
-            className="relative inline-flex h-6 items-center text-[16px] font-semibold leading-6 tracking-[-0.3125px] transition-colors duration-200"
+            aria-current={isCurrentPage ? 'page' : undefined}
+            className={`relative z-30 inline-flex h-6 items-center text-[16px] font-semibold leading-6 tracking-[-0.3125px] transition-colors duration-200 ${
+              isDragging ? 'pointer-events-none' : ''
+            }`}
           >
-            {isActive && (
-              <span
-                aria-hidden
-                className="absolute bg-sky"
-                style={{
-                  borderRadius: HEADER_ACTIVE_PILL_RADIUS_PX,
-                  height: HEADER_ACTIVE_PILL_HEIGHT_PX,
-                  left: HEADER_ACTIVE_PILL_OFFSET_X_PX,
-                  top: HEADER_ACTIVE_PILL_OFFSET_Y_PX,
-                  width: HEADER_ACTIVE_PILL_WIDTH_PX,
-                }}
-              />
-            )}
-            <span className={`relative ${isActive ? 'text-white' : 'text-ink-500 hover:text-ink-800'}`}>
+            <span
+              className={`relative ${
+                isHighlighted
+                  ? HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS
+                  : 'text-ink-500 hover:text-ink-800'
+              }`}
+            >
               {link.label}
             </span>
           </Link>

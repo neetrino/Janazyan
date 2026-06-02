@@ -248,9 +248,9 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className="relative hidden lg:block">
-          <div className="absolute left-[43px] top-[255px] z-10">
-            <h1 className="font-wide text-[198px] leading-[200px] tracking-[2px] text-cream">
+        <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
+          <div className="pointer-events-auto absolute left-[43px] top-[255px] max-w-[min(760px,52%)]">
+            <h1 className="overflow-visible pb-2 font-wide text-[198px] leading-[1.04] tracking-[2px] text-cream">
               {HERO_TITLE}
             </h1>
             <p className="mt-10 w-[486px] text-[18px] leading-[28px] tracking-[-0.44px] text-white">
