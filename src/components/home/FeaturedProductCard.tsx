@@ -44,6 +44,8 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
   const { addToCart } = useAddToCart({
     productId: product.id,
     productSlug: product.slug,
+    productTitle: product.title,
+    productImage: product.image,
     inStock: product.inStock,
     defaultVariantId: product.defaultVariantId ?? undefined,
     price: product.price,

@@ -8,6 +8,10 @@ import { isQuietCartStockValidationError } from '../../lib/api-client/error-hand
 import { logger } from '../../lib/utils/logger';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
+import { CART_KEY } from '../../app/cart/constants';
+import { applyOptimisticAddToSnapshot } from '../../lib/cart/cart-optimistic';
+import { resolveCartCacheScope } from '../../lib/cart/cart-snapshot-cache';
+import { scheduleCartRevalidate } from '../../lib/cart/cart-revalidate';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
 
@@ -25,7 +29,6 @@ interface ProductDetails {
 
 export interface AddToCartFlyContext {
   origin?: HTMLElement | null;
-  /** When set without `origin`, fly starts from the card product image (not the cart button). */
   clickTarget?: EventTarget | null;
   imageUrl?: string | null;
 }
@@ -33,21 +36,47 @@ export interface AddToCartFlyContext {
 interface UseAddToCartProps {
   productId: string;
   productSlug: string;
+  productTitle?: string;
+  productImage?: string | null;
   inStock: boolean;
-  /** When present, skip GET /api/v1/products/:slug and use this variant for add-to-cart (one request instead of two). */
   defaultVariantId?: string | null;
-  /** Unit price (AMD) — stored in guest cart so Header doesn't need extra API calls. */
   price?: number;
 }
 
+function dispatchCartUpdated(itemsCount: number): void {
+  window.dispatchEvent(
+    new CustomEvent('cart-updated', {
+      detail: { itemsCount, skipRevalidate: true },
+    }),
+  );
+}
+
+function pushOptimisticSnapshot(
+  scope: ReturnType<typeof resolveCartCacheScope>,
+  input: Parameters<typeof applyOptimisticAddToSnapshot>[1],
+  cartId: string,
+): void {
+  if (!scope) {
+    return;
+  }
+  const cart = applyOptimisticAddToSnapshot(scope, input, cartId);
+  dispatchCartUpdated(cart.itemsCount);
+}
+
 /**
- * Hook for adding products to cart
- * @param props - Product information
- * @returns Object with loading state and addToCart function
+ * Hook for adding products to cart — optimistic snapshot + instant drawer.
  */
-export function useAddToCart({ productId, productSlug, inStock, defaultVariantId, price: propPrice }: UseAddToCartProps) {
+export function useAddToCart({
+  productId,
+  productSlug,
+  productTitle,
+  productImage,
+  inStock,
+  defaultVariantId,
+  price: propPrice,
+}: UseAddToCartProps) {
   const router = useRouter();
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const [isAddingToCart, setIsAddingToCart] = useState(false);
 
@@ -56,7 +85,6 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
       return;
     }
 
-    // Validate product slug before making API call
     if (!productSlug || productSlug.trim() === '' || productSlug.includes(' ')) {
       logger.warn('[PRODUCT CARD] Invalid product slug', { productSlug });
       alert(t('common.alerts.invalidProduct'));
@@ -69,49 +97,73 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
 
     playCartFlyAnimation({
       fromElement: flyTrigger,
-      imageUrl: fly?.imageUrl ?? null,
+      imageUrl: fly?.imageUrl ?? productImage ?? null,
     });
 
-    // If user is not logged in, use localStorage for cart
+    const scope = resolveCartCacheScope(isLoggedIn, user?.id);
+    const imageForLine = fly?.imageUrl ?? productImage ?? null;
+    const optimisticLine = (variantId: string, variantPrice: number) => ({
+      productId,
+      productSlug,
+      variantId,
+      quantityToAdd: 1,
+      price: variantPrice,
+      productTitle,
+      productImage: imageForLine,
+    });
+
     if (!isLoggedIn) {
       setIsAddingToCart(true);
       try {
-        const CART_KEY = 'shop_cart_guest';
         const stored = localStorage.getItem(CART_KEY);
-        const cart: Array<{ productId: string; productSlug: string; variantId?: string; quantity: number; price?: number }> = stored ? JSON.parse(stored) : [];
+        const cart: Array<{
+          productId: string;
+          productSlug: string;
+          variantId?: string;
+          quantity: number;
+          price?: number;
+        }> = stored ? JSON.parse(stored) : [];
 
         let variantId: string;
         let variantStock: number | undefined;
         let variantPrice: number | undefined = propPrice || undefined;
+
         if (defaultVariantId) {
           variantId = defaultVariantId;
         } else {
           const encodedSlug = encodeURIComponent(productSlug.trim());
-          const productDetails = await apiClient.get<ProductDetails>(`/api/v1/products/${encodedSlug}`);
+          const productDetails = await apiClient.get<ProductDetails>(
+            `/api/v1/products/${encodedSlug}`,
+          );
           if (!productDetails.variants || productDetails.variants.length === 0) {
             alert(t('common.alerts.noVariantsAvailable'));
-            setIsAddingToCart(false);
             return;
           }
           variantId = productDetails.variants[0].id;
           variantStock = productDetails.variants[0].stock;
-          if (!variantPrice) variantPrice = productDetails.variants[0].price;
+          if (!variantPrice) {
+            variantPrice = productDetails.variants[0].price;
+          }
         }
 
-        const existingItem = cart.find(item => item.productId === productId && item.variantId === variantId);
-        const currentQuantityInCart = existingItem?.quantity || 0;
-        const totalQuantity = currentQuantityInCart + 1;
+        const existingItem = cart.find(
+          (item) => item.productId === productId && item.variantId === variantId,
+        );
+        const totalQuantity = (existingItem?.quantity || 0) + 1;
 
         if (variantStock !== undefined && totalQuantity > variantStock) {
           alert(t('common.alerts.noMoreStockAvailable'));
-          setIsAddingToCart(false);
           return;
         }
 
         if (existingItem) {
           existingItem.quantity = totalQuantity;
-          if (!existingItem.productSlug) existingItem.productSlug = productSlug;
-          if (variantPrice) existingItem.price = variantPrice;
+          if (!existingItem.productSlug) {
+            existingItem.productSlug = productSlug;
+          }
+          if (variantPrice) {
+            existingItem.price = variantPrice;
+          }
         } else {
           cart.push({
             productId,
@@ -123,12 +175,17 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
         }
 
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
-        window.dispatchEvent(new Event('cart-updated'));
+        pushOptimisticSnapshot(scope, optimisticLine(variantId, variantPrice || 0), 'guest-cart');
         openCartDrawer();
+        scheduleCartRevalidate(false, null, t, { force: true });
       } catch (error: unknown) {
         logger.error('[PRODUCT CARD] Error adding to guest cart', { error });
         const err = error as { message?: string; status?: number };
-        if (err?.message?.includes('does not exist') || err?.message?.includes('404') || err?.status === 404) {
+        if (
+          err?.message?.includes('does not exist') ||
+          err?.message?.includes('404') ||
+          err?.status === 404
+        ) {
           alert(t('common.alerts.productNotFound'));
         } else {
           router.push(`/login?redirect=/products`);
@@ -141,65 +198,75 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
 
     setIsAddingToCart(true);
 
-    const unitPrice = propPrice ?? 0;
-    window.dispatchEvent(new CustomEvent('cart-updated', {
-      detail: { optimisticAdd: { quantity: 1, price: unitPrice } },
-    }));
-
     try {
       let variantId: string;
+      let variantStock: number | undefined;
+      const unitPrice = propPrice ?? 0;
+
       if (defaultVariantId) {
         variantId = defaultVariantId;
+        pushOptimisticSnapshot(
+          scope,
+          optimisticLine(variantId, unitPrice),
+          `user-cart-${user?.id ?? 'pending'}`,
+        );
+        openCartDrawer();
       } else {
         const encodedSlug = encodeURIComponent(productSlug.trim());
-        const productDetails = await apiClient.get<ProductDetails>(`/api/v1/products/${encodedSlug}`);
+        const productDetails = await apiClient.get<ProductDetails>(
+          `/api/v1/products/${encodedSlug}`,
+        );
         if (!productDetails.variants || productDetails.variants.length === 0) {
           alert(t('common.alerts.noVariantsAvailable'));
           return;
         }
         variantId = productDetails.variants[0].id;
+        variantStock = productDetails.variants[0].stock;
+        const price = unitPrice || productDetails.variants[0].price;
+        pushOptimisticSnapshot(
+          scope,
+          optimisticLine(variantId, price),
+          `user-cart-${user?.id ?? 'pending'}`,
+        );
+        openCartDrawer();
       }
 
       const response = await apiClient.post<{
         item: { id: string; quantity: number; price: number };
         cartSummary?: { itemsCount: number; total: number };
-      }>(
-        '/api/v1/cart/items',
-        {
-          productId: productId,
-          variantId: variantId,
-          quantity: 1,
-        }
-      );
+      }>('/api/v1/cart/items', {
+        productId,
+        variantId,
+        quantity: 1,
+      });
 
-      window.dispatchEvent(new CustomEvent('cart-updated', {
-        detail: response.cartSummary || null,
-      }));
-      openCartDrawer();
+      const itemsCount = response.cartSummary?.itemsCount;
+      if (typeof itemsCount === 'number') {
+        dispatchCartUpdated(itemsCount);
+      }
+
+      scheduleCartRevalidate(true, user?.id ?? null, t, { force: true });
     } catch (error: unknown) {
       const err = error as {
         message?: string;
         status?: number;
         statusCode?: number;
-        data?: unknown;
-        response?: {
-          data?: {
-            detail?: string;
-            title?: string;
-          };
-        };
+        response?: { data?: { detail?: string; title?: string } };
       };
 
       if (error instanceof ApiError && isQuietCartStockValidationError(error.status, error.data)) {
         alert(t('common.alerts.noMoreStockAvailable'));
-        window.dispatchEvent(new Event('cart-updated'));
-        setIsAddingToCart(false);
+        scheduleCartRevalidate(true, user?.id ?? null, t, { force: true });
         return;
       }
 
-      if (err?.message?.includes('does not exist') || err?.message?.includes('404') || err?.status === 404 || err?.statusCode === 404) {
+      if (
+        err?.message?.includes('does not exist') ||
+        err?.message?.includes('404') ||
+        err?.status === 404 ||
+        err?.statusCode === 404
+      ) {
         alert(t('common.alerts.productNotFound'));
-        setIsAddingToCart(false);
         return;
       }
 
@@ -209,18 +276,22 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
         err.response?.data?.title === 'Insufficient stock'
       ) {
         alert(t('common.alerts.noMoreStockAvailable'));
-        setIsAddingToCart(false);
         return;
       }
 
       logger.error('[PRODUCT CARD] Error adding to cart', { error });
 
-      if (err.message?.includes('401') || err.message?.includes('Unauthorized') || err?.status === 401 || err?.statusCode === 401) {
+      if (
+        err.message?.includes('401') ||
+        err.message?.includes('Unauthorized') ||
+        err?.status === 401 ||
+        err?.statusCode === 401
+      ) {
         router.push(`/login?redirect=/products`);
       } else {
         alert(t('common.alerts.failedToAddToCart'));
       }
-      window.dispatchEvent(new Event('cart-updated'));
+      scheduleCartRevalidate(true, user?.id ?? null, t, { force: true });
     } finally {
       setIsAddingToCart(false);
     }
@@ -228,7 +299,3 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
 
   return { isAddingToCart, addToCart };
 }
-
-
-
-

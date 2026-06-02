@@ -2,23 +2,48 @@ import { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { CART_DELIVERY_ESTIMATE_CITY } from './constants';
 
+const DELIVERY_ESTIMATE_CACHE_KEY = 'shop_cart_delivery_estimate_amd_v1';
+
 interface UseCartDeliveryEstimateResult {
   deliveryPriceAMD: number | null;
   loadingDelivery: boolean;
+}
+
+function readCachedDeliveryPrice(): number | null {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  try {
+    const raw = sessionStorage.getItem(DELIVERY_ESTIMATE_CACHE_KEY);
+    if (raw === null) {
+      return null;
+    }
+    const price = Number(raw);
+    return Number.isFinite(price) ? price : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
  * Fetches a single delivery price estimate for the cart summary (no address yet).
  */
 export function useCartDeliveryEstimate(): UseCartDeliveryEstimateResult {
-  const [deliveryPriceAMD, setDeliveryPriceAMD] = useState<number | null>(null);
-  const [loadingDelivery, setLoadingDelivery] = useState(true);
+  const [deliveryPriceAMD, setDeliveryPriceAMD] = useState<number | null>(
+    () => readCachedDeliveryPrice(),
+  );
+  const [loadingDelivery, setLoadingDelivery] = useState(
+    () => readCachedDeliveryPrice() === null,
+  );
 
   useEffect(() => {
     let cancelled = false;
+    const initialCached = readCachedDeliveryPrice();
 
     async function load() {
-      setLoadingDelivery(true);
+      if (initialCached === null) {
+        setLoadingDelivery(true);
+      }
       try {
         const response = await apiClient.get<{ price: number }>('/api/v1/delivery/price', {
           params: {
@@ -28,10 +53,11 @@ export function useCartDeliveryEstimate(): UseCartDeliveryEstimateResult {
         });
         if (!cancelled) {
           setDeliveryPriceAMD(response.price);
+          sessionStorage.setItem(DELIVERY_ESTIMATE_CACHE_KEY, String(response.price));
         }
       } catch {
         if (!cancelled) {
-          setDeliveryPriceAMD(0);
+          setDeliveryPriceAMD(initialCached ?? 0);
         }
       } finally {
         if (!cancelled) {

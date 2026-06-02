@@ -79,6 +79,7 @@ async function fetchCatalogProducts(
     limit,
     page: 1,
     lang: HOME_LANG,
+    catalog: true,
   });
   return result.data as CatalogProduct[];
 }

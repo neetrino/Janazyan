@@ -4,6 +4,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import type { Cart } from '../../app/cart/types';
 import { useAuth } from '../../lib/auth/AuthContext';
+import {
+  clearCartSnapshot,
+  readCartSnapshot,
+  resolveCartCacheScope,
+  writeCartSnapshot,
+} from '../../lib/cart/cart-snapshot-cache';
+import { isCartSnapshotFresh } from '../../lib/cart/cart-snapshot-cache';
 import { getGuestCartItemCount } from '../../lib/storageCounts';
 
 const CART_COUNT_CAP = 99;
@@ -12,6 +19,7 @@ type CartUpdatedDetail = {
   itemsCount?: number;
   total?: number;
   optimisticAdd?: { quantity: number; price: number };
+  skipRevalidate?: boolean;
 };
 
 function parseCartUpdatedDetail(event: Event): CartUpdatedDetail | null {
@@ -39,29 +47,63 @@ function resolveItemsCount(cart: Cart | null | undefined): number {
  * Live cart line-item count for header badges; listens to `cart-updated` and `auth-updated`.
  */
 export function useCartItemCount(): number {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [count, setCount] = useState(0);
 
+  const applyCachedCount = useCallback(() => {
+    const scope = resolveCartCacheScope(isLoggedIn, user?.id);
+    if (!scope) {
+      return;
+    }
+    const cached = readCartSnapshot(scope);
+    if (cached) {
+      setCount(resolveItemsCount(cached));
+    }
+  }, [isLoggedIn, user?.id]);
+
   const refreshGuest = useCallback(() => {
+    const scope = resolveCartCacheScope(false, null);
+    const cached = scope ? readCartSnapshot(scope) : null;
+    if (cached) {
+      setCount(resolveItemsCount(cached));
+      return;
+    }
     setCount(getGuestCartItemCount());
   }, []);
 
-  const refreshLoggedIn = useCallback(async () => {
+  const refreshLoggedIn = useCallback(async (skipNetworkIfFresh = false) => {
+    const scope = resolveCartCacheScope(true, user?.id);
+    if (skipNetworkIfFresh && scope && isCartSnapshotFresh(scope)) {
+      applyCachedCount();
+      return;
+    }
+
     try {
       const response = await apiClient.get<{ cart: Cart | null }>('/api/v1/cart');
       setCount(resolveItemsCount(response.cart));
+      if (scope) {
+        if (response.cart) {
+          writeCartSnapshot(scope, response.cart);
+        } else {
+          clearCartSnapshot(scope);
+        }
+      }
     } catch {
-      setCount(0);
+      if (!scope || !readCartSnapshot(scope)) {
+        setCount(0);
+      }
     }
-  }, []);
+  }, [user?.id, applyCachedCount]);
 
   const refresh = useCallback(() => {
+    applyCachedCount();
     if (isLoggedIn) {
-      void refreshLoggedIn();
+      const scope = resolveCartCacheScope(true, user?.id);
+      void refreshLoggedIn(Boolean(scope && isCartSnapshotFresh(scope)));
       return;
     }
     refreshGuest();
-  }, [isLoggedIn, refreshGuest, refreshLoggedIn]);
+  }, [isLoggedIn, applyCachedCount, refreshGuest, refreshLoggedIn]);
 
   useEffect(() => {
     refresh();
@@ -76,6 +118,10 @@ export function useCartItemCount(): number {
       }
       if (detail?.optimisticAdd && detail.optimisticAdd.quantity > 0) {
         setCount((prev) => prev + detail.optimisticAdd!.quantity);
+        return;
+      }
+      if (detail?.skipRevalidate) {
+        applyCachedCount();
         return;
       }
       refresh();

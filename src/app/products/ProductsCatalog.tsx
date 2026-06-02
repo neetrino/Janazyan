@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { unstable_cache } from 'next/cache';
 import { Button } from '@shop/ui';
-import { getStoredLanguage } from '../../lib/language';
+import type { LanguageCode } from '../../lib/language';
+import { getServerLanguage } from '../../lib/language-server';
 import { t } from '../../lib/i18n';
 import { ProductsHeader } from '../../components/ProductsHeader';
 import { ProductsGrid } from '../../components/ProductsGrid';
@@ -70,7 +71,8 @@ const getProductsCached = unstable_cache(
       colors,
       sizes,
       brand,
-    }) as Promise<ProductsResponse>,
+      catalog: true,
+    }),
   ['products-catalog-db-v1'],
   { revalidate: PRODUCTS_LIST_REVALIDATE_SECONDS }
 );
@@ -83,6 +85,32 @@ function parseOptionalPrice(value?: string): number | undefined {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+type CatalogSort = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
+
+function sortCatalogProducts<T extends { price: number; title: string }>(
+  products: T[],
+  sort: CatalogSort
+): T[] {
+  const sorted = [...products];
+  switch (sort) {
+    case 'price-asc':
+      sorted.sort((a, b) => a.price - b.price);
+      break;
+    case 'price-desc':
+      sorted.sort((a, b) => b.price - a.price);
+      break;
+    case 'name-asc':
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'name-desc':
+      sorted.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+    default:
+      break;
+  }
+  return sorted;
+}
+
 async function getProducts(
   page: number = 1,
   search?: string,
@@ -92,10 +120,10 @@ async function getProducts(
   colors?: string,
   sizes?: string,
   brand?: string,
-  limit: number = 12
+  limit: number = 12,
+  language: LanguageCode = 'en'
 ): Promise<ProductsResponse> {
   try {
-    const language = getStoredLanguage();
     const response = await getProductsCached(
       page,
       limit,
@@ -133,12 +161,15 @@ export async function ProductsCatalog({
   searchParams: Promise<SearchParamsInput> | SearchParamsInput;
 }) {
   const params = searchParams instanceof Promise ? await searchParams : searchParams;
+  const language = await getServerLanguage();
   const page = parseInt((params.page as string) || '1', 10);
   const limitParam = typeof params.limit === 'string' ? params.limit.trim() : '';
   const parsedLimit = limitParam && !Number.isNaN(parseInt(limitParam, 10))
     ? parseInt(limitParam, 10)
     : null;
   const perPage = parsedLimit ? Math.min(parsedLimit, 200) : 12;
+
+  const sortParam = (typeof params.sort === 'string' ? params.sort : 'default') as CatalogSort;
 
   const productsData = await getProducts(
     page,
@@ -149,10 +180,12 @@ export async function ProductsCatalog({
     typeof params.colors === 'string' ? params.colors : undefined,
     typeof params.sizes === 'string' ? params.sizes : undefined,
     typeof params.brand === 'string' ? params.brand : undefined,
-    perPage
+    perPage,
+    language
   );
 
-  const normalizedProducts = productsData.data.map((p: Product) => ({
+  const normalizedProducts = sortCatalogProducts(
+    productsData.data.map((p: Product) => ({
     id: p.id,
     slug: p.slug,
     title: p.title,
@@ -164,7 +197,9 @@ export async function ProductsCatalog({
     defaultVariantId: p.defaultVariantId ?? null,
     colors: Array.isArray(p.colors) ? p.colors : [],
     labels: p.labels ?? [],
-  }));
+    })),
+    sortParam
+  );
 
   const buildPaginationUrl = (num: number) => {
     const q = new URLSearchParams();
@@ -192,9 +227,6 @@ export async function ProductsCatalog({
     }
     return out;
   };
-
-  const language = getStoredLanguage();
-  const sortParam = typeof params.sort === 'string' ? params.sort : 'default';
 
   return (
     <>
