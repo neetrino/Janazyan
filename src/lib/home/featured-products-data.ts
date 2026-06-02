@@ -1,11 +1,13 @@
+import { cache } from 'react';
+import { unstable_cache } from 'next/cache';
 import { db } from '@white-shop/db';
 import type { ProductLabel } from '../../components/ProductLabels';
 import { productsService } from '../services/products.service';
-import { ensureProductReviewsTable } from '../utils/db-ensure';
 import { mapToHomeFeaturedProduct } from './map-to-home-featured-product';
 
 const HOME_FEATURED_LIMIT = 4;
 const HOME_LANG = 'hy';
+const HOME_FEATURED_REVALIDATE_SECONDS = 60;
 
 type CatalogProduct = {
   id: string;
@@ -48,11 +50,6 @@ async function fetchAverageRatings(
   }
 
   try {
-    const tableReady = await ensureProductReviewsTable();
-    if (!tableReady) {
-      return new Map();
-    }
-
     const rows = await db.productReview.groupBy({
       by: ['productId'],
       where: {
@@ -112,10 +109,7 @@ async function loadFeaturedCatalog(limit: number): Promise<CatalogProduct[]> {
   return merged.slice(0, limit);
 }
 
-/**
- * Featured products for the home page (admin "featured" flag, with catalog fallback).
- */
-export async function getHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
+async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
   try {
     const catalog = await loadFeaturedCatalog(HOME_FEATURED_LIMIT);
     const ratings = await fetchAverageRatings(catalog.map((item) => item.id));
@@ -130,3 +124,18 @@ export async function getHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> 
     return [];
   }
 }
+
+const getHomeFeaturedProductsCached = unstable_cache(
+  loadHomeFeaturedProducts,
+  ['home-featured-products-v1'],
+  {
+    revalidate: HOME_FEATURED_REVALIDATE_SECONDS,
+    tags: ['products', 'home-featured'],
+  },
+);
+
+/**
+ * Featured products for the home page (admin "featured" flag, with catalog fallback).
+ * Cached for 60s; deduped within a single request.
+ */
+export const getHomeFeaturedProducts = cache(getHomeFeaturedProductsCached);

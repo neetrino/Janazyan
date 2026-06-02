@@ -1,20 +1,20 @@
 import {
   AboutSection,
   CategoryPosters,
-  FeaturedProducts,
   HomeHero,
   HomeMobileFigma,
   PromoPoster,
   WhyChooseUs,
 } from '../components/home';
-import { getHomeFeaturedProducts } from '../lib/home/featured-products-data';
+import {
+  DesktopFeaturedAsync,
+  HomeMobileFeaturedAsync,
+} from '../components/home/HomeFeaturedAsync';
 
-export default async function HomePage() {
-  const featuredProducts = await getHomeFeaturedProducts();
-
+export default function HomePage() {
   return (
     <div className="relative isolate overflow-hidden bg-white">
-      <HomeMobileFigma featuredProducts={featuredProducts} />
+      <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
 
       <div className="hidden lg:block">
         <HomeHero />
@@ -26,7 +26,7 @@ export default async function HomePage() {
 
       <div className="hidden lg:block relative mx-auto w-full max-w-[1475px] overflow-visible">
         <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
-        <FeaturedProducts products={featuredProducts} />
+        <DesktopFeaturedAsync />
         <PromoPoster />
         <WhyChooseUs />
       </div>

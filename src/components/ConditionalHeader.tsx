@@ -13,11 +13,7 @@ export function ConditionalHeader() {
   }
 
   if (pathname === '/') {
-    return (
-      <div className="hidden lg:block">
-        <Header />
-      </div>
-    );
+    return null;
   }
 
   return <Header />;

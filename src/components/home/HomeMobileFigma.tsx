@@ -1,8 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Globe, Menu, Phone, Search } from 'lucide-react';
-import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
-import { FeaturedProductCardSlot } from './FeaturedProductCardSlot';
+import type { ReactNode } from 'react';
 import {
   CATEGORY_BG,
   CATEGORY_FIGMA_GRID_IDS,
@@ -41,10 +40,10 @@ const MOBILE_FILTERS: ReadonlyArray<MobileFilter> = [
 ];
 
 type HomeMobileFigmaProps = {
-  featuredProducts: HomeFeaturedProduct[];
+  featuredSlot: ReactNode;
 };
 
-export function HomeMobileFigma({ featuredProducts }: HomeMobileFigmaProps) {
+export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   const mobileCategories = [...CATEGORY_FIGMA_GRID_IDS];
   const whyCards = WHY_CARDS.slice(0, 3);
 
@@ -59,7 +58,7 @@ export function HomeMobileFigma({ featuredProducts }: HomeMobileFigmaProps) {
       </div>
 
       <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink px-3 pb-10 pt-9">
-        <MobileFeaturedProducts products={featuredProducts} />
+        {featuredSlot}
         <MobileWhyChooseUs cards={whyCards} />
       </div>
     </section>
@@ -210,39 +209,6 @@ function MobileCategoryCard({ categoryId }: { categoryId: string }) {
         />
       </div>
     </Link>
-  );
-}
-
-function MobileFeaturedProducts({
-  products,
-}: {
-  products: HomeFeaturedProduct[];
-}) {
-  if (products.length === 0) {
-    return null;
-  }
-
-  return (
-    <div>
-      <div className="mb-4 flex items-center justify-between text-white">
-        <h2 className="text-[16px] font-bold tracking-[-0.01em]">Հայտնի Ապրանքներ</h2>
-        <Link
-          href="/products?filter=featured"
-          className="text-[13px] font-semibold uppercase"
-        >
-          Բոլորը
-        </Link>
-      </div>
-      <div className="grid grid-cols-2 gap-1 justify-items-center">
-        {products.slice(0, 4).map((product) => (
-          <FeaturedProductCardSlot
-            key={product.id}
-            product={product}
-            scale="mobile-grid"
-          />
-        ))}
-      </div>
-    </div>
   );
 }
 
