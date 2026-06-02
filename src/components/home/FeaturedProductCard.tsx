@@ -68,7 +68,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
   const handleAddToCart = (event: MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    addToCart({ imageUrl: product.image });
+    addToCart({ clickTarget: event.currentTarget, imageUrl: product.image });
   };
 
   return (
@@ -78,6 +78,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
     >
       <Link
         href={`/products/${product.slug}`}
+        data-product-fly-origin
         className="absolute left-1/2 z-30 block -translate-x-1/2 transition-transform duration-300 ease-out group-hover:-translate-y-4 group-hover:scale-110"
         style={{
           top: PRODUCT_IMAGE_TOP_PX,

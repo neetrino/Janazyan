@@ -57,7 +57,7 @@ function getFooterGradientStyle(): CSSProperties {
 const FOOTER_Z_DECORATION = 'z-0';
 const FOOTER_Z_CONTENT = 'z-10';
 
-const HIDDEN_FOOTER_PREFIXES = ['/supersudo', '/admin'] as const;
+const HIDDEN_FOOTER_PREFIXES = ['/supersudo', '/admin', '/login', '/register'] as const;
 
 function getFooterShellStyle(): CSSProperties {
   return {
@@ -74,7 +74,9 @@ function getFooterDecorationPositionStyle(): CSSProperties {
 }
 
 function shouldHideFooter(pathname: string): boolean {
-  return HIDDEN_FOOTER_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  return HIDDEN_FOOTER_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
 }
 
 export function Footer() {
@@ -86,10 +88,10 @@ export function Footer() {
 
   return (
     <div
-      className="relative z-[1] hidden shrink-0 overflow-hidden lg:block"
+      className="pointer-events-none relative z-[1] hidden shrink-0 overflow-hidden lg:block"
       style={getFooterShellStyle()}
     >
-      <footer className="absolute inset-x-0 bottom-0 z-0 h-[407px] w-full bg-cream font-armenian">
+      <footer className="pointer-events-auto absolute inset-x-0 bottom-0 z-0 h-[407px] w-full bg-cream font-armenian">
         <div className="relative mx-auto h-full w-full">
           <div
             aria-hidden="true"

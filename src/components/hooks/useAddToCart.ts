@@ -24,6 +24,8 @@ interface ProductDetails {
 
 export interface AddToCartFlyContext {
   origin?: HTMLElement | null;
+  /** When set without `origin`, fly starts from the card product image (not the cart button). */
+  clickTarget?: EventTarget | null;
   imageUrl?: string | null;
 }
 
@@ -60,8 +62,12 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
       return;
     }
 
+    const flyTrigger =
+      fly?.origin ??
+      (fly?.clickTarget instanceof HTMLElement ? fly.clickTarget : null);
+
     playCartFlyAnimation({
-      fromElement: fly?.origin ?? null,
+      fromElement: flyTrigger,
       imageUrl: fly?.imageUrl ?? null,
     });
 

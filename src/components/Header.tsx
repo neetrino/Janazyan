@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isNavLinkActive } from '../lib/nav/is-nav-link-active';
 import { HeaderAccountMenu } from './header/HeaderAccountMenu';
+import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 import { isStorefrontPage } from '../lib/nav/is-storefront-page';
 import { HOME_NAV_LINKS } from './home/constants';
 
@@ -121,6 +122,9 @@ function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
 }
 
 function HeaderActions() {
+  const cartCount = useCartItemCount();
+  const cartBadgeLabel = formatCartBadgeCount(cartCount);
+
   return (
     <div className="flex shrink-0 items-center overflow-visible rounded-7xl bg-white px-[22px] py-[10px]">
       <div className="flex items-center" style={{ gap: HEADER_ACTION_GAP_PX }}>
@@ -138,7 +142,10 @@ function HeaderActions() {
         <HeaderAccountMenu />
         <Link
           href="/cart"
-          aria-label="Cart"
+          data-cart-fly-target
+          aria-label={
+            cartCount === 0 ? 'Cart' : `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`
+          }
           className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
           style={{
             width: HEADER_ACTION_BUTTON_SIZE_PX,
@@ -147,10 +154,11 @@ function HeaderActions() {
         >
           <HeaderActionIcon src={HEADER_CART_ICON} alt="" />
           <span
-            className="absolute left-5 top-0 grid size-4 place-items-center rounded-full text-[12px] font-medium leading-4 text-white"
-            style={{ backgroundColor: HEADER_CART_BADGE_COLOR }}
+            className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
+            style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
+            aria-hidden
           >
-            0
+            {cartBadgeLabel}
           </span>
         </Link>
       </div>

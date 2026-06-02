@@ -1,8 +1,14 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { Button, Input, Card } from '@shop/ui';
+import { Button, Input } from '@shop/ui';
 import Link from 'next/link';
+import { AuthGlassCard } from '../../components/auth/AuthGlassCard';
+import { AuthPageShell } from '../../components/auth/AuthPageShell';
+import {
+  AUTH_GLASS_ERROR_CLASS,
+  AUTH_GLASS_INPUT_CLASS,
+} from '../../components/auth/auth-glass-styles';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { resolveRegisterApiError } from '../../lib/auth/client-api-error-messages';
@@ -121,13 +127,13 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Card className="p-8">
+    <AuthPageShell>
+      <AuthGlassCard>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('register.title')}</h1>
         <p className="text-gray-600 mb-8">{t('register.subtitle')}</p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className={`mb-4 p-3 ${AUTH_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -143,7 +149,7 @@ export default function RegisterPage() {
                 id="firstName"
                 type="text"
                 placeholder={t('register.placeholders.firstName')}
-                className="w-full"
+                className={`w-full ${AUTH_GLASS_INPUT_CLASS}`}
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 disabled={isSubmitting || isLoading}
@@ -159,7 +165,7 @@ export default function RegisterPage() {
                 id="lastName"
                 type="text"
                 placeholder={t('register.placeholders.lastName')}
-                className="w-full"
+                className={`w-full ${AUTH_GLASS_INPUT_CLASS}`}
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 disabled={isSubmitting || isLoading}
@@ -176,7 +182,7 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder={t('register.placeholders.email')}
-              className="w-full"
+              className={`w-full ${AUTH_GLASS_INPUT_CLASS}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isSubmitting || isLoading}
@@ -191,7 +197,7 @@ export default function RegisterPage() {
               id="phone"
               type="tel"
               placeholder={t('register.placeholders.phone')}
-              className="w-full"
+              className={`w-full ${AUTH_GLASS_INPUT_CLASS}`}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               disabled={isSubmitting || isLoading}
@@ -207,7 +213,7 @@ export default function RegisterPage() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder={t('register.placeholders.password')}
-                className="w-full pr-10"
+                className={`w-full pr-10 ${AUTH_GLASS_INPUT_CLASS}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting || isLoading}
@@ -240,7 +246,7 @@ export default function RegisterPage() {
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder={t('register.placeholders.confirmPassword')}
-                className="w-full pr-10"
+                className={`w-full pr-10 ${AUTH_GLASS_INPUT_CLASS}`}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isSubmitting || isLoading}
@@ -300,16 +306,14 @@ export default function RegisterPage() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {t('register.form.alreadyHaveAccount')}{' '}
-            <Link href="/login" className="text-blue-600 hover:underline font-medium">
-              {t('register.form.signIn')}
-            </Link>
-          </p>
+        <div className="relative z-20 mt-6 text-center text-sm text-gray-600">
+          {t('register.form.alreadyHaveAccount')}{' '}
+          <Link href="/login" className="font-medium text-blue-600 hover:underline">
+            {t('register.form.signIn')}
+          </Link>
         </div>
-      </Card>
-    </div>
+      </AuthGlassCard>
+    </AuthPageShell>
   );
 }
 

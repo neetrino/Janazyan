@@ -22,8 +22,10 @@ function dispatchHeaderRevealForCart(): void {
   }
   window.dispatchEvent(new CustomEvent(HEADER_REVEAL_FOR_CART_EVENT));
 }
-const FLY_START_SIZE_PX = 52;
+const FLY_START_SIZE_MIN_PX = 52;
+const FLY_START_SIZE_MAX_PX = 96;
 const FLY_END_SIZE_PX = 20;
+const FLY_ORIGIN_AREA_RATIO = 1.5;
 const FLY_ARC_BOOST_PX = 64;
 const FALLBACK_TOP_PX = 72;
 const FALLBACK_RIGHT_INSET_PX = 24;
@@ -31,6 +33,52 @@ const FALLBACK_SIZE_PX = 40;
 
 function hasNonZeroSize(rect: DOMRect): boolean {
   return rect.width > 0 && rect.height > 0;
+}
+
+function rectArea(rect: DOMRect): number {
+  return rect.width * rect.height;
+}
+
+/**
+ * Cart buttons are small; fly should start from the product photo when the card has one.
+ */
+function resolveFlySourceElement(source: HTMLElement): HTMLElement {
+  if (source.hasAttribute('data-product-fly-origin')) {
+    return source;
+  }
+
+  const cardRoot =
+    source.closest('[data-product-card]') ?? source.closest('article');
+  const origin = cardRoot?.querySelector<HTMLElement>('[data-product-fly-origin]');
+  if (!(origin instanceof HTMLElement)) {
+    return source;
+  }
+
+  const originRect = origin.getBoundingClientRect();
+  if (!hasNonZeroSize(originRect)) {
+    return source;
+  }
+
+  const sourceRect = source.getBoundingClientRect();
+  if (rectArea(originRect) > rectArea(sourceRect) * FLY_ORIGIN_AREA_RATIO) {
+    return origin;
+  }
+
+  return source;
+}
+
+function computeFlyStartSizePx(from: DOMRect, domImage: HTMLImageElement | null): number {
+  const imageRect = domImage?.getBoundingClientRect();
+  const basis = imageRect && hasNonZeroSize(imageRect) ? imageRect : from;
+  const side = Math.min(basis.width, basis.height);
+  if (side <= 40) {
+    return FLY_START_SIZE_MIN_PX;
+  }
+  const scaled = Math.round(side * 0.72);
+  return Math.min(
+    FLY_START_SIZE_MAX_PX,
+    Math.max(FLY_START_SIZE_MIN_PX, scaled),
+  );
 }
 
 function isTargetVisible(el: Element): boolean {
@@ -76,12 +124,15 @@ function scheduleAfterHeaderLayoutCommit(run: () => void): void {
   });
 }
 
-/** Prefer the bitmap already painted in the product block (Next/Image → real <img>, correct srcset). */
-function resolveFlyImageFromElement(fromElement: HTMLElement): {
+type FlyImageMeta = {
   url: string;
   objectFit: string;
   objectPosition: string;
-} | null {
+  img: HTMLImageElement;
+};
+
+/** Prefer the bitmap already painted in the product block (Next/Image → real <img>, correct srcset). */
+function resolveFlyImageFromElement(fromElement: HTMLElement): FlyImageMeta | null {
   const MIN_AREA_PX = 16;
   const imgs = fromElement.querySelectorAll('img');
   let best: HTMLImageElement | null = null;
@@ -111,6 +162,7 @@ function resolveFlyImageFromElement(fromElement: HTMLElement): {
     url: (best.currentSrc || best.src).trim(),
     objectFit: computed.objectFit || 'cover',
     objectPosition: computed.objectPosition || '50% 50%',
+    img: best,
   };
 }
 
@@ -160,11 +212,12 @@ export function playCartFlyAnimation(options: CartFlyAnimationOptions): void {
     return;
   }
 
-  const source = options.fromElement;
-  if (!(source instanceof HTMLElement)) {
+  const rawSource = options.fromElement;
+  if (!(rawSource instanceof HTMLElement)) {
     return;
   }
 
+  const source = resolveFlySourceElement(rawSource);
   const fromRect = source.getBoundingClientRect();
   if (!hasNonZeroSize(fromRect)) {
     return;
@@ -182,25 +235,27 @@ export function playCartFlyAnimation(options: CartFlyAnimationOptions): void {
 
     const targetRect = getVisibleCartTargetRect() ?? getFallbackTargetRect();
 
+    const fromDomImage = resolveFlyImageFromElement(source);
+    const flyStartSizePx = computeFlyStartSizePx(from, fromDomImage?.img ?? null);
+
     const fromCx = from.left + from.width / 2;
     const fromCy = from.top + from.height / 2;
     const toCx = targetRect.left + targetRect.width / 2;
     const toCy = targetRect.top + targetRect.height / 2;
 
-    const startLeft = fromCx - FLY_START_SIZE_PX / 2;
-    const startTop = fromCy - FLY_START_SIZE_PX / 2;
+    const startLeft = fromCx - flyStartSizePx / 2;
+    const startTop = fromCy - flyStartSizePx / 2;
     const deltaX = toCx - fromCx;
     const deltaY = toCy - fromCy;
 
-    const fromDomImage = resolveFlyImageFromElement(source);
     const resolvedUrl = fromDomImage?.url ?? options.imageUrl?.trim() ?? null;
     const shell = appendFlyShell(resolvedUrl, fromDomImage);
     shell.style.left = `${startLeft}px`;
     shell.style.top = `${startTop}px`;
-    shell.style.width = `${FLY_START_SIZE_PX}px`;
-    shell.style.height = `${FLY_START_SIZE_PX}px`;
+    shell.style.width = `${flyStartSizePx}px`;
+    shell.style.height = `${flyStartSizePx}px`;
 
-    const scaleEnd = FLY_END_SIZE_PX / FLY_START_SIZE_PX;
+    const scaleEnd = FLY_END_SIZE_PX / flyStartSizePx;
     const midDx = deltaX * 0.52;
     const midDy = deltaY * 0.48 - FLY_ARC_BOOST_PX;
 
