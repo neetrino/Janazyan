@@ -8,6 +8,7 @@ import { isQuietCartStockValidationError } from '../../lib/api-client/error-hand
 import { logger } from '../../lib/utils/logger';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
+import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
 
 interface ProductDetails {
@@ -123,6 +124,7 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
 
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
         window.dispatchEvent(new Event('cart-updated'));
+        openCartDrawer();
       } catch (error: unknown) {
         logger.error('[PRODUCT CARD] Error adding to guest cart', { error });
         const err = error as { message?: string; status?: number };
@@ -173,6 +175,7 @@ export function useAddToCart({ productId, productSlug, inStock, defaultVariantId
       window.dispatchEvent(new CustomEvent('cart-updated', {
         detail: response.cartSummary || null,
       }));
+      openCartDrawer();
     } catch (error: unknown) {
       const err = error as {
         message?: string;

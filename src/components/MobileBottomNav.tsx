@@ -6,6 +6,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Heart, Search, Store, X } from 'lucide-react';
 import { getCompareCount, getWishlistCount } from '../lib/storageCounts';
+import { openCartDrawer } from '../lib/cart-drawer-events';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage } from '../lib/language';
 
@@ -170,11 +171,11 @@ export function MobileBottomNav() {
         action: () => setShowShopCategories(true),
       },
       // On mobile we show Cart instead of Wishlist
-      { 
+      {
         key: 'cart',
         label: 'Զամբյուղ',
-        href: '/cart', 
         visible: true,
+        action: () => openCartDrawer(),
       },
       { key: 'account', label: 'Իմ էջը', href: '/profile', visible: true },
     ],

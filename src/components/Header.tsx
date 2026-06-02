@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { isNavLinkActive } from '../lib/nav/is-nav-link-active';
 import { HeaderAccountMenu } from './header/HeaderAccountMenu';
+import { openCartDrawer } from '../lib/cart-drawer-events';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 import { isStorefrontPage } from '../lib/nav/is-storefront-page';
 import { HOME_NAV_LINKS } from './home/constants';
@@ -140,9 +141,10 @@ function HeaderActions() {
           <HeaderActionIcon src={HEADER_HEART_ICON} alt="" />
         </Link>
         <HeaderAccountMenu />
-        <Link
-          href="/cart"
+        <button
+          type="button"
           data-cart-fly-target
+          onClick={() => openCartDrawer()}
           aria-label={
             cartCount === 0 ? 'Cart' : `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`
           }
@@ -160,7 +162,7 @@ function HeaderActions() {
           >
             {cartBadgeLabel}
           </span>
-        </Link>
+        </button>
       </div>
     </div>
   );

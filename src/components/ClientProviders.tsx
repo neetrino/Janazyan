@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { AuthProvider } from '../lib/auth/AuthContext';
+import { CartDrawer } from './cart/CartDrawer';
 import { ToastContainer } from './Toast';
 
 /**
@@ -12,6 +13,7 @@ export function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <AuthProvider>
       {children}
+      <CartDrawer />
       <ToastContainer />
     </AuthProvider>
   );
