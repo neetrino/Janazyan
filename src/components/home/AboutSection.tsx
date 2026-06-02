@@ -19,72 +19,17 @@ export function AboutSection() {
   return (
     <section
       aria-label="About Janazyan"
-      className="relative w-full overflow-hidden px-2 py-16 font-armenian sm:px-3 md:px-4 md:py-24 lg:p-0"
+      className="relative hidden w-full overflow-hidden font-armenian lg:block lg:p-0"
       style={ABOUT_BG_STYLE}
     >
-      <MobileAbout />
       <DesktopAbout />
     </section>
   );
 }
 
-function MobileAbout() {
-  return (
-    <div className="mx-auto w-full max-w-[1470px] lg:hidden">
-      <div className="text-center">
-        <h2
-          className={`${ABOUT_HEADING_CLASS} text-[clamp(32px,6vw,56px)] leading-[0.9] tracking-[0.3691px] text-ink-800`}
-        >
-          Ծնված Սիրուց
-        </h2>
-        <h2
-          className={`${ABOUT_HEADING_CLASS} mt-2 text-[clamp(32px,6vw,56px)] leading-[0.9] tracking-[0.3691px] text-sky-soft`}
-        >
-          Ստեղծված Խնամքով
-        </h2>
-      </div>
-
-      <div className="relative mx-auto mt-10 h-[420px] w-full max-w-[560px] sm:h-[520px]">
-        <div className="relative h-full w-full animate-hero-body-wash-showcase">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={ABOUT_IMAGE}
-            alt="Janazyan products"
-            className="mx-auto h-full w-full object-contain mix-blend-screen"
-          />
-        </div>
-      </div>
-
-      <div className="relative mt-10 grid gap-10 md:mt-12 md:grid-cols-3 md:items-center">
-        <div className="space-y-12 text-center md:text-right">
-          <p className="mx-auto max-w-[352px] text-[16px] leading-[26px] tracking-[-0.3125px] text-ink-500">
-            Մեր ուշադիր ընտրված հավաքածուն համատեղում է անվտանգությունը, կայունությունը և ոճը։ Յուրաքանչյուր արտադրանք մտածված կերպով ընտրված է և խստորեն փորձարկված՝ համապատասխանելու որակի և հարմարավետության բարձրագույն չափանիշներին։
-          </p>
-          <Stat value={ABOUT_STATS[0].value} label={ABOUT_STATS[0].label} />
-        </div>
-
-        <div className="relative mx-auto flex justify-center">
-          <Stat value={ABOUT_STATS[1].value} label={ABOUT_STATS[1].label} />
-        </div>
-
-        <div className="space-y-12 text-center md:text-left">
-          <Stat
-            value={ABOUT_STATS[2].value}
-            label={ABOUT_STATS[2].label}
-            align="left"
-          />
-          <p className="mx-auto max-w-[433px] text-[18px] leading-[29.25px] tracking-[-0.4395px] text-ink-500">
-            Փոքրիկ Ծաղիկը հիմնադրվել է ծնողների կողմից, ովքեր հասկանում են նոր կյանքի խնամքի ճանապարհը։ Մենք հավատում ենք, որ յուրաքանչյուր երեխա արժանի է ամենանուրբ խնամքին, և յուրաքանչյուր ծնող արժանի է հանգստության։
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function DesktopAbout() {
   return (
-    <div className="mx-auto hidden w-full lg:block">
+    <div className="mx-auto w-full">
       <div
         className="flex justify-center overflow-hidden"
         style={{
