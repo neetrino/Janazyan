@@ -17,7 +17,7 @@ export function HomeHero() {
       <div className="relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         <HeroRectangleBackground />
 
-        <Header variant="hero" />
+        <Header embedded />
 
         <div className="pointer-events-none absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] md:block lg:left-[51.3%] lg:right-auto lg:z-20">
           <Image

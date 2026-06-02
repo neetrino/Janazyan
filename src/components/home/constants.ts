@@ -3,12 +3,10 @@ import type { CSSProperties } from 'react';
 export const HOME_NAV_LINKS: ReadonlyArray<{
   label: string;
   href: string;
-  active?: boolean;
 }> = [
-  { label: 'Գլխավոր', href: '/', active: true },
+  { label: 'Գլխավոր', href: '/' },
   { label: 'Խանութ', href: '/products' },
   { label: 'Կատեգորիաներ', href: '/products?view=categories' },
-  { label: 'Մեր Մասին', href: '/about' },
   { label: 'Մեր Մասին', href: '/about' },
   { label: 'Կապ', href: '/contact' },
 ];

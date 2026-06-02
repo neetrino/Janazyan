@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
+import { isNavLinkActive } from '../lib/nav/is-nav-link-active';
 import { HOME_NAV_LINKS } from './home/constants';
 
 const NAV_LINKS = HOME_NAV_LINKS;
@@ -26,15 +27,15 @@ const HEADER_USER_ICON = '/figma/header-user-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
-const HERO_HEADER_LEFT_PX = 22;
-const HERO_HEADER_TOP_PX = 53;
-const HERO_ACTIONS_TOP_PERCENT = 7.77;
-const HERO_ACTIONS_RIGHT_PERCENT = 3.6;
-
-type HeaderVariant = 'hero' | 'default';
+const HEADER_BRAND_LEFT_PX = 22;
+const HEADER_BRAND_TOP_PX = 53;
+const HEADER_ACTIONS_TOP_PERCENT = 7.77;
+const HEADER_ACTIONS_RIGHT_PERCENT = 3.6;
+const HEADER_STANDALONE_MIN_HEIGHT_PX = 120;
 
 type HeaderProps = {
-  variant?: HeaderVariant;
+  /** When true, header is absolutely positioned inside the home hero card. */
+  embedded?: boolean;
 };
 
 function HeaderLogo() {
@@ -57,20 +58,27 @@ function HeaderLogo() {
   );
 }
 
-function HeaderNav({ pathname }: { pathname: string }) {
+function HeaderNav({
+  pathname,
+  searchParams,
+}: {
+  pathname: string;
+  searchParams: URLSearchParams;
+}) {
   return (
     <nav
       className="hidden items-center lg:flex"
       style={{ gap: HEADER_NAV_LINK_GAP_PX }}
       aria-label="Main navigation"
     >
-      {NAV_LINKS.map((link, index) => {
-        const isActive = link.active ?? pathname === link.href;
+      {NAV_LINKS.map((link) => {
+        const isActive = isNavLinkActive(pathname, link.href, searchParams);
 
         return (
           <Link
-            key={`${link.href}-${index}`}
+            key={link.href}
             href={link.href}
+            aria-current={isActive ? 'page' : undefined}
             className="relative inline-flex h-6 items-center text-[16px] font-semibold leading-6 tracking-[-0.3125px] transition-colors duration-200"
           >
             {isActive && (
@@ -156,41 +164,32 @@ function HeaderActions() {
   );
 }
 
-function HeaderBrandNav({ pathname }: { pathname: string }) {
-  return (
-    <div className="flex min-w-0 items-center" style={{ gap: HEADER_LOGO_NAV_GAP_PX }}>
-      <HeaderLogo />
-      <HeaderNav pathname={pathname} />
-    </div>
-  );
-}
-
-function DefaultHeaderBar({ pathname }: { pathname: string }) {
-  return (
-    <div className="flex w-full items-center justify-between gap-4">
-      <HeaderBrandNav pathname={pathname} />
-      <HeaderActions />
-    </div>
-  );
-}
-
-function HeroHeaderBar({ pathname }: { pathname: string }) {
+function HeaderBar({
+  pathname,
+  searchParams,
+}: {
+  pathname: string;
+  searchParams: URLSearchParams;
+}) {
   return (
     <>
       <div
         className="pointer-events-auto absolute"
         style={{
-          left: HERO_HEADER_LEFT_PX,
-          top: HERO_HEADER_TOP_PX,
+          left: HEADER_BRAND_LEFT_PX,
+          top: HEADER_BRAND_TOP_PX,
         }}
       >
-        <HeaderBrandNav pathname={pathname} />
+        <div className="flex min-w-0 items-center" style={{ gap: HEADER_LOGO_NAV_GAP_PX }}>
+          <HeaderLogo />
+          <HeaderNav pathname={pathname} searchParams={searchParams} />
+        </div>
       </div>
       <div
         className="pointer-events-auto absolute"
         style={{
-          right: `${HERO_ACTIONS_RIGHT_PERCENT}%`,
-          top: `${HERO_ACTIONS_TOP_PERCENT}%`,
+          right: `${HEADER_ACTIONS_RIGHT_PERCENT}%`,
+          top: `${HEADER_ACTIONS_TOP_PERCENT}%`,
         }}
       >
         <HeaderActions />
@@ -199,21 +198,25 @@ function HeroHeaderBar({ pathname }: { pathname: string }) {
   );
 }
 
-export function Header({ variant = 'default' }: HeaderProps) {
+export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
 
-  if (variant === 'hero') {
+  if (embedded) {
     return (
       <header className="pointer-events-none absolute inset-0 z-30">
-        <HeroHeaderBar pathname={pathname} />
+        <HeaderBar pathname={pathname} searchParams={searchParams} />
       </header>
     );
   }
 
   return (
-    <header className="w-full bg-safe-top px-4 pb-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 lg:px-[58px]">
-      <div className="mx-auto w-full max-w-[1472px] rounded-[28px] bg-white px-4 py-3 shadow-soft sm:px-5 md:px-6 lg:px-7">
-        <DefaultHeaderBar pathname={pathname} />
+    <header className="relative z-30 hidden w-full bg-safe-top px-4 pb-3 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 lg:block lg:px-[58px]">
+      <div
+        className="relative mx-auto w-full max-w-[1472px]"
+        style={{ minHeight: HEADER_STANDALONE_MIN_HEIGHT_PX }}
+      >
+        <HeaderBar pathname={pathname} searchParams={searchParams} />
       </div>
     </header>
   );
