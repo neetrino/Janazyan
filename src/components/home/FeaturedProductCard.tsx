@@ -73,12 +73,12 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
 
   return (
     <article
-      className="relative shrink-0 overflow-visible"
+      className="group relative shrink-0 overflow-visible"
       style={{ width: CARD_WIDTH_PX, height: CARD_HEIGHT_PX }}
     >
       <Link
         href={`/products/${product.slug}`}
-        className="absolute left-1/2 z-30 block -translate-x-1/2"
+        className="absolute left-1/2 z-30 block -translate-x-1/2 transition-transform duration-300 ease-out group-hover:-translate-y-4 group-hover:scale-110"
         style={{
           top: PRODUCT_IMAGE_TOP_PX,
           width: PRODUCT_IMAGE_WIDTH_PX,
