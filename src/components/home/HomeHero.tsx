@@ -131,7 +131,7 @@ function HeroProductImages({
 function HeroKidsLabel({ visible }: { visible: boolean }) {
   return (
     <p
-      className={`pointer-events-none absolute right-[8%] top-[281px] z-20 hidden text-[35px] font-light leading-[30px] text-cream transition-opacity duration-500 md:block ${
+      className={`pointer-events-none absolute right-[8%] top-[248px] z-20 hidden text-[35px] font-light leading-[30px] text-cream transition-opacity duration-500 md:block ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
       aria-hidden={!visible}
