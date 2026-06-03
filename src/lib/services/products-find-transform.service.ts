@@ -252,16 +252,25 @@ class ProductsFindTransformService {
         finalPrice = originalPrice * (1 - appliedDiscount / 100);
       }
 
-      // Get categories with translations
-      const categories = Array.isArray(product.categories) ? product.categories.map((cat: { id: string; translations?: Array<{ locale: string; slug: string; title: string }> }) => {
-        const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
-        const catTranslation = catTranslations.find((t: { locale: string }) => t.locale === lang) || catTranslations[0] || null;
-        return {
-          id: cat.id,
-          slug: catTranslation?.slug || "",
-          title: catTranslation?.title || "",
-        };
-      }) : [];
+      const categories = isCatalog
+        ? []
+        : Array.isArray(product.categories)
+          ? product.categories.map((cat: {
+              id: string;
+              translations?: Array<{ locale: string; slug: string; title: string }>;
+            }) => {
+              const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
+              const catTranslation =
+                catTranslations.find((t: { locale: string }) => t.locale === lang) ||
+                catTranslations[0] ||
+                null;
+              return {
+                id: cat.id,
+                slug: catTranslation?.slug || '',
+                title: catTranslation?.title || '',
+              };
+            })
+          : [];
 
       return {
         id: product.id,

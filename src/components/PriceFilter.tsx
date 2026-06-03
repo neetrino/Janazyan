@@ -3,8 +3,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@shop/ui';
-import { apiClient } from '../lib/api-client';
-import { getStoredLanguage } from '../lib/language';
 import { getStoredCurrency, formatPrice as formatCurrencyPrice, type CurrencyCode } from '../lib/currency';
 import { useTranslation } from '../lib/i18n-client';
 import { useProductsFilters } from './ProductsFiltersProvider';
@@ -23,19 +21,26 @@ interface PriceRange {
   stepSizePerCurrency?: Partial<Record<CurrencyCode, number>> | null;
 }
 
-export function PriceFilter({ currentMinPrice, currentMaxPrice, category }: PriceFilterProps) {
+const DEFAULT_PRICE_RANGE: PriceRange = {
+  min: 0,
+  max: 100000,
+  stepSize: null,
+  stepSizePerCurrency: null,
+};
+
+export function PriceFilter({ currentMinPrice, currentMaxPrice }: PriceFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filtersContext = useProductsFilters();
   const { t } = useTranslation();
-  const [priceRange, setPriceRange] = useState<PriceRange>({
-    min: 0,
-    max: 100000,
-    stepSize: null,
-    stepSizePerCurrency: null,
-  });
-  const [minPrice, setMinPrice] = useState(currentMinPrice ? parseFloat(currentMinPrice) : 0);
-  const [maxPrice, setMaxPrice] = useState(currentMaxPrice ? parseFloat(currentMaxPrice) : 100000);
+  const serverRange = (filtersContext?.data.priceRange ?? DEFAULT_PRICE_RANGE) as PriceRange;
+  const [priceRange, setPriceRange] = useState<PriceRange>(serverRange);
+  const [minPrice, setMinPrice] = useState(
+    currentMinPrice ? parseFloat(currentMinPrice) : serverRange.min
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    currentMaxPrice ? parseFloat(currentMaxPrice) : serverRange.max
+  );
   const [isDragging, setIsDragging] = useState<'min' | 'max' | null>(null);
   const [currency, setCurrency] = useState<CurrencyCode>('USD'); // Default для SSR
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -65,17 +70,18 @@ export function PriceFilter({ currentMinPrice, currentMaxPrice, category }: Pric
   }, []);
 
   useEffect(() => {
-    if (filtersContext?.data?.priceRange) {
-      const pr = filtersContext.data.priceRange;
-      setPriceRange(pr as PriceRange);
-      if (!currentMinPrice) setMinPrice(pr.min);
-      if (!currentMaxPrice) setMaxPrice(pr.max);
+    if (!filtersContext?.data.priceRange) {
       return;
     }
-    if (filtersContext === null) {
-      fetchPriceRange();
+    const pr = filtersContext.data.priceRange as PriceRange;
+    setPriceRange(pr);
+    if (!currentMinPrice) {
+      setMinPrice(pr.min);
     }
-  }, [category, filtersContext?.data?.priceRange, filtersContext === null]);
+    if (!currentMaxPrice) {
+      setMaxPrice(pr.max);
+    }
+  }, [filtersContext?.data.priceRange, currentMinPrice, currentMaxPrice]);
 
   useEffect(() => {
     if (currentMinPrice) {
@@ -89,21 +95,6 @@ export function PriceFilter({ currentMinPrice, currentMaxPrice, category }: Pric
       setMaxPrice(priceRange.max);
     }
   }, [currentMinPrice, currentMaxPrice, priceRange]);
-
-  const fetchPriceRange = async () => {
-    try {
-      const language = getStoredLanguage();
-      const params: Record<string, string> = { lang: language };
-      if (category) params.category = category;
-
-      const response = await apiClient.get<PriceRange>('/api/v1/products/price-range', { params });
-      setPriceRange(response);
-      if (!currentMinPrice) setMinPrice(response.min);
-      if (!currentMaxPrice) setMaxPrice(response.max);
-    } catch (error) {
-      console.error('Error fetching price range:', error);
-    }
-  };
 
   const resolveStepSize = (): number => {
     const perCurrency = priceRange.stepSizePerCurrency || {};
@@ -227,6 +218,10 @@ export function PriceFilter({ currentMinPrice, currentMaxPrice, category }: Pric
   
   const minPercentage = getPercentage(safeMinPrice);
   const maxPercentage = getPercentage(safeMaxPrice);
+
+  if (!filtersContext) {
+    return null;
+  }
 
   return (
     <Card className="p-4 mb-6">

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
 import { getStoredCurrency } from '../../../lib/currency';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
+import { readGuestOrderAccess } from '../../checkout/utils/guest-order-access';
 import { LoadingState } from './components/LoadingState';
 import { ErrorState } from './components/ErrorState';
 import { OrderItems } from './components/OrderItems';
@@ -21,21 +22,48 @@ import {
 
 export default function OrderPage() {
   const params = useParams();
-  const router = useRouter();
   const { isLoggedIn } = useAuth();
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currency, setCurrency] = useState(getStoredCurrency());
+  const orderNumber = String(params.number);
+
+  const fetchOrder = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      if (isLoggedIn) {
+        const response = await apiClient.get<Order>(`/api/v1/orders/${orderNumber}`);
+        setOrder(response);
+        return;
+      }
+
+      const guestAccess = readGuestOrderAccess(orderNumber);
+      if (!guestAccess) {
+        setError(t('orders.notFound.description'));
+        return;
+      }
+
+      const response = await apiClient.get<Order>(`/api/v1/orders/${orderNumber}`, {
+        params: {
+          email: guestAccess.email,
+          phone: guestAccess.phone,
+        },
+      });
+      setOrder(response);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : t('orders.notFound.description');
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  }, [isLoggedIn, orderNumber, t]);
 
   useEffect(() => {
-    if (!isLoggedIn) {
-      router.push('/login');
-      return;
-    }
-
-    fetchOrder();
+    void fetchOrder();
 
     const handleCurrencyUpdate = () => {
       setCurrency(getStoredCurrency());
@@ -46,20 +74,7 @@ export default function OrderPage() {
     return () => {
       window.removeEventListener('currency-updated', handleCurrencyUpdate);
     };
-  }, [isLoggedIn, params.number, router]);
-
-  async function fetchOrder() {
-    try {
-      setLoading(true);
-      const response = await apiClient.get<Order>(`/api/v1/orders/${params.number}`);
-      setOrder(response);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : t('orders.notFound.description');
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }
+  }, [fetchOrder]);
 
   if (loading) {
     return (

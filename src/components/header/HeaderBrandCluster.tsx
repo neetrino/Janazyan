@@ -7,7 +7,6 @@ import { useTranslation } from '../../lib/i18n-client';
 import {
   HEADER_ACTIVE_PILL_HEIGHT_PX,
   HEADER_ACTIVE_PILL_RADIUS_PX,
-  HEADER_ACTIVE_PILL_WIDTH_PX,
   HEADER_NAV_ACTIVE_PILL_CLASS,
   HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS,
 } from './header-nav-pill.constants';
@@ -93,10 +92,10 @@ function HeaderNav({
         style={{
           borderRadius: HEADER_ACTIVE_PILL_RADIUS_PX,
           height: HEADER_ACTIVE_PILL_HEIGHT_PX,
-          width: HEADER_ACTIVE_PILL_WIDTH_PX,
+          width: pillPosition.width,
           left: pillPosition.left,
           top: pillPosition.top,
-          transition: isDragging ? 'none' : 'left 200ms ease, top 200ms ease',
+          transition: isDragging ? 'none' : 'left 200ms ease, top 200ms ease, width 200ms ease',
         }}
         {...pillPointerHandlers}
       />

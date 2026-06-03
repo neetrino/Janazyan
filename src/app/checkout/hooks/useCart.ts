@@ -1,38 +1,82 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiClient } from '../../../lib/api-client';
+import { fetchCart } from '../../../app/cart/cart-fetcher';
+import type { Cart } from '../../../app/cart/types';
+import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
-import { fetchCartForGuest } from '../checkoutUtils';
-import type { Cart } from '../types';
+import {
+  isCartSnapshotFresh,
+  readCartSnapshot,
+  resolveCartCacheScope,
+} from '../../../lib/cart/cart-snapshot-cache';
+
+function readInitialCart(
+  isLoggedIn: boolean,
+  userId: string | null | undefined,
+): Cart | null {
+  const scope = resolveCartCacheScope(isLoggedIn, userId);
+  return scope ? readCartSnapshot(scope) : null;
+}
+
+function shouldShowLoading(
+  isLoggedIn: boolean,
+  userId: string | null | undefined,
+): boolean {
+  const scope = resolveCartCacheScope(isLoggedIn, userId);
+  if (!scope) {
+    return true;
+  }
+  return readCartSnapshot(scope) === null;
+}
 
 export function useCart(isLoggedIn: boolean) {
+  const { user } = useAuth();
   const { t } = useTranslation();
-  const [cart, setCart] = useState<Cart | null>(null);
-  const [loading, setLoading] = useState(true);
+  const userId = user?.id;
+
+  const [cart, setCart] = useState<Cart | null>(() => readInitialCart(isLoggedIn, userId));
+  const [loading, setLoading] = useState(() => shouldShowLoading(isLoggedIn, userId));
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCart = useCallback(async () => {
-    try {
-      setLoading(true);
-      
-      if (isLoggedIn) {
-        const response = await apiClient.get<{ cart: Cart }>('/api/v1/cart');
-        setCart(response.cart);
+  const fetchCartData = useCallback(
+    async (options?: { background?: boolean }) => {
+      const scope = resolveCartCacheScope(isLoggedIn, userId);
+      if (!scope) {
         return;
       }
 
-      const guestCart = await fetchCartForGuest();
-      setCart(guestCart);
-    } catch {
-      setError(t('checkout.errors.failedToLoadCart'));
-    } finally {
-      setLoading(false);
-    }
-  }, [isLoggedIn, t]);
+      if (!options?.background && readCartSnapshot(scope) === null) {
+        setLoading(true);
+      }
+
+      try {
+        const freshCart = await fetchCart(isLoggedIn, t, userId);
+        setCart(freshCart);
+        setError(null);
+      } catch {
+        setError(t('checkout.errors.failedToLoadCart'));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [isLoggedIn, t, userId],
+  );
 
   useEffect(() => {
-    fetchCart();
-  }, [fetchCart]);
+    const scope = resolveCartCacheScope(isLoggedIn, userId);
+    if (!scope) {
+      return;
+    }
 
-  return { cart, loading, error, setError, fetchCart };
+    const cached = readCartSnapshot(scope);
+    if (cached) {
+      setCart(cached);
+      setLoading(false);
+    }
+
+    if (!cached || !isCartSnapshotFresh(scope)) {
+      void fetchCartData({ background: cached !== null });
+    }
+  }, [fetchCartData, isLoggedIn, userId]);
+
+  return { cart, loading, error, setError, fetchCart: fetchCartData };
 }
-

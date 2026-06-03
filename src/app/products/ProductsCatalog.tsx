@@ -8,6 +8,13 @@ import { ProductsHeader } from '../../components/ProductsHeader';
 import { ProductsGrid } from '../../components/ProductsGrid';
 import { logger } from '../../lib/utils/logger';
 import { productsService } from '../../lib/services/products.service';
+import {
+  parseCatalogSearchParams,
+  parseOptionalPrice,
+  resolveSearchParams,
+  sortCatalogProducts,
+  type SearchParamsInput,
+} from '../../lib/products/catalog-search-params';
 
 const PAGE_CONTAINER = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 
@@ -77,51 +84,17 @@ const getProductsCached = unstable_cache(
   { revalidate: PRODUCTS_LIST_REVALIDATE_SECONDS }
 );
 
-function parseOptionalPrice(value?: string): number | undefined {
-  if (!value?.trim()) {
-    return undefined;
-  }
-  const parsed = Number.parseFloat(value.trim());
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
-
-type CatalogSort = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
-
-function sortCatalogProducts<T extends { price: number; title: string }>(
-  products: T[],
-  sort: CatalogSort
-): T[] {
-  const sorted = [...products];
-  switch (sort) {
-    case 'price-asc':
-      sorted.sort((a, b) => a.price - b.price);
-      break;
-    case 'price-desc':
-      sorted.sort((a, b) => b.price - a.price);
-      break;
-    case 'name-asc':
-      sorted.sort((a, b) => a.title.localeCompare(b.title));
-      break;
-    case 'name-desc':
-      sorted.sort((a, b) => b.title.localeCompare(a.title));
-      break;
-    default:
-      break;
-  }
-  return sorted;
-}
-
 async function getProducts(
-  page: number = 1,
-  search?: string,
-  category?: string,
-  minPrice?: string,
-  maxPrice?: string,
-  colors?: string,
-  sizes?: string,
-  brand?: string,
-  limit: number = 12,
-  language: LanguageCode = 'en'
+  page: number,
+  search: string | undefined,
+  category: string | undefined,
+  minPrice: string | undefined,
+  maxPrice: string | undefined,
+  colors: string | undefined,
+  sizes: string | undefined,
+  brand: string | undefined,
+  limit: number,
+  language: LanguageCode
 ): Promise<ProductsResponse> {
   try {
     const response = await getProductsCached(
@@ -153,60 +126,53 @@ async function getProducts(
   }
 }
 
-type SearchParamsInput = Record<string, string | string[] | undefined>;
-
 export async function ProductsCatalog({
   searchParams,
+  language: languageProp,
 }: {
   searchParams: Promise<SearchParamsInput> | SearchParamsInput;
+  language?: LanguageCode;
 }) {
-  const params = searchParams instanceof Promise ? await searchParams : searchParams;
-  const language = await getServerLanguage();
-  const page = parseInt((params.page as string) || '1', 10);
-  const limitParam = typeof params.limit === 'string' ? params.limit.trim() : '';
-  const parsedLimit = limitParam && !Number.isNaN(parseInt(limitParam, 10))
-    ? parseInt(limitParam, 10)
-    : null;
-  const perPage = parsedLimit ? Math.min(parsedLimit, 200) : 12;
-
-  const sortParam = (typeof params.sort === 'string' ? params.sort : 'default') as CatalogSort;
+  const raw = await resolveSearchParams(searchParams);
+  const parsed = parseCatalogSearchParams(raw);
+  const language = languageProp ?? (await getServerLanguage());
 
   const productsData = await getProducts(
-    page,
-    typeof params.search === 'string' ? params.search : undefined,
-    typeof params.category === 'string' ? params.category : undefined,
-    typeof params.minPrice === 'string' ? params.minPrice : undefined,
-    typeof params.maxPrice === 'string' ? params.maxPrice : undefined,
-    typeof params.colors === 'string' ? params.colors : undefined,
-    typeof params.sizes === 'string' ? params.sizes : undefined,
-    typeof params.brand === 'string' ? params.brand : undefined,
-    perPage,
+    parsed.page,
+    parsed.search,
+    parsed.category,
+    parsed.minPrice,
+    parsed.maxPrice,
+    parsed.colors,
+    parsed.sizes,
+    parsed.brand,
+    parsed.perPage,
     language
   );
 
   const normalizedProducts = sortCatalogProducts(
     productsData.data.map((p: Product) => ({
-    id: p.id,
-    slug: p.slug,
-    title: p.title,
-    price: p.price,
-    compareAtPrice: p.compareAtPrice ?? p.originalPrice ?? null,
-    image: p.image ?? null,
-    inStock: p.inStock ?? true,
-    brand: p.brand ?? null,
-    defaultVariantId: p.defaultVariantId ?? null,
-    colors: Array.isArray(p.colors) ? p.colors : [],
-    labels: p.labels ?? [],
+      id: p.id,
+      slug: p.slug,
+      title: p.title,
+      price: p.price,
+      compareAtPrice: p.compareAtPrice ?? p.originalPrice ?? null,
+      image: p.image ?? null,
+      inStock: p.inStock ?? true,
+      brand: p.brand ?? null,
+      defaultVariantId: p.defaultVariantId ?? null,
+      colors: Array.isArray(p.colors) ? p.colors : [],
+      labels: p.labels ?? [],
     })),
-    sortParam
+    parsed.sort
   );
 
   const buildPaginationUrl = (num: number) => {
     const q = new URLSearchParams();
     q.set('page', num.toString());
-    const currentLimit = params.limit ? String(params.limit) : '12';
+    const currentLimit = raw.limit ? String(raw.limit) : '12';
     q.set('limit', currentLimit);
-    Object.entries(params).forEach(([k, v]) => {
+    Object.entries(raw).forEach(([k, v]) => {
       if (k !== 'page' && k !== 'limit' && v && typeof v === 'string') q.set(k, v);
     });
     return `/products?${q.toString()}`;
@@ -214,7 +180,7 @@ export async function ProductsCatalog({
 
   const getPaginationPages = (): (number | 'ellipsis')[] => {
     const total = productsData.meta.totalPages;
-    const current = page;
+    const current = parsed.page;
     if (total <= 7) {
       return Array.from({ length: total }, (_, i) => i + 1);
     }
@@ -229,7 +195,7 @@ export async function ProductsCatalog({
   };
 
   return (
-    <>
+    <div className="w-full py-4 overflow-x-hidden">
       <div className={`${PAGE_CONTAINER} relative z-10`}>
         <ProductsHeader total={productsData.meta.total} perPage={productsData.meta.limit} />
       </div>
@@ -237,15 +203,15 @@ export async function ProductsCatalog({
       <div className={`${PAGE_CONTAINER} relative z-10 py-4`}>
         {normalizedProducts.length > 0 ? (
           <>
-            <ProductsGrid products={normalizedProducts} sortBy={sortParam} />
+            <ProductsGrid products={normalizedProducts} sortBy={parsed.sort} />
 
             {productsData.meta.totalPages > 1 && (
               <nav
                 className="mt-10 flex flex-wrap items-center justify-center gap-2"
                 aria-label="Pagination"
               >
-                {page > 1 ? (
-                  <Link href={buildPaginationUrl(page - 1)}>
+                {parsed.page > 1 ? (
+                  <Link href={buildPaginationUrl(parsed.page - 1)}>
                     <Button
                       variant="outline"
                       className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
@@ -267,7 +233,7 @@ export async function ProductsCatalog({
                       </span>
                     ) : (
                       <span key={item}>
-                        {item === page ? (
+                        {item === parsed.page ? (
                           <span
                             className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
                             aria-current="page"
@@ -287,8 +253,8 @@ export async function ProductsCatalog({
                   )}
                 </div>
 
-                {page < productsData.meta.totalPages ? (
-                  <Link href={buildPaginationUrl(page + 1)}>
+                {parsed.page < productsData.meta.totalPages ? (
+                  <Link href={buildPaginationUrl(parsed.page + 1)}>
                     <Button
                       variant="outline"
                       className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
@@ -310,6 +276,6 @@ export async function ProductsCatalog({
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -17,6 +17,9 @@ export const STOREFRONT_CACHE_TTL = {
   productDetails: 300,
   /** PDP related carousel (same shape as list items). */
   productRelated: 180,
+  blogPosts: 300,
+  blogPostBySlug: 300,
+  faqPublished: 300,
 } as const;
 
 export const STOREFRONT_CACHE_KEYS = {
@@ -29,6 +32,9 @@ export const STOREFRONT_CACHE_KEYS = {
   productVisual: (lang: string, slug: string) => `product:visual:${lang}:${slug}`,
   productDetails: (lang: string, slug: string) => `product:details:${lang}:${slug}`,
   productRelated: (lang: string, slug: string) => `product:related:${lang}:${slug}`,
+  blogPosts: (locale: string) => `blog:posts:${locale}`,
+  blogPostBySlug: (locale: string, slug: string) => `blog:post:${locale}:${slug}`,
+  faqPublished: (locale: string) => `faq:published:${locale}`,
 } as const;
 
 /** Deterministic cache key fragment from URL search params (sorted keys). */
@@ -107,4 +113,17 @@ export async function invalidateProductPageCaches(): Promise<void> {
     cacheService.deletePattern("product:details:*"),
     cacheService.deletePattern("product:related:*"),
   ]);
+}
+
+/** After blog post create/update/delete (admin). */
+export async function invalidateBlogCaches(): Promise<void> {
+  await Promise.all([
+    cacheService.deletePattern("blog:posts:*"),
+    cacheService.deletePattern("blog:post:*"),
+  ]);
+}
+
+/** After FAQ category/item mutations (admin). */
+export async function invalidateFaqCaches(): Promise<void> {
+  await cacheService.deletePattern("faq:published:*");
 }

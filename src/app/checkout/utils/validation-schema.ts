@@ -1,11 +1,11 @@
+import { useMemo } from 'react';
 import { z } from 'zod';
 import { useTranslation } from '../../../lib/i18n-client';
-import type { CheckoutFormData } from '../types';
 
 export function useCheckoutSchema() {
   const { t } = useTranslation();
 
-  return z.object({
+  return useMemo(() => z.object({
     firstName: z.string().min(1, t('checkout.errors.firstNameRequired')),
     lastName: z.string().min(1, t('checkout.errors.lastNameRequired')),
     email: z.string().email(t('checkout.errors.invalidEmail')).min(1, t('checkout.errors.emailRequired')),
@@ -70,7 +70,7 @@ export function useCheckoutSchema() {
   }, {
     message: t('checkout.errors.cardHolderNameRequired'),
     path: ['cardHolderName'],
-  });
+  }), [t]);
 }
 
 

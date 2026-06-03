@@ -201,9 +201,60 @@ body {
   margin-top: 0.25rem;
 }
 
+/* Blog article body */
+.blog-content p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: 1.75;
+}
+
+.blog-content p:last-child {
+  margin-bottom: 0;
+}
+
+.blog-content h2,
+.blog-content h3 {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.blog-content a {
+  color: #7CB342;
+  text-decoration: underline;
+}
+
+.blog-content img {
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.blog-content ul,
+.blog-content ol {
+  margin-bottom: 1rem;
+  padding-left: 1.25rem;
+}
+
+.blog-content li + li {
+  margin-top: 0.35rem;
+}
+
 /* Partner stores map (Leaflet) */
 .partner-stores-map {
   z-index: 0;
+}
+
+.partner-stores-map-section {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .partner-stores-map-section {
+    width: min(100%, 82%);
+    margin-left: auto;
+  }
 }
 
 .partner-store-marker {
@@ -267,16 +318,17 @@ body {
 
 /* Partner stores 3D globe carousel */
 .partner-stores-carousel {
-  --carousel-radius: 218px;
+  --carousel-radius: 194px;
   --carousel-perspective: 760px;
-  --carousel-card-width: 220px;
-  --carousel-ring-width: 680px;
+  --carousel-card-width: 194px;
+  --carousel-ring-width: 640px;
   --globe-tilt: -28deg;
-  --carousel-scene-offset-y: -80px;
-  --carousel-front-z-offset: 52px;
+  --carousel-scene-offset-y: -72px;
+  --carousel-front-z-offset: 46px;
   --carousel-rotation-duration: 650ms;
   overflow: visible;
   padding-bottom: 0.5rem;
+  overscroll-behavior: contain;
 }
 
 .partner-stores-carousel-scene {
@@ -288,7 +340,7 @@ body {
   max-width: 100%;
   overflow: visible;
   overscroll-behavior: contain;
-  touch-action: pan-y;
+  touch-action: none;
   perspective: var(--carousel-perspective);
   perspective-origin: 50% 58%;
   outline: none;
@@ -363,13 +415,14 @@ body {
 
 .partner-stores-carousel-item--front {
   pointer-events: auto;
-  z-index: 20;
+  z-index: 50;
 }
 
 .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
   transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
     rotateX(calc(var(--globe-tilt, 28deg) * -1)) scale(var(--item-scale, 1))
-    translateZ(var(--carousel-front-z-offset, 52px));
+    translateZ(var(--carousel-front-z-offset, 52px))
+    translateY(var(--carousel-front-drop-y, 0px));
 }
 
 .partner-stores-carousel-item--front .partner-stores-carousel-item-face article {
@@ -391,12 +444,65 @@ body {
   cursor: pointer;
 }
 
-.partner-stores-carousel-card-hit--side {
+.partner-stores-carousel-card-hit--front {
   pointer-events: auto;
 }
 
-.partner-stores-carousel-card-hit--side article {
+.partner-stores-carousel-card-hit--side {
   pointer-events: none;
+}
+
+.partner-stores-carousel-card-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 1rem;
+}
+
+.partner-stores-carousel-card-stack--selected {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 0 0 2px rgb(124 179 66 / 0.2);
+}
+
+.partner-stores-carousel-card-actions {
+  position: relative;
+  z-index: 30;
+  pointer-events: auto;
+  touch-action: manipulation;
+  transform: translateZ(80px);
+  transform-style: preserve-3d;
+  padding-inline: 0.625rem;
+  padding-bottom: 0.625rem;
+  margin-top: 0;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 1rem 1rem;
+  background: #fff;
+}
+
+.partner-stores-carousel-card-stack--selected .partner-stores-carousel-card-actions {
+  border-color: #7cb342;
+}
+
+.partner-stores-carousel-item--front
+  .partner-stores-carousel-card-stack
+  .partner-stores-carousel-card-hit--front
+  article {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+.partner-stores-carousel-card-stack--selected
+  .partner-stores-carousel-card-hit--front
+  article {
+  border-color: #7cb342;
+}
+
+.partner-stores-carousel-card-hit--side article,
+.partner-stores-carousel-card-hit--front article {
+  pointer-events: auto;
 }
 
 .partner-stores-carousel-controls {
@@ -455,6 +561,78 @@ body {
   background: #7cb342;
 }
 
+.partner-stores-carousel--mobile {
+  padding-inline: 0;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-scene {
+  max-width: none;
+  width: 100%;
+  perspective-origin: 50% 58%;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-ring {
+  min-height: 164px;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-controls {
+  margin-top: 0.25rem;
+  gap: 0.75rem;
+  padding-inline: 1rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-nav {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+
+/* Uniform compact card on every ring slot — side cards match the active card. */
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8125rem;
+  padding: 0.0625rem 0.4375rem 0.4375rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article > div:first-child {
+  gap: 0.75rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article > div:last-child {
+  margin-top: 0;
+  gap: 0.5rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article h3 {
+  font-size: 0.625rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article p {
+  font-size: 0.5rem;
+}
+
+.partner-stores-carousel--mobile .partner-store-card-logo--compact {
+  height: 1.75rem;
+  width: 2.625rem;
+}
+
+.partner-stores-carousel--mobile .partner-store-card-logo--compact img {
+  height: 1.125rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article button,
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article a,
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article span {
+  padding: 0.1875rem 0.3125rem;
+  font-size: 0.4375rem;
+}
+
+@media (max-width: 767px) {
+  .partner-stores-map {
+    min-height: 260px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .partner-stores-carousel-item,
   .partner-stores-carousel-item-face {
@@ -472,7 +650,8 @@ body {
 
   .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
     transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
-      translateZ(var(--carousel-front-z-offset, 52px));
+      translateZ(var(--carousel-front-z-offset, 52px))
+      translateY(var(--carousel-front-drop-y, 0px));
   }
 }
 

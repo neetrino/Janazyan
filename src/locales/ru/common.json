@@ -41,6 +41,8 @@
     "terms": "Условия",
     "delivery": "Доставка",
     "stores": "Магазины",
+    "ourStores": "Наши магазины",
+    "blog": "Блог",
     "categoriesMenuUnavailable": "Меню категорий временно недоступно"
   },
   "stock": {

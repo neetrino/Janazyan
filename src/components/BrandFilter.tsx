@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, Input } from '@shop/ui';
-import { apiClient } from '../lib/api-client';
-import { getStoredLanguage } from '../lib/language';
 import { useTranslation } from '../lib/i18n-client';
 import { useProductsFilters } from './ProductsFiltersProvider';
 
@@ -16,67 +14,26 @@ interface BrandFilterProps {
   selectedBrands?: string[];
 }
 
-interface BrandOption {
-  id: string;
-  name: string;
-  count: number;
-}
-
-export function BrandFilter({ category, search, minPrice, maxPrice, selectedBrands = [] }: BrandFilterProps) {
+export function BrandFilter({ selectedBrands = [] }: BrandFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filtersContext = useProductsFilters();
   const { t } = useTranslation();
-  const [brands, setBrands] = useState<BrandOption[]>([]);
-  const [filteredBrands, setFilteredBrands] = useState<BrandOption[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [filteredBrands, setFilteredBrands] = useState(
+    filtersContext?.data.brands ?? []
+  );
 
-  useEffect(() => {
-    if (filtersContext?.data?.brands) {
-      setBrands(filtersContext.data.brands);
-      setFilteredBrands(filtersContext.data.brands);
-      setLoading(false);
-      return;
-    }
-    if (filtersContext === null) {
-      fetchBrands();
-    } else {
-      setLoading(filtersContext.loading);
-    }
-  }, [category, search, minPrice, maxPrice, filtersContext?.data?.brands, filtersContext?.loading, filtersContext === null]);
+  const brands = filtersContext?.data.brands ?? [];
 
   useEffect(() => {
     if (searchQuery.trim() === '') {
       setFilteredBrands(brands);
     } else {
       const query = searchQuery.toLowerCase().trim();
-      setFilteredBrands(
-        brands.filter((brand) => brand.name.toLowerCase().includes(query))
-      );
+      setFilteredBrands(brands.filter((brand) => brand.name.toLowerCase().includes(query)));
     }
   }, [searchQuery, brands]);
-
-  const fetchBrands = async () => {
-    try {
-      setLoading(true);
-      const language = getStoredLanguage();
-      const params: Record<string, string> = { lang: language };
-      if (category) params.category = category;
-      if (search) params.search = search;
-      if (minPrice) params.minPrice = minPrice;
-      if (maxPrice) params.maxPrice = maxPrice;
-      const response = await apiClient.get<{ brands: BrandOption[] }>('/api/v1/products/filters', { params });
-      const list = response.brands ?? [];
-      setBrands(list);
-      setFilteredBrands(list);
-    } catch (err) {
-      setBrands([]);
-      setFilteredBrands([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleBrandSelect = (brandId: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -93,24 +50,16 @@ export function BrandFilter({ category, search, minPrice, maxPrice, selectedBran
     router.push(`/products?${params.toString()}`);
   };
 
-  if (loading) {
-    return (
-      <Card className="p-4 mb-6">
-        <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">{t('products.filters.brand.title')}</h3>
-        <div className="text-sm text-gray-500">{t('products.filters.brand.loading')}</div>
-      </Card>
-    );
-  }
-
-  if (brands.length === 0) {
+  if (!filtersContext || brands.length === 0) {
     return null;
   }
 
   return (
     <Card className="p-4 mb-6">
-      <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">{t('products.filters.brand.title')}</h3>
-      
-      {/* Search Input */}
+      <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">
+        {t('products.filters.brand.title')}
+      </h3>
+
       <div className="mb-4 relative">
         <Input
           type="text"
@@ -134,7 +83,6 @@ export function BrandFilter({ category, search, minPrice, maxPrice, selectedBran
         </svg>
       </div>
 
-      {/* Brand List */}
       {filteredBrands.length > 0 ? (
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {filteredBrands.map((brand) => {
@@ -161,9 +109,7 @@ export function BrandFilter({ category, search, minPrice, maxPrice, selectedBran
                 </span>
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
-                    isSelected
-                      ? 'text-blue-700 bg-blue-100'
-                      : 'text-gray-500 bg-gray-100'
+                    isSelected ? 'text-blue-700 bg-blue-100' : 'text-gray-500 bg-gray-100'
                   }`}
                 >
                   {brand.count}
@@ -180,4 +126,3 @@ export function BrandFilter({ category, search, minPrice, maxPrice, selectedBran
     </Card>
   );
 }
-

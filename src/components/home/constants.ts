@@ -1,14 +1,16 @@
 import type { CSSProperties } from 'react';
 
 export const HOME_NAV_LINK_HREFS: ReadonlyArray<{
-  labelKey: 'home' | 'shop' | 'categories' | 'about' | 'contact';
+  labelKey: 'home' | 'shop' | 'about' | 'ourStores' | 'contact' | 'faq' | 'blog';
   href: string;
 }> = [
   { labelKey: 'home', href: '/' },
   { labelKey: 'shop', href: '/products' },
-  { labelKey: 'categories', href: '/products?view=categories' },
   { labelKey: 'about', href: '/about' },
+  { labelKey: 'ourStores', href: '/stores' },
   { labelKey: 'contact', href: '/contact' },
+  { labelKey: 'faq', href: '/faq' },
+  { labelKey: 'blog', href: '/blog' },
 ];
 
 /** @deprecated Use HOME_NAV_LINK_HREFS with i18n in HeaderBrandCluster */

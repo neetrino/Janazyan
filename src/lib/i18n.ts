@@ -23,6 +23,7 @@ import enTerms from '../locales/en/terms.json';
 import enPrivacy from '../locales/en/privacy.json';
 import enSupport from '../locales/en/support.json';
 import enStores from '../locales/en/stores.json';
+import enBlog from '../locales/en/blog.json';
 import enReturns from '../locales/en/returns.json';
 import enRefundPolicy from '../locales/en/refund-policy.json';
 import enProfile from '../locales/en/profile.json';
@@ -47,6 +48,7 @@ import hyTerms from '../locales/hy/terms.json';
 import hyPrivacy from '../locales/hy/privacy.json';
 import hySupport from '../locales/hy/support.json';
 import hyStores from '../locales/hy/stores.json';
+import hyBlog from '../locales/hy/blog.json';
 import hyReturns from '../locales/hy/returns.json';
 import hyRefundPolicy from '../locales/hy/refund-policy.json';
 import hyProfile from '../locales/hy/profile.json';
@@ -71,6 +73,7 @@ import ruTerms from '../locales/ru/terms.json';
 import ruPrivacy from '../locales/ru/privacy.json';
 import ruSupport from '../locales/ru/support.json';
 import ruStores from '../locales/ru/stores.json';
+import ruBlog from '../locales/ru/blog.json';
 import ruReturns from '../locales/ru/returns.json';
 import ruRefundPolicy from '../locales/ru/refund-policy.json';
 import ruProfile from '../locales/ru/profile.json';
@@ -81,7 +84,7 @@ import ruOrders from '../locales/ru/orders.json';
 import ruAdmin from '../locales/ru/admin.json';
 
 // Type definitions for better type safety
-export type Namespace = 'common' | 'home' | 'product' | 'products' | 'attributes' | 'delivery' | 'about' | 'contact' | 'faq' | 'login' | 'delivery-terms' | 'terms' | 'privacy' | 'support' | 'stores' | 'returns' | 'refund-policy' | 'profile' | 'checkout' | 'register' | 'categories' | 'orders' | 'admin';
+export type Namespace = 'common' | 'home' | 'product' | 'products' | 'attributes' | 'delivery' | 'about' | 'contact' | 'faq' | 'login' | 'delivery-terms' | 'terms' | 'privacy' | 'support' | 'stores' | 'blog' | 'returns' | 'refund-policy' | 'profile' | 'checkout' | 'register' | 'categories' | 'orders' | 'admin';
 export type ProductField = 'title' | 'shortDescription' | 'longDescription';
 
 // Translation store - organized by language and namespace
@@ -103,6 +106,7 @@ const translations: Partial<Record<LanguageCode, Record<Namespace, any>>> = {
     privacy: enPrivacy,
     support: enSupport,
     stores: enStores,
+    blog: enBlog,
     returns: enReturns,
     'refund-policy': enRefundPolicy,
     profile: enProfile,
@@ -128,6 +132,7 @@ const translations: Partial<Record<LanguageCode, Record<Namespace, any>>> = {
     privacy: hyPrivacy,
     support: hySupport,
     stores: hyStores,
+    blog: hyBlog,
     returns: hyReturns,
     'refund-policy': hyRefundPolicy,
     profile: hyProfile,
@@ -153,6 +158,7 @@ const translations: Partial<Record<LanguageCode, Record<Namespace, any>>> = {
     privacy: ruPrivacy,
     support: ruSupport,
     stores: ruStores,
+    blog: ruBlog,
     returns: ruReturns,
     'refund-policy': ruRefundPolicy,
     profile: ruProfile,
@@ -248,7 +254,7 @@ export function t(lang: LanguageCode | undefined, path: string): string {
   }
 
   // Validate namespace
-  const validNamespaces: Namespace[] = ['common', 'home', 'product', 'products', 'attributes', 'delivery', 'about', 'contact', 'faq', 'login', 'delivery-terms', 'terms', 'privacy', 'support', 'stores', 'returns', 'refund-policy', 'profile', 'checkout', 'register', 'categories', 'orders', 'admin'];
+  const validNamespaces: Namespace[] = ['common', 'home', 'product', 'products', 'attributes', 'delivery', 'about', 'contact', 'faq', 'login', 'delivery-terms', 'terms', 'privacy', 'support', 'stores', 'blog', 'returns', 'refund-policy', 'profile', 'checkout', 'register', 'categories', 'orders', 'admin'];
   if (!validNamespaces.includes(namespace)) {
     if (process.env.NODE_ENV === 'development') {
       console.warn(`[i18n] Invalid namespace: "${namespace}". Valid namespaces: ${validNamespaces.join(', ')}`);
@@ -500,7 +506,7 @@ export function clearTranslationCache(): void {
  * Get all available namespaces
  */
 export function getAvailableNamespaces(): Namespace[] {
-  return ['common', 'home', 'product', 'products', 'attributes', 'delivery', 'about', 'contact', 'faq', 'login', 'delivery-terms', 'terms', 'privacy', 'support', 'stores', 'returns', 'refund-policy', 'profile', 'checkout', 'register', 'categories', 'orders'];
+  return ['common', 'home', 'product', 'products', 'attributes', 'delivery', 'about', 'contact', 'faq', 'login', 'delivery-terms', 'terms', 'privacy', 'support', 'stores', 'blog', 'returns', 'refund-policy', 'profile', 'checkout', 'register', 'categories', 'orders'];
 }
 
 /**

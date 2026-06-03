@@ -2,15 +2,16 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shop/ui';
 import { useTranslation } from '../../../lib/i18n-client';
 import { getStoredLanguage } from '../../../lib/language';
 import { fetchPartnerStores } from '../fetch-partner-stores';
 import { loadStoresPageCopy } from '../load-stores-page-copy';
 import { MAP_HEIGHT_PX } from '../constants';
+import { scrollPartnerMapIntoView } from '../scroll-to-map';
 import { PartnerStoresCarousel } from './PartnerStoresCarousel';
-import type { PartnerStore, StoresTranslation } from '../types';
+import type { PartnerStore, StoreSelectHandler, StoresTranslation } from '../types';
 
 import 'leaflet/dist/leaflet.css';
 
@@ -61,9 +62,15 @@ export function StoresPageView() {
   const { t } = useTranslation();
   const { copy, stores } = usePartnerStoresContent();
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
+  const [mapFocusRequest, setMapFocusRequest] = useState(0);
+  const mapSectionRef = useRef<HTMLDivElement>(null);
 
-  const handleStoreSelect = useCallback((storeId: string) => {
+  const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
+    if (options?.scrollToMap) {
+      scrollPartnerMapIntoView(mapSectionRef.current);
+      setMapFocusRequest((count) => count + 1);
+    }
   }, []);
 
   useEffect(() => {
@@ -101,11 +108,11 @@ export function StoresPageView() {
       <section className="pb-16 md:pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
-            <div className="lg:col-span-2">
+            <div className="relative z-10 lg:col-span-2">
               <div className="overflow-visible lg:sticky lg:top-28">
                 <h2 className="text-2xl font-bold text-gray-900">{copy.listTitle}</h2>
                 <p className="mt-2 text-sm text-gray-500">{copy.map.hint}</p>
-                <div className="mt-6 overflow-visible">
+                <div className="mt-6 overflow-visible -mx-4 w-[calc(100%+2rem)] sm:-mx-6 sm:w-[calc(100%+3rem)] md:mx-0 md:w-full">
                   <PartnerStoresCarousel
                     stores={stores}
                     selectedStoreId={selectedStoreId}
@@ -118,13 +125,14 @@ export function StoresPageView() {
               </div>
             </div>
 
-            <div className="lg:col-span-3">
-              <div className="lg:sticky lg:top-28">
+            <div ref={mapSectionRef} className="scroll-mt-28 lg:col-span-3">
+              <div className="partner-stores-map-section lg:sticky lg:top-28">
                 <h2 className="mb-4 text-2xl font-bold text-gray-900">{copy.map.title}</h2>
                 <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
                   <PartnerStoresMap
                     stores={stores}
                     selectedStoreId={selectedStoreId}
+                    mapFocusRequest={mapFocusRequest}
                     onStoreSelect={handleStoreSelect}
                     ariaLabel={copy.map.ariaLabel}
                     getDirectionsLabel={copy.getDirections}

@@ -2,6 +2,7 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { clearGuestCart } from '../checkoutUtils';
+import { saveGuestOrderAccess } from '../utils/guest-order-access';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
 
 interface UseOrderSubmissionProps {
@@ -40,12 +41,15 @@ export function useOrderSubmission({
         cartId = 'guest-cart';
       }
 
-      const shippingAddress = data.shippingMethod === 'delivery' && 
-        data.shippingAddress && 
+      const shippingAddress = data.shippingMethod === 'delivery' &&
+        data.shippingAddress &&
         data.shippingCity
         ? {
-            address: data.shippingAddress,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            addressLine1: data.shippingAddress,
             city: data.shippingCity,
+            phone: data.phone,
           }
         : undefined;
 
@@ -81,6 +85,7 @@ export function useOrderSubmission({
 
       if (!isLoggedIn) {
         clearGuestCart();
+        saveGuestOrderAccess(response.order.number, data.email, data.phone);
       }
 
       if (response.payment?.paymentUrl) {

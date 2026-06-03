@@ -14,10 +14,6 @@ export function isNavLinkActive(
     return pathname === '/';
   }
 
-  if (href === '/products?view=categories') {
-    return pathname === '/products' && searchParams.get('view') === 'categories';
-  }
-
   if (href === '/products') {
     if (pathname === '/products') {
       return searchParams.get('view') !== 'categories';

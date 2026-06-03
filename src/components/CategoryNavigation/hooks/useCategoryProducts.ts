@@ -11,16 +11,20 @@ interface PreviewsResponse {
 }
 
 /**
- * Loads one preview product per category nav slot via a single API call
- * (replaces N parallel /products requests).
+ * Optional preview images per category slot (skipped on /products for faster first paint).
  */
-export function useCategoryProducts() {
+export function useCategoryProducts(skipPreviews = false) {
   const [categoryProducts, setCategoryProducts] = useState<
     Record<string, CategoryNavPreviewProduct | null>
   >({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!skipPreviews);
 
   useEffect(() => {
+    if (skipPreviews) {
+      setLoading(false);
+      return;
+    }
+
     const fetchPreviews = async () => {
       try {
         setLoading(true);
@@ -43,7 +47,7 @@ export function useCategoryProducts() {
     const onLang = () => void fetchPreviews();
     window.addEventListener('language-updated', onLang);
     return () => window.removeEventListener('language-updated', onLang);
-  }, []);
+  }, [skipPreviews]);
 
   return { categoryProducts, loading };
 }
