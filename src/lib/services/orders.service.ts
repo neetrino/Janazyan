@@ -579,14 +579,27 @@ class OrdersService {
   }
 
   /**
-   * Get order by number
+   * Get order by number for authenticated users or verified guest checkout.
    */
-  async findByNumber(orderNumber: string, userId: string) {
+  async findByNumber(
+    orderNumber: string,
+    access: string | { email: string; phone: string },
+  ) {
+    const isGuestAccess = typeof access === 'object';
     const order = await db.order.findFirst({
-      where: {
-        number: orderNumber,
-        userId,
-      },
+      where: isGuestAccess
+        ? {
+            number: orderNumber,
+            userId: null,
+            customerEmail: {
+              equals: access.email.trim(),
+              mode: 'insensitive',
+            },
+          }
+        : {
+            number: orderNumber,
+            userId: access,
+          },
       include: {
         items: {
           include: {
@@ -618,6 +631,19 @@ class OrdersService {
         title: "Order not found",
         detail: `Order with number '${orderNumber}' not found`,
       };
+    }
+
+    if (isGuestAccess) {
+      const requestPhone = access.phone.replace(/\D/g, '');
+      const storedPhone = (order.customerPhone ?? '').replace(/\D/g, '');
+      if (!requestPhone || requestPhone !== storedPhone) {
+        throw {
+          status: 404,
+          type: "https://api.shop.am/problems/not-found",
+          title: "Order not found",
+          detail: `Order with number '${orderNumber}' not found`,
+        };
+      }
     }
 
     // Parse shipping address if it's a JSON string

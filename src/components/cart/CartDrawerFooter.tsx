@@ -1,6 +1,7 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useMemo } from 'react';
 import { Button } from '@shop/ui';
 import { buildCartShippingAndTotalLabels } from '../../app/cart/cart-summary-labels';
 import type { Cart } from '../../app/cart/types';
@@ -19,7 +20,12 @@ interface CartDrawerFooterProps {
  * Sticky footer with totals and checkout — mounts only when drawer has items.
  */
 export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
+  const router = useRouter();
   const { deliveryPriceAMD, loadingDelivery } = useCartDeliveryEstimate();
+
+  useEffect(() => {
+    router.prefetch('/checkout');
+  }, [router]);
 
   const summaryLabels = useMemo(
     () =>
@@ -59,7 +65,7 @@ export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
           size="lg"
           onClick={() => {
             closeCartDrawer();
-            window.location.href = '/checkout';
+            router.push('/checkout');
           }}
         >
           {t('common.buttons.proceedToCheckout')}
