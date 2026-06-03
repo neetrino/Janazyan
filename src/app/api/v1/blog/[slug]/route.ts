@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPublishedBlogPostBySlug } from '@/lib/services/blog.service';
+import { getCachedPublishedBlogPostBySlug } from '@/lib/blog/blog-posts-cache';
 import { LANGUAGES } from '@/lib/language';
 
 const DEFAULT_LOCALE = 'en';
@@ -22,7 +22,7 @@ export async function GET(
   try {
     const { slug } = await params;
     const locale = parseLocale(req.nextUrl.searchParams.get('locale'));
-    const data = await getPublishedBlogPostBySlug(slug, locale);
+    const data = await getCachedPublishedBlogPostBySlug(slug, locale);
 
     if (!data) {
       return NextResponse.json(

@@ -7,15 +7,21 @@ import { BlogCardImageFrame } from './BlogCardImageFrame';
 type BlogPostCardProps = {
   post: BlogPostSummary;
   locale: string;
+  priorityImage?: boolean;
 };
 
-export function BlogPostCard({ post, locale }: BlogPostCardProps) {
+export function BlogPostCard({ post, locale, priorityImage = false }: BlogPostCardProps) {
   const formattedDate = formatBlogDate(post.publishedAt, locale);
 
   return (
     <article className="h-full">
       <Link href={`/blog/${post.slug}`} className={`group ${BLOG_CARD_CLASS}`}>
-        <BlogCardImageFrame src={post.coverImage} alt={post.title} hoverZoom />
+        <BlogCardImageFrame
+          src={post.coverImage}
+          alt={post.title}
+          hoverZoom
+          loading={priorityImage ? 'eager' : 'lazy'}
+        />
 
         <div className="flex flex-1 flex-col gap-3 p-6">
           {formattedDate ? (

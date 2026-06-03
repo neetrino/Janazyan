@@ -614,6 +614,70 @@ model BlogPostTranslation {
 }
 
 // ============================================
+// FAQ MODEL (public /faq page)
+// ============================================
+model FaqCategory {
+  id           String                   @id @default(cuid())
+  slug         String                   @unique
+  position     Int                      @default(0)
+  published    Boolean                  @default(false)
+  translations FaqCategoryTranslation[]
+  items        FaqItem[]
+  deletedAt    DateTime?
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([published])
+  @@index([deletedAt])
+  @@index([position])
+  @@map("faq_categories")
+}
+
+model FaqCategoryTranslation {
+  id         String @id @default(cuid())
+  categoryId String
+  locale     String
+  title      String
+
+  category FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([categoryId, locale])
+  @@index([locale])
+  @@map("faq_category_translations")
+}
+
+model FaqItem {
+  id           String                @id @default(cuid())
+  categoryId   String
+  position     Int                   @default(0)
+  published    Boolean               @default(false)
+  translations FaqItemTranslation[]
+  category     FaqCategory           @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  deletedAt    DateTime?
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  @@index([categoryId, published])
+  @@index([deletedAt])
+  @@index([position])
+  @@map("faq_items")
+}
+
+model FaqItemTranslation {
+  id       String @id @default(cuid())
+  itemId   String
+  locale   String
+  question String
+  answer   String @db.Text
+
+  item FaqItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+
+  @@unique([itemId, locale])
+  @@index([locale])
+  @@map("faq_item_translations")
+}
+
+// ============================================
 // CONTACT MESSAGE MODEL
 // ============================================
 model ContactMessage {

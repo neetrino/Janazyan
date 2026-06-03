@@ -2,29 +2,30 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { useTranslation } from '../../../lib/i18n-client';
-import { getStoredLanguage } from '../../../lib/language';
+import { getStoredLanguage, type LanguageCode } from '../../../lib/language';
 import {
   BLOG_DETAIL_CONTAINER_CLASS,
   BLOG_EXCERPT_CALLOUT_CLASS,
   BLOG_GALLERY_IMAGE_BOX_CLASS,
   BLOG_GALLERY_IMAGE_CLASS,
+  BLOG_GLASS_ARTICLE_CLASS,
   BLOG_HERO_IMAGE_BOX_CLASS,
   BLOG_HERO_IMAGE_CLASS,
-  BLOG_PAGE_BG_CLASS,
 } from '../blog-layout-styles';
 import { fetchBlogPostBySlug } from '../fetch-blog-posts';
 import { formatBlogDate } from '../format-blog-date';
+import { loadBlogDetailCopy, type BlogDetailCopy } from '../load-blog-page-copy';
 import type { BlogPostDetail } from '../types';
 import { BlogCoverImage } from './BlogCoverImage';
 
 type BlogPostDetailViewProps = {
   slug: string;
+  initialPost: BlogPostDetail | null;
+  initialLocale: LanguageCode;
+  copy: BlogDetailCopy;
 };
 
-function BlogBackLink() {
-  const { t } = useTranslation();
-
+function BlogBackLink({ label }: { label: string }) {
   return (
     <Link
       href="/blog"
@@ -39,71 +40,76 @@ function BlogBackLink() {
       >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       </svg>
-      {t('blog.backToBlog')}
+      {label}
     </Link>
   );
 }
 
 function BlogDetailSkeleton() {
   return (
-    <div className={BLOG_PAGE_BG_CLASS}>
-      <div className={`${BLOG_DETAIL_CONTAINER_CLASS} animate-pulse py-10 md:py-14`}>
-        <div className="mb-8 h-4 w-28 rounded bg-gray-200" />
-        <div className={`${BLOG_HERO_IMAGE_BOX_CLASS} bg-gray-200`} />
-        <div className="mt-8 h-10 w-4/5 rounded bg-gray-200" />
-        <div className="mt-3 h-4 w-32 rounded bg-gray-200" />
-        <div className="mt-8 h-24 rounded-lg bg-[#eef6fb]" />
+    <div className={`${BLOG_DETAIL_CONTAINER_CLASS} animate-pulse py-10 md:py-14`}>
+      <div className="mb-8 h-4 w-28 rounded bg-white/60" />
+      <div className={`${BLOG_HERO_IMAGE_BOX_CLASS} bg-white/50`} />
+      <div className={`${BLOG_GLASS_ARTICLE_CLASS} mt-8 p-6 sm:p-8`}>
+        <div className="h-10 w-4/5 rounded bg-white/60" />
+        <div className="mt-3 h-4 w-32 rounded bg-white/60" />
+        <div className="mt-8 h-24 rounded-2xl bg-teal-50/40" />
         <div className="mt-8 space-y-3">
-          <div className="h-4 rounded bg-gray-200" />
-          <div className="h-4 rounded bg-gray-200" />
-          <div className="h-4 w-5/6 rounded bg-gray-200" />
+          <div className="h-4 rounded bg-white/60" />
+          <div className="h-4 rounded bg-white/60" />
+          <div className="h-4 w-5/6 rounded bg-white/60" />
         </div>
       </div>
     </div>
   );
 }
 
-export function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
-  const { t } = useTranslation();
-  const [post, setPost] = useState<BlogPostDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [locale, setLocale] = useState('en');
+export function BlogPostDetailView({
+  slug,
+  initialPost,
+  initialLocale,
+  copy: initialCopy,
+}: BlogPostDetailViewProps) {
+  const [post, setPost] = useState<BlogPostDetail | null>(initialPost);
+  const [locale, setLocale] = useState(initialLocale);
+  const [copy, setCopy] = useState(initialCopy);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    const load = async () => {
-      const lang = getStoredLanguage();
-      setLocale(lang);
-      setLoading(true);
-      try {
-        const data = await fetchBlogPostBySlug(slug, lang);
-        setPost(data);
-      } catch {
-        setPost(null);
-      } finally {
-        setLoading(false);
-      }
+    const onLanguageUpdated = () => {
+      const refresh = async () => {
+        const lang = getStoredLanguage();
+        setIsRefreshing(true);
+        try {
+          const data = await fetchBlogPostBySlug(slug, lang);
+          setPost(data);
+          setLocale(lang);
+          setCopy(loadBlogDetailCopy(lang));
+        } catch {
+          setPost(null);
+        } finally {
+          setIsRefreshing(false);
+        }
+      };
+      void refresh();
     };
 
-    void load();
-    const onLanguageUpdated = () => {
-      void load();
-    };
     window.addEventListener('language-updated', onLanguageUpdated);
     return () => window.removeEventListener('language-updated', onLanguageUpdated);
   }, [slug]);
 
-  if (loading) {
+  if (isRefreshing) {
     return <BlogDetailSkeleton />;
   }
 
   if (!post) {
     return (
-      <div className={BLOG_PAGE_BG_CLASS}>
-        <div className={`${BLOG_DETAIL_CONTAINER_CLASS} py-20 text-center`}>
-          <h1 className="text-2xl font-bold text-gray-900">{t('blog.notFoundTitle')}</h1>
-          <p className="mt-2 text-gray-600">{t('blog.notFoundDescription')}</p>
+      <div className={`${BLOG_DETAIL_CONTAINER_CLASS} py-20 text-center`}>
+        <div className={`${BLOG_GLASS_ARTICLE_CLASS} px-6 py-12 sm:px-10`}>
+          <h1 className="text-2xl font-bold text-gray-900">{copy.notFoundTitle}</h1>
+          <p className="mt-2 text-gray-600">{copy.notFoundDescription}</p>
           <div className="mt-6 flex justify-center">
-            <BlogBackLink />
+            <BlogBackLink label={copy.backToBlog} />
           </div>
         </div>
       </div>
@@ -114,23 +120,25 @@ export function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
   const extraImages = post.images.slice(1);
 
   return (
-    <div className={BLOG_PAGE_BG_CLASS}>
-      <article className="pb-14 md:pb-20">
-        <div className={`${BLOG_DETAIL_CONTAINER_CLASS} py-10 md:py-14`}>
-          <BlogBackLink />
+    <article className="pb-14 md:pb-20">
+      <div className={`${BLOG_DETAIL_CONTAINER_CLASS} py-10 md:py-14`}>
+        <BlogBackLink label={copy.backToBlog} />
 
-          {post.coverImage ? (
-            <div className={BLOG_HERO_IMAGE_BOX_CLASS}>
-              <BlogCoverImage
-                src={post.coverImage}
-                alt={post.title}
-                loading="eager"
-                className={BLOG_HERO_IMAGE_CLASS}
-              />
-            </div>
-          ) : null}
+        {post.coverImage ? (
+          <div className={BLOG_HERO_IMAGE_BOX_CLASS}>
+            <BlogCoverImage
+              src={post.coverImage}
+              alt={post.title}
+              loading="eager"
+              className={BLOG_HERO_IMAGE_CLASS}
+            />
+          </div>
+        ) : null}
 
-          <header className={post.coverImage ? 'mt-8' : ''}>
+        <div
+          className={`${BLOG_GLASS_ARTICLE_CLASS} ${post.coverImage ? 'mt-8' : ''} p-6 sm:p-8 md:p-10`}
+        >
+          <header>
             <h1 className="text-3xl font-bold leading-tight text-gray-900 md:text-4xl lg:text-[2.5rem]">
               {post.title}
             </h1>
@@ -170,7 +178,7 @@ export function BlogPostDetailView({ slug }: BlogPostDetailViewProps) {
             </div>
           ) : null}
         </div>
-      </article>
-    </div>
+      </div>
+    </article>
   );
 }

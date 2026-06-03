@@ -3,6 +3,7 @@ import { resolveBlogImageUrls } from '@/lib/blog/persist-blog-image';
 import { normalizeBlogImageUrls } from '@/lib/blog/normalize-blog-image-url';
 import type { BlogTranslationInput } from '@/features/blog/blog-locales';
 import { toSlug } from '@/lib/utils/slug';
+import { revalidateBlogPublicCache } from '@/lib/blog/revalidate-blog-cache';
 import { logger } from '@/lib/utils/logger';
 
 type AdminBlogPostRow = {
@@ -158,6 +159,7 @@ class AdminBlogService {
     });
 
     logger.info('Blog post created', { id: post.id, slug: post.slug });
+    await revalidateBlogPublicCache();
     return { data: mapAdminPost(post) };
   }
 
@@ -246,6 +248,7 @@ class AdminBlogService {
       include: { translations: true },
     });
 
+    await revalidateBlogPublicCache();
     return { data: mapAdminPost(updated!) };
   }
 
@@ -265,6 +268,7 @@ class AdminBlogService {
       data: { deletedAt: new Date(), published: false },
     });
 
+    await revalidateBlogPublicCache();
     return { success: true };
   }
 }

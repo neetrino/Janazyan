@@ -41,6 +41,8 @@
     "terms": "Terms",
     "delivery": "Delivery",
     "stores": "Stores",
+    "ourStores": "Our stores",
+    "blog": "Blog",
     "categoriesMenuUnavailable": "Category menu temporarily unavailable"
   },
   "stock": {

@@ -246,6 +246,17 @@ body {
   z-index: 0;
 }
 
+.partner-stores-map-section {
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .partner-stores-map-section {
+    width: min(100%, 82%);
+    margin-left: auto;
+  }
+}
+
 .partner-store-marker {
   display: flex;
   align-items: center;

@@ -15,6 +15,7 @@ import { adminAttributesService } from "./admin/admin-attributes.service";
 import { adminCouponsService } from "./admin/admin-coupons.service";
 import { adminPartnerStoresService } from "./admin/admin-partner-stores.service";
 import { adminBlogService } from "./admin/admin-blog.service";
+import { adminFaqService } from "./admin/admin-faq.service";
 
 class AdminService {
   // Delegate to specialized services
@@ -97,6 +98,16 @@ class AdminService {
   createBlogPost = adminBlogService.createBlogPost.bind(adminBlogService);
   updateBlogPost = adminBlogService.updateBlogPost.bind(adminBlogService);
   deleteBlogPost = adminBlogService.deleteBlogPost.bind(adminBlogService);
+
+  // FAQ
+  getFaqCategories = adminFaqService.getFaqCategories.bind(adminFaqService);
+  createFaqCategory = adminFaqService.createFaqCategory.bind(adminFaqService);
+  updateFaqCategory = adminFaqService.updateFaqCategory.bind(adminFaqService);
+  deleteFaqCategory = adminFaqService.deleteFaqCategory.bind(adminFaqService);
+  getFaqItems = adminFaqService.getFaqItems.bind(adminFaqService);
+  createFaqItem = adminFaqService.createFaqItem.bind(adminFaqService);
+  updateFaqItem = adminFaqService.updateFaqItem.bind(adminFaqService);
+  deleteFaqItem = adminFaqService.deleteFaqItem.bind(adminFaqService);
 }
 
 export const adminService = new AdminService();

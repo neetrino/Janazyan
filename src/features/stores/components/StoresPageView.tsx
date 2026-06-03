@@ -106,7 +106,7 @@ export function StoresPageView() {
       <section className="pb-16 md:pb-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
-            <div className="lg:col-span-2">
+            <div className="relative z-10 lg:col-span-2">
               <div className="overflow-visible lg:sticky lg:top-28">
                 <h2 className="text-2xl font-bold text-gray-900">{copy.listTitle}</h2>
                 <p className="mt-2 text-sm text-gray-500">{copy.map.hint}</p>
@@ -124,7 +124,7 @@ export function StoresPageView() {
             </div>
 
             <div ref={mapSectionRef} className="scroll-mt-28 lg:col-span-3">
-              <div className="lg:sticky lg:top-28">
+              <div className="partner-stores-map-section lg:sticky lg:top-28">
                 <h2 className="mb-4 text-2xl font-bold text-gray-900">{copy.map.title}</h2>
                 <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
                   <PartnerStoresMap
