@@ -58,3 +58,35 @@ export function getCompareCount(): number {
   return getStoredArrayLength(COMPARE_KEY);
 }
 
+type GuestCartStoredLine = {
+  quantity?: number;
+};
+
+/**
+ * Sum of line quantities in the guest cart (for header badges without API).
+ */
+export function getGuestCartItemCount(): number {
+  if (typeof window === 'undefined') {
+    return 0;
+  }
+  try {
+    const stored = window.localStorage.getItem(CART_KEY);
+    const parsed: unknown = stored ? JSON.parse(stored) : [];
+    if (!Array.isArray(parsed)) {
+      return 0;
+    }
+    return parsed.reduce<number>((sum, line) => {
+      if (typeof line !== 'object' || line === null) {
+        return sum;
+      }
+      const quantity = Number((line as GuestCartStoredLine).quantity);
+      if (!Number.isFinite(quantity) || quantity <= 0) {
+        return sum;
+      }
+      return sum + quantity;
+    }, 0);
+  } catch {
+    return 0;
+  }
+}
+

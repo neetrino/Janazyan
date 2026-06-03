@@ -1,6 +1,7 @@
 import { db } from "@white-shop/db";
 import { isDatabaseConnectionUrlConfigured } from "@white-shop/db/env";
 import { isPrismaConnectionError } from "@/lib/http/prisma-connection";
+import { getRedisHealth } from "@/lib/services/cache.service";
 import { logger } from "@/lib/utils/logger";
 import { NextResponse } from "next/server";
 
@@ -28,11 +29,14 @@ export async function getHealthResponse(): Promise<NextResponse> {
       ),
     ]);
     const latencyMs = Date.now() - start;
+    const redis = await getRedisHealth();
+    const status = redis.available ? "ok" : "degraded";
     return NextResponse.json(
       {
-        status: "ok",
+        status,
         app: "running",
         database: "connected",
+        redis,
         latencyMs,
       },
       { status: 200 }

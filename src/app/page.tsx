@@ -1,26 +1,37 @@
-import { HeroCarousel } from '../components/HeroCarousel';
-import { FeaturesSection } from '../components/FeaturesSection';
-import { TopCategories } from '../components/TopCategories';
-import { FeaturedProductsTabs } from '../components/FeaturedProductsTabs';
+import {
+  AboutSection,
+  CategoryPosters,
+  HomeHero,
+  HomeMobileFigma,
+  PromoPoster,
+  WhyChooseUs,
+} from '../components/home';
+import {
+  DesktopFeaturedAsync,
+  HomeMobileFeaturedAsync,
+} from '../components/home/HomeFeaturedAsync';
 
-export default async function HomePage() {
-
+export default function HomePage() {
   return (
-    <div className="min-h-screen">
-      {/* Hero Section - Full Width */}
-      <section className="bg-white">
-        <HeroCarousel />
-      </section>
+    <div className="relative isolate overflow-hidden bg-white">
+      <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
 
-      {/* Top Categories */}
-      <TopCategories />
+      <div className="hidden lg:block">
+        <HomeHero />
+      </div>
 
-      {/* Featured Products with Tabs */}
-      <FeaturedProductsTabs />
+      <div className="hidden lg:block relative mx-auto w-full max-w-[1416px] lg:-mt-[30px]">
+        <CategoryPosters />
+      </div>
 
-      {/* Features Section */}
-      <FeaturesSection />
+      <div className="hidden lg:block relative mx-auto w-full max-w-[1475px] overflow-visible">
+        <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
+        <DesktopFeaturedAsync />
+        <PromoPoster />
+        <WhyChooseUs />
+      </div>
+
+      <AboutSection />
     </div>
   );
 }
-

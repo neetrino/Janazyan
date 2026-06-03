@@ -194,6 +194,8 @@ async function seedProducts(categoryIds, brandIds) {
   return created;
 }
 
+const { seedPartnerStores } = require("./seed-partner-stores.cjs");
+
 async function main() {
   console.log("=== Seed start ===");
   try {
@@ -201,6 +203,7 @@ async function main() {
     const categoryIds = await seedCategories();
     const brandIds = await seedBrands();
     await seedProducts(categoryIds, brandIds);
+    await seedPartnerStores(prisma);
     console.log("=== Seed done ===");
   } catch (e) {
     console.error("Seed error:", e);

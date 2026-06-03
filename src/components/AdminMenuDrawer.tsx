@@ -35,6 +35,9 @@ function isDrawerNestedProductTabVisible(
   pathname: string,
   productsNestedExpanded: boolean
 ): boolean {
+  if (tab.id === 'products') {
+    return true;
+  }
   if (tab.parentGroupId !== 'products') {
     return true;
   }
@@ -127,42 +130,28 @@ export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
                   return (
                     <div
                       key={tab.id}
-                      className={`flex w-full min-w-0 items-stretch ${isActive ? 'bg-gray-900 text-white' : ''}`}
+                      className={`flex w-full ${isActive ? 'bg-gray-900 text-white' : 'text-gray-700'}`}
                     >
                       <button
                         type="button"
                         onClick={() => handleNavigate(tab.path)}
-                        className={`flex min-w-0 flex-1 items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium ${
-                          isActive ? 'text-white hover:bg-gray-800' : 'text-gray-700 hover:bg-gray-50'
+                        className={`flex min-w-0 flex-1 items-center gap-3 px-4 py-3 text-left text-sm font-medium ${
+                          isActive ? 'text-white hover:bg-gray-800' : 'hover:bg-gray-50'
                         }`}
                       >
-                        <span className="flex min-w-0 items-center gap-3">
-                          <span className={isActive ? 'text-white' : 'text-gray-500'}>{tab.icon}</span>
-                          <span className="min-w-0 truncate">{tab.label}</span>
-                        </span>
-                        <svg
-                          className={`h-4 w-4 shrink-0 ${isActive ? 'text-white' : 'text-gray-400'}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          aria-hidden
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <span className={isActive ? 'text-white' : 'text-gray-500'}>{tab.icon}</span>
+                        <span className="min-w-0 truncate">{tab.label}</span>
                       </button>
                       <button
                         type="button"
                         aria-expanded={productsNestedExpanded}
                         aria-label={t('admin.sidebar.toggleProductsNested')}
                         title={t('admin.sidebar.toggleProductsNested')}
-                        onClick={(e) => {
-                          e.preventDefault();
+                        onClick={() => {
                           toggleProductsNested();
                         }}
-                        className={`shrink-0 border-l px-3 py-3 ${
-                          isActive
-                            ? 'border-white/25 text-white hover:bg-white/10'
-                            : 'border-gray-200 text-gray-600 hover:bg-gray-50'
+                        className={`shrink-0 px-3 py-3 ${
+                          isActive ? 'text-white hover:bg-gray-800' : 'text-gray-500 hover:bg-gray-50'
                         }`}
                       >
                         <svg

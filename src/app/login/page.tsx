@@ -2,8 +2,14 @@
 
 import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Button, Input, Card } from '@shop/ui';
+import { Button, Input } from '@shop/ui';
 import Link from 'next/link';
+import { AuthGlassCard } from '../../components/auth/AuthGlassCard';
+import { AuthPageShell } from '../../components/auth/AuthPageShell';
+import {
+  AUTH_GLASS_ERROR_CLASS,
+  AUTH_GLASS_INPUT_CLASS,
+} from '../../components/auth/auth-glass-styles';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '../../lib/i18n-client';
@@ -69,13 +75,13 @@ function LoginPageContent() {
   }, [isLoggedIn, isLoading, isAdmin, redirectTo, router]);
 
   return (
-    <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <Card className="p-8">
+    <AuthPageShell>
+      <AuthGlassCard>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('login.title')}</h1>
         <p className="text-gray-600 mb-8">{t('login.subtitle')}</p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className={`mb-4 p-3 ${AUTH_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -89,7 +95,7 @@ function LoginPageContent() {
               id="email"
               type="email"
               placeholder={t('login.form.emailPlaceholder')}
-              className="w-full"
+              className={`w-full ${AUTH_GLASS_INPUT_CLASS}`}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isSubmitting || isLoading}
@@ -105,7 +111,7 @@ function LoginPageContent() {
                 id="password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder={t('login.form.passwordPlaceholder')}
-                className="w-full pr-10"
+                className={`w-full pr-10 ${AUTH_GLASS_INPUT_CLASS}`}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isSubmitting || isLoading}
@@ -153,35 +159,33 @@ function LoginPageContent() {
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
-            {t('login.form.noAccount')}{' '}
-            <Link href="/register" className="text-blue-600 hover:underline font-medium">
-              {t('login.form.signUp')}
-            </Link>
-          </p>
+        <div className="relative z-20 mt-6 text-center text-sm text-gray-600">
+          {t('login.form.noAccount')}{' '}
+          <Link href="/register" className="font-medium text-blue-600 hover:underline">
+            {t('login.form.signUp')}
+          </Link>
         </div>
-      </Card>
-    </div>
+      </AuthGlassCard>
+    </AuthPageShell>
   );
 }
 
 export default function LoginPage() {
   return (
     <Suspense fallback={
-      <div className="max-w-lg mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Card className="p-8">
+      <AuthPageShell>
+        <AuthGlassCard>
           <div className="animate-pulse">
-            <div className="h-8 bg-gray-200 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2 mb-8"></div>
+            <div className="h-8 bg-white/40 rounded w-3/4 mb-4"></div>
+            <div className="h-4 bg-white/40 rounded w-1/2 mb-8"></div>
             <div className="space-y-4">
-              <div className="h-10 bg-gray-200 rounded"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
-              <div className="h-10 bg-gray-200 rounded"></div>
+              <div className="h-10 bg-white/40 rounded-xl"></div>
+              <div className="h-10 bg-white/40 rounded-xl"></div>
+              <div className="h-10 bg-white/40 rounded-xl"></div>
             </div>
           </div>
-        </Card>
-      </div>
+        </AuthGlassCard>
+      </AuthPageShell>
     }>
       <LoginPageContent />
     </Suspense>

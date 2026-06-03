@@ -3,6 +3,8 @@ import { CategoryNavigation } from '../../components/CategoryNavigation';
 import { ProductsCatalog } from './ProductsCatalog';
 import { ProductsCatalogSkeleton } from './ProductsCatalogSkeleton';
 
+export const revalidate = 60;
+
 /**
  * Shop catalog: category strip streams immediately; product grid streams inside Suspense.
  */

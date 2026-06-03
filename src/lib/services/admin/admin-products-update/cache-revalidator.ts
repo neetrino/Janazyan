@@ -23,6 +23,8 @@ export async function revalidateProductCache(
     // @ts-expect-error - revalidateTag type issue in Next.js
     revalidateTag('products');
     // @ts-expect-error - revalidateTag type issue in Next.js
+    revalidateTag('home-featured');
+    // @ts-expect-error - revalidateTag type issue in Next.js
     revalidateTag(`product-${productId}`);
 
     await cacheService.deletePattern("products:*");

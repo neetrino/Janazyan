@@ -54,25 +54,9 @@ const getBaseIncludeWithoutAttributeValue = () => ({
   },
 });
 
-/**
- * ProductAttributes include configuration
- */
-const getProductAttributesInclude = () => ({
-  productAttributes: {
-    include: {
-      attribute: {
-        include: {
-          translations: true,
-          values: {
-            include: {
-              translations: true,
-            },
-          },
-        },
-      },
-    },
-  },
-});
+const CATALOG_LIST_ORDER: Prisma.ProductOrderByWithRelationInput = {
+  createdAt: 'desc',
+};
 
 /**
  * Check if error is related to product_attributes table
@@ -118,14 +102,12 @@ export async function executeProductQuery(
   try {
     const products = await db.product.findMany({
       where,
-      include: {
-        ...baseInclude,
-        ...getProductAttributesInclude(),
-      },
+      include: baseInclude,
+      orderBy: CATALOG_LIST_ORDER,
       skip,
       take: limit,
     });
-    logger.debug(`Found ${products.length} products from database (with productAttributes)`);
+    logger.debug(`Found ${products.length} products from database (catalog list)`);
     return products as unknown as ProductWithRelations[];
   } catch (error: unknown) {
     // If productAttributes table doesn't exist, retry without it
@@ -143,6 +125,7 @@ export async function executeProductQuery(
         const products = await db.product.findMany({
           where,
           include: baseInclude,
+          orderBy: CATALOG_LIST_ORDER,
           skip,
           take: limit,
         });
@@ -178,10 +161,11 @@ async function executeWithoutProductAttributes(
     const products = await db.product.findMany({
       where,
       include: baseInclude,
+      orderBy: CATALOG_LIST_ORDER,
       skip,
       take: limit,
     });
-    logger.debug(`Found ${products.length} products from database (without productAttributes)`);
+    logger.debug(`Found ${products.length} products from database (catalog list fallback)`);
     return products as unknown as ProductWithRelations[];
   } catch (retryError: unknown) {
     if (isVariantAttributesError(retryError)) {
@@ -191,6 +175,7 @@ async function executeWithoutProductAttributes(
         const products = await db.product.findMany({
           where,
           include: baseInclude,
+          orderBy: CATALOG_LIST_ORDER,
           skip,
           take: limit,
         });
@@ -240,32 +225,14 @@ async function executeWithoutAttributeValue(
 ): Promise<ProductWithRelations[]> {
   const baseIncludeWithoutAttributeValue = getBaseIncludeWithoutAttributeValue();
 
-  // Try to include productAttributes even in fallback
-  try {
-    const products = await db.product.findMany({
-      where,
-      include: {
-        ...baseIncludeWithoutAttributeValue,
-        ...getProductAttributesInclude(),
-      },
-      skip,
-      take: limit,
-    });
-    logger.debug(`Found ${products.length} products from database (without attributeValue, with productAttributes)`);
-    return products as unknown as ProductWithRelations[];
-  } catch (productAttrError: unknown) {
-    // If productAttributes also fails, try without it
-    if (isProductAttributesError(productAttrError)) {
-      const products = await db.product.findMany({
-        where,
-        include: baseIncludeWithoutAttributeValue,
-        skip,
-        take: limit,
-      });
-      logger.debug(`Found ${products.length} products from database (without attributeValue and productAttributes)`);
-      return products as unknown as ProductWithRelations[];
-    }
-    throw productAttrError;
-  }
+  const products = await db.product.findMany({
+    where,
+    include: baseIncludeWithoutAttributeValue,
+    orderBy: CATALOG_LIST_ORDER,
+    skip,
+    take: limit,
+  });
+  logger.debug(`Found ${products.length} products from database (without attributeValue)`);
+  return products as unknown as ProductWithRelations[];
 }
 

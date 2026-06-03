@@ -5,11 +5,16 @@ import { Header } from './Header';
 
 export function ConditionalHeader() {
   const pathname = usePathname();
-  if (pathname?.startsWith('/supersudo')) {
+  const shouldHideHeader =
+    pathname.startsWith('/supersudo') || pathname.startsWith('/admin');
+
+  if (shouldHideHeader) {
     return null;
   }
-  if (pathname?.startsWith('/profile')) {
-    return <div className="hidden md:block"><Header /></div>;
+
+  if (pathname === '/') {
+    return null;
   }
+
   return <Header />;
 }

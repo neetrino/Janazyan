@@ -64,7 +64,7 @@ export function ProductImages({
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {imageUrls.map((imageUrl, index) => (
                 <div key={index} className="relative group">
-                  <div className={`relative border-2 rounded-md overflow-hidden ${
+                  <div className={`relative aspect-square bg-gray-100 border-2 rounded-md overflow-hidden ${
                     featuredImageIndex === index 
                       ? 'border-blue-500 ring-2 ring-blue-300' 
                       : 'border-gray-300'
@@ -72,7 +72,7 @@ export function ProductImages({
                     <img
                       src={imageUrl}
                       alt={`Product image ${index + 1}`}
-                      className="w-full h-48 object-cover"
+                      className="w-full h-full object-cover"
                     />
                     
                     {/* Main Checkbox */}

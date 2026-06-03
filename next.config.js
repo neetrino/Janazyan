@@ -16,6 +16,25 @@ if (
   );
 }
 
+function getR2ImageRemotePattern() {
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return null;
+  }
+  try {
+    const hostname = new URL(publicUrl).hostname;
+    return {
+      protocol: 'https',
+      hostname,
+      pathname: '/**',
+    };
+  } catch {
+    return null;
+  }
+}
+
+const r2ImagePattern = getR2ImageRemotePattern();
+
 const nextConfig = {
   reactStrictMode: true,
   // Скрыть индикатор "Compiling..." в углу в dev — не мешает на экране
@@ -44,6 +63,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
               `connect-src 'self' https: ${VERCEL_LIVE_CONNECT}`,
+              "frame-src 'self' https://www.google.com https://maps.google.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },
@@ -95,6 +115,7 @@ const nextConfig = {
         hostname: 'cdn-icons-png.flaticon.com',
         pathname: '/**',
       },
+      ...(r2ImagePattern ? [r2ImagePattern] : []),
     ],
     // Allow unoptimized images for development (images will use unoptimized prop)
     // Ensure image optimization is enabled for production

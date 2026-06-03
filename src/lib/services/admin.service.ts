@@ -13,6 +13,7 @@ import { adminCategoriesService } from "./admin/admin-categories.service";
 import { adminProductsService } from "./admin/admin-products.service";
 import { adminAttributesService } from "./admin/admin-attributes.service";
 import { adminCouponsService } from "./admin/admin-coupons.service";
+import { adminPartnerStoresService } from "./admin/admin-partner-stores.service";
 
 class AdminService {
   // Delegate to specialized services
@@ -83,6 +84,12 @@ class AdminService {
   createPromoCode = adminCouponsService.createPromoCode.bind(adminCouponsService);
   updatePromoCode = adminCouponsService.updatePromoCode.bind(adminCouponsService);
   deletePromoCode = adminCouponsService.deletePromoCode.bind(adminCouponsService);
+
+  // Partner stores
+  getPartnerStores = adminPartnerStoresService.getPartnerStores.bind(adminPartnerStoresService);
+  createPartnerStore = adminPartnerStoresService.createPartnerStore.bind(adminPartnerStoresService);
+  updatePartnerStore = adminPartnerStoresService.updatePartnerStore.bind(adminPartnerStoresService);
+  deletePartnerStore = adminPartnerStoresService.deletePartnerStore.bind(adminPartnerStoresService);
 }
 
 export const adminService = new AdminService();

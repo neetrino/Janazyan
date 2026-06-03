@@ -17,6 +17,8 @@ export interface ProductFilters {
   page?: number;
   limit?: number;
   lang?: string;
+  /** Lighter transform + query for catalog grids (cards do not need full color swatches). */
+  catalog?: boolean;
 }
 
 /**

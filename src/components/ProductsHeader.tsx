@@ -22,7 +22,7 @@ function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid-2');
+  const [viewMode, setViewMode] = useState<ViewMode>('grid-3');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
@@ -54,9 +54,8 @@ function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
     if (stored && ['list', 'grid-2', 'grid-3'].includes(stored)) {
       setViewMode(stored as ViewMode);
     } else {
-      // Default to grid-2 if nothing stored
-      setViewMode('grid-2');
-      localStorage.setItem('products-view-mode', 'grid-2');
+      setViewMode('grid-3');
+      localStorage.setItem('products-view-mode', 'grid-3');
     }
   }, []);
 
@@ -313,29 +312,8 @@ function ProductsHeaderContent({ total, perPage }: ProductsHeaderProps) {
           </div>
         </div>
 
-        {/* Bottom: Filters button + View Mode Icons + Sort */}
-        <div className="flex items-center justify-between gap-2">
-          {/* Left: Filters button */}
-          <button
-            type="button"
-            onClick={() => window.dispatchEvent(new Event('mobile:filters-toggle'))}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors text-sm font-medium text-gray-900"
-          >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <line x1="3" y1="5" x2="17" y2="5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-            <span>{t('products.header.filters')}</span>
-          </button>
-
-          {/* Right: View Mode Icons + Sort */}
+        {/* Bottom: View Mode Icons + Sort */}
+        <div className="flex items-center justify-end gap-2">
           <div className="flex items-center gap-2">
             {/* View Mode Icons */}
             <div className="flex items-center gap-1">

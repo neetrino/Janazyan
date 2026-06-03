@@ -2,6 +2,11 @@ import type { MouseEvent } from 'react';
 import { WISHLIST_KEY, COMPARE_KEY } from '../types';
 import { t } from '../../../../lib/i18n';
 import type { LanguageCode } from '../../../../lib/language';
+import {
+  removeWishlistSnapshot,
+  upsertWishlistSnapshot,
+} from '../../../../lib/wishlist/wishlist-snapshot-cache';
+import type { WishlistProductSnapshot } from '../../../../lib/wishlist/wishlist-types';
 
 interface UseProductActionsProps {
   productId: string | null;
@@ -11,6 +16,7 @@ interface UseProductActionsProps {
   setIsInCompare: (value: boolean) => void;
   setShowMessage: (message: string | null) => void;
   language: LanguageCode;
+  wishlistSnapshot?: WishlistProductSnapshot | null;
 }
 
 export function useProductActions({
@@ -21,27 +27,32 @@ export function useProductActions({
   setIsInCompare,
   setShowMessage,
   language,
+  wishlistSnapshot = null,
 }: UseProductActionsProps) {
   const handleAddToWishlist = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (!productId || typeof window === 'undefined') return;
-    
+
     try {
       const stored = localStorage.getItem(WISHLIST_KEY);
       const wishlist: string[] = stored ? JSON.parse(stored) : [];
-      
+
       if (isInWishlist) {
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist.filter(id => id !== productId)));
+        removeWishlistSnapshot(productId);
         setIsInWishlist(false);
         setShowMessage(t(language, 'product.removedFromWishlist'));
       } else {
         wishlist.push(productId);
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+        if (wishlistSnapshot) {
+          upsertWishlistSnapshot(wishlistSnapshot);
+        }
         setIsInWishlist(true);
         setShowMessage(t(language, 'product.addedToWishlist'));
       }
-      
+
       setTimeout(() => setShowMessage(null), 2000);
       window.dispatchEvent(new Event('wishlist-updated'));
     } catch {
@@ -53,11 +64,11 @@ export function useProductActions({
     e.preventDefault();
     e.stopPropagation();
     if (!productId || typeof window === 'undefined') return;
-    
+
     try {
       const stored = localStorage.getItem(COMPARE_KEY);
       const compare: string[] = stored ? JSON.parse(stored) : [];
-      
+
       if (isInCompare) {
         localStorage.setItem(COMPARE_KEY, JSON.stringify(compare.filter(id => id !== productId)));
         setIsInCompare(false);
@@ -72,7 +83,7 @@ export function useProductActions({
           setShowMessage(t(language, 'product.addedToCompare'));
         }
       }
-      
+
       setTimeout(() => setShowMessage(null), 2000);
       window.dispatchEvent(new Event('compare-updated'));
     } catch {
@@ -85,7 +96,3 @@ export function useProductActions({
     handleCompareToggle,
   };
 }
-
-
-
-

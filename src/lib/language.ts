@@ -8,25 +8,30 @@ export const LANGUAGES = {
 
 export type LanguageCode = keyof typeof LANGUAGES;
 
-const LANGUAGE_STORAGE_KEY = 'shop_language';
+export const LANGUAGE_STORAGE_KEY = 'shop_language';
+
+function parseLanguageCode(value: string | null | undefined): LanguageCode | null {
+  if (value && value in LANGUAGES) {
+    return value as LanguageCode;
+  }
+  return null;
+}
 
 export function getStoredLanguage(): LanguageCode {
   if (typeof window === 'undefined') return 'en';
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    if (stored && stored in LANGUAGES) {
-      return stored as LanguageCode;
-    }
+    return parseLanguageCode(stored) ?? 'en';
   } catch {
-    // Ignore errors
+    return 'en';
   }
-  return 'en';
 }
 
 export function setStoredLanguage(language: LanguageCode, options?: { skipReload?: boolean }): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(LANGUAGE_STORAGE_KEY, language);
+    document.cookie = `${LANGUAGE_STORAGE_KEY}=${language};path=/;max-age=31536000;SameSite=Lax`;
     window.dispatchEvent(new Event('language-updated'));
     // Only reload if skipReload is not true
     if (!options?.skipReload) {

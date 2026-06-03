@@ -1,5 +1,6 @@
 import { apiClient } from '../../lib/api-client';
 import { logger } from '../../lib/utils/logger';
+import { persistCartSnapshotFromAuth } from '../../lib/cart/cart-snapshot-cache';
 import type { Cart, CartItem } from './types';
 import { CART_KEY } from './constants';
 
@@ -90,7 +91,8 @@ export async function handleRemoveItem(
   cart: Cart,
   isLoggedIn: boolean,
   setCart: (cart: Cart | null) => void,
-  fetchCart: () => Promise<void>
+  fetchCart: () => Promise<void>,
+  userId: string | null | undefined,
 ): Promise<void> {
   const itemToRemove = cart.items.find(item => item.id === itemId);
   if (!itemToRemove) return;
@@ -99,13 +101,15 @@ export async function handleRemoveItem(
   const updatedItems = cart.items.filter(item => item.id !== itemId);
   const newItemsCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Update UI immediately (optimistic update)
-  setCart({
+  const optimisticCart: Cart = {
     ...cart,
     items: updatedItems,
     totals: calculateCartTotals(updatedItems, cart.totals),
     itemsCount: newItemsCount,
-  });
+  };
+
+  setCart(optimisticCart);
+  persistCartSnapshotFromAuth(optimisticCart, isLoggedIn, userId);
 
   try {
     if (!isLoggedIn) {
@@ -134,11 +138,12 @@ export async function handleUpdateQuantity(
   setCart: (cart: Cart | null) => void,
   setUpdatingItems: (fn: (prev: Set<string>) => Set<string>) => void,
   fetchCart: () => Promise<void>,
-  t: (key: string) => string
+  t: (key: string) => string,
+  userId: string | null | undefined,
 ): Promise<void> {
   if (quantity < 1) {
     if (cart) {
-      await handleRemoveItem(itemId, cart, isLoggedIn, setCart, fetchCart);
+      await handleRemoveItem(itemId, cart, isLoggedIn, setCart, fetchCart, userId);
     }
     return;
   }
@@ -163,12 +168,14 @@ export async function handleUpdateQuantity(
     );
     const newItemsCount = updatedItems.reduce((sum, item) => sum + item.quantity, 0);
 
-    setCart({
+    const optimisticCart: Cart = {
       ...cart,
       items: updatedItems,
       totals: calculateCartTotals(updatedItems, cart.totals),
       itemsCount: newItemsCount,
-    });
+    };
+    setCart(optimisticCart);
+    persistCartSnapshotFromAuth(optimisticCart, isLoggedIn, userId);
   }
 
   setUpdatingItems(prev => new Set(prev).add(itemId));

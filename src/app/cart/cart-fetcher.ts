@@ -1,6 +1,11 @@
 import { apiClient } from '../../lib/api-client';
 import { logger } from '../../lib/utils/logger';
 import { getStoredLanguage } from '../../lib/language';
+import {
+  clearCartSnapshot,
+  resolveCartCacheScope,
+  writeCartSnapshot,
+} from '../../lib/cart/cart-snapshot-cache';
 import type { Cart, CartItem } from './types';
 import { CART_KEY } from './constants';
 
@@ -209,18 +214,38 @@ export async function fetchLoggedInCart(): Promise<Cart | null> {
   }
 }
 
+function persistFetchedCart(
+  isLoggedIn: boolean,
+  userId: string | null | undefined,
+  cart: Cart | null,
+): void {
+  const scope = resolveCartCacheScope(isLoggedIn, userId);
+  if (!scope) {
+    return;
+  }
+  if (cart) {
+    writeCartSnapshot(scope, cart);
+  } else {
+    clearCartSnapshot(scope);
+  }
+}
+
 /**
- * Fetch cart (guest or logged-in)
+ * Fetch cart (guest or logged-in) and refresh the scope-local snapshot cache.
  */
 export async function fetchCart(
   isLoggedIn: boolean,
-  t: (key: string) => string
+  t: (key: string) => string,
+  userId?: string | null,
 ): Promise<Cart | null> {
-  if (!isLoggedIn) {
-    return fetchGuestCart(t);
-  }
-  return fetchLoggedInCart();
+  const cart = !isLoggedIn
+    ? await fetchGuestCart(t)
+    : await fetchLoggedInCart();
+
+  persistFetchedCart(isLoggedIn, userId ?? null, cart);
+  return cart;
 }
+
 
 
 

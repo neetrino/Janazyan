@@ -1,11 +1,15 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
+import { ensureProductAttributesTable } from "../../../utils/db-ensure";
 import type { UpdateProductData } from "./types";
 import { collectVariantImages, buildProductUpdateData, updateProductTranslation, updateProductLabels, updateProductAttributes } from "./product-updater";
 import { updateOrCreateVariant } from "./variant-updater";
 import { updateAttributeValueImageUrls } from "./attribute-value-updater";
 import { ensureUniqueProductSlug } from "../product-slug-utils";
+
+const PRODUCT_UPDATE_TX_TIMEOUT_MS = 15000;
+const PRODUCT_UPDATE_TX_MAX_WAIT_MS = 5000;
 
 /**
  * Update product
@@ -32,6 +36,10 @@ export async function updateProduct(
         title: "Product not found",
         detail: `Product with id '${productId}' does not exist`,
       };
+    }
+
+    if (data.attributeIds && data.attributeIds.length > 0) {
+      await ensureProductAttributesTable();
     }
 
     // Execute everything in a transaction for atomicity and speed
@@ -125,6 +133,9 @@ export async function updateProduct(
           labels: true,
         },
       });
+    }, {
+      timeout: PRODUCT_UPDATE_TX_TIMEOUT_MS,
+      maxWait: PRODUCT_UPDATE_TX_MAX_WAIT_MS,
     });
 
     return result;

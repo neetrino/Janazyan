@@ -4,22 +4,57 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { Heart, Home, Search, UserRound, Store, X } from 'lucide-react';
+import { Heart, Search, Store, X } from 'lucide-react';
 import { getCompareCount, getWishlistCount } from '../lib/storageCounts';
-import { CartIcon } from './icons/CartIcon';
+import { openCartDrawer } from '../lib/cart-drawer-events';
 import { apiClient } from '../lib/api-client';
 import { getStoredLanguage } from '../lib/language';
 
 interface MobileNavItem {
   key: 'home' | 'wishlist' | 'shop' | 'cart' | 'account';
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
   href?: string;
   action?: () => void;
   onClick?: (_event: React.MouseEvent<HTMLAnchorElement>) => void;
   badge?: 'wishlist' | 'compare';
   visible?: boolean;
 }
+
+type MobileNavVisualKey = Exclude<MobileNavItem['key'], 'wishlist'>;
+
+const MOBILE_NAV_ICONS: Record<
+  MobileNavVisualKey,
+  { src: string; width: number; height: number; alt: string; sizeClass: string }
+> = {
+  home: {
+    src: '/figma/nav-home-icon.svg',
+    width: 61,
+    height: 62,
+    alt: 'Home',
+    sizeClass: 'h-[30px] w-[30px]',
+  },
+  shop: {
+    src: '/figma/nav-shop-icon.svg',
+    width: 36,
+    height: 38,
+    alt: 'Shop',
+    sizeClass: 'h-[28px] w-[26px]',
+  },
+  cart: {
+    src: '/figma/nav-cart-icon.svg',
+    width: 42,
+    height: 42,
+    alt: 'Cart',
+    sizeClass: 'h-[28px] w-[28px]',
+  },
+  account: {
+    src: '/figma/nav-account-icon.svg',
+    width: 47,
+    height: 47,
+    alt: 'Account',
+    sizeClass: 'h-[30px] w-[30px]',
+  },
+};
 
 interface TopCategoryItem {
   id: string;
@@ -116,37 +151,33 @@ export function MobileBottomNav() {
     () => [
       { 
         key: 'home',
-        label: 'Home', 
+        label: 'Գլխավոր',
         href: '/', 
-        icon: Home, 
         visible: true,
       },
       {
         key: 'wishlist',
-        label: 'Wishlist',
+        label: 'Ցանկ',
         href: '/wishlist',
-        icon: Heart,
-        visible: true,
+        visible: false,
         badge: 'wishlist',
       },
       // Shop with Store icon
       { 
         key: 'shop',
-        label: 'Shop', 
+        label: 'Խանութ',
         href: '/products', 
-        icon: Store, 
         visible: true,
         action: () => setShowShopCategories(true),
       },
       // On mobile we show Cart instead of Wishlist
-      { 
+      {
         key: 'cart',
-        label: 'Cart', 
-        href: '/cart', 
-        icon: CartIcon, 
+        label: 'Զամբյուղ',
         visible: true,
+        action: () => openCartDrawer(),
       },
-      { key: 'account', label: 'My account', href: '/profile', icon: UserRound, visible: true },
+      { key: 'account', label: 'Իմ էջը', href: '/profile', visible: true },
     ],
     []
   );
@@ -167,49 +198,33 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-[70] bg-white border-t border-gray-200 shadow-[0_-4px_20px_rgba(15,23,42,0.08)]">
-        <div className="mx-auto grid max-w-md grid-cols-5 items-end px-2 py-2">
-          {navItems.filter(item => item.visible).map(({ key, label, href, icon: Icon, badge, action, onClick }) => {
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-[70] px-2 pb-2 pt-1">
+        <div className="mx-auto grid max-w-md grid-cols-4 items-start rounded-t-[34px] border border-white/30 bg-white/55 px-3 py-2 shadow-[0_-4px_4px_rgba(135,123,135,0.13)] backdrop-blur-md">
+          {navItems.filter(item => item.visible).map(({ key, label, href, badge, action, onClick }) => {
             const isActive = key === 'shop' ? pathname?.startsWith('/products') : href ? pathname === href : false;
-            const isShopItem = key === 'shop';
-          const badgeValue = resolveBadgeValue(badge);
+            const badgeValue = resolveBadgeValue(badge);
           const slotClass =
             key === 'home'
               ? 'col-start-1'
-              : key === 'wishlist'
-                ? 'col-start-2'
               : key === 'shop'
-                ? 'col-start-3'
+                ? 'col-start-2'
                 : key === 'cart'
-                  ? 'col-start-4'
-                  : 'col-start-5';
+                  ? 'col-start-3'
+                  : 'col-start-4';
 
           const defaultContent = (
             <>
               <div className="relative">
-                <Icon className={`h-5 w-5 ${isActive ? 'text-gray-900' : 'text-gray-500'}`} />
+                <NavIcon itemKey={key} isActive={Boolean(isActive)} />
                 {badgeValue > 0 && (
-                  <span className="absolute -top-2 -right-2 rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
+                  <span className="absolute -right-2 -top-2 rounded-full bg-coral px-1.5 text-[10px] font-semibold text-white">
                     {badgeValue > 99 ? '99+' : badgeValue}
                   </span>
                 )}
               </div>
-            </>
-          );
-          const shopContent = (
-            <>
-              <div
-                className={`relative -mt-8 flex h-14 w-14 items-center justify-center rounded-full border-4 border-white shadow-lg transition ${
-                  isActive ? 'bg-emerald-700 text-white' : 'bg-emerald-600 text-white'
-                }`}
-              >
-                <Icon className="h-6 w-6" />
-                {badgeValue > 0 && (
-                  <span className="absolute -right-1 -top-1 rounded-full bg-red-500 px-1.5 text-[10px] font-semibold text-white">
-                    {badgeValue > 99 ? '99+' : badgeValue}
-                  </span>
-                )}
-              </div>
+              <span className={`mt-1 text-[12px] ${isActive ? 'font-semibold text-ink-800' : 'text-ink-500'}`}>
+                {label}
+              </span>
             </>
           );
 
@@ -220,9 +235,9 @@ export function MobileBottomNav() {
                   type="button"
                   onClick={action}
                   aria-label={label}
-                  className={`flex flex-col items-center rounded-xl px-2 py-1 text-xs font-medium text-gray-500 transition ${slotClass}`}
+                  className={`flex flex-col items-center rounded-xl px-2 py-1 transition ${slotClass}`}
                 >
-                  {isShopItem ? shopContent : defaultContent}
+                  {defaultContent}
                 </button>
               );
             }
@@ -233,11 +248,9 @@ export function MobileBottomNav() {
                 href={href || '#'}
                 onClick={onClick}
                 aria-label={label}
-                className={`flex flex-col items-center rounded-xl px-2 py-1 text-xs font-medium transition ${slotClass} ${
-                  isActive ? 'text-gray-900' : 'text-gray-500'
-                }`}
+                className={`flex flex-col items-center rounded-xl px-2 py-1 transition ${slotClass}`}
               >
-                {isShopItem ? shopContent : defaultContent}
+                {defaultContent}
               </Link>
             );
           })}
@@ -335,5 +348,30 @@ export function MobileBottomNav() {
       )}
     </>
   );
+}
+
+function NavIcon({
+  itemKey,
+  isActive,
+}: {
+  itemKey: MobileNavItem['key'];
+  isActive: boolean;
+}) {
+  if (itemKey in MOBILE_NAV_ICONS) {
+    const icon = MOBILE_NAV_ICONS[itemKey as MobileNavVisualKey];
+    return (
+      <span className={`relative block ${icon.sizeClass}`}>
+        <Image
+          src={icon.src}
+          alt={icon.alt}
+          fill
+          sizes="32px"
+          className={isActive ? 'opacity-100' : 'opacity-85'}
+        />
+      </span>
+    );
+  }
+
+  return <Heart className={`h-5 w-5 ${isActive ? 'text-ink-800' : 'text-ink-500'}`} />;
 }
 

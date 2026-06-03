@@ -1,16 +1,129 @@
 {
-  "hero_title": "Welcome to Shop",
-  "hero_subtitle": "Discover amazing products and exclusive offers. Shop the latest trends and find everything you need in one place.",
-  "hero_button_products": "PRODUCTS",
-  "hero_button_view_more": "VIEW MORE",
-  "features_title": "We provide high quality products",
-  "features_subtitle": "An unsatisfied customer who has a reason is a problem, but an unsatisfied customer who cannot explain is a bigger problem.",
-  "feature_fast_delivery_title": "Fast Delivery",
-  "feature_fast_delivery_description": "There likely was no collaboration and checkpoints, there was no process.",
-  "feature_best_quality_title": "Best Quality",
-  "feature_best_quality_description": "This is a content strategy that went wrong from the very beginning.",
-  "feature_free_return_title": "Free Return",
-  "feature_free_return_description": "This is true, but that's not all that's needed to get things back on track.",
+  "hero": {
+    "title": "JANAZYAN",
+    "description": "Premium children's care products created with love, safety, and your child's comfort in mind.",
+    "kidsLabel": "Kids",
+    "buyNow": "Shop Now",
+    "learnMore": "Learn More",
+    "ariaSection": "Janazyan hero",
+    "slides": {
+      "bodyWashAlt": "Janazyan body wash product",
+      "kidsCareAlt": "Janazyan kids care products"
+    },
+    "nav": {
+      "previous": "Previous slide",
+      "next": "Next slide"
+    }
+  },
+  "categories": {
+    "sectionAria": "Categories",
+    "body": {
+      "titleLine1": "Body",
+      "titleLine2": "care",
+      "tag": "21 products · NEW",
+      "caption": "Body · Lotion · Oil"
+    },
+    "kids": {
+      "titleLine1": "Kids",
+      "titleLine2": "care",
+      "tag": "21 products · NEW",
+      "caption": "Kids · 3M+"
+    },
+    "hair": {
+      "titleLine1": "Hair",
+      "titleLine2": "care",
+      "tag": "21 products · NEW",
+      "caption": "Shampoo · Conditioner"
+    },
+    "face": {
+      "titleLine1": "Face",
+      "titleLine2": "care",
+      "tag": "21 products · NEW",
+      "caption": "Hypoallergenic · Dermatologist tested"
+    },
+    "adult": {
+      "titleLine1": "ADULT",
+      "titleLine2": "CARE",
+      "tag": "12 products",
+      "caption": "SPF 30 → 50+"
+    }
+  },
+  "featured": {
+    "title": "Featured Products",
+    "cta": "View More",
+    "sectionAria": "Featured products",
+    "mobile": {
+      "title": "Popular Products",
+      "viewAll": "View All"
+    }
+  },
+  "promo": {
+    "sectionAria": "Promotional offer",
+    "label": "— Limited offer",
+    "titleLine1": "Hair",
+    "titleLine2": "care",
+    "discount": "Discount",
+    "description": "Five products for mom, dad, teen, and two kids. Save 12,600 AMD.",
+    "cta": "Order — 32,400 AMD"
+  },
+  "whyChooseUs": {
+    "title": "Why Choose Us",
+    "titleMobile": "Why choose us",
+    "sectionAria": "Why choose us",
+    "cards": {
+      "01": {
+        "index": "№ 01",
+        "titleA": "Natural",
+        "titleB": "ingredients",
+        "description": "96% plant-based ingredients from certified suppliers."
+      },
+      "02": {
+        "index": "№ 02",
+        "titleA": "For the",
+        "titleB": "whole family",
+        "description": "Formulas for skin from 3 months to 80 years."
+      },
+      "03": {
+        "index": "№ 03",
+        "titleA": "Dermatologist",
+        "titleB": "tested",
+        "description": "Independent labs, clinical results in 28 days."
+      },
+      "04": {
+        "index": "№ 04",
+        "titleA": "Cruelty",
+        "titleB": "Free",
+        "description": "We never test on animals — Leaping Bunny certified."
+      }
+    }
+  },
+  "about": {
+    "sectionAria": "About Janazyan",
+    "headingBorn": "Born from Love",
+    "headingCare": "Made with Care",
+    "paragraphRight": "Little Flower was founded by parents who understand the journey of new life. We believe every child deserves the gentlest care, and every parent deserves peace of mind.",
+    "paragraphLeft": "Our carefully curated collection combines safety, sustainability, and style. Every product is thoughtfully selected and rigorously tested to meet the highest standards of quality and comfort.",
+    "stats": {
+      "families": { "value": "10k+", "label": "Happy Families" },
+      "products": { "value": "500+", "label": "Products" },
+      "rating": { "value": "4.9★", "label": "Rating" }
+    }
+  },
+  "mobile": {
+    "filters": {
+      "face": "Face",
+      "hair": "Hair",
+      "body": "Body",
+      "kids": "Kids",
+      "sun": "Sun"
+    },
+    "orderCta": "Order — 32,400 AMD",
+    "aria": {
+      "search": "Search",
+      "call": "Call",
+      "language": "Language"
+    }
+  },
   "featured_products": {
     "title": "Featured Products",
     "subtitle": "Three quick choices: New Arrivals, Best Sellers and Featured Selections",
@@ -27,9 +140,3 @@
     "try_again": "Try again"
   }
 }
-
-
-
-
-
-
