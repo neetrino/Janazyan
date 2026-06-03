@@ -1,8 +1,10 @@
 'use client';
 
-import { Card, Button } from '@shop/ui';
+import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
 import { formatPriceInCurrency } from '../../lib/currency';
+import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { CHECKOUT_GLASS_ERROR_CLASS } from './checkout-glass-styles';
 
 interface Cart {
   id: string;
@@ -52,7 +54,7 @@ export function OrderSummary({
 
   return (
     <div>
-      <Card className="p-6 sticky top-4">
+      <CheckoutGlassCard className="sticky top-4">
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
         <div className="space-y-4 mb-6">
           <div className="flex justify-between text-gray-600">
@@ -62,7 +64,7 @@ export function OrderSummary({
           <div className="flex justify-between text-gray-600">
             <span>{t('checkout.summary.shipping')}</span>
             <span>
-              {shippingMethod === 'pickup' 
+              {shippingMethod === 'pickup'
                 ? t('checkout.shipping.freePickup')
                 : loadingDeliveryPrice
                   ? t('checkout.shipping.loading')
@@ -75,7 +77,7 @@ export function OrderSummary({
             <span>{t('checkout.summary.tax')}</span>
             <span>{formatPriceInCurrency(orderSummary.taxDisplay, currency)}</span>
           </div>
-          <div className="border-t border-gray-200 pt-4">
+          <div className="border-t border-white/40 pt-4">
             <div className="flex justify-between text-lg font-bold text-gray-900">
               <span>{t('checkout.summary.total')}</span>
               <span>
@@ -86,7 +88,7 @@ export function OrderSummary({
         </div>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
@@ -94,14 +96,14 @@ export function OrderSummary({
         <Button
           type="submit"
           variant="primary"
-          className="w-full"
+          className="w-full rounded-2xl"
           size="lg"
           disabled={isSubmitting}
           onClick={onPlaceOrder}
         >
           {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.placeOrder')}
         </Button>
-      </Card>
+      </CheckoutGlassCard>
     </div>
   );
 }

@@ -1,8 +1,16 @@
 'use client';
 
-import { Card, Input } from '@shop/ui';
-import { UseFormRegister, UseFormSetValue, FieldErrors, UseFormWatch } from 'react-hook-form';
+import { Input } from '@shop/ui';
+import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
+import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import {
+  CHECKOUT_GLASS_ERROR_CLASS,
+  CHECKOUT_GLASS_INNER_CLASS,
+  CHECKOUT_GLASS_OPTION_BASE,
+  CHECKOUT_GLASS_OPTION_IDLE,
+  CHECKOUT_GLASS_OPTION_SELECTED,
+} from './checkout-glass-styles';
 import { CheckoutFormData } from './types';
 
 interface CheckoutFormProps {
@@ -24,6 +32,12 @@ interface CheckoutFormProps {
   setError: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
+function optionClass(isSelected: boolean): string {
+  return `${CHECKOUT_GLASS_OPTION_BASE} ${
+    isSelected ? CHECKOUT_GLASS_OPTION_SELECTED : CHECKOUT_GLASS_OPTION_IDLE
+  }`;
+}
+
 export function CheckoutForm({
   register,
   setValue,
@@ -41,8 +55,7 @@ export function CheckoutForm({
 
   return (
     <div className="lg:col-span-2 space-y-6">
-      {/* Contact Information */}
-      <Card className="p-6">
+      <CheckoutGlassCard>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.contactInformation')}</h2>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -79,24 +92,17 @@ export function CheckoutForm({
             />
           </div>
         </div>
-      </Card>
+      </CheckoutGlassCard>
 
-      {/* Shipping Method */}
-      <Card className="p-6">
+      <CheckoutGlassCard>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingMethod')}</h2>
         {errors.shippingMethod && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{errors.shippingMethod.message}</p>
           </div>
         )}
         <div className="space-y-3">
-          <label
-            className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-              shippingMethod === 'pickup'
-                ? 'border-purple-600 bg-purple-50'
-                : 'border-gray-300 hover:bg-gray-50'
-            }`}
-          >
+          <label className={optionClass(shippingMethod === 'pickup')}>
             <input
               type="radio"
               {...register('shippingMethod')}
@@ -111,13 +117,7 @@ export function CheckoutForm({
               <div className="text-sm text-gray-600">{t('checkout.shipping.storePickupDescription')}</div>
             </div>
           </label>
-          <label
-            className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-              shippingMethod === 'delivery'
-                ? 'border-purple-600 bg-purple-50'
-                : 'border-gray-300 hover:bg-gray-50'
-            }`}
-          >
+          <label className={optionClass(shippingMethod === 'delivery')}>
             <input
               type="radio"
               {...register('shippingMethod')}
@@ -133,19 +133,17 @@ export function CheckoutForm({
             </div>
           </label>
         </div>
-      </Card>
+      </CheckoutGlassCard>
 
-      {/* Shipping Address - Only show for delivery */}
       {shippingMethod === 'delivery' && (
-        <Card className="p-6" data-shipping-section>
+        <CheckoutGlassCard data-shipping-section>
           <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
           {(error && error.includes('shipping address')) || (errors.shippingAddress || errors.shippingCity) ? (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+            <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
               <p className="text-sm text-red-600">
-                {error && error.includes('shipping address') 
-                  ? error 
-                  : (errors.shippingAddress?.message || 
-                     errors.shippingCity?.message)}
+                {error && error.includes('shipping address')
+                  ? error
+                  : (errors.shippingAddress?.message || errors.shippingCity?.message)}
               </p>
             </div>
           ) : null}
@@ -160,7 +158,7 @@ export function CheckoutForm({
                     if (error && error.includes('shipping address')) {
                       setError(null);
                     }
-                  }
+                  },
                 })}
                 error={errors.shippingCity?.message}
                 disabled={isSubmitting}
@@ -176,34 +174,26 @@ export function CheckoutForm({
                     if (error && error.includes('shipping address')) {
                       setError(null);
                     }
-                  }
+                  },
                 })}
                 error={errors.shippingAddress?.message}
                 disabled={isSubmitting}
               />
             </div>
           </div>
-        </Card>
+        </CheckoutGlassCard>
       )}
 
-      {/* Payment Method */}
-      <Card className="p-6">
+      <CheckoutGlassCard>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.paymentMethod')}</h2>
         {errors.paymentMethod && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{errors.paymentMethod.message}</p>
           </div>
         )}
         <div className="space-y-3">
           {paymentMethods.map((method) => (
-            <label
-              key={method.id}
-              className={`flex items-center p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                paymentMethod === method.id
-                  ? 'border-purple-600 bg-purple-50'
-                  : 'border-gray-300 hover:bg-gray-50'
-              }`}
-            >
+            <label key={method.id} className={optionClass(paymentMethod === method.id)}>
               <input
                 type="radio"
                 {...register('paymentMethod')}
@@ -214,7 +204,9 @@ export function CheckoutForm({
                 disabled={isSubmitting}
               />
               <div className="flex items-center gap-4 flex-1">
-                <div className="relative w-20 h-12 flex-shrink-0 bg-white rounded border border-gray-200 flex items-center justify-center overflow-hidden">
+                <div
+                  className={`relative w-20 h-12 flex-shrink-0 ${CHECKOUT_GLASS_INNER_CLASS} flex items-center justify-center overflow-hidden`}
+                >
                   {!method.logo || logoErrors[method.id] ? (
                     <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -239,10 +231,7 @@ export function CheckoutForm({
             </label>
           ))}
         </div>
-      </Card>
+      </CheckoutGlassCard>
     </div>
   );
 }
-
-
-

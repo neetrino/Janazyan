@@ -2,11 +2,12 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Card, Button } from '@shop/ui';
+import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
 import { OrderSummary } from './OrderSummary';
 import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
+import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { useCheckout } from './useCheckout';
 
 const CheckoutModals = dynamic(
@@ -54,12 +55,12 @@ export function CheckoutPageClient() {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('checkout.title')}</h1>
-        <Card className="p-6 text-center">
+        <CheckoutGlassCard className="text-center">
           <p className="text-gray-600 mb-4">{t('checkout.errors.cartEmpty')}</p>
-          <Button variant="primary" onClick={() => router.push('/products')}>
+          <Button variant="primary" className="rounded-2xl" onClick={() => router.push('/products')}>
             {t('checkout.buttons.continueShopping')}
           </Button>
-        </Card>
+        </CheckoutGlassCard>
       </div>
     );
   }
