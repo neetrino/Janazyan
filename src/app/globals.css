@@ -277,6 +277,7 @@ body {
   --carousel-rotation-duration: 650ms;
   overflow: visible;
   padding-bottom: 0.5rem;
+  overscroll-behavior: contain;
 }
 
 .partner-stores-carousel-scene {
@@ -288,7 +289,7 @@ body {
   max-width: 100%;
   overflow: visible;
   overscroll-behavior: contain;
-  touch-action: pan-y;
+  touch-action: none;
   perspective: var(--carousel-perspective);
   perspective-origin: 50% 58%;
   outline: none;
@@ -369,7 +370,8 @@ body {
 .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
   transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
     rotateX(calc(var(--globe-tilt, 28deg) * -1)) scale(var(--item-scale, 1))
-    translateZ(var(--carousel-front-z-offset, 52px));
+    translateZ(var(--carousel-front-z-offset, 52px))
+    translateY(var(--carousel-front-drop-y, 0px));
 }
 
 .partner-stores-carousel-item--front .partner-stores-carousel-item-face article {
@@ -391,12 +393,19 @@ body {
   cursor: pointer;
 }
 
-.partner-stores-carousel-card-hit--side {
+.partner-stores-carousel-card-hit--side,
+.partner-stores-carousel-card-hit--front {
   pointer-events: auto;
 }
 
-.partner-stores-carousel-card-hit--side article {
+.partner-stores-carousel-card-hit--side article,
+.partner-stores-carousel-card-hit--front article {
   pointer-events: none;
+}
+
+.partner-stores-carousel-card-hit--front article a,
+.partner-stores-carousel-card-hit--front article button {
+  pointer-events: auto;
 }
 
 .partner-stores-carousel-controls {
@@ -455,6 +464,78 @@ body {
   background: #7cb342;
 }
 
+.partner-stores-carousel--mobile {
+  padding-inline: 0;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-scene {
+  max-width: none;
+  width: 100%;
+  perspective-origin: 50% 58%;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-ring {
+  min-height: 164px;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-controls {
+  margin-top: 0.25rem;
+  gap: 0.75rem;
+  padding-inline: 1rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-nav {
+  width: 2.125rem;
+  height: 2.125rem;
+}
+
+/* Uniform compact card on every ring slot — side cards match the active card. */
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8125rem;
+  padding: 0.0625rem 0.4375rem 0.4375rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article > div:first-child {
+  gap: 0.75rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article > div:last-child {
+  margin-top: 0;
+  gap: 0.5rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article h3 {
+  font-size: 0.625rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article p {
+  font-size: 0.5rem;
+}
+
+.partner-stores-carousel--mobile .partner-store-card-logo--compact {
+  height: 1.75rem;
+  width: 2.625rem;
+}
+
+.partner-stores-carousel--mobile .partner-store-card-logo--compact img {
+  height: 1.125rem;
+}
+
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article button,
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article a,
+.partner-stores-carousel--mobile .partner-stores-carousel-item-face article span {
+  padding: 0.1875rem 0.3125rem;
+  font-size: 0.4375rem;
+}
+
+@media (max-width: 767px) {
+  .partner-stores-map {
+    min-height: 260px !important;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .partner-stores-carousel-item,
   .partner-stores-carousel-item-face {
@@ -472,7 +553,8 @@ body {
 
   .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
     transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
-      translateZ(var(--carousel-front-z-offset, 52px));
+      translateZ(var(--carousel-front-z-offset, 52px))
+      translateY(var(--carousel-front-drop-y, 0px));
   }
 }
 

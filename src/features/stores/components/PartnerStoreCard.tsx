@@ -3,14 +3,14 @@
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
 import { getDirectionsUrl } from '../get-directions-url';
-import type { PartnerStore } from '../types';
+import type { PartnerStore, StoreSelectHandler } from '../types';
 
 type PartnerStoreCardProps = {
   store: PartnerStore;
   isSelected: boolean;
   getDirectionsLabel: string;
   viewOnMapLabel: string;
-  onSelect: (storeId: string) => void;
+  onSelect: StoreSelectHandler;
   compact?: boolean;
   /** Non-interactive labels for carousel side cards (avoids nested controls). */
   previewOnly?: boolean;
@@ -23,7 +23,7 @@ type StoreLogoProps = {
 
 function StoreLogo({ store, compact }: StoreLogoProps) {
   const boxClassName = compact
-    ? 'flex h-11 w-[4.5rem] shrink-0 items-center justify-center rounded-lg border border-gray-100 bg-gray-50 px-2 py-1.5'
+    ? 'partner-store-card-logo partner-store-card-logo--compact flex h-11 w-[4.5rem] shrink-0 items-center justify-center rounded-lg border border-gray-100 bg-gray-50 px-2 py-1.5'
     : 'flex h-16 w-28 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-gray-50 px-3 py-2';
   const imageClassName = compact
     ? 'h-8 w-auto max-w-full object-contain'
@@ -93,7 +93,7 @@ type StoreCardActionsProps = {
   isSelected: boolean;
   viewOnMapLabel: string;
   getDirectionsLabel: string;
-  onSelect: (storeId: string) => void;
+  onSelect: StoreSelectHandler;
   previewOnly: boolean;
 };
 
@@ -133,7 +133,10 @@ function StoreCardActions({
     <div className={actionsClassName}>
       <button
         type="button"
-        onClick={() => onSelect(store.id)}
+        onClick={(event) => {
+          event.stopPropagation();
+          onSelect(store.id, { scrollToMap: true });
+        }}
         className={`${primaryButtonClassName} ${
           isSelected
             ? 'bg-[#7CB342] text-white shadow-sm'

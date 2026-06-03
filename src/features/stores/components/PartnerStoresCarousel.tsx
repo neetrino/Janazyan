@@ -8,21 +8,15 @@ import {
   useState,
   type CSSProperties,
   type KeyboardEvent,
+  type MouseEvent,
 } from 'react';
-import {
-  CAROUSEL_AUTO_ROTATE_MS,
-  CAROUSEL_GLOBE_TILT_DEG,
-  CAROUSEL_PERSPECTIVE_PX,
-  CAROUSEL_ROTATION_MS,
-  CAROUSEL_SCENE_SHIFT_UP_PX,
-  CAROUSEL_FRONT_FACE_Z_OFFSET_PX,
-} from '../carousel-constants';
+import { CAROUSEL_AUTO_ROTATE_MS, CAROUSEL_FRONT_DROP_MOBILE_PX, CAROUSEL_ROTATION_MS } from '../carousel-constants';
 import {
   getCarouselItemGlobePresentation,
   getCarouselSlotAngleDeg,
 } from '../carousel-layout';
 import { useCarouselLayout } from '../use-carousel-layout';
-import type { PartnerStore } from '../types';
+import type { PartnerStore, StoreSelectHandler } from '../types';
 import { PartnerStoreCard } from './PartnerStoreCard';
 
 type PartnerStoresCarouselProps = {
@@ -30,7 +24,7 @@ type PartnerStoresCarouselProps = {
   selectedStoreId: string | null;
   getDirectionsLabel: string;
   viewOnMapLabel: string;
-  onSelect: (storeId: string) => void;
+  onSelect: StoreSelectHandler;
   ariaLabel: string;
 };
 
@@ -64,6 +58,7 @@ type CarouselRootStyle = CSSProperties & {
   '--globe-tilt': string;
   '--carousel-scene-offset-y': string;
   '--carousel-front-z-offset': string;
+  '--carousel-front-drop-y': string;
 };
 
 /**
@@ -79,10 +74,11 @@ export function PartnerStoresCarousel({
 }: PartnerStoresCarouselProps) {
   const count = stores.length;
   const activeIndex = getStoreIndex(stores, selectedStoreId);
-  const layout = useCarouselLayout(count);
+  const { layout, isMobile } = useCarouselLayout(count);
   const [isPaused, setIsPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const autoRotateRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const sceneRef = useRef<HTMLDivElement>(null);
   const wheelLockedRef = useRef(false);
   const touchStartXRef = useRef(0);
@@ -91,10 +87,11 @@ export function PartnerStoresCarousel({
     '--carousel-radius': `${layout.radiusPx}px`,
     '--carousel-card-width': `${layout.cardWidthPx}px`,
     '--carousel-ring-width': `${layout.ringWidthPx}px`,
-    '--carousel-perspective': `${CAROUSEL_PERSPECTIVE_PX}px`,
-    '--globe-tilt': `${CAROUSEL_GLOBE_TILT_DEG}deg`,
-    '--carousel-scene-offset-y': `-${CAROUSEL_SCENE_SHIFT_UP_PX}px`,
-    '--carousel-front-z-offset': `${CAROUSEL_FRONT_FACE_Z_OFFSET_PX}px`,
+    '--carousel-perspective': `${layout.perspectivePx}px`,
+    '--globe-tilt': `${layout.globeTiltDeg}deg`,
+    '--carousel-scene-offset-y': `-${layout.sceneShiftUpPx}px`,
+    '--carousel-front-z-offset': `${layout.frontFaceZOffsetPx}px`,
+    '--carousel-front-drop-y': isMobile ? `${CAROUSEL_FRONT_DROP_MOBILE_PX}px` : '0px',
   };
 
   useEffect(() => {
@@ -106,13 +103,38 @@ export function PartnerStoresCarousel({
   }, []);
 
   const goToIndex = useCallback(
-    (index: number) => {
+    (index: number, options?: { scrollToMap?: boolean }) => {
       const store = stores[normalizeIndex(index, count)];
       if (store) {
-        onSelect(store.id);
+        onSelect(store.id, options);
       }
     },
     [count, onSelect, stores],
+  );
+
+  const focusStoreAtIndex = useCallback(
+    (index: number) => {
+      goToIndex(index, { scrollToMap: true });
+    },
+    [goToIndex],
+  );
+
+  const selectFromCarouselCard = useCallback<StoreSelectHandler>(
+    (storeId, options) => {
+      onSelect(storeId, { ...options, scrollToMap: true });
+    },
+    [onSelect],
+  );
+
+  const handleCardHitClick = useCallback(
+    (index: number, event: MouseEvent<HTMLDivElement>) => {
+      const target = event.target as HTMLElement;
+      if (target.closest('a, button')) {
+        return;
+      }
+      focusStoreAtIndex(index);
+    },
+    [focusStoreAtIndex],
   );
 
   const goToPrevious = useCallback(() => {
@@ -131,16 +153,16 @@ export function PartnerStoresCarousel({
   }, []);
 
   useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene || count < 2 || prefersReducedMotion) {
+    const carousel = carouselRef.current;
+    if (!carousel || count < 2 || prefersReducedMotion) {
       return undefined;
     }
 
     const handleWheel = (event: WheelEvent) => {
+      event.preventDefault();
       if (wheelLockedRef.current || Math.abs(event.deltaY) < 8) {
         return;
       }
-      event.preventDefault();
       lockWheel();
       if (event.deltaY > 0) {
         goToIndex(activeIndex + 1);
@@ -167,13 +189,14 @@ export function PartnerStoresCarousel({
       }
     };
 
-    scene.addEventListener('wheel', handleWheel, { passive: false });
-    scene.addEventListener('touchstart', handleTouchStart, { passive: true });
-    scene.addEventListener('touchend', handleTouchEnd, { passive: true });
+    const scene = sceneRef.current;
+    carousel.addEventListener('wheel', handleWheel, { passive: false });
+    scene?.addEventListener('touchstart', handleTouchStart, { passive: true });
+    scene?.addEventListener('touchend', handleTouchEnd, { passive: true });
     return () => {
-      scene.removeEventListener('wheel', handleWheel);
-      scene.removeEventListener('touchstart', handleTouchStart);
-      scene.removeEventListener('touchend', handleTouchEnd);
+      carousel.removeEventListener('wheel', handleWheel);
+      scene?.removeEventListener('touchstart', handleTouchStart);
+      scene?.removeEventListener('touchend', handleTouchEnd);
     };
   }, [activeIndex, count, goToIndex, lockWheel, prefersReducedMotion]);
 
@@ -218,7 +241,8 @@ export function PartnerStoresCarousel({
 
   return (
     <div
-      className="partner-stores-carousel"
+      ref={carouselRef}
+      className={`partner-stores-carousel${isMobile ? ' partner-stores-carousel--mobile' : ''}`}
       style={carouselStyle}
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
@@ -253,6 +277,7 @@ export function PartnerStoresCarousel({
                   activeIndex,
                   count,
                   layout.angleStepDeg,
+                  layout,
                 );
                 const itemStyle: CarouselItemStyle = {
                   '--slot-angle': `${getCarouselSlotAngleDeg(index, activeIndex, layout)}deg`,
@@ -267,11 +292,15 @@ export function PartnerStoresCarousel({
                     isSelected={selectedStoreId === store.id}
                     getDirectionsLabel={getDirectionsLabel}
                     viewOnMapLabel={viewOnMapLabel}
-                    onSelect={onSelect}
+                    onSelect={selectFromCarouselCard}
                     compact
                     previewOnly={!isFrontCard}
                   />
                 );
+
+                const hitClassName = isFrontCard
+                  ? 'partner-stores-carousel-card-hit partner-stores-carousel-card-hit--front'
+                  : 'partner-stores-carousel-card-hit partner-stores-carousel-card-hit--side';
 
                 return (
                   <div
@@ -283,25 +312,21 @@ export function PartnerStoresCarousel({
                     aria-hidden={!isFrontCard}
                   >
                     <div className="partner-stores-carousel-item-face">
-                      {isFrontCard ? (
-                        card
-                      ) : (
-                        <div
-                          role="button"
-                          className="partner-stores-carousel-card-hit partner-stores-carousel-card-hit--side"
-                          onClick={() => goToIndex(index)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter' || event.key === ' ') {
-                              event.preventDefault();
-                              goToIndex(index);
-                            }
-                          }}
-                          tabIndex={-1}
-                          aria-label={store.name}
-                        >
-                          {card}
-                        </div>
-                      )}
+                      <div
+                        role="button"
+                        className={hitClassName}
+                        tabIndex={isFrontCard ? 0 : -1}
+                        aria-label={store.name}
+                        onClick={(event) => handleCardHitClick(index, event)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            focusStoreAtIndex(index);
+                          }
+                        }}
+                      >
+                        {card}
+                      </div>
                     </div>
                   </div>
                 );

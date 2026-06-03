@@ -1,13 +1,27 @@
 import {
   CAROUSEL_CARD_WIDTH_MOBILE_PX,
   CAROUSEL_CARD_WIDTH_PX,
+  CAROUSEL_FRONT_FACE_Z_OFFSET_MOBILE_PX,
+  CAROUSEL_FRONT_FACE_Z_OFFSET_PX,
+  CAROUSEL_GLOBE_BACK_LIFT_MOBILE_PX,
   CAROUSEL_GLOBE_BACK_OPACITY_MIN,
+  CAROUSEL_GLOBE_BACK_OPACITY_MIN_MOBILE,
   CAROUSEL_GLOBE_BACK_SCALE_MIN,
+  CAROUSEL_GLOBE_BACK_SCALE_MIN_MOBILE,
   CAROUSEL_GLOBE_BACK_LIFT_PX,
+  CAROUSEL_GLOBE_LATITUDE_DIP_MOBILE_PX,
   CAROUSEL_GLOBE_LATITUDE_DIP_PX,
+  CAROUSEL_GLOBE_TILT_DEG,
+  CAROUSEL_GLOBE_TILT_MOBILE_DEG,
+  CAROUSEL_PERSPECTIVE_MOBILE_PX,
+  CAROUSEL_PERSPECTIVE_PX,
   CAROUSEL_RADIUS_DESKTOP_PX,
+  CAROUSEL_RADIUS_MOBILE_MAX_PX,
   CAROUSEL_RADIUS_MOBILE_PX,
+  CAROUSEL_SCENE_MIN_HEIGHT_MOBILE_PX,
   CAROUSEL_SCENE_MIN_HEIGHT_PX,
+  CAROUSEL_SCENE_SHIFT_UP_MOBILE_PX,
+  CAROUSEL_SCENE_SHIFT_UP_PX,
 } from './carousel-constants';
 
 const DEG_TO_RAD = Math.PI / 180;
@@ -18,6 +32,14 @@ export type CarouselRingLayout = {
   cardWidthPx: number;
   sceneMinHeightPx: number;
   ringWidthPx: number;
+  perspectivePx: number;
+  sceneShiftUpPx: number;
+  frontFaceZOffsetPx: number;
+  globeTiltDeg: number;
+  globeLatitudeDipPx: number;
+  globeBackLiftPx: number;
+  globeBackScaleMin: number;
+  globeBackOpacityMin: number;
 };
 
 function radiusForRing(
@@ -44,6 +66,14 @@ export function getCarouselRingLayout(
     cardWidthPx: 0,
     sceneMinHeightPx: 0,
     ringWidthPx: 0,
+    perspectivePx: 0,
+    sceneShiftUpPx: 0,
+    frontFaceZOffsetPx: 0,
+    globeTiltDeg: 0,
+    globeLatitudeDipPx: 0,
+    globeBackLiftPx: 0,
+    globeBackScaleMin: 1,
+    globeBackOpacityMin: 1,
   };
 
   if (storeCount <= 0) {
@@ -57,14 +87,22 @@ export function getCarouselRingLayout(
     ? CAROUSEL_RADIUS_MOBILE_PX
     : CAROUSEL_RADIUS_DESKTOP_PX;
   const angleStepDeg = storeCount > 0 ? 360 / storeCount : 0;
-  const radiusPx =
+  const computedRadiusPx =
     storeCount > 1
       ? radiusForRing(cardWidthPx, angleStepDeg, minRadiusPx)
       : minRadiusPx;
+  const radiusPx = isMobile
+    ? Math.min(computedRadiusPx, CAROUSEL_RADIUS_MOBILE_MAX_PX)
+    : computedRadiusPx;
   const ringWidthPx = Math.ceil(2 * radiusPx + cardWidthPx);
+  const sceneMinHeightBase = isMobile
+    ? CAROUSEL_SCENE_MIN_HEIGHT_MOBILE_PX
+    : CAROUSEL_SCENE_MIN_HEIGHT_PX;
   const sceneMinHeightPx = Math.max(
-    CAROUSEL_SCENE_MIN_HEIGHT_PX,
-    Math.ceil(cardWidthPx * 1.55 + radiusPx * 0.2),
+    sceneMinHeightBase,
+    Math.ceil(
+      cardWidthPx * (isMobile ? 1.15 : 1.55) + radiusPx * (isMobile ? 0.08 : 0.2),
+    ),
   );
 
   return {
@@ -73,6 +111,26 @@ export function getCarouselRingLayout(
     cardWidthPx,
     sceneMinHeightPx,
     ringWidthPx,
+    perspectivePx: isMobile ? CAROUSEL_PERSPECTIVE_MOBILE_PX : CAROUSEL_PERSPECTIVE_PX,
+    sceneShiftUpPx: isMobile
+      ? CAROUSEL_SCENE_SHIFT_UP_MOBILE_PX
+      : CAROUSEL_SCENE_SHIFT_UP_PX,
+    frontFaceZOffsetPx: isMobile
+      ? CAROUSEL_FRONT_FACE_Z_OFFSET_MOBILE_PX
+      : CAROUSEL_FRONT_FACE_Z_OFFSET_PX,
+    globeTiltDeg: isMobile ? CAROUSEL_GLOBE_TILT_MOBILE_DEG : CAROUSEL_GLOBE_TILT_DEG,
+    globeLatitudeDipPx: isMobile
+      ? CAROUSEL_GLOBE_LATITUDE_DIP_MOBILE_PX
+      : CAROUSEL_GLOBE_LATITUDE_DIP_PX,
+    globeBackLiftPx: isMobile
+      ? CAROUSEL_GLOBE_BACK_LIFT_MOBILE_PX
+      : CAROUSEL_GLOBE_BACK_LIFT_PX,
+    globeBackScaleMin: isMobile
+      ? CAROUSEL_GLOBE_BACK_SCALE_MIN_MOBILE
+      : CAROUSEL_GLOBE_BACK_SCALE_MIN,
+    globeBackOpacityMin: isMobile
+      ? CAROUSEL_GLOBE_BACK_OPACITY_MIN_MOBILE
+      : CAROUSEL_GLOBE_BACK_OPACITY_MIN,
   };
 }
 
@@ -104,6 +162,13 @@ export function getCarouselItemGlobePresentation(
   activeIndex: number,
   count: number,
   angleStepDeg: number,
+  layout: Pick<
+    CarouselRingLayout,
+    | 'globeLatitudeDipPx'
+    | 'globeBackLiftPx'
+    | 'globeBackScaleMin'
+    | 'globeBackOpacityMin'
+  >,
 ): CarouselItemGlobePresentation {
   const offset = normalizeCarouselIndex(index - activeIndex, count);
   const angleRad = (offset * angleStepDeg * Math.PI) / 180;
@@ -114,14 +179,13 @@ export function getCarouselItemGlobePresentation(
 
   return {
     liftPx: Math.round(
-      sideFactor * CAROUSEL_GLOBE_LATITUDE_DIP_PX -
-        backFactor * CAROUSEL_GLOBE_BACK_LIFT_PX,
+      sideFactor * layout.globeLatitudeDipPx - backFactor * layout.globeBackLiftPx,
     ),
     scale:
-      CAROUSEL_GLOBE_BACK_SCALE_MIN +
-      (1 - CAROUSEL_GLOBE_BACK_SCALE_MIN) * hemisphereFactor,
+      layout.globeBackScaleMin +
+      (1 - layout.globeBackScaleMin) * hemisphereFactor,
     opacity:
-      CAROUSEL_GLOBE_BACK_OPACITY_MIN +
-      (1 - CAROUSEL_GLOBE_BACK_OPACITY_MIN) * hemisphereFactor,
+      layout.globeBackOpacityMin +
+      (1 - layout.globeBackOpacityMin) * hemisphereFactor,
   };
 }
