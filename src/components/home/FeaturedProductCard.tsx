@@ -149,7 +149,6 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         style={{ top: CARD_BODY_TOP_PX }}
       >
         <div className="absolute inset-0 rotate-180 overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={FEATURED_CARD_BG}
             alt=""
@@ -158,7 +157,6 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         </div>
 
         <div className="absolute bottom-0 left-[73.58%] right-0 top-[77.44%] z-10">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={FEATURED_CARD_CART_CORNER}
             alt=""

@@ -114,7 +114,6 @@ export function Footer() {
                   height: FOOTER_DECORATION_HEIGHT_PX,
                 }}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={FOOTER_DECORATION}
                   alt=""
@@ -130,7 +129,6 @@ export function Footer() {
                 href="/"
                 className="absolute left-[-4px] top-[6px] block h-[66px] w-[79px] overflow-hidden"
               >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={FOOTER_LOGO}
                   alt="Janazyan"

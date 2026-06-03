@@ -53,7 +53,6 @@ function DesktopAbout() {
           aria-hidden
           className="pointer-events-none absolute left-[403px] top-[118px] z-[3] h-[798px] w-[598px] animate-hero-body-wash-showcase"
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={ABOUT_IMAGE}
             alt=""

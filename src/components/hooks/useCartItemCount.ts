@@ -103,7 +103,7 @@ export function useCartItemCount(): number {
       return;
     }
     refreshGuest();
-  }, [isLoggedIn, applyCachedCount, refreshGuest, refreshLoggedIn]);
+  }, [isLoggedIn, applyCachedCount, refreshGuest, refreshLoggedIn, user?.id]);
 
   useEffect(() => {
     refresh();
