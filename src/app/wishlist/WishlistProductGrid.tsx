@@ -1,69 +1,47 @@
 'use client';
 
-import { useCallback } from 'react';
-import { formatPrice, type CurrencyCode } from '../../lib/currency';
-import { useCurrency } from '../../components/hooks/useCurrency';
-import { useTranslation } from '../../lib/i18n-client';
-import { removeWishlistItem } from '../../lib/wishlist/wishlist-storage';
+import { ProductCard } from '../../components/ProductCard';
 import type { WishlistProductSnapshot } from '../../lib/wishlist/wishlist-types';
-import {
-  WishlistProductCard,
-  WishlistProductCardSkeleton,
-} from './WishlistProductCard';
-import { useWishlistCartActions } from './useWishlistCartActions';
 
 type WishlistProductGridProps = {
   products: WishlistProductSnapshot[];
   pendingCount: number;
 };
 
-function resolveComparePrice(
-  product: WishlistProductSnapshot,
-  currency: CurrencyCode,
-): string | null {
-  const compareValue =
-    product.originalPrice != null && product.originalPrice > product.price
-      ? product.originalPrice
-      : product.compareAtPrice != null && product.compareAtPrice > product.price
-        ? product.compareAtPrice
-        : null;
+const CATALOG_SLOT_SIZE =
+  'h-[201px] w-[164px] sm:h-[250px] sm:w-[204px] md:h-[305px] md:w-[249px] lg:h-[347px] lg:w-[283px]';
 
-  return compareValue != null ? formatPrice(compareValue, currency) : null;
+function WishlistProductCardSkeleton() {
+  return (
+    <div
+      className={`animate-pulse rounded-2xl bg-neutral-200 ${CATALOG_SLOT_SIZE}`}
+    />
+  );
 }
 
 /**
- * Renders wishlist products with shared page-level hooks (not per card).
+ * Renders wishlist products using the same ProductCard as the catalog page.
  */
 export function WishlistProductGrid({ products, pendingCount }: WishlistProductGridProps) {
-  const { t } = useTranslation();
-  const currency = useCurrency();
-  const { addToCart, addingProductId } = useWishlistCartActions();
-
-  const handleRemove = useCallback((productId: string) => {
-    removeWishlistItem(productId);
-  }, []);
-
-  const handleAddToCart = useCallback(
-    (product: WishlistProductSnapshot) => {
-      void addToCart(product);
-    },
-    [addToCart],
-  );
-
   return (
-    <div className="grid w-full grid-cols-1 justify-items-center gap-x-6 gap-y-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
       {products.map((product) => (
-        <WishlistProductCard
+        <ProductCard
           key={product.id}
-          product={product}
-          priceLabel={formatPrice(product.price, currency)}
-          comparePriceLabel={resolveComparePrice(product, currency)}
-          removeLabel={t('common.ariaLabels.removeFromWishlist')}
-          addToCartLabel={t('common.buttons.addToCart')}
-          outOfStockLabel={t('common.stock.outOfStock')}
-          isAddingToCart={addingProductId === product.id}
-          onRemove={handleRemove}
-          onAddToCart={handleAddToCart}
+          product={{
+            id: product.id,
+            slug: product.slug,
+            title: product.title,
+            price: product.price,
+            image: product.image,
+            inStock: product.inStock,
+            defaultVariantId: product.defaultVariantId,
+            compareAtPrice: product.compareAtPrice ?? undefined,
+            originalPrice: product.originalPrice ?? undefined,
+            discountPercent: product.discountPercent ?? undefined,
+            brand: product.brand,
+          }}
+          viewMode="grid-3"
         />
       ))}
       {Array.from({ length: pendingCount }).map((_, index) => (

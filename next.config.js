@@ -63,6 +63,7 @@ const nextConfig = {
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: https: blob:",
               `connect-src 'self' https: ${VERCEL_LIVE_CONNECT}`,
+              "frame-src 'self' https://www.google.com https://maps.google.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },
