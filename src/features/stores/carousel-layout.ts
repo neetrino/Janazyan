@@ -137,10 +137,41 @@ export function getCarouselRingLayout(
 /** Position on the ring relative to the active store — cards orbit, faces stay upright. */
 export function getCarouselSlotAngleDeg(
   index: number,
-  activeIndex: number,
+  rotationIndex: number,
   layout: CarouselRingLayout,
 ): number {
-  return (index - activeIndex) * layout.angleStepDeg;
+  return (index - rotationIndex) * layout.angleStepDeg;
+}
+
+/** Shortest signed step between two normalized ring indices. */
+export function getShortestIndexDelta(
+  fromIndex: number,
+  toIndex: number,
+  count: number,
+): number {
+  const delta = toIndex - fromIndex;
+  if (count <= 1) {
+    return 0;
+  }
+  const altDelta = delta > 0 ? delta - count : delta + count;
+  return Math.abs(delta) <= Math.abs(altDelta) ? delta : altDelta;
+}
+
+/** Keeps a monotonic rotation index while targeting a store slot. */
+export function getRotationIndexForTarget(
+  currentRotationIndex: number,
+  targetIndex: number,
+  count: number,
+): number {
+  const currentNormalized = normalizeCarouselIndex(currentRotationIndex, count);
+  const normalizedTarget = normalizeCarouselIndex(targetIndex, count);
+  if (currentNormalized === normalizedTarget) {
+    return currentRotationIndex;
+  }
+  return (
+    currentRotationIndex +
+    getShortestIndexDelta(currentNormalized, normalizedTarget, count)
+  );
 }
 
 function normalizeCarouselIndex(index: number, count: number): number {
@@ -159,8 +190,7 @@ export type CarouselItemGlobePresentation = {
 /** Depth, latitude dip, and fade for a store slot on the spinning globe. */
 export function getCarouselItemGlobePresentation(
   index: number,
-  activeIndex: number,
-  count: number,
+  rotationIndex: number,
   angleStepDeg: number,
   layout: Pick<
     CarouselRingLayout,
@@ -170,7 +200,7 @@ export function getCarouselItemGlobePresentation(
     | 'globeBackOpacityMin'
   >,
 ): CarouselItemGlobePresentation {
-  const offset = normalizeCarouselIndex(index - activeIndex, count);
+  const offset = index - rotationIndex;
   const angleRad = (offset * angleStepDeg * Math.PI) / 180;
   const depthFactor = Math.cos(angleRad);
   const hemisphereFactor = (depthFactor + 1) / 2;

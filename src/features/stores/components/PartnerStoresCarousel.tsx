@@ -14,6 +14,7 @@ import { CAROUSEL_AUTO_ROTATE_MS, CAROUSEL_FRONT_DROP_MOBILE_PX, CAROUSEL_ROTATI
 import {
   getCarouselItemGlobePresentation,
   getCarouselSlotAngleDeg,
+  getRotationIndexForTarget,
 } from '../carousel-layout';
 import { useCarouselLayout } from '../use-carousel-layout';
 import type { PartnerStore, StoreSelectHandler } from '../types';
@@ -73,7 +74,10 @@ export function PartnerStoresCarousel({
   ariaLabel,
 }: PartnerStoresCarouselProps) {
   const count = stores.length;
-  const activeIndex = getStoreIndex(stores, selectedStoreId);
+  const [rotationIndex, setRotationIndex] = useState(() =>
+    getStoreIndex(stores, selectedStoreId),
+  );
+  const activeIndex = normalizeIndex(rotationIndex, count);
   const { layout, isMobile } = useCarouselLayout(count);
   const [isPaused, setIsPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -102,14 +106,32 @@ export function PartnerStoresCarousel({
     return () => media.removeEventListener('change', update);
   }, []);
 
+  useEffect(() => {
+    const targetIndex = getStoreIndex(stores, selectedStoreId);
+    setRotationIndex((prev) => getRotationIndexForTarget(prev, targetIndex, count));
+  }, [count, selectedStoreId, stores]);
+
   const goToIndex = useCallback(
     (index: number, options?: { scrollToMap?: boolean }) => {
-      const store = stores[normalizeIndex(index, count)];
+      const normalizedIndex = normalizeIndex(index, count);
+      setRotationIndex((prev) => getRotationIndexForTarget(prev, normalizedIndex, count));
+      const store = stores[normalizedIndex];
       if (store) {
         onSelect(store.id, options);
       }
     },
     [count, onSelect, stores],
+  );
+
+  const advanceRotation = useCallback(
+    (delta: number, options?: { scrollToMap?: boolean }) => {
+      setRotationIndex((prev) => prev + delta);
+      const store = stores[normalizeIndex(activeIndex + delta, count)];
+      if (store) {
+        onSelect(store.id, options);
+      }
+    },
+    [activeIndex, count, onSelect, stores],
   );
 
   const focusStoreAtIndex = useCallback(
@@ -138,12 +160,12 @@ export function PartnerStoresCarousel({
   );
 
   const goToPrevious = useCallback(() => {
-    goToIndex(activeIndex - 1);
-  }, [activeIndex, goToIndex]);
+    advanceRotation(-1);
+  }, [advanceRotation]);
 
   const goToNext = useCallback(() => {
-    goToIndex(activeIndex + 1);
-  }, [activeIndex, goToIndex]);
+    advanceRotation(1);
+  }, [advanceRotation]);
 
   const lockWheel = useCallback(() => {
     wheelLockedRef.current = true;
@@ -165,9 +187,9 @@ export function PartnerStoresCarousel({
       }
       lockWheel();
       if (event.deltaY > 0) {
-        goToIndex(activeIndex + 1);
+        advanceRotation(1);
       } else {
-        goToIndex(activeIndex - 1);
+        advanceRotation(-1);
       }
     };
 
@@ -183,9 +205,9 @@ export function PartnerStoresCarousel({
       }
       lockWheel();
       if (deltaX < 0) {
-        goToIndex(activeIndex + 1);
+        advanceRotation(1);
       } else {
-        goToIndex(activeIndex - 1);
+        advanceRotation(-1);
       }
     };
 
@@ -198,7 +220,7 @@ export function PartnerStoresCarousel({
       scene?.removeEventListener('touchstart', handleTouchStart);
       scene?.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [activeIndex, count, goToIndex, lockWheel, prefersReducedMotion]);
+  }, [advanceRotation, count, lockWheel, prefersReducedMotion]);
 
   useEffect(() => {
     if (autoRotateRef.current) {
@@ -211,7 +233,7 @@ export function PartnerStoresCarousel({
     }
 
     autoRotateRef.current = setInterval(() => {
-      goToIndex(activeIndex + 1);
+      advanceRotation(1);
     }, CAROUSEL_AUTO_ROTATE_MS);
 
     return () => {
@@ -219,7 +241,7 @@ export function PartnerStoresCarousel({
         clearInterval(autoRotateRef.current);
       }
     };
-  }, [activeIndex, count, goToIndex, isPaused, prefersReducedMotion]);
+  }, [advanceRotation, count, isPaused, prefersReducedMotion]);
 
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -274,13 +296,12 @@ export function PartnerStoresCarousel({
                 const isFrontCard = index === activeIndex;
                 const globePresentation = getCarouselItemGlobePresentation(
                   index,
-                  activeIndex,
-                  count,
+                  rotationIndex,
                   layout.angleStepDeg,
                   layout,
                 );
                 const itemStyle: CarouselItemStyle = {
-                  '--slot-angle': `${getCarouselSlotAngleDeg(index, activeIndex, layout)}deg`,
+                  '--slot-angle': `${getCarouselSlotAngleDeg(index, rotationIndex, layout)}deg`,
                   '--item-lift': `${globePresentation.liftPx}px`,
                   '--item-scale': String(globePresentation.scale),
                   '--item-opacity': String(globePresentation.opacity),
