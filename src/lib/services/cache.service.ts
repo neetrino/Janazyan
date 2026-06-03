@@ -180,7 +180,9 @@ export async function get(key: string): Promise<string | null> {
   await ensureRedisReady();
   if (!redisAvailable || (!redisClient && !upstashClient)) return memoryGet(key);
   try {
-    return upstashClient ? (await upstashClient.get(key)) ?? null : await redisClient.get(key);
+    if (upstashClient) return (await upstashClient.get(key)) ?? null;
+    if (redisClient) return await redisClient.get(key);
+    return memoryGet(key);
   } catch {
     return memoryGet(key);
   }
@@ -194,7 +196,7 @@ export async function set(key: string, value: string): Promise<boolean> {
   }
   try {
     if (upstashClient) await upstashClient.set(key, value);
-    else await redisClient.set(key, value);
+    else if (redisClient) await redisClient.set(key, value);
     return true;
   } catch {
     return false;
@@ -209,7 +211,7 @@ export async function setex(key: string, seconds: number, value: string): Promis
   }
   try {
     if (upstashClient) await upstashClient.set(key, value, { ex: seconds });
-    else await redisClient.setex(key, seconds, value);
+    else if (redisClient) await redisClient.setex(key, seconds, value);
     return true;
   } catch {
     memorySetex(key, seconds, value);
@@ -223,7 +225,7 @@ export async function del(key: string): Promise<boolean> {
   if (!redisAvailable || (!redisClient && !upstashClient)) return true;
   try {
     if (upstashClient) await upstashClient.del(key);
-    else await redisClient.del(key);
+    else if (redisClient) await redisClient.del(key);
     return true;
   } catch {
     return false;
@@ -234,7 +236,9 @@ export async function keys(pattern: string): Promise<string[]> {
   await ensureRedisReady();
   if (!redisAvailable || (!redisClient && !upstashClient)) return [];
   try {
-    return upstashClient ? await upstashClient.keys(pattern) : await redisClient.keys(pattern);
+    if (upstashClient) return await upstashClient.keys(pattern);
+    if (redisClient) return await redisClient.keys(pattern);
+    return [];
   } catch {
     return [];
   }
@@ -245,12 +249,12 @@ export async function deletePattern(pattern: string): Promise<number> {
   const memoryDeleted = clearMemoryByPattern(pattern);
   if (!redisAvailable || (!redisClient && !upstashClient)) return memoryDeleted;
   try {
-    const matchingKeys = upstashClient
-      ? await upstashClient.keys(pattern)
-      : await redisClient.keys(pattern);
+    let matchingKeys: string[] = [];
+    if (upstashClient) matchingKeys = await upstashClient.keys(pattern);
+    else if (redisClient) matchingKeys = await redisClient.keys(pattern);
     if (matchingKeys.length === 0) return memoryDeleted;
     if (upstashClient) await upstashClient.del(...matchingKeys);
-    else await redisClient.del(...matchingKeys);
+    else if (redisClient) await redisClient.del(...matchingKeys);
     return matchingKeys.length + memoryDeleted;
   } catch {
     return memoryDeleted;

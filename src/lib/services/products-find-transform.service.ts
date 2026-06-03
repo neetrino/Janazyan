@@ -1,3 +1,4 @@
+import type { ProductLabel } from "../../components/ProductLabels";
 import { processImageUrl } from "../utils/image-utils";
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
@@ -25,13 +26,7 @@ export type ProductListItem = {
   discountPercent: number | null;
   image: string | null;
   inStock: boolean;
-  labels: Array<{
-    id: string;
-    type: string;
-    value: string;
-    position: string;
-    color: string | null;
-  }>;
+  labels: ProductLabel[];
   colors: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>;
 };
 
@@ -298,13 +293,15 @@ class ProductsFindTransformService {
         inStock: (variant?.stock || 0) > 0,
         labels: (() => {
           // Map existing labels
-          const existingLabels = Array.isArray(product.labels) ? product.labels.map((label: { id: string; type: string; value: string; position: string; color: string | null }) => ({
-            id: label.id,
-            type: label.type,
-            value: label.value,
-            position: label.position,
-            color: label.color,
-          })) : [];
+          const existingLabels: ProductLabel[] = Array.isArray(product.labels)
+            ? product.labels.map((label) => ({
+                id: label.id,
+                type: label.type as ProductLabel["type"],
+                value: label.value,
+                position: label.position as ProductLabel["position"],
+                color: label.color,
+              }))
+            : [];
           
           // Check if product is out of stock
           const isOutOfStock = (variant?.stock || 0) <= 0;
@@ -330,7 +327,7 @@ class ProductsFindTransformService {
                 id: `out-of-stock-${product.id}`,
                 type: 'text',
                 value: outOfStockText,
-                position: position as 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right',
+                position,
                 color: '#6B7280', // Gray color for out of stock
               });
               

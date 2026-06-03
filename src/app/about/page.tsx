@@ -4,9 +4,6 @@ import Image from 'next/image';
 import { TeamCarousel } from '../../components/TeamCarousel';
 import { useTranslation } from '../../lib/i18n-client';
 
-export const dynamic = 'force-dynamic';
-export const dynamicParams = true;
-
 /** Set to true when the Our Team section should be visible again. */
 const SHOW_ABOUT_TEAM_SECTION = false;
 
