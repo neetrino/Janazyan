@@ -14,6 +14,7 @@ import { adminProductsService } from "./admin/admin-products.service";
 import { adminAttributesService } from "./admin/admin-attributes.service";
 import { adminCouponsService } from "./admin/admin-coupons.service";
 import { adminPartnerStoresService } from "./admin/admin-partner-stores.service";
+import { adminBlogService } from "./admin/admin-blog.service";
 
 class AdminService {
   // Delegate to specialized services
@@ -90,6 +91,12 @@ class AdminService {
   createPartnerStore = adminPartnerStoresService.createPartnerStore.bind(adminPartnerStoresService);
   updatePartnerStore = adminPartnerStoresService.updatePartnerStore.bind(adminPartnerStoresService);
   deletePartnerStore = adminPartnerStoresService.deletePartnerStore.bind(adminPartnerStoresService);
+
+  // Blog posts
+  getBlogPosts = adminBlogService.getBlogPosts.bind(adminBlogService);
+  createBlogPost = adminBlogService.createBlogPost.bind(adminBlogService);
+  updateBlogPost = adminBlogService.updateBlogPost.bind(adminBlogService);
+  deleteBlogPost = adminBlogService.deleteBlogPost.bind(adminBlogService);
 }
 
 export const adminService = new AdminService();

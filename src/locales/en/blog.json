@@ -1,0 +1,13 @@
+{
+  "breadcrumbHome": "Home",
+  "breadcrumbCurrent": "Blog",
+  "subtitle": "Blog",
+  "title": "Our Blog",
+  "description": "Stay updated with our latest news, tips, and insights.",
+  "readMore": "Read article",
+  "emptyTitle": "No articles yet",
+  "emptyDescription": "Check back soon — new blog posts are on the way.",
+  "backToBlog": "Back to blog",
+  "notFoundTitle": "Article not found",
+  "notFoundDescription": "This article may have been removed or the link is incorrect."
+}
