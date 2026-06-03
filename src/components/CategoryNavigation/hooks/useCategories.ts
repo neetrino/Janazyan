@@ -10,13 +10,18 @@ interface CategoriesResponse {
 }
 
 /**
- * Hook for fetching categories
+ * Hook for fetching categories (skipped when server provides initialCategories).
  */
-export function useCategories() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+export function useCategories(initialCategories?: Category[]) {
+  const hasInitial = Boolean(initialCategories?.length);
+  const [categories, setCategories] = useState<Category[]>(initialCategories ?? []);
+  const [loading, setLoading] = useState(!hasInitial);
 
   useEffect(() => {
+    if (hasInitial) {
+      return;
+    }
+
     const fetchCategories = async () => {
       try {
         setLoading(true);
@@ -26,8 +31,7 @@ export function useCategories() {
         });
 
         const categoriesList = response.data || [];
-        const allCategories = flattenCategories(categoriesList);
-        setCategories(allCategories);
+        setCategories(flattenCategories(categoriesList));
       } catch (err) {
         console.error('Error fetching categories:', err);
       } finally {
@@ -35,12 +39,8 @@ export function useCategories() {
       }
     };
 
-    fetchCategories();
-  }, []);
+    void fetchCategories();
+  }, [hasInitial]);
 
   return { categories, loading };
 }
-
-
-
-

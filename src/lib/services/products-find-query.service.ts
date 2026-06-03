@@ -1,4 +1,5 @@
 import { buildWhereClause } from "./products-find-query/query-builder";
+import { executeCatalogProductQuery } from "./products-find-query/catalog-query-executor";
 import { executeProductQuery } from "./products-find-query/query-executor";
 import { db } from "@white-shop/db";
 import type { ProductFilters, ProductWithRelations } from "./products-find-query/types";
@@ -33,10 +34,14 @@ class ProductsFindQueryService {
       filters.maxPrice != null ||
       Boolean(filters.colors || filters.sizes || filters.brand);
 
+    const runQuery = filters.catalog
+      ? executeCatalogProductQuery
+      : executeProductQuery;
+
     if (!needOverFetch) {
       const [total, products] = await Promise.all([
         db.product.count({ where }),
-        executeProductQuery(where, limit, (page - 1) * limit),
+        runQuery(where, limit, (page - 1) * limit),
       ]);
       return {
         products,
@@ -46,7 +51,7 @@ class ProductsFindQueryService {
     }
 
     const fetchLimit = Math.min(limit * 10, 200);
-    const products = await executeProductQuery(where, fetchLimit, 0);
+    const products = await runQuery(where, fetchLimit, 0);
 
     return {
       products,

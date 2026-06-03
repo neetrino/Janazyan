@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card } from '@shop/ui';
-import { apiClient } from '../lib/api-client';
-import { getStoredLanguage } from '../lib/language';
 import { getColorHex } from '../lib/colorMap';
 import { useTranslation } from '../lib/i18n-client';
 import { useProductsFilters } from './ProductsFiltersProvider';
@@ -17,63 +15,20 @@ interface ColorFilterProps {
   selectedColors?: string[];
 }
 
-interface ColorOption {
-  value: string;
-  label: string;
-  count: number;
-  imageUrl?: string | null;
-  colors?: string[] | null;
-}
-
-export function ColorFilter({ category, search, minPrice, maxPrice, selectedColors = [] }: ColorFilterProps) {
+export function ColorFilter({
+  selectedColors = [],
+}: ColorFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const filtersContext = useProductsFilters();
   const { t } = useTranslation();
-  const [colors, setColors] = useState<ColorOption[]>([]);
-  const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>(selectedColors);
 
-  useEffect(() => {
-    if (filtersContext?.data?.colors) {
-      setColors(filtersContext.data.colors);
-      setLoading(false);
-      return;
-    }
-    if (filtersContext === null) {
-      fetchColors();
-    } else {
-      setLoading(filtersContext.loading);
-    }
-  }, [category, search, minPrice, maxPrice, filtersContext?.data?.colors, filtersContext?.loading, filtersContext === null]);
+  const colors = filtersContext?.data.colors ?? [];
 
   useEffect(() => {
     setSelected(selectedColors);
   }, [selectedColors]);
-
-  const fetchColors = async () => {
-    try {
-      setLoading(true);
-      const language = getStoredLanguage();
-      const params: Record<string, string> = {
-        lang: language,
-      };
-      
-      if (category) params.category = category;
-      if (search) params.search = search;
-      if (minPrice) params.minPrice = minPrice;
-      if (maxPrice) params.maxPrice = maxPrice;
-
-      // Fetch filters from API
-      const response = await apiClient.get<{ colors: ColorOption[]; sizes: any[] }>('/api/v1/products/filters', { params });
-      
-      setColors(response.colors || []);
-    } catch (error) {
-      setColors([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleColorToggle = (colorValue: string) => {
     const newSelected = selected.includes(colorValue)
@@ -85,34 +40,27 @@ export function ColorFilter({ category, search, minPrice, maxPrice, selectedColo
   };
 
   const applyFilters = (colorsToApply: string[]) => {
-    // Ստեղծում ենք նոր URLSearchParams URL-ի հիման վրա, որպեսզի պահպանենք բոլոր params-ները
     const params = new URLSearchParams(searchParams.toString());
-    
-    // Թարմացնում ենք colors պարամետրը
+
     if (colorsToApply.length > 0) {
       params.set('colors', colorsToApply.join(','));
     } else {
       params.delete('colors');
     }
-    
-    // Reset page to 1 when filters change
-    params.delete('page');
 
+    params.delete('page');
     router.push(`/products?${params.toString()}`);
   };
 
-  if (loading) {
-    return (
-      <Card className="p-4 mb-6">
-        <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">{t('products.filters.color.title')}</h3>
-        <div className="text-sm text-gray-500">{t('products.filters.color.loading')}</div>
-      </Card>
-    );
+  if (!filtersContext) {
+    return null;
   }
 
   return (
     <Card className="p-4 mb-6">
-      <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">{t('products.filters.color.title')}</h3>
+      <h3 className="text-base font-bold text-gray-800 mb-4 uppercase tracking-wide">
+        {t('products.filters.color.title')}
+      </h3>
       {colors.length === 0 ? (
         <div className="text-sm text-gray-500 py-4 text-center">
           {t('products.filters.color.noColors')}
@@ -121,10 +69,10 @@ export function ColorFilter({ category, search, minPrice, maxPrice, selectedColo
         <div className="space-y-2 max-h-64 overflow-y-auto">
           {colors.map((color) => {
             const isSelected = selected.includes(color.value);
-            // Determine color hex: use colors[0] if available, otherwise use getColorHex
-            const colorHex = color.colors && Array.isArray(color.colors) && color.colors.length > 0 
-              ? color.colors[0] 
-              : getColorHex(color.label);
+            const colorHex =
+              color.colors && Array.isArray(color.colors) && color.colors.length > 0
+                ? color.colors[0]
+                : getColorHex(color.label);
             const hasImage = color.imageUrl && color.imageUrl.trim() !== '';
 
             return (
@@ -148,12 +96,11 @@ export function ColorFilter({ category, search, minPrice, maxPrice, selectedColo
                     aria-label={color.label}
                   >
                     {hasImage ? (
-                      <img 
-                        src={color.imageUrl!} 
+                      <img
+                        src={color.imageUrl!}
                         alt={color.label}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          // Fallback to color hex if image fails to load
                           (e.target as HTMLImageElement).style.backgroundColor = colorHex;
                           (e.target as HTMLImageElement).style.display = 'none';
                         }}
@@ -170,9 +117,7 @@ export function ColorFilter({ category, search, minPrice, maxPrice, selectedColo
                 </div>
                 <span
                   className={`text-xs px-2 py-0.5 rounded-full ${
-                    isSelected
-                      ? 'text-blue-700 bg-blue-100'
-                      : 'text-gray-500 bg-gray-100'
+                    isSelected ? 'text-blue-700 bg-blue-100' : 'text-gray-500 bg-gray-100'
                   }`}
                 >
                   {color.count}
@@ -185,4 +130,3 @@ export function ColorFilter({ category, search, minPrice, maxPrice, selectedColo
     </Card>
   );
 }
-

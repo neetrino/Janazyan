@@ -11,14 +11,22 @@ import { CategoryScrollButtons } from './CategoryNavigation/CategoryScrollButton
 import { CategoryNavigationLoading } from './CategoryNavigation/CategoryNavigationLoading';
 import type { Category } from './CategoryNavigation/utils';
 
-function CategoryNavigationContent() {
+interface CategoryNavigationContentProps {
+  initialCategories?: Category[];
+  skipPreviews?: boolean;
+}
+
+function CategoryNavigationContent({
+  initialCategories,
+  skipPreviews = false,
+}: CategoryNavigationContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
   const currentCategory = searchParams?.get('category');
   
-  const { categories, loading: categoriesLoading } = useCategories();
-  const { categoryProducts, loading: previewsLoading } = useCategoryProducts();
+  const { categories, loading: categoriesLoading } = useCategories(initialCategories);
+  const { categoryProducts, loading: previewsLoading } = useCategoryProducts(skipPreviews);
   const {
     scrollContainerRef,
     canScrollLeft,
@@ -43,14 +51,14 @@ function CategoryNavigationContent() {
   };
 
   useEffect(() => {
-    if (!categoriesLoading && categories.length > 0 && !previewsLoading) {
+    if (!categoriesLoading && categories.length > 0 && (skipPreviews || !previewsLoading)) {
       const timer = window.setTimeout(() => {
         updateScrollButtons();
       }, 200);
       return () => window.clearTimeout(timer);
     }
     return undefined;
-  }, [categories.length, categoriesLoading, previewsLoading, updateScrollButtons]);
+  }, [categories.length, categoriesLoading, previewsLoading, skipPreviews, updateScrollButtons]);
 
   if (categoriesLoading && categories.length === 0) {
     return <CategoryNavigationLoading />;
@@ -106,10 +114,33 @@ function CategoryNavigationContent() {
   );
 }
 
-export function CategoryNavigation() {
+interface CategoryNavigationProps {
+  /** Server-hydrated tree — avoids client /categories/tree on first paint. */
+  initialCategories?: Category[];
+  /** Skip navigation-previews API (used on /products). */
+  skipPreviews?: boolean;
+}
+
+export function CategoryNavigation({
+  initialCategories,
+  skipPreviews = false,
+}: CategoryNavigationProps) {
+  const fallback =
+    initialCategories && initialCategories.length > 0 ? (
+      <CategoryNavigationContent
+        initialCategories={initialCategories}
+        skipPreviews={skipPreviews}
+      />
+    ) : (
+      <CategoryNavigationLoading />
+    );
+
   return (
-    <Suspense fallback={<CategoryNavigationLoading />}>
-      <CategoryNavigationContent />
+    <Suspense fallback={fallback}>
+      <CategoryNavigationContent
+        initialCategories={initialCategories}
+        skipPreviews={skipPreviews}
+      />
     </Suspense>
   );
 }
