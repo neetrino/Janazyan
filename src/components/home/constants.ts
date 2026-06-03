@@ -6,7 +6,7 @@ export const HOME_NAV_LINK_HREFS: ReadonlyArray<{
 }> = [
   { labelKey: 'home', href: '/' },
   { labelKey: 'shop', href: '/products' },
-  { labelKey: 'categories', href: '/products?view=categories' },
+  { labelKey: 'categories', href: '/stores' },
   { labelKey: 'about', href: '/about' },
   { labelKey: 'contact', href: '/contact' },
 ];

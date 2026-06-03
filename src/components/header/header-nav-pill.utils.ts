@@ -1,9 +1,10 @@
 import {
   HEADER_ACTIVE_PILL_OFFSET_X_PX,
   HEADER_ACTIVE_PILL_OFFSET_Y_PX,
-  HEADER_ACTIVE_PILL_WIDTH_PX,
   type HeaderNavPillPosition,
 } from './header-nav-pill.constants';
+
+const HEADER_ACTIVE_PILL_HORIZONTAL_PADDING_PX = Math.abs(HEADER_ACTIVE_PILL_OFFSET_X_PX) * 2;
 
 export function getPillPositionForLink(
   link: HTMLAnchorElement,
@@ -14,6 +15,7 @@ export function getPillPositionForLink(
   return {
     left: linkRect.left - navRect.left + HEADER_ACTIVE_PILL_OFFSET_X_PX,
     top: linkRect.top - navRect.top + HEADER_ACTIVE_PILL_OFFSET_Y_PX,
+    width: linkRect.width + HEADER_ACTIVE_PILL_HORIZONTAL_PADDING_PX,
   };
 }
 
@@ -24,12 +26,16 @@ export function getLinkCenterX(link: HTMLAnchorElement, nav: HTMLElement): numbe
 }
 
 export function getPillCenterX(position: HeaderNavPillPosition): number {
-  return position.left + HEADER_ACTIVE_PILL_WIDTH_PX / 2;
+  return position.left + position.width / 2;
 }
 
-export function getPillLeftFromPointer(clientX: number, nav: HTMLElement): number {
+export function getPillLeftFromPointer(
+  clientX: number,
+  nav: HTMLElement,
+  pillWidth: number,
+): number {
   const navRect = nav.getBoundingClientRect();
-  return clientX - navRect.left - HEADER_ACTIVE_PILL_WIDTH_PX / 2;
+  return clientX - navRect.left - pillWidth / 2;
 }
 
 export function findNearestLinkIndex(
@@ -54,10 +60,21 @@ export function findNearestLinkIndex(
   return bestIndex;
 }
 
+export function findNearestLinkIndexFromPointer(
+  clientX: number,
+  links: ReadonlyArray<HTMLAnchorElement | null>,
+  nav: HTMLElement,
+): number {
+  const navRect = nav.getBoundingClientRect();
+  const pointerX = clientX - navRect.left;
+  return findNearestLinkIndex(pointerX, links, nav);
+}
+
 export function clampPillLeft(
   left: number,
   links: ReadonlyArray<HTMLAnchorElement | null>,
   nav: HTMLElement,
+  pillWidth: number,
 ): number {
   const anchors = links.filter((link): link is HTMLAnchorElement => link !== null);
   if (anchors.length === 0) {
@@ -67,7 +84,9 @@ export function clampPillLeft(
   const first = anchors[0];
   const last = anchors[anchors.length - 1];
   const minLeft = getPillPositionForLink(first, nav).left;
-  const maxLeft = getPillPositionForLink(last, nav).left;
+  const maxLeft = getPillPositionForLink(last, nav).left + last.getBoundingClientRect().width
+    - pillWidth
+    + HEADER_ACTIVE_PILL_HORIZONTAL_PADDING_PX;
 
   return Math.min(Math.max(left, minLeft), maxLeft);
 }

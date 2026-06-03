@@ -13,6 +13,7 @@ import type { HeaderNavPillPosition } from './header-nav-pill.constants';
 import {
   clampPillLeft,
   findNearestLinkIndex,
+  findNearestLinkIndexFromPointer,
   getPillCenterX,
   getPillLeftFromPointer,
   getPillPositionForLink,
@@ -20,6 +21,7 @@ import {
 
 type NavLink = {
   href: string;
+  label?: string;
 };
 
 type UseHeaderNavActivePillParams = {
@@ -27,6 +29,21 @@ type UseHeaderNavActivePillParams = {
   pathname: string;
   searchParams: URLSearchParams;
 };
+
+function getLinksLayoutKey(links: ReadonlyArray<NavLink>): string {
+  return links.map((link) => `${link.href}\0${link.label ?? ''}`).join('\n');
+}
+
+function isSamePillPosition(
+  current: HeaderNavPillPosition,
+  next: HeaderNavPillPosition,
+): boolean {
+  return (
+    current.left === next.left &&
+    current.top === next.top &&
+    current.width === next.width
+  );
+}
 
 export function useHeaderNavActivePill({
   links,
@@ -36,7 +53,11 @@ export function useHeaderNavActivePill({
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
   const linkRefs = useRef<(HTMLAnchorElement | null)[]>([]);
-  const [pillPosition, setPillPosition] = useState<HeaderNavPillPosition>({ left: 0, top: 0 });
+  const [pillPosition, setPillPosition] = useState<HeaderNavPillPosition>({
+    left: 0,
+    top: 0,
+    width: 0,
+  });
   const pillTopRef = useRef(0);
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -44,6 +65,7 @@ export function useHeaderNavActivePill({
   const activeIndex = links.findIndex((link) =>
     isNavLinkActive(pathname, link.href, searchParams),
   );
+  const linksLayoutKey = getLinksLayoutKey(links);
 
   const syncPillToIndex = useCallback((index: number) => {
     const nav = navRef.current;
@@ -53,7 +75,9 @@ export function useHeaderNavActivePill({
     }
     const nextPosition = getPillPositionForLink(link, nav);
     pillTopRef.current = nextPosition.top;
-    setPillPosition(nextPosition);
+    setPillPosition((current) =>
+      isSamePillPosition(current, nextPosition) ? current : nextPosition,
+    );
   }, []);
 
   const syncPillToActive = useCallback(() => {
@@ -67,7 +91,7 @@ export function useHeaderNavActivePill({
       return;
     }
     syncPillToActive();
-  }, [isDragging, syncPillToActive]);
+  }, [isDragging, syncPillToActive, linksLayoutKey]);
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -98,11 +122,24 @@ export function useHeaderNavActivePill({
       return;
     }
 
-    const left = clampPillLeft(getPillLeftFromPointer(clientX, nav), linkRefs.current, nav);
-    const nextPosition: HeaderNavPillPosition = { left, top: pillTopRef.current };
-    setPillPosition(nextPosition);
-    setHoveredIndex(findNearestLinkIndex(getPillCenterX(nextPosition), linkRefs.current, nav));
-  }, []);
+    const hoveredIdx = findNearestLinkIndexFromPointer(clientX, linkRefs.current, nav);
+    const hoveredLink = linkRefs.current[hoveredIdx];
+    const pillWidth = hoveredLink
+      ? getPillPositionForLink(hoveredLink, nav).width
+      : pillPosition.width;
+
+    const left = clampPillLeft(
+      getPillLeftFromPointer(clientX, nav, pillWidth),
+      linkRefs.current,
+      nav,
+      pillWidth,
+    );
+    const nextPosition: HeaderNavPillPosition = { left, top: pillTopRef.current, width: pillWidth };
+    setPillPosition((current) =>
+      isSamePillPosition(current, nextPosition) ? current : nextPosition,
+    );
+    setHoveredIndex(hoveredIdx);
+  }, [pillPosition.width]);
 
   const handlePillPointerDown = useCallback((event: ReactPointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
@@ -130,9 +167,20 @@ export function useHeaderNavActivePill({
         return;
       }
 
-      const left = clampPillLeft(getPillLeftFromPointer(clientX, nav), linkRefs.current, nav);
+      const hoveredIdx = findNearestLinkIndexFromPointer(clientX, linkRefs.current, nav);
+      const hoveredLink = linkRefs.current[hoveredIdx];
+      const pillWidth = hoveredLink
+        ? getPillPositionForLink(hoveredLink, nav).width
+        : pillPosition.width;
+
+      const left = clampPillLeft(
+        getPillLeftFromPointer(clientX, nav, pillWidth),
+        linkRefs.current,
+        nav,
+        pillWidth,
+      );
       const targetIndex = findNearestLinkIndex(
-        getPillCenterX({ left, top: pillTopRef.current }),
+        getPillCenterX({ left, top: pillTopRef.current, width: pillWidth }),
         linkRefs.current,
         nav,
       );
@@ -150,7 +198,7 @@ export function useHeaderNavActivePill({
         router.push(targetHref);
       }
     },
-    [links, pathname, router, searchParams, syncPillToIndex],
+    [links, pathname, pillPosition.width, router, searchParams, syncPillToIndex],
   );
 
   const handlePillPointerUp = useCallback(
