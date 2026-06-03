@@ -3,6 +3,7 @@ import {
   CAROUSEL_CARD_WIDTH_PX,
   CAROUSEL_GLOBE_BACK_OPACITY_MIN,
   CAROUSEL_GLOBE_BACK_SCALE_MIN,
+  CAROUSEL_GLOBE_BACK_LIFT_PX,
   CAROUSEL_GLOBE_LATITUDE_DIP_PX,
   CAROUSEL_RADIUS_DESKTOP_PX,
   CAROUSEL_RADIUS_MOBILE_PX,
@@ -109,9 +110,13 @@ export function getCarouselItemGlobePresentation(
   const depthFactor = Math.cos(angleRad);
   const hemisphereFactor = (depthFactor + 1) / 2;
   const sideFactor = Math.abs(Math.sin(angleRad));
+  const backFactor = 1 - hemisphereFactor;
 
   return {
-    liftPx: -Math.round(sideFactor * CAROUSEL_GLOBE_LATITUDE_DIP_PX),
+    liftPx: Math.round(
+      sideFactor * CAROUSEL_GLOBE_LATITUDE_DIP_PX -
+        backFactor * CAROUSEL_GLOBE_BACK_LIFT_PX,
+    ),
     scale:
       CAROUSEL_GLOBE_BACK_SCALE_MIN +
       (1 - CAROUSEL_GLOBE_BACK_SCALE_MIN) * hemisphereFactor,

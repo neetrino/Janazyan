@@ -14,6 +14,8 @@ import {
   CAROUSEL_GLOBE_TILT_DEG,
   CAROUSEL_PERSPECTIVE_PX,
   CAROUSEL_ROTATION_MS,
+  CAROUSEL_SCENE_SHIFT_UP_PX,
+  CAROUSEL_FRONT_FACE_Z_OFFSET_PX,
 } from '../carousel-constants';
 import {
   getCarouselItemGlobePresentation,
@@ -60,6 +62,8 @@ type CarouselRootStyle = CSSProperties & {
   '--carousel-ring-width': string;
   '--carousel-perspective': string;
   '--globe-tilt': string;
+  '--carousel-scene-offset-y': string;
+  '--carousel-front-z-offset': string;
 };
 
 /**
@@ -89,6 +93,8 @@ export function PartnerStoresCarousel({
     '--carousel-ring-width': `${layout.ringWidthPx}px`,
     '--carousel-perspective': `${CAROUSEL_PERSPECTIVE_PX}px`,
     '--globe-tilt': `${CAROUSEL_GLOBE_TILT_DEG}deg`,
+    '--carousel-scene-offset-y': `-${CAROUSEL_SCENE_SHIFT_UP_PX}px`,
+    '--carousel-front-z-offset': `${CAROUSEL_FRONT_FACE_Z_OFFSET_PX}px`,
   };
 
   useEffect(() => {
@@ -263,6 +269,7 @@ export function PartnerStoresCarousel({
                     viewOnMapLabel={viewOnMapLabel}
                     onSelect={onSelect}
                     compact
+                    previewOnly={!isFrontCard}
                   />
                 );
 
@@ -279,15 +286,21 @@ export function PartnerStoresCarousel({
                       {isFrontCard ? (
                         card
                       ) : (
-                        <button
-                          type="button"
+                        <div
+                          role="button"
                           className="partner-stores-carousel-card-hit partner-stores-carousel-card-hit--side"
                           onClick={() => goToIndex(index)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              goToIndex(index);
+                            }
+                          }}
                           tabIndex={-1}
                           aria-label={store.name}
                         >
                           {card}
-                        </button>
+                        </div>
                       )}
                     </div>
                   </div>

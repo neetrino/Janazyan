@@ -271,9 +271,12 @@ body {
   --carousel-perspective: 760px;
   --carousel-card-width: 220px;
   --carousel-ring-width: 680px;
-  --globe-tilt: 28deg;
+  --globe-tilt: -28deg;
+  --carousel-scene-offset-y: -80px;
+  --carousel-front-z-offset: 52px;
   --carousel-rotation-duration: 650ms;
   overflow: visible;
+  padding-bottom: 0.5rem;
 }
 
 .partner-stores-carousel-scene {
@@ -287,7 +290,7 @@ body {
   overscroll-behavior: contain;
   touch-action: pan-y;
   perspective: var(--carousel-perspective);
-  perspective-origin: 50% 34%;
+  perspective-origin: 50% 58%;
   outline: none;
 }
 
@@ -302,6 +305,7 @@ body {
   align-items: center;
   justify-content: center;
   width: 100%;
+  transform: translateY(var(--carousel-scene-offset-y, 0px));
   transform-style: preserve-3d;
 }
 
@@ -354,17 +358,23 @@ body {
 
 .partner-stores-carousel-item-face article {
   width: 100%;
-  padding: 0.875rem;
-}
-
-.partner-stores-carousel-item-face h3 {
-  font-size: 0.9375rem;
-  line-height: 1.35;
+  box-sizing: border-box;
 }
 
 .partner-stores-carousel-item--front {
   pointer-events: auto;
-  z-index: 2;
+  z-index: 20;
+}
+
+.partner-stores-carousel-item--front .partner-stores-carousel-item-face {
+  transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
+    rotateX(calc(var(--globe-tilt, 28deg) * -1)) scale(var(--item-scale, 1))
+    translateZ(var(--carousel-front-z-offset, 52px));
+}
+
+.partner-stores-carousel-item--front .partner-stores-carousel-item-face article {
+  position: relative;
+  isolation: isolate;
 }
 
 .partner-stores-carousel-item:not(.partner-stores-carousel-item--front) {
@@ -394,7 +404,9 @@ body {
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin-top: 1.25rem;
+  margin-top: 0.5rem;
+  position: relative;
+  z-index: 3;
 }
 
 .partner-stores-carousel-nav {
@@ -456,6 +468,11 @@ body {
   .partner-stores-carousel-item-face {
     transform: rotateY(calc(var(--slot-angle, 0deg) * -1));
     opacity: 1;
+  }
+
+  .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
+    transform: rotateY(calc(var(--slot-angle, 0deg) * -1))
+      translateZ(var(--carousel-front-z-offset, 52px));
   }
 }
 
