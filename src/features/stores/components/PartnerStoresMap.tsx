@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CAROUSEL_MOBILE_BREAKPOINT_PX } from '../carousel-constants';
 import type {
   DivIcon,
@@ -22,6 +22,8 @@ import { useStoresMobileViewport } from '../use-stores-mobile-viewport';
 type PartnerStoresMapProps = {
   stores: PartnerStore[];
   selectedStoreId: string | null;
+  /** Increments on each explicit "View on map" action to re-focus the same store. */
+  mapFocusRequest?: number;
   onStoreSelect: StoreSelectHandler;
   ariaLabel: string;
   getDirectionsLabel: string;
@@ -57,6 +59,7 @@ function createMarkerIcon(
 export function PartnerStoresMap({
   stores,
   selectedStoreId,
+  mapFocusRequest = 0,
   onStoreSelect,
   ariaLabel,
   getDirectionsLabel,
@@ -65,8 +68,28 @@ export function PartnerStoresMap({
   const mapRef = useRef<LeafletMap | null>(null);
   const markersRef = useRef<Map<string, LeafletMarker>>(new Map());
   const leafletRef = useRef<LeafletModule | null>(null);
+  const [mapReady, setMapReady] = useState(false);
   const isMobile = useStoresMobileViewport();
   const selectedZoom = isMobile ? MAP_SELECTED_ZOOM_MOBILE : MAP_SELECTED_ZOOM;
+
+  const focusSelectedStore = useCallback(() => {
+    const map = mapRef.current;
+    if (!map || !selectedStoreId) {
+      return;
+    }
+
+    const selectedStore = stores.find((store) => store.id === selectedStoreId);
+    if (!selectedStore) {
+      return;
+    }
+
+    map.flyTo([selectedStore.lat, selectedStore.lng], selectedZoom, {
+      duration: 0.8,
+    });
+
+    const marker = markersRef.current.get(selectedStoreId);
+    marker?.openPopup();
+  }, [selectedStoreId, selectedZoom, stores]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -101,6 +124,7 @@ export function PartnerStoresMap({
       }).addTo(map);
 
       mapRef.current = map;
+      setMapReady(true);
     });
 
     return () => {
@@ -109,10 +133,15 @@ export function PartnerStoresMap({
       mapRef.current?.remove();
       mapRef.current = null;
       leafletRef.current = null;
+      setMapReady(false);
     };
   }, []);
 
   useEffect(() => {
+    if (!mapReady) {
+      return;
+    }
+
     const map = mapRef.current;
     const L = leafletRef.current;
     if (!map || !L) {
@@ -143,27 +172,14 @@ export function PartnerStoresMap({
       marker.addTo(map);
       markersRef.current.set(store.id, marker);
     });
-  }, [stores, selectedStoreId, onStoreSelect, getDirectionsLabel, isMobile]);
+  }, [stores, selectedStoreId, onStoreSelect, getDirectionsLabel, isMobile, mapReady]);
 
   useEffect(() => {
-    const map = mapRef.current;
-    const L = leafletRef.current;
-    if (!map || !L || !selectedStoreId) {
+    if (!mapReady) {
       return;
     }
-
-    const selectedStore = stores.find((store) => store.id === selectedStoreId);
-    if (!selectedStore) {
-      return;
-    }
-
-    map.flyTo([selectedStore.lat, selectedStore.lng], selectedZoom, {
-      duration: 0.8,
-    });
-
-    const marker = markersRef.current.get(selectedStoreId);
-    marker?.openPopup();
-  }, [selectedStoreId, selectedZoom, stores]);
+    focusSelectedStore();
+  }, [focusSelectedStore, mapFocusRequest, mapReady, selectedStoreId]);
 
   return (
     <div

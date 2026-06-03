@@ -18,7 +18,7 @@ import {
 } from '../carousel-layout';
 import { useCarouselLayout } from '../use-carousel-layout';
 import type { PartnerStore, StoreSelectHandler } from '../types';
-import { PartnerStoreCard } from './PartnerStoreCard';
+import { PartnerStoreCard, PartnerStoreCardActions } from './PartnerStoreCard';
 
 type PartnerStoresCarouselProps = {
   stores: PartnerStore[];
@@ -316,6 +316,7 @@ export function PartnerStoresCarousel({
                     onSelect={selectFromCarouselCard}
                     compact
                     previewOnly={!isFrontCard}
+                    hideActions={isFrontCard}
                   />
                 );
 
@@ -333,21 +334,57 @@ export function PartnerStoresCarousel({
                     aria-hidden={!isFrontCard}
                   >
                     <div className="partner-stores-carousel-item-face">
-                      <div
-                        role="button"
-                        className={hitClassName}
-                        tabIndex={isFrontCard ? 0 : -1}
-                        aria-label={store.name}
-                        onClick={(event) => handleCardHitClick(index, event)}
-                        onKeyDown={(event) => {
-                          if (event.key === 'Enter' || event.key === ' ') {
-                            event.preventDefault();
-                            focusStoreAtIndex(index);
-                          }
-                        }}
-                      >
-                        {card}
-                      </div>
+                      {isFrontCard ? (
+                        <div
+                          className={`partner-stores-carousel-card-stack${
+                            selectedStoreId === store.id
+                              ? ' partner-stores-carousel-card-stack--selected'
+                              : ''
+                          }`}
+                        >
+                          <div
+                            role="button"
+                            className={hitClassName}
+                            tabIndex={0}
+                            aria-label={store.name}
+                            onClick={(event) => handleCardHitClick(index, event)}
+                            onKeyDown={(event) => {
+                              if (event.key === 'Enter' || event.key === ' ') {
+                                event.preventDefault();
+                                focusStoreAtIndex(index);
+                              }
+                            }}
+                          >
+                            {card}
+                          </div>
+                          <PartnerStoreCardActions
+                            store={store}
+                            compact
+                            isSelected={selectedStoreId === store.id}
+                            viewOnMapLabel={viewOnMapLabel}
+                            getDirectionsLabel={getDirectionsLabel}
+                            onSelect={selectFromCarouselCard}
+                            previewOnly={false}
+                            className="partner-stores-carousel-card-actions"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          role="button"
+                          className={hitClassName}
+                          tabIndex={-1}
+                          aria-label={store.name}
+                          onClick={(event) => handleCardHitClick(index, event)}
+                          onKeyDown={(event) => {
+                            if (event.key === 'Enter' || event.key === ' ') {
+                              event.preventDefault();
+                              focusStoreAtIndex(index);
+                            }
+                          }}
+                        >
+                          {card}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );

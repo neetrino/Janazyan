@@ -16,22 +16,22 @@ export const CAROUSEL_GLOBE_BACK_SCALE_MIN = 0.72;
 export const CAROUSEL_GLOBE_BACK_SCALE_MIN_MOBILE = 0.76;
 export const CAROUSEL_GLOBE_BACK_OPACITY_MIN = 0.4;
 export const CAROUSEL_GLOBE_BACK_OPACITY_MIN_MOBILE = 0.5;
-export const CAROUSEL_RADIUS_MOBILE_PX = 72;
-export const CAROUSEL_RADIUS_MOBILE_MAX_PX = 84;
-export const CAROUSEL_RADIUS_DESKTOP_PX = 200;
+export const CAROUSEL_RADIUS_MOBILE_PX = 64;
+export const CAROUSEL_RADIUS_MOBILE_MAX_PX = 76;
+export const CAROUSEL_RADIUS_DESKTOP_PX = 176;
 /** Uniform card width for every store on the ring. */
-export const CAROUSEL_CARD_WIDTH_PX = 220;
-export const CAROUSEL_CARD_WIDTH_MOBILE_PX = 128;
+export const CAROUSEL_CARD_WIDTH_PX = 194;
+export const CAROUSEL_CARD_WIDTH_MOBILE_PX = 116;
 export const CAROUSEL_ROTATION_MS = 650;
 export const CAROUSEL_AUTO_ROTATE_MS = 7000;
-export const CAROUSEL_SCENE_MIN_HEIGHT_PX = 360;
-export const CAROUSEL_SCENE_MIN_HEIGHT_MOBILE_PX = 200;
+export const CAROUSEL_SCENE_MIN_HEIGHT_PX = 328;
+export const CAROUSEL_SCENE_MIN_HEIGHT_MOBILE_PX = 184;
 /** Lifts the 3D stack so dots/nav stay visible below the cards. */
-export const CAROUSEL_SCENE_SHIFT_UP_PX = 80;
-export const CAROUSEL_SCENE_SHIFT_UP_MOBILE_PX = 48;
+export const CAROUSEL_SCENE_SHIFT_UP_PX = 72;
+export const CAROUSEL_SCENE_SHIFT_UP_MOBILE_PX = 44;
 /** Drops only the active card on mobile — side stack stays in place. */
-export const CAROUSEL_FRONT_DROP_MOBILE_PX = 26;
+export const CAROUSEL_FRONT_DROP_MOBILE_PX = 22;
 /** Pulls the active card toward the viewer so actions are not covered by the stack. */
-export const CAROUSEL_FRONT_FACE_Z_OFFSET_PX = 52;
+export const CAROUSEL_FRONT_FACE_Z_OFFSET_PX = 46;
 export const CAROUSEL_FRONT_FACE_Z_OFFSET_MOBILE_PX = 16;
 export const CAROUSEL_MOBILE_BREAKPOINT_PX = 768;

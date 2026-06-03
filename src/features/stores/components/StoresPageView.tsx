@@ -62,12 +62,14 @@ export function StoresPageView() {
   const { t } = useTranslation();
   const { copy, stores } = usePartnerStoresContent();
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
+  const [mapFocusRequest, setMapFocusRequest] = useState(0);
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
     if (options?.scrollToMap) {
       scrollPartnerMapIntoView(mapSectionRef.current);
+      setMapFocusRequest((count) => count + 1);
     }
   }, []);
 
@@ -130,6 +132,7 @@ export function StoresPageView() {
                   <PartnerStoresMap
                     stores={stores}
                     selectedStoreId={selectedStoreId}
+                    mapFocusRequest={mapFocusRequest}
                     onStoreSelect={handleStoreSelect}
                     ariaLabel={copy.map.ariaLabel}
                     getDirectionsLabel={copy.getDirections}

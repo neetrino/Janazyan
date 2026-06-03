@@ -318,13 +318,13 @@ body {
 
 /* Partner stores 3D globe carousel */
 .partner-stores-carousel {
-  --carousel-radius: 218px;
+  --carousel-radius: 194px;
   --carousel-perspective: 760px;
-  --carousel-card-width: 220px;
-  --carousel-ring-width: 680px;
+  --carousel-card-width: 194px;
+  --carousel-ring-width: 640px;
   --globe-tilt: -28deg;
-  --carousel-scene-offset-y: -80px;
-  --carousel-front-z-offset: 52px;
+  --carousel-scene-offset-y: -72px;
+  --carousel-front-z-offset: 46px;
   --carousel-rotation-duration: 650ms;
   overflow: visible;
   padding-bottom: 0.5rem;
@@ -415,7 +415,7 @@ body {
 
 .partner-stores-carousel-item--front {
   pointer-events: auto;
-  z-index: 20;
+  z-index: 50;
 }
 
 .partner-stores-carousel-item--front .partner-stores-carousel-item-face {
@@ -444,18 +444,64 @@ body {
   cursor: pointer;
 }
 
-.partner-stores-carousel-card-hit--side,
 .partner-stores-carousel-card-hit--front {
   pointer-events: auto;
 }
 
-.partner-stores-carousel-card-hit--side article,
-.partner-stores-carousel-card-hit--front article {
+.partner-stores-carousel-card-hit--side {
   pointer-events: none;
 }
 
-.partner-stores-carousel-card-hit--front article a,
-.partner-stores-carousel-card-hit--front article button {
+.partner-stores-carousel-card-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border-radius: 1rem;
+}
+
+.partner-stores-carousel-card-stack--selected {
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.08),
+    0 0 0 2px rgb(124 179 66 / 0.2);
+}
+
+.partner-stores-carousel-card-actions {
+  position: relative;
+  z-index: 30;
+  pointer-events: auto;
+  touch-action: manipulation;
+  transform: translateZ(80px);
+  transform-style: preserve-3d;
+  padding-inline: 0.625rem;
+  padding-bottom: 0.625rem;
+  margin-top: 0;
+  border: 1px solid #e5e7eb;
+  border-top: none;
+  border-radius: 0 0 1rem 1rem;
+  background: #fff;
+}
+
+.partner-stores-carousel-card-stack--selected .partner-stores-carousel-card-actions {
+  border-color: #7cb342;
+}
+
+.partner-stores-carousel-item--front
+  .partner-stores-carousel-card-stack
+  .partner-stores-carousel-card-hit--front
+  article {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom: none;
+}
+
+.partner-stores-carousel-card-stack--selected
+  .partner-stores-carousel-card-hit--front
+  article {
+  border-color: #7cb342;
+}
+
+.partner-stores-carousel-card-hit--side article,
+.partner-stores-carousel-card-hit--front article {
   pointer-events: auto;
 }
 
