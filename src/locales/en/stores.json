@@ -1,16 +1,63 @@
 {
+  "subtitle": "Partner stores",
   "title": "Our Stores",
-  "description": "Visit us at any of our locations. Our friendly staff is ready to help you find exactly what you're looking for.",
-  "getDirections": "Get Directions",
+  "description": "Find Janazyan products at our partner stores across Yerevan. Choose a store below or explore the map to see all locations.",
+  "map": {
+    "title": "Store map",
+    "hint": "Select a store to highlight it on the map.",
+    "ariaLabel": "Interactive map of Janazyan partner stores",
+    "loading": "Loading map…"
+  },
+  "listTitle": "Partner stores",
+  "getDirections": "Get directions",
+  "viewOnMap": "View on map",
+  "partnerStores": [
+    {
+      "id": "sas-abovyan",
+      "name": "SAS Supermarket",
+      "address": "34 Abovyan Street, Yerevan",
+      "logo": "/stores/logos/sas.svg",
+      "logoAlt": "SAS Supermarket logo"
+    },
+    {
+      "id": "yerevan-city-komitas",
+      "name": "Yerevan City",
+      "address": "22 Komitas Avenue, Yerevan",
+      "logo": "/stores/logos/yerevan-city.svg",
+      "logoAlt": "Yerevan City logo"
+    },
+    {
+      "id": "grand-hold-arshakunyats",
+      "name": "Grand Hold",
+      "address": "70 Arshakunyats Avenue, Yerevan",
+      "logo": "/stores/logos/grand-hold.svg",
+      "logoAlt": "Grand Hold logo"
+    },
+    {
+      "id": "medium-amiryan",
+      "name": "Medium Supermarket",
+      "address": "32 Amiryan Street, Yerevan",
+      "logo": "/stores/logos/medium.svg",
+      "logoAlt": "Medium Supermarket logo"
+    },
+    {
+      "id": "spar-mashtots",
+      "name": "SPAR",
+      "address": "45 Mashtots Avenue, Yerevan",
+      "logo": "/stores/logos/spar.svg",
+      "logoAlt": "SPAR logo"
+    },
+    {
+      "id": "sas-baghramyan",
+      "name": "SAS Supermarket",
+      "address": "24 Baghramyan Avenue, Yerevan",
+      "logo": "/stores/logos/sas.svg",
+      "logoAlt": "SAS Supermarket logo"
+    }
+  ],
   "cantFind": {
     "title": "Can't find what you're looking for?",
-    "description": "Contact us and we'll help you find the perfect product.",
-    "contactUs": "Contact Us"
+    "description": "Contact us and we'll help you find the perfect product or the nearest store.",
+    "contactUs": "Contact us"
   }
 }
-
-
-
-
-
-

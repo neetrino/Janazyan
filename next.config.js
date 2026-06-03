@@ -16,6 +16,25 @@ if (
   );
 }
 
+function getR2ImageRemotePattern() {
+  const publicUrl = process.env.R2_PUBLIC_URL;
+  if (!publicUrl) {
+    return null;
+  }
+  try {
+    const hostname = new URL(publicUrl).hostname;
+    return {
+      protocol: 'https',
+      hostname,
+      pathname: '/**',
+    };
+  } catch {
+    return null;
+  }
+}
+
+const r2ImagePattern = getR2ImageRemotePattern();
+
 const nextConfig = {
   reactStrictMode: true,
   // Скрыть индикатор "Compiling..." в углу в dev — не мешает на экране
