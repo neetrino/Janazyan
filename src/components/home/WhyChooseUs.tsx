@@ -1,27 +1,37 @@
-import { WHY_CARDS, type WhyCard } from './constants';
-import { MIRAGE_SECTION_HEADING_CREAM_CLASS } from './mirage-heading-styles';
+'use client';
 
-const NUMBER_POSITION: Record<WhyCard['index'], string> = {
+import { MIRAGE_SECTION_HEADING_CREAM_CLASS } from './mirage-heading-styles';
+import { useHomeWhyCards } from './use-home-i18n';
+import { useTranslation } from '../../lib/i18n-client';
+import type { WhyCardConfig } from './constants';
+import type { WhyCardText } from './use-home-i18n';
+
+const NUMBER_POSITION: Record<string, string> = {
   '№ 01': 'left-[20.97%] right-[-13%]',
   '№ 02': 'left-[22.67%] right-[-6%]',
   '№ 03': 'left-[23.94%] right-[-14.52%]',
   '№ 04': 'left-[63.15%] right-[-14.24%]',
 };
 
+type WhyCardView = WhyCardConfig & WhyCardText;
+
 export function WhyChooseUs() {
+  const { t } = useTranslation();
+  const cards = useHomeWhyCards();
+
   return (
     <section
-      aria-label="Why choose us"
+      aria-label={t('home.whyChooseUs.sectionAria')}
       className="relative w-full px-4 py-16 font-armenian sm:px-6 md:px-8 lg:px-[58px] md:py-24 lg:h-[588px] lg:py-0"
     >
       <div className="relative mx-auto h-full w-full">
         <h2 className={`text-center ${MIRAGE_SECTION_HEADING_CREAM_CLASS} lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap`}>
-          Ինչու Ընտրել Մեզ
+          {t('home.whyChooseUs.title')}
         </h2>
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:left-1/2 lg:top-[124px] lg:mt-0 lg:flex lg:w-[1372px] lg:max-w-full lg:-translate-x-1/2 lg:gap-[20px]">
-          {WHY_CARDS.map((card) => (
-            <Card key={card.index} card={card} />
+          {cards.map((card) => (
+            <Card key={card.cardKey} card={card} />
           ))}
         </div>
       </div>
@@ -29,14 +39,17 @@ export function WhyChooseUs() {
   );
 }
 
-function Card({ card }: { card: WhyCard }) {
+function Card({ card }: { card: WhyCardView }) {
+  const numberPosition =
+    NUMBER_POSITION[card.index] ?? 'left-[20%] right-[-10%]';
+
   return (
     <article className="relative h-[320px] w-full overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card lg:w-[328px] lg:shrink-0">
       <span
         aria-hidden
         className={[
           'pointer-events-none absolute top-[202px] text-[200px] font-bold leading-[160px] tracking-[0.01em]',
-          NUMBER_POSITION[card.index],
+          numberPosition,
         ].join(' ')}
         style={{ color: card.numberColor }}
       >

@@ -9,11 +9,7 @@ import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
 import { HERO_SLIDES } from './hero-slides';
 import { useHeroImageDrag } from './useHeroImageDrag';
-
-const HERO_TITLE = 'JANAZYAN';
-const HERO_DESCRIPTION =
-  'Պրեմիում մանկական խնամքի արտադրանք՝ ստեղծված սիրով, անվտանգությամբ և Ձեր երեխայի հարմարավետության մասին մտածելով.';
-const HERO_KIDS_LABEL = 'Մանկական';
+import { useTranslation } from '../../lib/i18n-client';
 
 type HeroDraggableShellProps = {
   slideId: string;
@@ -128,7 +124,7 @@ function HeroProductImages({
   );
 }
 
-function HeroKidsLabel({ visible }: { visible: boolean }) {
+function HeroKidsLabel({ visible, label }: { visible: boolean; label: string }) {
   return (
     <p
       className={`pointer-events-none absolute right-[8%] top-[248px] z-20 hidden text-[35px] font-light leading-[30px] text-cream transition-opacity duration-500 md:block ${
@@ -136,26 +132,34 @@ function HeroKidsLabel({ visible }: { visible: boolean }) {
       }`}
       aria-hidden={!visible}
     >
-      {HERO_KIDS_LABEL}
+      {label}
     </p>
   );
 }
 
-function HeroActionButtons({ className = '' }: { className?: string }) {
+function HeroActionButtons({
+  className = '',
+  buyNowLabel,
+  learnMoreLabel,
+}: {
+  className?: string;
+  buyNowLabel: string;
+  learnMoreLabel: string;
+}) {
   return (
     <div className={`flex flex-wrap items-center gap-3.5 ${className}`}>
       <Link
         href="/products"
         className="inline-flex h-[52px] items-center gap-1 rounded-full bg-cream px-6 text-[15px] font-extrabold tracking-[-0.01em] text-sky-deep shadow-soft transition-transform duration-700 ease-in-out hover:-translate-y-0.5 md:h-[56px] md:text-[16px]"
       >
-        Գնել Հիմա
+        {buyNowLabel}
         <HeroArrowButtonIcon />
       </Link>
       <Link
         href="/about"
         className="inline-flex h-[52px] items-center gap-1 rounded-full border-[3px] border-cream px-6 text-[15px] font-semibold tracking-[-0.01em] text-cream transition-[transform,background-color] duration-700 ease-in-out hover:-translate-y-0.5 hover:bg-cream/10 md:h-[56px] md:text-[16px]"
       >
-        Իմանալ Ավելին
+        {learnMoreLabel}
         <HeroArrowButtonIcon />
       </Link>
     </div>
@@ -163,8 +167,14 @@ function HeroActionButtons({ className = '' }: { className?: string }) {
 }
 
 export function HomeHero() {
+  const { t } = useTranslation();
   const [slideIndex, setSlideIndex] = useState(0);
   const activeSlide = HERO_SLIDES[slideIndex];
+  const heroTitle = t('home.hero.title');
+  const heroDescription = t('home.hero.description');
+  const heroKidsLabel = t('home.hero.kidsLabel');
+  const buyNowLabel = t('home.hero.buyNow');
+  const learnMoreLabel = t('home.hero.learnMore');
   const slideIds = HERO_SLIDES.map((slide) => slide.id);
   const { offsets, draggingSlideId, getDragHandlers } = useHeroImageDrag(slideIds);
 
@@ -183,7 +193,7 @@ export function HomeHero() {
 
   return (
     <section
-      aria-label="Janazyan hero"
+      aria-label={t('home.hero.ariaSection')}
       className="relative w-full px-4 pt-3 sm:px-6 md:px-8 md:pt-5 lg:px-0"
     >
       <div className="relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
@@ -203,7 +213,7 @@ export function HomeHero() {
           draggingSlideId={draggingSlideId}
           getDragHandlers={getDragHandlers}
         />
-        <HeroKidsLabel visible={activeSlide.showKidsLabel} />
+        <HeroKidsLabel visible={activeSlide.showKidsLabel} label={heroKidsLabel} />
         <HeroNavigationArrows onPrevious={goToPreviousSlide} onNext={goToNextSlide} />
 
         <div className="relative z-20 lg:hidden">
@@ -233,30 +243,37 @@ export function HomeHero() {
             </div>
 
             {activeSlide.showKidsLabel ? (
-              <p className="text-[28px] font-light leading-none text-cream">{HERO_KIDS_LABEL}</p>
+              <p className="text-[28px] font-light leading-none text-cream">{heroKidsLabel}</p>
             ) : null}
 
             <h1 className="font-wide mt-2 max-w-full text-[clamp(56px,13vw,170px)] leading-[0.9] tracking-[0.01em] text-cream md:mt-6">
-              {HERO_TITLE}
+              {heroTitle}
             </h1>
 
             <p className="max-w-[486px] text-[15px] leading-[1.55] tracking-[-0.01em] text-white/95 sm:text-base md:text-lg">
-              {HERO_DESCRIPTION}
+              {heroDescription}
             </p>
 
-            <HeroActionButtons />
+            <HeroActionButtons
+              buyNowLabel={buyNowLabel}
+              learnMoreLabel={learnMoreLabel}
+            />
           </div>
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
           <div className="pointer-events-auto absolute left-[43px] top-[255px] max-w-[min(760px,52%)]">
             <h1 className="overflow-visible pb-2 font-wide text-[198px] leading-[1.04] tracking-[2px] text-cream">
-              {HERO_TITLE}
+              {heroTitle}
             </h1>
             <p className="mt-10 w-[486px] text-[18px] leading-[28px] tracking-[-0.44px] text-white">
-              {HERO_DESCRIPTION}
+              {heroDescription}
             </p>
-            <HeroActionButtons className="mt-10 gap-[14px]" />
+            <HeroActionButtons
+              className="mt-10 gap-[14px]"
+              buyNowLabel={buyNowLabel}
+              learnMoreLabel={learnMoreLabel}
+            />
           </div>
         </div>
       </div>

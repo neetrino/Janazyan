@@ -2,7 +2,8 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { HOME_NAV_LINKS } from '../home/constants';
+import { HOME_NAV_LINK_HREFS } from '../home/constants';
+import { useTranslation } from '../../lib/i18n-client';
 import {
   HEADER_ACTIVE_PILL_HEIGHT_PX,
   HEADER_ACTIVE_PILL_RADIUS_PX,
@@ -12,7 +13,16 @@ import {
 } from './header-nav-pill.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
-const NAV_LINKS = HOME_NAV_LINKS;
+function useHeaderNavLinks() {
+  const { t } = useTranslation();
+  return HOME_NAV_LINK_HREFS.map((link) => ({
+    href: link.href,
+    label:
+      link.labelKey === 'shop'
+        ? t('common.footer.shop')
+        : t(`common.navigation.${link.labelKey}`),
+  }));
+}
 
 const HEADER_LOGO_WIDTH_PX = 110;
 const HEADER_LOGO_HEIGHT_PX = 92;
@@ -53,6 +63,7 @@ function HeaderNav({
   pathname: string;
   searchParams: URLSearchParams;
 }) {
+  const navLinks = useHeaderNavLinks();
   const {
     navRef,
     setLinkRef,
@@ -62,7 +73,7 @@ function HeaderNav({
     activeIndex,
     pillPointerHandlers,
   } = useHeaderNavActivePill({
-    links: NAV_LINKS,
+    links: navLinks,
     pathname,
     searchParams,
   });
@@ -89,7 +100,7 @@ function HeaderNav({
         }}
         {...pillPointerHandlers}
       />
-      {NAV_LINKS.map((link, index) => {
+      {navLinks.map((link, index) => {
         const isHighlighted = highlightedIndex === index;
         const isCurrentPage = activeIndex === index;
 

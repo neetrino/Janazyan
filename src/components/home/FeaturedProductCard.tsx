@@ -12,6 +12,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import { formatPrice } from '../../lib/currency';
 import { ProductLabels } from '../ProductLabels';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
+import { snapshotFromFeaturedProduct } from '../../lib/wishlist/wishlist-snapshot-builders';
 
 const CARD_WIDTH_PX = 283;
 const CARD_HEIGHT_PX = 347;
@@ -69,7 +70,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
       router.push('/login?redirect=/');
       return;
     }
-    toggleWishlist();
+    toggleWishlist(snapshotFromFeaturedProduct(product));
   };
 
   const handleAddToCart = (event: MouseEvent) => {

@@ -4,6 +4,7 @@ import { useState, useEffect, use, useCallback } from 'react';
 import { getStoredCurrency } from '../../../lib/currency';
 import { getStoredLanguage, type LanguageCode } from '../../../lib/language';
 import { t } from '../../../lib/i18n';
+import { snapshotFromProductPage } from '../../../lib/wishlist/wishlist-snapshot-builders';
 import { useAttributeGroups } from './useAttributeGroups';
 import { useProductImages } from './hooks/useProductImages';
 import { useProductFetch } from './hooks/useProductFetch';
@@ -107,6 +108,17 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
     setIsInCompare,
     setShowMessage,
     language,
+    wishlistSnapshot: product
+      ? snapshotFromProductPage({
+          product,
+          price,
+          originalPrice,
+          compareAtPrice,
+          discountPercent,
+          inStock: !isOutOfStock,
+          defaultVariantId: currentVariant?.id ?? null,
+        })
+      : null,
   });
 
   useEffect(() => {

@@ -1,12 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import {
-  CATEGORY_FIGMA_GRID_IDS,
-  CATEGORY_POSTERS,
-  type CategoryPoster as Poster,
-} from './constants';
+import { CATEGORY_FIGMA_GRID_IDS } from './constants';
 import { MIRAGE_CATEGORY_TITLE_CLASS } from './mirage-heading-styles';
+import { useHomeCategoryPosters } from './use-home-i18n';
+import { useTranslation } from '../../lib/i18n-client';
 
 const CATEGORY_IMAGE_CLASS: Record<
   (typeof CATEGORY_FIGMA_GRID_IDS)[number],
@@ -18,24 +18,25 @@ const CATEGORY_IMAGE_CLASS: Record<
   face: 'left-[22%] top-[-40%] h-[172%] w-[83%]',
 };
 
-const CATEGORY_BG_CLASS: Record<Poster['color'], string> = {
+const CATEGORY_BG_CLASS = {
   pink: 'bg-pink',
   sky: 'bg-sky',
   butter: 'bg-butter',
   sage: 'bg-sage',
   lavender: 'bg-lavender',
-};
+} as const;
 
 const CARD_HEIGHT_CLASS = 'h-[434px] min-h-[434px]';
 
 export function CategoryPosters() {
-  const posters = CATEGORY_FIGMA_GRID_IDS.map((id) =>
-    CATEGORY_POSTERS.find((poster) => poster.id === id),
-  ).filter((poster): poster is Poster => poster !== undefined);
+  const { t } = useTranslation();
+  const posters = useHomeCategoryPosters().filter((poster) =>
+    (CATEGORY_FIGMA_GRID_IDS as readonly string[]).includes(poster.id),
+  );
 
   return (
     <section
-      aria-label="Categories"
+      aria-label={t('home.categories.sectionAria')}
       className="relative w-full bg-white px-4 pb-10 pt-10 sm:px-6 md:px-8 lg:px-0 md:pb-[30px] md:pt-[47px]"
     >
       <div className="mx-auto grid w-full max-w-[1416px] grid-cols-2 gap-4 md:gap-[16px]">
@@ -47,7 +48,11 @@ export function CategoryPosters() {
   );
 }
 
-function CategoryCard({ poster }: { poster: Poster }) {
+function CategoryCard({
+  poster,
+}: {
+  poster: ReturnType<typeof useHomeCategoryPosters>[number];
+}) {
   const imageClass =
     CATEGORY_IMAGE_CLASS[
       poster.id as (typeof CATEGORY_FIGMA_GRID_IDS)[number]

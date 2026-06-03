@@ -1,8 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-
-const WISHLIST_KEY = 'shop_wishlist';
+import { WISHLIST_KEY } from '../../lib/storageCounts';
+import { removeWishlistItem as removeWishlistItemFromStore } from '../../lib/wishlist/wishlist-storage';
+import {
+  removeWishlistSnapshot,
+  upsertWishlistSnapshot,
+} from '../../lib/wishlist/wishlist-snapshot-cache';
+import type { WishlistProductSnapshot } from '../../lib/wishlist/wishlist-types';
 
 /**
  * Hook for managing wishlist state for a product
@@ -34,32 +39,30 @@ export function useWishlist(productId: string) {
     };
   }, [productId]);
 
-  const toggleWishlist = () => {
+  const toggleWishlist = (snapshot?: WishlistProductSnapshot) => {
     if (typeof window === 'undefined') return;
-    
+
     try {
       const stored = localStorage.getItem(WISHLIST_KEY);
       const wishlist: string[] = stored ? JSON.parse(stored) : [];
-      
+
       if (isInWishlist) {
-        const updated = wishlist.filter((id) => id !== productId);
-        localStorage.setItem(WISHLIST_KEY, JSON.stringify(updated));
+        removeWishlistItemFromStore(productId);
         setIsInWishlist(false);
       } else {
         wishlist.push(productId);
         localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+        if (snapshot) {
+          upsertWishlistSnapshot(snapshot);
+        }
         setIsInWishlist(true);
       }
-      
+
       window.dispatchEvent(new Event('wishlist-updated'));
-    } catch (error) {
-      console.error('Error updating wishlist:', error);
+    } catch {
+      // Silently fail — localStorage may be unavailable.
     }
   };
 
   return { isInWishlist, toggleWishlist };
 }
-
-
-
-

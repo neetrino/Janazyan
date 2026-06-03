@@ -1,6 +1,9 @@
+'use client';
+
 import Link from 'next/link';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 import { FeaturedProductCardSlot } from './FeaturedProductCardSlot';
+import { useTranslation } from '../../lib/i18n-client';
 
 type HomeMobileFeaturedProductsProps = {
   products: HomeFeaturedProduct[];
@@ -9,6 +12,8 @@ type HomeMobileFeaturedProductsProps = {
 export function HomeMobileFeaturedProducts({
   products,
 }: HomeMobileFeaturedProductsProps) {
+  const { t } = useTranslation();
+
   if (products.length === 0) {
     return null;
   }
@@ -16,12 +21,14 @@ export function HomeMobileFeaturedProducts({
   return (
     <div>
       <div className="mb-4 flex items-center justify-between text-white">
-        <h2 className="text-[16px] font-bold tracking-[-0.01em]">Հայտնի Ապրանքներ</h2>
+        <h2 className="text-[16px] font-bold tracking-[-0.01em]">
+          {t('home.featured.mobile.title')}
+        </h2>
         <Link
           href="/products?filter=featured"
           className="text-[13px] font-semibold uppercase"
         >
-          Բոլորը
+          {t('home.featured.mobile.viewAll')}
         </Link>
       </div>
       <div className="grid grid-cols-2 gap-1 justify-items-center">

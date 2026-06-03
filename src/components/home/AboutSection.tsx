@@ -1,9 +1,12 @@
+'use client';
+
 import type { CSSProperties } from 'react';
-import { ABOUT_STATS } from './constants';
+import { ABOUT_STAT_KEYS } from './constants';
 import {
   MIRAGE_ABOUT_HEADING_INK_CLASS,
   MIRAGE_ABOUT_HEADING_SKY_CLASS,
 } from './mirage-heading-styles';
+import { useTranslation } from '../../lib/i18n-client';
 
 const ABOUT_IMAGE = '/figma/about-hero.webp';
 
@@ -18,9 +21,11 @@ const ABOUT_BG_STYLE: CSSProperties = {
 };
 
 export function AboutSection() {
+  const { t } = useTranslation();
+
   return (
     <section
-      aria-label="About Janazyan"
+      aria-label={t('home.about.sectionAria')}
       className="relative hidden w-full overflow-hidden font-armenian lg:block lg:p-0"
       style={ABOUT_BG_STYLE}
     >
@@ -30,6 +35,8 @@ export function AboutSection() {
 }
 
 function DesktopAbout() {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto w-full">
       <div
@@ -56,31 +63,31 @@ function DesktopAbout() {
 
         <div className="absolute left-1/2 top-[48px] z-[2] flex -translate-x-1/2 flex-col items-center text-center">
           <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}>
-            Ծնված Սիրուց
+            {t('home.about.headingBorn')}
           </p>
           <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}>
-            Ստեղծված Խնամքով
+            {t('home.about.headingCare')}
           </p>
         </div>
 
         <p className="absolute left-[950px] top-[323px] z-[2] w-[433px] text-[18px] leading-[29.25px] tracking-[-0.4395px] text-ink-500">
-          Փոքրիկ Ծաղիկը հիմնադրվել է ծնողների կողմից, ովքեր հասկանում են նոր կյանքի ճանապարհը։ Մենք հավատում ենք, որ յուրաքանչյուր երեխա արժանի է ամենանուրբ խնամքին, և յուրաքանչյուր ծնող արժանի է հանգստության։
+          {t('home.about.paragraphRight')}
         </p>
 
         <p className="absolute left-[484px] top-[228px] z-[2] w-[352px] -translate-x-full text-right text-[16px] leading-[26px] tracking-[-0.3125px] text-ink-500">
-          Մեր ուշադիր ընտրված հավաքածուն համատեղում է անվտանգությունը, կայունությունը և ոճը։ Յուրաքանչյուր արտադրանք մտածված կերպով ընտրված է և խստորեն փորձարկված՝ համապատասխանելու որակի և հարմարավետության բարձրագույն չափանիշներին։
+          {t('home.about.paragraphLeft')}
         </p>
 
         <div className="absolute left-[254px] top-[548px] z-[2] w-[149px]">
-          <Stat value={ABOUT_STATS[0].value} label={ABOUT_STATS[0].label} />
+          <Stat statKey={ABOUT_STAT_KEYS[0]} />
         </div>
 
         <div className="absolute left-[577px] top-[796px] z-[2] w-[99px]">
-          <Stat value={ABOUT_STATS[1].value} label={ABOUT_STATS[1].label} />
+          <Stat statKey={ABOUT_STAT_KEYS[1]} />
         </div>
 
         <div className="absolute left-[1044px] top-[579px] z-[2] w-[115px]">
-          <Stat value={ABOUT_STATS[2].value} label={ABOUT_STATS[2].label} />
+          <Stat statKey={ABOUT_STAT_KEYS[2]} />
         </div>
         </div>
       </div>
@@ -89,14 +96,13 @@ function DesktopAbout() {
 }
 
 function Stat({
-  value,
-  label,
+  statKey,
   align = 'center',
 }: {
-  value: string;
-  label: string;
+  statKey: (typeof ABOUT_STAT_KEYS)[number];
   align?: 'left' | 'center' | 'right';
 }) {
+  const { t } = useTranslation();
   const alignClass =
     align === 'left'
       ? 'items-start text-left'
@@ -107,10 +113,10 @@ function Stat({
   return (
     <div className={`flex flex-col gap-[4px] ${alignClass}`}>
       <span className="whitespace-nowrap text-[30px] font-black leading-[36px] tracking-[0.3955px] text-sky-soft">
-        {value}
+        {t(`home.about.stats.${statKey}.value`)}
       </span>
       <span className="whitespace-nowrap text-[14px] leading-[20px] tracking-[-0.1504px] text-ink-500">
-        {label}
+        {t(`home.about.stats.${statKey}.label`)}
       </span>
     </div>
   );

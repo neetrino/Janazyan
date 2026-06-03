@@ -1,66 +1,59 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-import { Globe, Menu, Phone, Search } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { MobileTopBar } from './MobileTopBar';
 import type { ReactNode } from 'react';
 import {
   CATEGORY_BG,
   CATEGORY_FIGMA_GRID_IDS,
-  CATEGORY_POSTERS,
-  WHY_CARDS,
 } from './constants';
 import {
   MIRAGE_CATEGORY_TITLE_MOBILE_CLASS,
   MIRAGE_MOBILE_HERO_TITLE_CLASS,
 } from './mirage-heading-styles';
+import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
+import { useTranslation } from '../../lib/i18n-client';
+import type { WhyCardConfig } from './constants';
+import type { WhyCardText } from './use-home-i18n';
 
-const MOBILE_HERO_TITLE = CATEGORY_POSTERS.find((item) => item.id === 'hair')!.title;
+type MobileFilterKey = 'face' | 'hair' | 'body' | 'kids' | 'sun';
 
-type MobileFilter = {
-  label: string;
+const MOBILE_FILTER_KEYS: ReadonlyArray<{
+  key: MobileFilterKey;
   iconSrc?: string;
   iconClassName?: string;
-};
-
-const MOBILE_FILTERS: ReadonlyArray<MobileFilter> = [
-  {
-    label: 'Դեմք',
-    iconSrc: '/figma/filter-face-icon.svg',
-    iconClassName: 'h-4 w-4',
-  },
-  {
-    label: 'Մազ',
-    iconSrc: '/figma/filter-hair-icon.svg',
-    iconClassName: 'h-4 w-4',
-  },
-  {
-    label: 'Մարմին',
-    iconSrc: '/figma/filter-body-icon.svg',
-    iconClassName: 'h-4 w-4',
-  },
-  {
-    label: 'Մանկական',
-    iconSrc: '/figma/filter-kids-icon.svg',
-    iconClassName: 'h-5 w-5',
-  },
-  { label: 'Արև' },
+}> = [
+  { key: 'face', iconSrc: '/figma/filter-face-icon.svg', iconClassName: 'h-4 w-4' },
+  { key: 'hair', iconSrc: '/figma/filter-hair-icon.svg', iconClassName: 'h-4 w-4' },
+  { key: 'body', iconSrc: '/figma/filter-body-icon.svg', iconClassName: 'h-4 w-4' },
+  { key: 'kids', iconSrc: '/figma/filter-kids-icon.svg', iconClassName: 'h-5 w-5' },
+  { key: 'sun' },
 ];
 
 type HomeMobileFigmaProps = {
   featuredSlot: ReactNode;
 };
 
+type WhyCardView = WhyCardConfig & WhyCardText;
+
 export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
-  const mobileCategories = [...CATEGORY_FIGMA_GRID_IDS];
-  const whyCards = WHY_CARDS.slice(0, 3);
+  const categoryPosters = useHomeCategoryPosters();
+  const whyCards = useHomeWhyCards().slice(0, 3);
+  const hairCategory = categoryPosters.find((item) => item.id === 'hair');
 
   return (
     <section className="relative lg:hidden pb-28">
       <MobileBackdrop />
       <div className="relative z-10 px-3 pt-10">
         <MobileTopBar />
-        <MobileHeroCard />
+        <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />
-        <MobileCategoryGrid categoryIds={mobileCategories} />
+        <MobileCategoryGrid
+          categoryIds={[...CATEGORY_FIGMA_GRID_IDS]}
+          categoryPosters={categoryPosters}
+        />
       </div>
 
       <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink px-3 pb-10 pt-9">
@@ -79,45 +72,9 @@ function MobileBackdrop() {
   );
 }
 
-function MobileTopBar() {
-  return (
-    <div className="flex items-center gap-2">
-      <button
-        type="button"
-        aria-label="Search"
-        className="flex h-12 flex-1 items-center rounded-full bg-white px-4 text-ink-500 shadow-[0_4px_18px_rgba(30,41,57,0.08)]"
-      >
-        <Search className="h-5 w-5" />
-      </button>
-      <CircleButton label="Call">
-        <Phone className="h-5 w-5" />
-      </CircleButton>
-      <CircleButton label="Language">
-        <Globe className="h-5 w-5" />
-      </CircleButton>
-    </div>
-  );
-}
+function MobileHeroCard({ heroTitle }: { heroTitle: [string, string] }) {
+  const { t } = useTranslation();
 
-function CircleButton({
-  children,
-  label,
-}: {
-  children: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      aria-label={label}
-      className="grid h-12 w-12 place-items-center rounded-full bg-sky text-ink-500"
-    >
-      {children}
-    </button>
-  );
-}
-
-function MobileHeroCard() {
   return (
     <div className="relative mt-6 h-[220px] overflow-hidden rounded-[40px] bg-[linear-gradient(148deg,#f5c8ce_0%,#bcd4ec_60%,#f19397_100%)]">
       <div className="absolute left-[146px] top-[-48px] h-[339px] w-[266px]">
@@ -132,7 +89,7 @@ function MobileHeroCard() {
       </div>
       <div className="absolute left-0 top-[29px] flex w-full flex-col gap-3 px-5 pt-5">
         <p className={MIRAGE_MOBILE_HERO_TITLE_CLASS}>
-          {MOBILE_HERO_TITLE.map((line) => (
+          {heroTitle.map((line) => (
             <span key={line} className="block">
               {line}
             </span>
@@ -142,7 +99,7 @@ function MobileHeroCard() {
           href="/products?category=hair"
           className="inline-flex h-9 w-[217px] items-center justify-center gap-1 rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-ink-800"
         >
-          Պատվիրել — 32 400 ֏
+          {t('home.mobile.orderCta')}
           <Menu className="h-3.5 w-3.5" />
         </Link>
       </div>
@@ -151,11 +108,13 @@ function MobileHeroCard() {
 }
 
 function MobileFilterTabs() {
+  const { t } = useTranslation();
+
   return (
     <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-      {MOBILE_FILTERS.map((filter, index) => (
+      {MOBILE_FILTER_KEYS.map((filter, index) => (
         <button
-          key={filter.label}
+          key={filter.key}
           type="button"
           className={[
             'shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-3 text-[12px] font-medium leading-none',
@@ -173,29 +132,36 @@ function MobileFilterTabs() {
               />
             </span>
           ) : null}
-          {filter.label}
+          {t(`home.mobile.filters.${filter.key}`)}
         </button>
       ))}
     </div>
   );
 }
 
-function MobileCategoryGrid({ categoryIds }: { categoryIds: string[] }) {
+function MobileCategoryGrid({
+  categoryIds,
+  categoryPosters,
+}: {
+  categoryIds: string[];
+  categoryPosters: ReturnType<typeof useHomeCategoryPosters>;
+}) {
   return (
     <div className="mt-4 grid grid-cols-2 gap-3">
       {categoryIds.map((id) => {
-        const category = CATEGORY_POSTERS.find((item) => item.id === id);
+        const category = categoryPosters.find((item) => item.id === id);
         if (!category) return null;
-        return <MobileCategoryCard key={category.id} categoryId={category.id} />;
+        return <MobileCategoryCard key={category.id} category={category} />;
       })}
     </div>
   );
 }
 
-function MobileCategoryCard({ categoryId }: { categoryId: string }) {
-  const category = CATEGORY_POSTERS.find((item) => item.id === categoryId);
-  if (!category) return null;
-
+function MobileCategoryCard({
+  category,
+}: {
+  category: ReturnType<typeof useHomeCategoryPosters>[number];
+}) {
   return (
     <Link
       href={category.href}
@@ -222,7 +188,8 @@ function MobileCategoryCard({ categoryId }: { categoryId: string }) {
   );
 }
 
-function MobileWhyChooseUs({ cards }: { cards: typeof WHY_CARDS }) {
+function MobileWhyChooseUs({ cards }: { cards: WhyCardView[] }) {
+  const { t } = useTranslation();
   const [leftCard, topRightCard, bottomRightCard] = cards;
   if (!leftCard || !topRightCard || !bottomRightCard) {
     return null;
@@ -230,7 +197,9 @@ function MobileWhyChooseUs({ cards }: { cards: typeof WHY_CARDS }) {
 
   return (
     <div className="mt-8">
-      <h2 className="text-[16px] font-bold text-white">Ինչու ընտրել մեզ</h2>
+      <h2 className="text-[16px] font-bold text-white">
+        {t('home.whyChooseUs.titleMobile')}
+      </h2>
       <div className="mt-3 grid grid-cols-2 gap-3">
         <WhyCard card={leftCard} className="row-span-2 h-[260px]" />
         <WhyCard card={topRightCard} className="h-[124px]" />
@@ -245,7 +214,7 @@ function WhyCard({
   className,
   compact = false,
 }: {
-  card: (typeof WHY_CARDS)[number];
+  card: WhyCardView;
   className: string;
   compact?: boolean;
 }) {
