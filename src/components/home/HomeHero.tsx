@@ -194,7 +194,7 @@ export function HomeHero() {
   return (
     <section
       aria-label={t('home.hero.ariaSection')}
-      className="relative w-full px-4 pt-3 sm:px-6 md:px-8 md:pt-5 lg:px-0"
+      className="relative w-full pt-3 md:pt-5"
     >
       <div className="relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (

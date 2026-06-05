@@ -26,7 +26,7 @@ export function AboutSection() {
   return (
     <section
       aria-label={t('home.about.sectionAria')}
-      className="relative hidden w-full overflow-hidden font-armenian lg:block lg:p-0"
+      className="relative hidden w-full overflow-hidden font-armenian lg:block"
       style={ABOUT_BG_STYLE}
     >
       <DesktopAbout />

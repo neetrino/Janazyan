@@ -8,6 +8,7 @@ import { HeaderBrandCluster } from './header/HeaderBrandCluster';
 import { openCartDrawer } from '../lib/cart-drawer-events';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 import { formatWishlistBadgeCount, useWishlistItemCount } from './hooks/useWishlistItemCount';
+import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../lib/layout/storefront-layout.constants';
 import { isStorefrontPage } from '../lib/nav/is-storefront-page';
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
@@ -174,7 +175,9 @@ function HeaderShell({
   const innerBgClass = storefrontTone ? STOREFRONT_HEADER_BG_CLASS : 'bg-white';
 
   return (
-    <div className={`relative z-30 hidden w-full ${outerBgClass} px-4 pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] sm:px-6 md:px-8 md:pt-5 lg:block lg:px-0`}>
+    <div
+      className={`relative z-30 hidden w-full ${outerBgClass} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS} pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] md:pt-5 lg:block`}
+    >
       <div
         className={`relative mx-auto flex w-full max-w-[1472px] items-center justify-between ${innerBgClass} px-[22px] lg:rounded-t-[36px] lg:pr-[53px]`}
         style={{ minHeight: HEADER_SHELL_MIN_HEIGHT_PX }}

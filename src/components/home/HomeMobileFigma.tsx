@@ -15,6 +15,7 @@ import {
 } from './mirage-heading-styles';
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -44,9 +45,9 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   const hairCategory = categoryPosters.find((item) => item.id === 'hair');
 
   return (
-    <section className="relative lg:hidden pb-28">
+    <section className={`relative pb-28 lg:hidden ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
       <MobileBackdrop />
-      <div className="relative z-10 px-3 pt-10">
+      <div className="relative z-10 pt-10">
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />
@@ -56,7 +57,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
         />
       </div>
 
-      <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink px-3 pb-10 pt-9">
+      <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink pb-10 pt-9">
         {featuredSlot}
         <MobileWhyChooseUs cards={whyCards} />
       </div>

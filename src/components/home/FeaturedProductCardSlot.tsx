@@ -12,9 +12,12 @@ const SCALE_CLASS: Record<FeaturedProductCardScale, string> = {
   carousel: 'scale-[0.72] sm:scale-[0.85] lg:scale-100',
 };
 
-/** Layout box matching catalog scale so cards do not overlap in the grid. */
+/** Product bottle extends above the card — slot height includes that overflow at each breakpoint. */
 const CATALOG_SLOT_SIZE =
-  'h-[201px] w-[164px] sm:h-[250px] sm:w-[204px] md:h-[305px] md:w-[249px] lg:h-[347px] lg:w-[283px]';
+  'h-[238px] w-[164px] sm:h-[296px] sm:w-[204px] md:h-[361px] md:w-[249px] lg:h-[411px] lg:w-[283px]';
+
+const CATALOG_SLOT_CARD_TOP_CLASS =
+  'top-[37px] sm:top-[46px] md:top-[56px] lg:top-[64px]';
 
 type FeaturedProductCardSlotProps = {
   product: HomeFeaturedProduct;
@@ -32,7 +35,7 @@ export function FeaturedProductCardSlot({
     return (
       <div className={`relative shrink-0 overflow-visible ${CATALOG_SLOT_SIZE}`}>
         <div
-          className={`absolute left-1/2 top-0 -translate-x-1/2 origin-top ${SCALE_CLASS.catalog}`}
+          className={`absolute left-1/2 -translate-x-1/2 origin-top ${CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.catalog}`}
         >
           <FeaturedProductCard product={product} />
         </div>
