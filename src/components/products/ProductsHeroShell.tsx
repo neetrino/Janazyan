@@ -28,7 +28,7 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
         <div
           className={`absolute inset-x-0 w-full ${PRODUCTS_PAGE_HERO_ASPECT_CLASS} ${PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS}`}
         >
-          <HeroRectangleBackground variant="blue" fill />
+          <HeroRectangleBackground variant="blue" fill solidColor="#C9DDF0" />
         </div>
         <Header embedded />
         <div

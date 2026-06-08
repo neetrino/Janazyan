@@ -11,14 +11,18 @@ type HeroRectangleBackgroundProps = {
   className?: string;
   /** Stretch gradient to fill the parent (e.g. growing products catalog shell). */
   fill?: boolean;
+  /** When set, fills the shape with a single solid color instead of the gradient. */
+  solidColor?: string;
 };
 
 export function HeroRectangleBackground({
   variant,
   className = '',
   fill = false,
+  solidColor,
 }: HeroRectangleBackgroundProps) {
   const gradientId = `hero-rectangle-gradient-${variant}`;
+  const pathFill = solidColor ?? `url(#${gradientId})`;
 
   return (
     <div
@@ -41,7 +45,7 @@ export function HeroRectangleBackground({
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d={HERO_RECTANGLE_PATH} fill={`url(#${gradientId})`} />
+        <path d={HERO_RECTANGLE_PATH} fill={pathFill} />
         <defs>
           {variant === 'blue' ? (
             <linearGradient
