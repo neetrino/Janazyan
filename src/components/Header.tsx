@@ -19,10 +19,7 @@ const HEADER_CART_BADGE_COLOR = '#0499c3';
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
 
-const HEADER_BRAND_LEFT_PX = 22;
 const HEADER_BRAND_TOP_PX = 53;
-const HEADER_ACTIONS_TOP_PERCENT = 7.77;
-const HEADER_ACTIONS_RIGHT_PERCENT = 3.6;
 /** Bar height for logo (top + height) and action cluster in flow/embedded shells. */
 const HEADER_SHELL_MIN_HEIGHT_PX = 156;
 
@@ -104,52 +101,6 @@ function HeaderActions() {
   );
 }
 
-function HeaderBar({
-  pathname,
-  searchParams,
-}: {
-  pathname: string;
-  searchParams: URLSearchParams;
-}) {
-  return (
-    <>
-      <div
-        className="pointer-events-auto absolute"
-        style={{
-          left: HEADER_BRAND_LEFT_PX,
-          top: HEADER_BRAND_TOP_PX,
-        }}
-      >
-        <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
-      </div>
-      <div
-        className="pointer-events-auto absolute"
-        style={{
-          right: `${HEADER_ACTIONS_RIGHT_PERCENT}%`,
-          top: `${HEADER_ACTIONS_TOP_PERCENT}%`,
-        }}
-      >
-        <HeaderActions />
-      </div>
-    </>
-  );
-}
-
-function HeaderFlowBar({
-  pathname,
-  searchParams,
-}: {
-  pathname: string;
-  searchParams: URLSearchParams;
-}) {
-  return (
-    <>
-      <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
-      <HeaderActions />
-    </>
-  );
-}
-
 function HeaderOverlayBar({
   pathname,
   searchParams,
@@ -158,8 +109,17 @@ function HeaderOverlayBar({
   searchParams: URLSearchParams;
 }) {
   return (
-    <header className="pointer-events-none absolute inset-0 z-30">
-      <HeaderBar pathname={pathname} searchParams={searchParams} />
+    <header className="pointer-events-none absolute inset-x-0 top-0 z-30">
+      <div
+        className="pointer-events-auto mx-auto flex w-full max-w-[1472px] items-center justify-between px-[22px] lg:pr-[53px]"
+        style={{
+          paddingTop: HEADER_BRAND_TOP_PX,
+          minHeight: HEADER_SHELL_MIN_HEIGHT_PX,
+        }}
+      >
+        <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
+        <HeaderActions />
+      </div>
     </header>
   );
 }
@@ -206,7 +166,8 @@ export function Header({ embedded = false }: HeaderProps) {
 
   return (
     <HeaderShell storefrontTone={storefrontTone} plainWhite={plainWhite}>
-      <HeaderFlowBar pathname={pathname} searchParams={searchParams} />
+      <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
+      <HeaderActions />
     </HeaderShell>
   );
 }

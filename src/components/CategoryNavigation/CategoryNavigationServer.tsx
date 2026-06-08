@@ -65,17 +65,7 @@ export async function CategoryNavigationServer({
   language,
   activeCategorySlug,
 }: CategoryNavigationServerProps) {
-  const stripCategories = await getCategoryNavStripCached(language);
-
-  const allItem: CategoryTreeNode = {
-    id: 'all',
-    slug: 'all',
-    title: t(language, 'products.categoryNavigation.all'),
-    fullPath: 'all',
-    children: [],
-  };
-
-  const displayCategories = [allItem, ...stripCategories];
+  const displayCategories = await getCategoryNavStripCached(language);
 
   return (
     <div className="border-b border-black/5 py-3 sm:py-4 md:py-6 w-full">
@@ -84,10 +74,7 @@ export async function CategoryNavigationServer({
           className="flex items-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-1 sm:pb-2 pl-2 sm:pl-4 md:pl-6"
         >
           {displayCategories.map((category) => {
-            const isActive =
-              category.slug === 'all'
-                ? !activeCategorySlug
-                : activeCategorySlug === category.slug;
+            const isActive = activeCategorySlug === category.slug;
 
             return (
               <Link
