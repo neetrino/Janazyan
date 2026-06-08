@@ -33,9 +33,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   return (
     <main className={`relative flex-1 w-full ${plainProductsListing ? 'bg-white' : ''}`}>
       {plainProductsListing ? (
-        <div className="relative z-10 mx-auto w-full max-w-[1475px] bg-white pb-12 lg:pb-[220px]">
-          {children}
-        </div>
+        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
       ) : useCatalogTheme ? (
         <StorefrontPageShell>{children}</StorefrontPageShell>
       ) : (

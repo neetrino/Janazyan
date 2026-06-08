@@ -9,19 +9,31 @@ const HERO_RECTANGLE_PATH =
 type HeroRectangleBackgroundProps = {
   variant: HeroSlideBackground;
   className?: string;
+  /** Stretch gradient to fill the parent (e.g. growing products catalog shell). */
+  fill?: boolean;
 };
 
-export function HeroRectangleBackground({ variant, className = '' }: HeroRectangleBackgroundProps) {
+export function HeroRectangleBackground({
+  variant,
+  className = '',
+  fill = false,
+}: HeroRectangleBackgroundProps) {
   const gradientId = `hero-rectangle-gradient-${variant}`;
 
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 z-[1] transition-opacity duration-500 ${className}`}
-      style={{
-        bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
-        top: `${HERO_RECTANGLE_TOP_PERCENT}%`,
-      }}
+      className={`pointer-events-none absolute z-[1] transition-opacity duration-500 ${
+        fill ? 'inset-0' : 'inset-x-0'
+      } ${className}`}
+      style={
+        fill
+          ? undefined
+          : {
+              bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
+              top: `${HERO_RECTANGLE_TOP_PERCENT}%`,
+            }
+      }
     >
       <svg
         className="h-full w-full"

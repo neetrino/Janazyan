@@ -2,11 +2,17 @@
 export const PRODUCTS_PAGE_SHELL_CLASS =
   'relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
 
-/** Figma shop hero band — toolbar zone (nodes 269:900–269:919). */
-export const PRODUCTS_PAGE_HERO_BAND_MIN_HEIGHT_CLASS = 'min-h-[320px]';
+/** Same viewBox proportions as {@link HeroRectangleBackground} — keeps the hero shape unsmeared. */
+export const PRODUCTS_PAGE_HERO_ASPECT_CLASS = 'aspect-[1388/852]';
+
+/** HomeHero lg frame top inset (5.96% × 940px) — gradient starts below embedded header. */
+export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-[56px]';
 
 /** Breadcrumb baseline from shell top (node 269:900, y=210). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[210px]';
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'lg:pt-[210px]';
+
+/** Mobile — clear embedded header before breadcrumb / category pills. */
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[140px]';
 
 /** Embedded header actions — fixed px (7.77% of Figma 940px frame). */
 export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
@@ -28,5 +34,5 @@ export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-5 sm:px-8 lg:px-[53px]';
 /** Bottom padding inside the catalog zone. */
 export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS = 'pb-10 lg:pb-14';
 
-/** Mobile hero band height — header overlay only (category strip removed). */
+/** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

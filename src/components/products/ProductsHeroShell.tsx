@@ -2,12 +2,17 @@
 
 import type { ReactNode } from 'react';
 import {
+  PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
+  PRODUCTS_PAGE_CATALOG_SURFACE_CLASS,
+  PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS,
   PRODUCTS_PAGE_CONTENT_INSET_CLASS,
-  PRODUCTS_PAGE_HERO_BAND_MIN_HEIGHT_CLASS,
-  PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS,
+  PRODUCTS_PAGE_HERO_ASPECT_CLASS,
+  PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS,
+  PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
+import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
 
@@ -16,43 +21,46 @@ type ProductsHeroShellProps = {
   catalog: ReactNode;
 };
 
+function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
+  return (
+    <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
+      <div className="relative shrink-0 overflow-hidden">
+        <div
+          className={`absolute inset-x-0 w-full ${PRODUCTS_PAGE_HERO_ASPECT_CLASS} ${PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS}`}
+        >
+          <HeroRectangleBackground variant="blue" fill />
+        </div>
+        <Header embedded />
+        <div
+          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
+        >
+          {toolbar}
+        </div>
+      </div>
+
+      <div
+        className={`relative z-20 ${PRODUCTS_PAGE_CATALOG_SURFACE_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS} ${PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS}`}
+      >
+        {catalog}
+      </div>
+    </div>
+  );
+}
+
 /**
- * /products shell — fixed hero band (Figma node 269:726), catalog grows below.
+ * /products shell — home-hero rounded frame; hero band matches HomeHero SVG, catalog grows below.
  */
 export function ProductsHeroShell({ toolbar, catalog }: ProductsHeroShellProps) {
   return (
     <>
-      <div className="hidden w-full lg:block">
-        <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
-          <div className={`relative shrink-0 ${PRODUCTS_PAGE_HERO_BAND_MIN_HEIGHT_CLASS}`}>
-            <HeroRectangleBackground variant="blue" fill />
-            <Header embedded embeddedScope="products" />
-
-            <div
-              className={`absolute inset-x-0 top-0 z-20 ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}
-            >
-              {toolbar}
-            </div>
-          </div>
-
-          <div className="relative z-20 flex flex-col">{catalog}</div>
-        </div>
+      <div className={`hidden w-full lg:block ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+        <section aria-label="Shop" className="relative w-full pt-3 md:pt-5">
+          <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
+        </section>
       </div>
 
-      <div className="lg:hidden">
-        <div className="relative flex flex-col overflow-hidden rounded-[28px] bg-white">
-          <div
-            className={`relative shrink-0 overflow-hidden ${PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS}`}
-          >
-            <HeroRectangleBackground variant="blue" fill />
-            <Header embedded embeddedScope="products" />
-          </div>
-
-          <div className={`relative z-20 flex flex-col bg-products-catalog ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
-            <div className="pb-2 pt-4">{toolbar}</div>
-            {catalog}
-          </div>
-        </div>
+      <div className={`lg:hidden ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+        <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
       </div>
     </>
   );
