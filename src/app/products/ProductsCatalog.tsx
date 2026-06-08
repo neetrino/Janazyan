@@ -4,7 +4,6 @@ import { Button } from '@shop/ui';
 import type { LanguageCode } from '../../lib/language';
 import { getServerLanguage } from '../../lib/language-server';
 import { t } from '../../lib/i18n';
-import { ProductsHeader } from '../../components/ProductsHeader';
 import { ProductsGrid } from '../../components/ProductsGrid';
 import { logger } from '../../lib/utils/logger';
 import { productsService } from '../../lib/services/products.service';
@@ -196,10 +195,6 @@ export async function ProductsCatalog({
 
   return (
     <div className="w-full py-4 overflow-x-hidden">
-      <div className={`${PAGE_CONTAINER} relative z-10`}>
-        <ProductsHeader total={productsData.meta.total} perPage={productsData.meta.limit} />
-      </div>
-
       <div className={`${PAGE_CONTAINER} relative z-10 py-4`}>
         {normalizedProducts.length > 0 ? (
           <>

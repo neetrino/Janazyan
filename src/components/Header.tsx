@@ -9,7 +9,7 @@ import { openCartDrawer } from '../lib/cart-drawer-events';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 import { formatWishlistBadgeCount, useWishlistItemCount } from './hooks/useWishlistItemCount';
 import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../lib/layout/storefront-layout.constants';
-import { isStorefrontPage } from '../lib/nav/is-storefront-page';
+import { isProductsListingPage, isStorefrontPage } from '../lib/nav/is-storefront-page';
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
 const HEADER_ACTION_ICON_SIZE_PX = 20;
@@ -167,12 +167,18 @@ function HeaderOverlayBar({
 function HeaderShell({
   children,
   storefrontTone,
+  plainWhite,
 }: {
   children: React.ReactNode;
   storefrontTone: boolean;
+  plainWhite: boolean;
 }) {
-  const outerBgClass = storefrontTone ? STOREFRONT_HEADER_BG_CLASS : 'bg-safe-top';
-  const innerBgClass = storefrontTone ? STOREFRONT_HEADER_BG_CLASS : 'bg-white';
+  const outerBgClass = plainWhite
+    ? 'bg-white'
+    : storefrontTone
+      ? STOREFRONT_HEADER_BG_CLASS
+      : 'bg-safe-top';
+  const innerBgClass = plainWhite || !storefrontTone ? 'bg-white' : STOREFRONT_HEADER_BG_CLASS;
 
   return (
     <div
@@ -191,14 +197,15 @@ function HeaderShell({
 export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const storefrontTone = isStorefrontPage(pathname);
+  const plainWhite = isProductsListingPage(pathname);
+  const storefrontTone = isStorefrontPage(pathname) && !plainWhite;
 
   if (embedded) {
     return <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />;
   }
 
   return (
-    <HeaderShell storefrontTone={storefrontTone}>
+    <HeaderShell storefrontTone={storefrontTone} plainWhite={plainWhite}>
       <HeaderFlowBar pathname={pathname} searchParams={searchParams} />
     </HeaderShell>
   );
