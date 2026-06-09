@@ -22,6 +22,22 @@ export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 export const PRODUCTS_PAGE_TOOLBAR_PILL_CLASS =
   'rounded-tl-[30px] rounded-tr-[89px] rounded-bl-[30px] rounded-br-[89px]';
 
+/** Category filter pills row — Figma "categories" frame (node 269:894), gap 11px. */
+export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
+  'flex items-center gap-[11px] overflow-x-auto scrollbar-hide';
+
+/** Shared category pill shape/typography — Figma buttons (node 269:895 …), h=56, Montserrat Medium 13px. */
+export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
+  'inline-flex h-[54px] shrink-0 items-center justify-center gap-2 rounded-full px-5 text-[13px] font-medium tracking-[0.5px] whitespace-nowrap transition-colors';
+
+/** Active category pill — dark ink slate with 3px white ring (node 269:895). */
+export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
+  'border-[3px] border-white bg-ink-500 text-white';
+
+/** Inactive category pill — white surface, sky-deep label + icon (nodes 269:861 …). */
+export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
+  'bg-white text-sky-deep hover:bg-sky-mist/50';
+
 /** Gradient continuation for the catalog zone. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
 

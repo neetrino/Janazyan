@@ -1,14 +1,24 @@
 import Link from 'next/link';
 import type { LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
+import {
+  PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS,
+  PRODUCTS_PAGE_CATEGORY_PILL_CLASS,
+  PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS,
+  PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
+} from '../../app/products/products-page-layout.constants';
 import { getCategoryNavStripCached } from '../../lib/categories/categories-nav-strip-cache';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
 import { getCategoryIcon } from './utils';
+import { CategoryPillIcon } from './CategoryPillIcon';
 import { getCategoryNavHref, getCategoryNavLabel } from './category-nav-label';
+
+type CategoryNavigationVariant = 'strip' | 'pills';
 
 interface CategoryNavigationServerProps {
   language: LanguageCode;
   activeCategorySlug?: string;
+  variant?: CategoryNavigationVariant;
 }
 
 function CategoryPlaceholderIcon({ isActive }: { isActive: boolean }) {
@@ -58,14 +68,68 @@ function NavCategoryIcon({
   return <CategoryPlaceholderIcon isActive={isActive} />;
 }
 
+function isCategoryActive(slug: string, activeCategorySlug?: string): boolean {
+  if (slug === 'all') {
+    return !activeCategorySlug;
+  }
+  return activeCategorySlug === slug;
+}
+
+/** Figma "categories" pill row (node 269:894) — horizontal filter buttons. */
+function CategoryPillRow({
+  categories,
+  activeCategorySlug,
+  language,
+}: {
+  categories: CategoryTreeNode[];
+  activeCategorySlug?: string;
+  language: LanguageCode;
+}) {
+  return (
+    <div className={PRODUCTS_PAGE_CATEGORY_ROW_CLASS}>
+      {categories.map((category) => {
+        const isActive = isCategoryActive(category.slug, activeCategorySlug);
+
+        return (
+          <Link
+            key={category.id}
+            href={getCategoryNavHref(category.slug)}
+            aria-current={isActive ? 'page' : undefined}
+            className={`${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${
+              isActive
+                ? PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS
+                : PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS
+            }`}
+          >
+            <CategoryPillIcon title={category.title} slug={category.slug} />
+            <span>{getCategoryNavLabel(category, language)}</span>
+          </Link>
+        );
+      })}
+    </div>
+  );
+}
+
 /**
- * Server-rendered category strip for /products (streams in Suspense, no client fetch).
+ * Server-rendered category navigation for /products (streams in Suspense, no client fetch).
+ * `pills` renders the Figma filter buttons; `strip` keeps the legacy circular icon row.
  */
 export async function CategoryNavigationServer({
   language,
   activeCategorySlug,
+  variant = 'strip',
 }: CategoryNavigationServerProps) {
   const displayCategories = await getCategoryNavStripCached(language);
+
+  if (variant === 'pills') {
+    return (
+      <CategoryPillRow
+        categories={displayCategories}
+        activeCategorySlug={activeCategorySlug}
+        language={language}
+      />
+    );
+  }
 
   return (
     <div className="border-b border-black/5 py-3 sm:py-4 md:py-6 w-full">
