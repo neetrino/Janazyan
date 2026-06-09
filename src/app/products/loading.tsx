@@ -1,11 +1,15 @@
-import { CategoryNavigationStripSkeleton } from '../../components/CategoryNavigation/CategoryNavigationStripSkeleton';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
+import { ProductsShopHeroToolbar } from '../../components/products/ProductsShopHeroToolbar';
+import { getServerLanguage } from '../../lib/language-server';
 import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
 
-export default function ProductsLoading() {
+export default async function ProductsLoading() {
+  const language = await getServerLanguage();
+
   return (
-    <div className="w-full max-w-full">
-      <CategoryNavigationStripSkeleton />
-      <ProductsCatalogMainSkeleton />
-    </div>
+    <ProductsHeroShell
+      toolbar={<ProductsShopHeroToolbar language={language} />}
+      catalog={<ProductsCatalogMainSkeleton />}
+    />
   );
 }

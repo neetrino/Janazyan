@@ -148,7 +148,7 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
         className="absolute inset-x-0 bottom-0"
         style={{ top: CARD_BODY_TOP_PX }}
       >
-        <div className="absolute inset-0 rotate-180 overflow-hidden">
+        <div className="absolute inset-0 rotate-180 overflow-visible">
           <img
             src={FEATURED_CARD_BG}
             alt=""

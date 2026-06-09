@@ -37,7 +37,7 @@ export function CategoryPosters() {
   return (
     <section
       aria-label={t('home.categories.sectionAria')}
-      className="relative w-full bg-white px-4 pb-10 pt-10 sm:px-6 md:px-8 lg:px-0 md:pb-[30px] md:pt-[47px]"
+      className="relative w-full bg-white pb-10 pt-10 md:pb-[30px] md:pt-[47px]"
     >
       <div className="mx-auto grid w-full max-w-[1416px] grid-cols-2 gap-4 md:gap-[16px]">
         {posters.map((poster) => (

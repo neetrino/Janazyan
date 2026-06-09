@@ -8,3 +8,8 @@ export function isAdminPath(pathname: string): boolean {
 export function isStorefrontPage(pathname: string): boolean {
   return pathname !== '/' && !isAdminPath(pathname);
 }
+
+/** Shop listing — plain white surface (no sky header band or catalog gradient). */
+export function isProductsListingPage(pathname: string): boolean {
+  return pathname === '/products';
+}

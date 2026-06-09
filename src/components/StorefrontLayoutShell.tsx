@@ -2,7 +2,11 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { isAdminPath, isStorefrontPage } from '../lib/nav/is-storefront-page';
+import {
+  isAdminPath,
+  isProductsListingPage,
+  isStorefrontPage,
+} from '../lib/nav/is-storefront-page';
 import { StorefrontPageShell } from './StorefrontPageShell';
 
 /** Legacy fixed backdrop — storefront pages use `StorefrontPageShell` instead. */
@@ -23,11 +27,14 @@ export function StorefrontBackground() {
 
 export function StorefrontMain({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const useCatalogTheme = isStorefrontPage(pathname);
+  const plainProductsListing = isProductsListingPage(pathname);
+  const useCatalogTheme = isStorefrontPage(pathname) && !plainProductsListing;
 
   return (
-    <main className="relative flex-1 w-full">
-      {useCatalogTheme ? (
+    <main className={`relative flex-1 w-full ${plainProductsListing ? 'bg-white' : ''}`}>
+      {plainProductsListing ? (
+        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
+      ) : useCatalogTheme ? (
         <StorefrontPageShell>{children}</StorefrontPageShell>
       ) : (
         children

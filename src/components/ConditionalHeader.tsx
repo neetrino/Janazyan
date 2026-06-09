@@ -12,7 +12,7 @@ export function ConditionalHeader() {
     return null;
   }
 
-  if (pathname === '/') {
+  if (pathname === '/' || pathname === '/products') {
     return null;
   }
 

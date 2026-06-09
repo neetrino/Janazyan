@@ -9,19 +9,35 @@ const HERO_RECTANGLE_PATH =
 type HeroRectangleBackgroundProps = {
   variant: HeroSlideBackground;
   className?: string;
+  /** Stretch gradient to fill the parent (e.g. growing products catalog shell). */
+  fill?: boolean;
+  /** When set, fills the shape with a single solid color instead of the gradient. */
+  solidColor?: string;
 };
 
-export function HeroRectangleBackground({ variant, className = '' }: HeroRectangleBackgroundProps) {
+export function HeroRectangleBackground({
+  variant,
+  className = '',
+  fill = false,
+  solidColor,
+}: HeroRectangleBackgroundProps) {
   const gradientId = `hero-rectangle-gradient-${variant}`;
+  const pathFill = solidColor ?? `url(#${gradientId})`;
 
   return (
     <div
       aria-hidden
-      className={`pointer-events-none absolute inset-x-0 z-[1] transition-opacity duration-500 ${className}`}
-      style={{
-        bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
-        top: `${HERO_RECTANGLE_TOP_PERCENT}%`,
-      }}
+      className={`pointer-events-none absolute z-[1] transition-opacity duration-500 ${
+        fill ? 'inset-0' : 'inset-x-0'
+      } ${className}`}
+      style={
+        fill
+          ? undefined
+          : {
+              bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
+              top: `${HERO_RECTANGLE_TOP_PERCENT}%`,
+            }
+      }
     >
       <svg
         className="h-full w-full"
@@ -29,7 +45,7 @@ export function HeroRectangleBackground({ variant, className = '' }: HeroRectang
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d={HERO_RECTANGLE_PATH} fill={`url(#${gradientId})`} />
+        <path d={HERO_RECTANGLE_PATH} fill={pathFill} />
         <defs>
           {variant === 'blue' ? (
             <linearGradient

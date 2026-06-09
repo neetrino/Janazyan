@@ -6,11 +6,15 @@ import { FeaturedProductCard } from './FeaturedProductCard';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { MIRAGE_SECTION_HEADING_CLASS } from './mirage-heading-styles';
 import { useTranslation } from '../../lib/i18n-client';
+import { SECTION_CARD_ROW_INSET_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { useFeaturedRowScale } from './useFeaturedRowScale';
 
 const SECTION_HEIGHT_PX = 772;
 const CARD_WIDTH_PX = 283;
 const CARD_GAP_PX = 30;
 const FEATURED_CARDS_TOP_PX = 188;
+/** Product bottle extends above the card body — row needs headroom so it is not clipped. */
+const FEATURED_CARD_IMAGE_OVERFLOW_TOP_PX = 64;
 
 type FeaturedProductsProps = {
   products: HomeFeaturedProduct[];
@@ -25,6 +29,8 @@ function rowWidthForCount(count: number): number {
 
 export function FeaturedProducts({ products }: FeaturedProductsProps) {
   const { t } = useTranslation();
+  const rowWidth = rowWidthForCount(products.length);
+  const { containerRef, scale } = useFeaturedRowScale(rowWidth);
 
   if (products.length === 0) {
     return null;
@@ -33,7 +39,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
   return (
     <section
       aria-label={t('home.featured.sectionAria')}
-      className="relative w-full overflow-visible px-4 font-armenian sm:px-6 md:px-8 lg:px-[58px]"
+      className="relative w-full overflow-x-hidden font-armenian"
     >
       <div
         className="relative mx-auto w-full max-w-[1470px] overflow-visible"
@@ -44,16 +50,25 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         </h2>
 
         <div
-          className="absolute left-1/2 flex -translate-x-1/2 flex-nowrap items-center justify-center overflow-visible"
+          ref={containerRef}
+          className={`absolute inset-x-0 flex justify-center overflow-visible ${SECTION_CARD_ROW_INSET_CLASS}`}
           style={{
-            top: FEATURED_CARDS_TOP_PX,
-            width: rowWidthForCount(products.length),
-            gap: CARD_GAP_PX,
+            top: FEATURED_CARDS_TOP_PX - FEATURED_CARD_IMAGE_OVERFLOW_TOP_PX,
+            paddingTop: FEATURED_CARD_IMAGE_OVERFLOW_TOP_PX,
           }}
         >
-          {products.map((product) => (
-            <FeaturedProductCard key={product.id} product={product} />
-          ))}
+          <div
+            className="flex flex-nowrap items-center origin-top"
+            style={{
+              gap: CARD_GAP_PX,
+              width: rowWidth,
+              transform: `scale(${scale})`,
+            }}
+          >
+            {products.map((product) => (
+              <FeaturedProductCard key={product.id} product={product} />
+            ))}
+          </div>
         </div>
 
         <div className="absolute left-1/2 top-[622px] -translate-x-1/2">

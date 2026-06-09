@@ -3,6 +3,7 @@
 import { MIRAGE_SECTION_HEADING_CREAM_CLASS } from './mirage-heading-styles';
 import { useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
+import { SECTION_CARD_ROW_INSET_CLASS } from '../../lib/layout/storefront-layout.constants';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -22,14 +23,16 @@ export function WhyChooseUs() {
   return (
     <section
       aria-label={t('home.whyChooseUs.sectionAria')}
-      className="relative w-full px-4 py-16 font-armenian sm:px-6 md:px-8 lg:px-[58px] md:py-24 lg:h-[588px] lg:py-0"
+      className="relative w-full overflow-hidden py-16 font-armenian md:py-24 lg:h-[588px] lg:py-0"
     >
       <div className="relative mx-auto h-full w-full">
         <h2 className={`text-center ${MIRAGE_SECTION_HEADING_CREAM_CLASS} lg:absolute lg:left-1/2 lg:top-[23px] lg:-translate-x-1/2 lg:whitespace-nowrap`}>
           {t('home.whyChooseUs.title')}
         </h2>
 
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:left-1/2 lg:top-[124px] lg:mt-0 lg:flex lg:w-[1372px] lg:max-w-full lg:-translate-x-1/2 lg:gap-[20px]">
+        <div
+          className={`mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:inset-x-0 lg:top-[124px] lg:mt-0 lg:grid-cols-4 lg:gap-5 ${SECTION_CARD_ROW_INSET_CLASS}`}
+        >
           {cards.map((card) => (
             <Card key={card.cardKey} card={card} />
           ))}
@@ -44,7 +47,7 @@ function Card({ card }: { card: WhyCardView }) {
     NUMBER_POSITION[card.index] ?? 'left-[20%] right-[-10%]';
 
   return (
-    <article className="relative h-[320px] w-full overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card lg:w-[328px] lg:shrink-0">
+    <article className="relative h-[320px] w-full min-w-0 overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card">
       <span
         aria-hidden
         className={[

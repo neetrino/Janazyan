@@ -12,7 +12,7 @@ function DesktopFeaturedSkeleton() {
   return (
     <div
       aria-hidden
-      className="relative mx-auto w-full max-w-[1470px] animate-pulse px-4 sm:px-6 md:px-8 lg:px-[58px]"
+      className="relative mx-auto w-full max-w-[1470px] animate-pulse"
       style={{ minHeight: DESKTOP_FEATURED_SKELETON_HEIGHT_PX }}
     >
       <div className="mx-auto mt-16 h-10 w-72 max-w-full rounded bg-white/40" />

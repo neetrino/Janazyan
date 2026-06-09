@@ -4,7 +4,6 @@ import { Button } from '@shop/ui';
 import type { LanguageCode } from '../../lib/language';
 import { getServerLanguage } from '../../lib/language-server';
 import { t } from '../../lib/i18n';
-import { ProductsHeader } from '../../components/ProductsHeader';
 import { ProductsGrid } from '../../components/ProductsGrid';
 import { logger } from '../../lib/utils/logger';
 import { productsService } from '../../lib/services/products.service';
@@ -15,8 +14,6 @@ import {
   sortCatalogProducts,
   type SearchParamsInput,
 } from '../../lib/products/catalog-search-params';
-
-const PAGE_CONTAINER = 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8';
 
 interface Product {
   id: string;
@@ -195,21 +192,16 @@ export async function ProductsCatalog({
   };
 
   return (
-    <div className="w-full py-4 overflow-x-hidden">
-      <div className={`${PAGE_CONTAINER} relative z-10`}>
-        <ProductsHeader total={productsData.meta.total} perPage={productsData.meta.limit} />
-      </div>
+    <div className="relative z-10 w-full overflow-x-hidden">
+      {normalizedProducts.length > 0 ? (
+        <>
+          <ProductsGrid products={normalizedProducts} sortBy={parsed.sort} />
 
-      <div className={`${PAGE_CONTAINER} relative z-10 py-4`}>
-        {normalizedProducts.length > 0 ? (
-          <>
-            <ProductsGrid products={normalizedProducts} sortBy={parsed.sort} />
-
-            {productsData.meta.totalPages > 1 && (
-              <nav
-                className="mt-10 flex flex-wrap items-center justify-center gap-2"
-                aria-label="Pagination"
-              >
+          {productsData.meta.totalPages > 1 && (
+            <nav
+              className="mt-10 flex flex-wrap items-center justify-center gap-2"
+              aria-label="Pagination"
+            >
                 {parsed.page > 1 ? (
                   <Link href={buildPaginationUrl(parsed.page - 1)}>
                     <Button
@@ -271,11 +263,10 @@ export async function ProductsCatalog({
             )}
           </>
         ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">{t(language, 'common.messages.noProductsFound')}</p>
+          <div className="py-12 text-center">
+            <p className="text-lg text-gray-500">{t(language, 'common.messages.noProductsFound')}</p>
           </div>
         )}
-      </div>
     </div>
   );
 }
