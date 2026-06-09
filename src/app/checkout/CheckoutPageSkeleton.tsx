@@ -2,7 +2,7 @@ import { CHECKOUT_GLASS_CARD_CLASS } from './checkout-glass-styles';
 
 export function CheckoutPageSkeleton() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="mx-auto max-w-7xl py-8 md:py-12">
       <div className="animate-pulse" aria-busy="true" aria-label="Loading checkout">
         <div className="h-8 bg-white/40 rounded-2xl w-1/4 mb-8 backdrop-blur-sm" />
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

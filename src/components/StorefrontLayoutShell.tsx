@@ -4,8 +4,8 @@ import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   isAdminPath,
-  isProductsListingPage,
   isStorefrontPage,
+  usesStorefrontHeroShell,
 } from '../lib/nav/is-storefront-page';
 import { StorefrontPageShell } from './StorefrontPageShell';
 
@@ -27,12 +27,12 @@ export function StorefrontBackground() {
 
 export function StorefrontMain({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const plainProductsListing = isProductsListingPage(pathname);
-  const useCatalogTheme = isStorefrontPage(pathname) && !plainProductsListing;
+  const heroShellPage = usesStorefrontHeroShell(pathname);
+  const useCatalogTheme = isStorefrontPage(pathname) && !heroShellPage;
 
   return (
-    <main className={`relative flex-1 w-full ${plainProductsListing ? 'bg-white' : ''}`}>
-      {plainProductsListing ? (
+    <main className={`relative flex-1 w-full ${heroShellPage ? 'bg-white' : ''}`}>
+      {heroShellPage ? (
         <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
       ) : useCatalogTheme ? (
         <StorefrontPageShell>{children}</StorefrontPageShell>

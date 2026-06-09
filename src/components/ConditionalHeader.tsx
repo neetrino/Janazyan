@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import { usesStorefrontHeroShell } from '../lib/nav/is-storefront-page';
 import { Header } from './Header';
 
 export function ConditionalHeader() {
@@ -12,7 +13,7 @@ export function ConditionalHeader() {
     return null;
   }
 
-  if (pathname === '/' || pathname === '/products') {
+  if (pathname === '/' || usesStorefrontHeroShell(pathname)) {
     return null;
   }
 

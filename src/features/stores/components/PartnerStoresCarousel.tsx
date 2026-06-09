@@ -116,22 +116,22 @@ export function PartnerStoresCarousel({
       const normalizedIndex = normalizeIndex(index, count);
       setRotationIndex((prev) => getRotationIndexForTarget(prev, normalizedIndex, count));
       const store = stores[normalizedIndex];
-      if (store) {
+      if (store && store.id !== selectedStoreId) {
         onSelect(store.id, options);
       }
     },
-    [count, onSelect, stores],
+    [count, onSelect, selectedStoreId, stores],
   );
 
   const advanceRotation = useCallback(
     (delta: number, options?: { scrollToMap?: boolean }) => {
       setRotationIndex((prev) => prev + delta);
       const store = stores[normalizeIndex(activeIndex + delta, count)];
-      if (store) {
+      if (store && store.id !== selectedStoreId) {
         onSelect(store.id, options);
       }
     },
-    [activeIndex, count, onSelect, stores],
+    [activeIndex, count, onSelect, selectedStoreId, stores],
   );
 
   const focusStoreAtIndex = useCallback(

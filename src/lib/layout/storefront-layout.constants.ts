@@ -37,7 +37,7 @@ export const STOREFRONT_XL_LAYOUT_MIN_WIDTH_PX = 1800;
 /** Viewport min-width where the ultra-wide column activates. */
 export const STOREFRONT_2XL_LAYOUT_MIN_WIDTH_PX = 2200;
 
-/** Viewport min-width where side padding is removed (column is max-width centered). */
+/** @deprecated Side padding no longer drops at large breakpoints — kept for reference only. */
 export const STOREFRONT_SIDE_PADDING_END_MIN_WIDTH_PX = 1580;
 
 export const STOREFRONT_CONTENT_MAX_WIDTH_CLASS = `max-w-[1470px] min-[1548px]:max-w-[1660px] min-[1800px]:max-w-[1800px] min-[2200px]:max-w-[1900px]`;
@@ -47,12 +47,14 @@ export const STOREFRONT_ARC_MAX_WIDTH_CLASS = `max-w-[1475px] min-[1548px]:max-w
 export const STOREFRONT_PROMO_MAX_WIDTH_CLASS =
   'max-w-[1375px] min-[1548px]:max-w-[1565px] min-[1800px]:max-w-[1705px] min-[2200px]:max-w-[1805px]';
 
+/** Minimum side gutter on narrow viewports (home mobile + legacy storefront blocks). */
+export const STOREFRONT_SIDE_PADDING_MIN_PX = 24;
+
 /**
- * Side padding from Figma (~41px at 1470px viewport). Shrinks on smaller screens;
- * removed once the shell hits max-width so ultra-wide viewports only get mx-auto gutters.
+ * Side padding — same gutter as hero-shell pages on all viewports (no drop at max-width).
+ * Aligns with {@link PRODUCTS_PAGE_SIDE_PADDING_CLASS}.
  */
-export const STOREFRONT_SIDE_PADDING_CLASS =
-  'px-[clamp(16px,2.8vw,48px)] min-[1580px]:px-0';
+export const STOREFRONT_SIDE_PADDING_CLASS = 'px-[clamp(24px,3.2vw,36px)]';
 
 /** Responsive horizontal gutter — same as shell side padding. */
 export const STOREFRONT_HORIZONTAL_GUTTER_CLASS = STOREFRONT_SIDE_PADDING_CLASS;
@@ -63,6 +65,8 @@ export const STOREFRONT_CONTENT_SHELL_CLASS = `mx-auto w-full ${STOREFRONT_CONTE
 /** Pastel arc block — slightly wider than the main column (Figma 10:519). */
 export const STOREFRONT_ARC_SHELL_CLASS = `mx-auto w-full ${STOREFRONT_ARC_MAX_WIDTH_CLASS} ${STOREFRONT_SIDE_PADDING_CLASS}`;
 
-/** Card rows inside arc sections — Figma why-cards inset ~51px at 1470. */
-export const SECTION_CARD_ROW_INSET_CLASS =
-  'px-[clamp(16px,3.5vw,51px)] min-[1580px]:px-0';
+/** Card rows inside arc sections — matches hero-shell inner inset. */
+export const SECTION_CARD_ROW_INSET_CLASS = 'px-6 sm:px-8';
+
+/** Home category 2×2 grid — inset within the content column (Figma 45:414). */
+export const HOME_CATEGORY_GRID_INSET_CLASS = 'px-6 md:px-10 lg:px-12';

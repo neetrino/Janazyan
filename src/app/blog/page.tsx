@@ -1,3 +1,4 @@
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { BlogPageView } from '../../features/blog/components/BlogPageView';
 import { loadBlogPageCopy } from '../../features/blog/load-blog-page-copy';
 import { getCachedPublishedBlogPosts } from '../../lib/blog/blog-posts-cache';
@@ -11,6 +12,11 @@ export default async function BlogPage() {
   const copy = loadBlogPageCopy(locale);
 
   return (
-    <BlogPageView initialPosts={posts} initialLocale={locale} copy={copy} />
+    <ProductsHeroShell
+      sectionAriaLabel="Blog"
+      catalog={
+        <BlogPageView initialPosts={posts} initialLocale={locale} copy={copy} />
+      }
+    />
   );
 }

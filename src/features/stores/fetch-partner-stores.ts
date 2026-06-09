@@ -1,5 +1,6 @@
 import type { LanguageCode } from '../../lib/language';
 import { loadTranslation } from '../../lib/i18n';
+import { normalizePartnerStoreCoordinates } from './coordinates';
 import type { PartnerStore, StoresTranslation } from './types';
 import { PARTNER_STORE_COORDINATES } from './partner-store-coordinates';
 
@@ -18,7 +19,15 @@ export async function fetchPartnerStores(locale: LanguageCode): Promise<PartnerS
     if (response.ok) {
       const payload = (await response.json()) as PartnerStoresApiResponse;
       if (payload.data?.length > 0) {
-        return payload.data;
+        return payload.data
+          .map((store) => {
+            const coordinates = normalizePartnerStoreCoordinates(store.lat, store.lng);
+            if (!coordinates) {
+              return null;
+            }
+            return { ...store, lat: coordinates.lat, lng: coordinates.lng };
+          })
+          .filter((store): store is PartnerStore => store !== null);
       }
     }
   } catch {

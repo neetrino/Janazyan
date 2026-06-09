@@ -15,6 +15,7 @@ import {
   MAP_SELECTED_ZOOM,
   MAP_SELECTED_ZOOM_MOBILE,
 } from '../constants';
+import { normalizePartnerStoreCoordinates } from '../coordinates';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 import { getDirectionsUrl } from '../get-directions-url';
 import { useStoresMobileViewport } from '../use-stores-mobile-viewport';
@@ -72,6 +73,9 @@ export function PartnerStoresMap({
   const isMobile = useStoresMobileViewport();
   const selectedZoom = isMobile ? MAP_SELECTED_ZOOM_MOBILE : MAP_SELECTED_ZOOM;
 
+  const onStoreSelectRef = useRef(onStoreSelect);
+  onStoreSelectRef.current = onStoreSelect;
+
   const focusSelectedStore = useCallback(() => {
     const map = mapRef.current;
     if (!map || !selectedStoreId) {
@@ -83,7 +87,15 @@ export function PartnerStoresMap({
       return;
     }
 
-    map.flyTo([selectedStore.lat, selectedStore.lng], selectedZoom, {
+    const coordinates = normalizePartnerStoreCoordinates(
+      selectedStore.lat,
+      selectedStore.lng,
+    );
+    if (!coordinates) {
+      return;
+    }
+
+    map.flyTo([coordinates.lat, coordinates.lng], selectedZoom, {
       duration: 0.8,
     });
 
@@ -152,8 +164,13 @@ export function PartnerStoresMap({
     markersRef.current.clear();
 
     stores.forEach((store) => {
+      const coordinates = normalizePartnerStoreCoordinates(store.lat, store.lng);
+      if (!coordinates) {
+        return;
+      }
+
       const isSelected = store.id === selectedStoreId;
-      const marker = L.marker([store.lat, store.lng], {
+      const marker = L.marker([coordinates.lat, coordinates.lng], {
         icon: createMarkerIcon(L, isSelected, isMobile),
       });
 
@@ -161,18 +178,18 @@ export function PartnerStoresMap({
         `<div class="partner-store-popup">
           <p class="partner-store-popup-name">${store.name}</p>
           <p class="partner-store-popup-address">${store.address}</p>
-          <a class="partner-store-popup-link" href="${getDirectionsUrl(store.lat, store.lng)}" target="_blank" rel="noopener noreferrer">${getDirectionsLabel}</a>
+          <a class="partner-store-popup-link" href="${getDirectionsUrl(coordinates.lat, coordinates.lng)}" target="_blank" rel="noopener noreferrer">${getDirectionsLabel}</a>
         </div>`,
       );
 
       marker.on('click', () => {
-        onStoreSelect(store.id);
+        onStoreSelectRef.current(store.id);
       });
 
       marker.addTo(map);
       markersRef.current.set(store.id, marker);
     });
-  }, [stores, selectedStoreId, onStoreSelect, getDirectionsLabel, isMobile, mapReady]);
+  }, [stores, selectedStoreId, getDirectionsLabel, isMobile, mapReady]);
 
   useEffect(() => {
     if (!mapReady) {

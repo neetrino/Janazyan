@@ -1,4 +1,5 @@
 import dynamic from 'next/dynamic';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
 
 const CheckoutPageClient = dynamic(
@@ -7,7 +8,9 @@ const CheckoutPageClient = dynamic(
       default: module.CheckoutPageClient,
     })),
   {
-    loading: () => <CheckoutPageSkeleton />,
+    loading: () => (
+      <ProductsHeroShell sectionAriaLabel="Checkout" catalog={<CheckoutPageSkeleton />} />
+    ),
   },
 );
 

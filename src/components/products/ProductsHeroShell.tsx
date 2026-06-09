@@ -11,15 +11,16 @@ import {
   PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS,
   PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
-  PRODUCTS_PAGE_SIDE_PADDING_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
 
 type ProductsHeroShellProps = {
-  toolbar: ReactNode;
+  /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
+  toolbar?: ReactNode;
   catalog: ReactNode;
+  sectionAriaLabel?: string;
 };
 
 function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
@@ -49,22 +50,22 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
 }
 
 /**
- * /products shell — home-hero rounded frame; hero band matches HomeHero SVG, catalog grows below.
+ * Storefront hero shell — rounded frame with HomeHero SVG band; catalog/content grows below.
+ * Used by /products (with toolbar) and /about (content-only).
  */
-export function ProductsHeroShell({ toolbar, catalog }: ProductsHeroShellProps) {
+export function ProductsHeroShell({
+  toolbar,
+  catalog,
+  sectionAriaLabel = 'Shop',
+}: ProductsHeroShellProps) {
   return (
-    <>
-      <div className="hidden w-full lg:block">
-        <div className={PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}>
-          <section aria-label="Shop" className="relative w-full pt-3 md:pt-5">
-            <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
-          </section>
-        </div>
-      </div>
-
-      <div className={`lg:hidden ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`}>
+    <div className={PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}>
+      <section
+        aria-label={sectionAriaLabel}
+        className="relative w-full lg:pt-3 lg:md:pt-5"
+      >
         <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
-      </div>
-    </>
+      </section>
+    </div>
   );
 }

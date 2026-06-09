@@ -10,6 +10,10 @@ import {
   HEADER_NAV_ACTIVE_PILL_CLASS,
   HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS,
 } from './header-nav-pill.constants';
+import {
+  getHeaderNavLinkRowClass,
+  getHeaderNavLinkTextClass,
+} from './header-nav-typography.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
 function useHeaderNavLinks() {
@@ -62,7 +66,10 @@ function HeaderNav({
   pathname: string;
   searchParams: URLSearchParams;
 }) {
+  const { lang } = useTranslation();
   const navLinks = useHeaderNavLinks();
+  const navLinkTextClass = getHeaderNavLinkTextClass(lang);
+  const navLinkRowClass = getHeaderNavLinkRowClass(lang);
   const {
     navRef,
     setLinkRef,
@@ -109,7 +116,7 @@ function HeaderNav({
             ref={setLinkRef(index)}
             href={link.href}
             aria-current={isCurrentPage ? 'page' : undefined}
-            className={`relative z-30 inline-flex h-6 items-center text-[16px] font-semibold leading-6 tracking-[-0.3125px] transition-colors duration-200 ${
+            className={`relative z-30 inline-flex ${navLinkRowClass} items-center ${navLinkTextClass} transition-colors duration-200 ${
               isDragging ? 'pointer-events-none' : ''
             }`}
           >

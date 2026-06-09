@@ -1,3 +1,4 @@
+import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
 import { BlogPostDetailView } from '../../../features/blog/components/BlogPostDetailView';
 import { loadBlogDetailCopy } from '../../../features/blog/load-blog-page-copy';
 import { getCachedPublishedBlogPostBySlug } from '../../../lib/blog/blog-posts-cache';
@@ -18,11 +19,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   ]);
 
   return (
-    <BlogPostDetailView
-      slug={slug}
-      initialPost={post}
-      initialLocale={locale}
-      copy={copy}
+    <ProductsHeroShell
+      sectionAriaLabel="Blog article"
+      catalog={
+        <BlogPostDetailView
+          slug={slug}
+          initialPost={post}
+          initialLocale={locale}
+          copy={copy}
+        />
+      }
     />
   );
 }

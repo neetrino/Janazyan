@@ -7,6 +7,7 @@ import { CATEGORY_FIGMA_GRID_IDS } from './constants';
 import { MIRAGE_CATEGORY_TITLE_CLASS } from './mirage-heading-styles';
 import { useHomeCategoryPosters } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
+import { HOME_CATEGORY_GRID_INSET_CLASS } from '../../lib/layout/storefront-layout.constants';
 
 const CATEGORY_IMAGE_CLASS: Record<
   (typeof CATEGORY_FIGMA_GRID_IDS)[number],
@@ -39,7 +40,9 @@ export function CategoryPosters() {
       aria-label={t('home.categories.sectionAria')}
       className="relative w-full bg-white pb-10 pt-10 md:pb-[30px] md:pt-[47px]"
     >
-      <div className="grid w-full grid-cols-2 gap-4 md:gap-[16px]">
+      <div
+        className={`grid w-full grid-cols-2 gap-4 md:gap-[16px] ${HOME_CATEGORY_GRID_INSET_CLASS}`}
+      >
         {posters.map((poster) => (
           <CategoryCard key={poster.id} poster={poster} />
         ))}

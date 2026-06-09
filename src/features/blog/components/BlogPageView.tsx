@@ -54,7 +54,7 @@ export function BlogPageView({
   const showEmpty = !isRefreshing && posts.length === 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 md:py-14 lg:px-8">
+    <div className="mx-auto max-w-7xl py-8 md:py-12">
         <BlogBreadcrumbs
           homeLabel={copy.breadcrumbHome}
           currentLabel={copy.breadcrumbCurrent}

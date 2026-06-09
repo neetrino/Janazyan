@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { TeamCarousel } from '../../components/TeamCarousel';
 import { useTranslation } from '../../lib/i18n-client';
 
@@ -13,63 +14,68 @@ const SHOW_ABOUT_TEAM_SECTION = false;
 export default function AboutPage() {
   const { t } = useTranslation();
   return (
-    <div className="min-h-screen">
-      <section className="py-16 md:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] rounded-lg overflow-hidden shadow-lg">
-              <Image
-                src="https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-                alt="Our team working together"
-                fill
-                className="object-cover"
-                priority
-                unoptimized
-              />
-            </div>
+    <ProductsHeroShell
+      sectionAriaLabel="About us"
+      catalog={
+        <>
+          <section className="py-8 md:py-12 lg:py-16">
+            <div className="mx-auto max-w-7xl">
+              <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
+                <div className="relative h-[400px] w-full overflow-hidden rounded-lg shadow-lg md:h-[500px] lg:h-[600px]">
+                  <Image
+                    src="https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                    alt="Our team working together"
+                    fill
+                    className="object-cover"
+                    priority
+                    unoptimized
+                  />
+                </div>
 
-            <div className="space-y-6">
-              <p className="text-sm md:text-base font-semibold uppercase tracking-wider text-[#7CB342]">
-                {t('about.subtitle')}
-              </p>
+                <div className="space-y-6">
+                  <p className="text-sm font-semibold uppercase tracking-wider text-[#7CB342] md:text-base">
+                    {t('about.subtitle')}
+                  </p>
 
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
-                {t('about.title')}
-              </h1>
+                  <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+                    {t('about.title')}
+                  </h1>
 
-              <div className="space-y-4 text-gray-600 text-base md:text-lg leading-relaxed">
-                <p>{t('about.description.paragraph1')}</p>
-                <p>{t('about.description.paragraph2')}</p>
-                <p>{t('about.description.paragraph3')}</p>
+                  <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
+                    <p>{t('about.description.paragraph1')}</p>
+                    <p>{t('about.description.paragraph2')}</p>
+                    <p>{t('about.description.paragraph3')}</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      </section>
+          </section>
 
-      {SHOW_ABOUT_TEAM_SECTION ? (
-        <section className="py-16 md:py-24 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <p className="text-sm md:text-base font-semibold uppercase tracking-wider text-[#7CB342] mb-4">
-                {t('about.team.subtitle')}
-              </p>
+          {SHOW_ABOUT_TEAM_SECTION ? (
+            <section className="py-16 md:py-24">
+              <div className="mx-auto max-w-7xl">
+                <div className="mb-12 text-center">
+                  <p className="mb-4 text-sm font-semibold uppercase tracking-wider text-[#7CB342] md:text-base">
+                    {t('about.team.subtitle')}
+                  </p>
 
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-                {t('about.team.title')}
-              </h2>
+                  <h2 className="mb-4 text-4xl font-bold text-gray-900 md:text-5xl lg:text-6xl">
+                    {t('about.team.title')}
+                  </h2>
 
-              <p className="text-gray-600 text-base md:text-lg max-w-2xl mx-auto">
-                {t('about.team.description')}
-              </p>
-            </div>
+                  <p className="mx-auto max-w-2xl text-base text-gray-600 md:text-lg">
+                    {t('about.team.description')}
+                  </p>
+                </div>
 
-            <div className="max-w-6xl mx-auto">
-              <TeamCarousel />
-            </div>
-          </div>
-        </section>
-      ) : null}
-    </div>
+                <div className="mx-auto max-w-6xl">
+                  <TeamCarousel />
+                </div>
+              </div>
+            </section>
+          ) : null}
+        </>
+      }
+    />
   );
 }

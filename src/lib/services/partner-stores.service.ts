@@ -1,5 +1,6 @@
 import { db } from '@white-shop/db';
 import type { PartnerStore } from '@/features/stores/types';
+import { normalizePartnerStoreCoordinates } from '@/features/stores/coordinates';
 
 const FALLBACK_LOCALE = 'en';
 
@@ -28,14 +29,19 @@ function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
     return null;
   }
 
+  const coordinates = normalizePartnerStoreCoordinates(row.lat, row.lng);
+  if (!coordinates) {
+    return null;
+  }
+
   return {
     id: row.id,
     name: match.name,
     address: match.address,
     logo: row.logoUrl || '/stores/logos/sas.svg',
     logoAlt: match.logoAlt ?? match.name,
-    lat: row.lat,
-    lng: row.lng,
+    lat: coordinates.lat,
+    lng: coordinates.lng,
   };
 }
 

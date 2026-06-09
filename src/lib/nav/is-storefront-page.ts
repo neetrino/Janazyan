@@ -13,3 +13,22 @@ export function isStorefrontPage(pathname: string): boolean {
 export function isProductsListingPage(pathname: string): boolean {
   return pathname === '/products';
 }
+
+const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
+  '/products',
+  '/about',
+  '/stores',
+  '/contact',
+  '/faq',
+  '/blog',
+  '/checkout',
+] as const;
+
+/** Storefront pages that use the rounded hero shell with embedded header (same as /products). */
+export function usesStorefrontHeroShell(pathname: string): boolean {
+  if (STOREFRONT_HERO_SHELL_EXACT_PATHS.some((path) => pathname === path)) {
+    return true;
+  }
+
+  return pathname.startsWith('/blog/');
+}

@@ -1,8 +1,9 @@
 'use client';
 
 import { Button, Input } from '@shop/ui';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { useTranslation } from '../../lib/i18n-client';
 import { apiClient } from '../../lib/api-client';
 
@@ -76,146 +77,144 @@ export default function ContactPage() {
   };
 
   return (
-    <div>
-      {/* Top Section: Contact Info and Form */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Left Side: Contact Information */}
-          <div className="space-y-8">
-            {/* Call to Us */}
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-700">
-                  <PhoneIcon />
+    <ProductsHeroShell
+      sectionAriaLabel="Contact"
+      catalog={
+        <>
+          <div className="mx-auto max-w-7xl py-8 md:py-12">
+            <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
+              <div className="space-y-8">
+                <div>
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                      <PhoneIcon />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
+                  </div>
+                  <p className="mb-2 text-gray-600">{t('contact.callToUs.description')}</p>
+                  <a href={`tel:${t('contact.phone')}`} className="font-medium text-orange-500 hover:text-orange-600">
+                    {t('contact.phone')}
+                  </a>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
-              </div>
-              <p className="text-gray-600 mb-2">{t('contact.callToUs.description')}</p>
-              <a href={`tel:${t('contact.phone')}`} className="text-orange-500 hover:text-orange-600 font-medium">
-                {t('contact.phone')}
-              </a>
-            </div>
 
-            {/* Write to Us */}
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-700">
-                  <EnvelopeIcon />
+                <div>
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                      <EnvelopeIcon />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
+                  </div>
+                  <p className="mb-2 text-gray-600">{t('contact.writeToUs.description')}</p>
+                  <a href={`mailto:${t('contact.email')}`} className="font-medium text-orange-500 hover:text-orange-600">
+                    {t('contact.writeToUs.emailLabel')} {t('contact.email')}
+                  </a>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
-              </div>
-              <p className="text-gray-600 mb-2">{t('contact.writeToUs.description')}</p>
-              <a href={`mailto:${t('contact.email')}`} className="text-orange-500 hover:text-orange-600 font-medium">
-                {t('contact.writeToUs.emailLabel')} {t('contact.email')}
-              </a>
-            </div>
 
-            {/* Headquarter */}
-            <div>
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-700">
-                  <MapPinIcon />
+                <div>
+                  <div className="mb-3 flex items-center gap-3">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                      <MapPinIcon />
+                    </div>
+                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.headquarter.title')}</h3>
+                  </div>
+                  <div className="mb-2 space-y-1 text-gray-600">
+                    <p>{t('contact.headquarter.hours.weekdays')}</p>
+                    <p>{t('contact.headquarter.hours.saturday')}</p>
+                  </div>
+                  <p className="font-medium text-orange-500 hover:text-orange-600">
+                    {t('contact.address')}
+                  </p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">{t('contact.headquarter.title')}</h3>
               </div>
-              <div className="text-gray-600 mb-2 space-y-1">
-                <p>{t('contact.headquarter.hours.weekdays')}</p>
-                <p>{t('contact.headquarter.hours.saturday')}</p>
+
+              <div>
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  <div>
+                    <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-900">
+                      {t('contact.form.name')}
+                    </label>
+                    <Input
+                      id="name"
+                      name="name"
+                      type="text"
+                      required
+                      value={formData.name}
+                      onChange={handleChange}
+                      className="w-full"
+                      placeholder={t('contact.form.namePlaceholder')}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="mb-2 block text-sm font-medium text-gray-900">
+                      {t('contact.form.email')}
+                    </label>
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      required
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full"
+                      placeholder={t('contact.form.emailPlaceholder')}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="subject" className="mb-2 block text-sm font-medium text-gray-900">
+                      {t('contact.form.subject')}
+                    </label>
+                    <Input
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      value={formData.subject}
+                      onChange={handleChange}
+                      className="w-full"
+                      placeholder={t('contact.form.subjectPlaceholder')}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="message" className="mb-2 block text-sm font-medium text-gray-900">
+                      {t('contact.form.message')}
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      required
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      placeholder={t('contact.form.messagePlaceholder')}
+                    />
+                  </div>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    className="w-full rounded-md bg-gray-900 py-3 font-semibold uppercase tracking-wide text-white hover:bg-gray-800"
+                    disabled={submitting}
+                  >
+                    {submitting ? (t('contact.form.submitting') || 'Ուղարկվում է...') : t('contact.form.submit')}
+                  </Button>
+                </form>
               </div>
-              <p className="text-orange-500 hover:text-orange-600 font-medium">
-                {t('contact.address')}
-              </p>
             </div>
           </div>
 
-          {/* Right Side: Contact Form */}
-          <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.name')}
-                </label>
-                <Input
-                  id="name"
-                  name="name"
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={handleChange}
-                  className="w-full"
-                  placeholder={t('contact.form.namePlaceholder')}
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.email')}
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="w-full"
-                  placeholder={t('contact.form.emailPlaceholder')}
-                />
-              </div>
-              <div>
-                <label htmlFor="subject" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.subject')}
-                </label>
-                <Input
-                  id="subject"
-                  name="subject"
-                  type="text"
-                  value={formData.subject}
-                  onChange={handleChange}
-                  className="w-full"
-                  placeholder={t('contact.form.subjectPlaceholder')}
-                />
-              </div>
-              <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
-                  {t('contact.form.message')}
-                </label>
-                <textarea
-                  id="message"
-                  name="message"
-                  rows={6}
-                  required
-                  value={formData.message}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent"
-                  placeholder={t('contact.form.messagePlaceholder')}
-                />
-              </div>
-              <Button
-                type="submit"
-                variant="primary"
-                className="w-full bg-gray-900 text-white hover:bg-gray-800 rounded-md py-3 font-semibold uppercase tracking-wide"
-                disabled={submitting}
-              >
-                {submitting ? (t('contact.form.submitting') || 'Ուղարկվում է...') : t('contact.form.submit')}
-              </Button>
-            </form>
+          <div className="h-[500px] w-full overflow-hidden bg-gray-100">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.1234567890123!2d44.5150!3d40.1812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x406aa2dab8fc8b5b%3A0x3d1479ab4e9b8c5e!2sAbovyan%20St%2C%20Yerevan%2C%20Armenia!5e0!3m2!1sen!2sam!4v1234567890123!5m2!1sen!2sam"
+              width="100%"
+              height="100%"
+              title="Janazyan location map"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-full w-full border-0"
+            />
           </div>
-        </div>
-      </div>
-
-      {/* Bottom Section: Map */}
-      <div className="w-full h-[500px] bg-gray-100">
-        <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.1234567890123!2d44.5150!3d40.1812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x406aa2dab8fc8b5b%3A0x3d1479ab4e9b8c5e!2sAbovyan%20St%2C%20Yerevan%2C%20Armenia!5e0!3m2!1sen!2sam!4v1234567890123!5m2!1sen!2sam"
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          className="w-full h-full"
-        />
-      </div>
-    </div>
+        </>
+      }
+    />
   );
 }
