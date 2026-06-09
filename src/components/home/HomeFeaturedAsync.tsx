@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { getHomeFeaturedProducts } from '../../lib/home/featured-products-data';
 import { FeaturedProducts } from './FeaturedProducts';
+import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
   HomeMobileFeaturedProducts,
   HomeMobileFeaturedSkeleton,
@@ -12,7 +13,7 @@ function DesktopFeaturedSkeleton() {
   return (
     <div
       aria-hidden
-      className="relative mx-auto w-full max-w-[1470px] animate-pulse"
+      className={`relative mx-auto w-full animate-pulse ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`}
       style={{ minHeight: DESKTOP_FEATURED_SKELETON_HEIGHT_PX }}
     >
       <div className="mx-auto mt-16 h-10 w-72 max-w-full rounded bg-white/40" />

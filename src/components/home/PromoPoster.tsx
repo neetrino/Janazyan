@@ -8,7 +8,7 @@ import {
   MIRAGE_LINE_HEIGHT_CLASS,
 } from './mirage-heading-styles';
 import { useTranslation } from '../../lib/i18n-client';
-import { SECTION_CARD_ROW_INSET_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { STOREFRONT_PROMO_MAX_WIDTH_CLASS } from '../../lib/layout/storefront-layout.constants';
 
 const PROMO_PHOTO = '/figma/promo-poster-photo.webp';
 const PROMO_CTA_HREF = '/products?category=hair';
@@ -30,7 +30,7 @@ export function PromoPoster() {
       aria-label={t('home.promo.sectionAria')}
       className="relative w-full pb-16 font-armenian md:pb-20"
     >
-      <div className={`mx-auto w-full max-w-[1375px] ${SECTION_CARD_ROW_INSET_CLASS}`}>
+      <div className={`mx-auto w-full ${STOREFRONT_PROMO_MAX_WIDTH_CLASS}`}>
         <MobilePromo />
         <DesktopPromo />
       </div>

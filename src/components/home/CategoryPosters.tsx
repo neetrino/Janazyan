@@ -39,7 +39,7 @@ export function CategoryPosters() {
       aria-label={t('home.categories.sectionAria')}
       className="relative w-full bg-white pb-10 pt-10 md:pb-[30px] md:pt-[47px]"
     >
-      <div className="mx-auto grid w-full max-w-[1416px] grid-cols-2 gap-4 md:gap-[16px]">
+      <div className="grid w-full grid-cols-2 gap-4 md:gap-[16px]">
         {posters.map((poster) => (
           <CategoryCard key={poster.id} poster={poster} />
         ))}

@@ -1,6 +1,17 @@
-/** Same rounded shell as {@link HomeHero} — white backdrop shows through the SVG step. */
+/** Same rounded shell as {@link HomeHero} — width follows {@link PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  'relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
+  'relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
+
+/** Slightly wider than home column — tighter outer gutters on /products. */
+export const PRODUCTS_PAGE_MAX_WIDTH_CLASS =
+  'max-w-[1510px] min-[1548px]:max-w-[1710px] min-[1800px]:max-w-[1840px] min-[2200px]:max-w-[1940px]';
+
+/** Tighter side gutters than {@link STOREFRONT_SIDE_PADDING_CLASS}. */
+export const PRODUCTS_PAGE_SIDE_PADDING_CLASS =
+  'px-[clamp(12px,1.5vw,24px)] min-[1520px]:px-0';
+
+/** Desktop page wrapper — responsive max-width with reduced side free space. */
+export const PRODUCTS_PAGE_DESKTOP_SHELL_CLASS = `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`;
 
 /** Same viewBox proportions as {@link HeroRectangleBackground} — keeps the hero shape unsmeared. */
 export const PRODUCTS_PAGE_HERO_ASPECT_CLASS = 'aspect-[1388/852]';
@@ -44,8 +55,12 @@ export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
 /** Space between toolbar and first product row. */
 export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 lg:pt-8';
 
-/** Content horizontal inset (Figma x=53). */
-export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-5 sm:px-8 lg:px-[53px]';
+/**
+ * Content horizontal inset — slightly tighter than Figma 53px so the grid gains width.
+ * Below 1520px the outer shell already applies side gutters.
+ */
+export const PRODUCTS_PAGE_CONTENT_INSET_CLASS =
+  'px-4 sm:px-6 lg:px-[clamp(12px,2.5vw,36px)] min-[1520px]:px-[clamp(32px,2.8vw,52px)]';
 
 /** Bottom padding inside the catalog zone. */
 export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS = 'pb-10 lg:pb-14';

@@ -7,6 +7,10 @@ import {
   MIRAGE_ABOUT_HEADING_SKY_CLASS,
 } from './mirage-heading-styles';
 import { useTranslation } from '../../lib/i18n-client';
+import {
+  STOREFRONT_CONTENT_MAX_WIDTH_PX,
+  STOREFRONT_CONTENT_SHELL_CLASS,
+} from '../../lib/layout/storefront-layout.constants';
 
 const ABOUT_IMAGE = '/figma/about-hero.webp';
 
@@ -29,7 +33,9 @@ export function AboutSection() {
       className="relative hidden w-full overflow-hidden font-armenian lg:block"
       style={ABOUT_BG_STYLE}
     >
-      <DesktopAbout />
+      <div className={STOREFRONT_CONTENT_SHELL_CLASS}>
+        <DesktopAbout />
+      </div>
     </section>
   );
 }
@@ -37,17 +43,23 @@ export function AboutSection() {
 function DesktopAbout() {
   const { t } = useTranslation();
 
+  const scaleExpression = `calc(100cqw / ${STOREFRONT_CONTENT_MAX_WIDTH_PX}px)`;
+
   return (
-    <div className="mx-auto w-full">
+    <div className="@container relative w-full">
       <div
-        className="flex justify-center overflow-hidden"
+        className="relative flex w-full justify-center overflow-hidden"
         style={{
-          height: `calc(${ABOUT_DESKTOP_TOTAL_HEIGHT_PX}px * min(1, 100vw / 1470px))`,
+          height: `calc(${ABOUT_DESKTOP_TOTAL_HEIGHT_PX}px * ${scaleExpression})`,
         }}
       >
         <div
-          className="relative w-[1470px] origin-top [transform:scale(min(1,calc(100vw/1470px)))]"
-          style={{ height: ABOUT_DESKTOP_TOTAL_HEIGHT_PX }}
+          className="relative shrink-0 origin-top"
+          style={{
+            width: STOREFRONT_CONTENT_MAX_WIDTH_PX,
+            height: ABOUT_DESKTOP_TOTAL_HEIGHT_PX,
+            transform: `scale(${scaleExpression})`,
+          }}
         >
         <div
           aria-hidden

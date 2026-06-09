@@ -11,6 +11,7 @@ import {
   FOOTER_SOCIAL,
   FOOTER_SUPPORT,
 } from './footer/constants';
+import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_TEXT = 'text-black/65';
 const FOOTER_LINK =
@@ -29,7 +30,6 @@ const FOOTER_DECORATION_WIDTH_PX = Math.round(
 const FOOTER_DECORATION_HEIGHT_PX = Math.round(
   FOOTER_DECORATION_BASE_HEIGHT_PX * FOOTER_DECORATION_SIZE_SCALE,
 );
-const FOOTER_DECORATION_LEFT_PX = 500;
 const FOOTER_DECORATION_BASE_TOP_PX = -104;
 /** Nudge decoration downward within the footer. */
 const FOOTER_DECORATION_DOWN_SHIFT_PX = 380;
@@ -99,16 +99,17 @@ export function Footer() {
             style={getFooterGradientStyle()}
           />
 
-          <div className="relative mx-auto hidden h-full w-full max-w-[1470px] lg:block">
+          <div
+            className={`relative mx-auto hidden h-full w-full lg:block ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`}
+          >
             <div
               aria-hidden="true"
               className={`pointer-events-none absolute inset-x-0 ${FOOTER_Z_DECORATION}`}
               style={getFooterDecorationPositionStyle()}
             >
               <div
-                className="absolute"
+                className="absolute left-1/2 -translate-x-1/2"
                 style={{
-                  left: FOOTER_DECORATION_LEFT_PX,
                   top: FOOTER_DECORATION_TOP_PX,
                   width: FOOTER_DECORATION_WIDTH_PX,
                   height: FOOTER_DECORATION_HEIGHT_PX,

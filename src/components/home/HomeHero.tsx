@@ -196,7 +196,7 @@ export function HomeHero() {
       aria-label={t('home.hero.ariaSection')}
       className="relative w-full pt-3 md:pt-5"
     >
-      <div className="relative mx-auto w-full max-w-[1472px] overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (
           <HeroRectangleBackground
             key={slide.id}

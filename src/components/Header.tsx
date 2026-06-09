@@ -8,7 +8,10 @@ import { HeaderBrandCluster } from './header/HeaderBrandCluster';
 import { openCartDrawer } from '../lib/cart-drawer-events';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 import { formatWishlistBadgeCount, useWishlistItemCount } from './hooks/useWishlistItemCount';
-import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../lib/layout/storefront-layout.constants';
+import {
+  STOREFRONT_CONTENT_MAX_WIDTH_CLASS,
+  STOREFRONT_HORIZONTAL_GUTTER_CLASS,
+} from '../lib/layout/storefront-layout.constants';
 import { isProductsListingPage, isStorefrontPage } from '../lib/nav/is-storefront-page';
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
@@ -111,7 +114,7 @@ function HeaderOverlayBar({
   return (
     <header className="pointer-events-none absolute inset-x-0 top-0 z-30">
       <div
-        className="pointer-events-auto mx-auto flex w-full max-w-[1472px] items-center justify-between px-[22px] lg:pr-[53px]"
+        className={`pointer-events-auto mx-auto flex w-full items-center justify-between px-[22px] lg:pr-[53px] ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`}
         style={{
           paddingTop: HEADER_BRAND_TOP_PX,
           minHeight: HEADER_SHELL_MIN_HEIGHT_PX,
@@ -145,7 +148,7 @@ function HeaderShell({
       className={`relative z-30 hidden w-full ${outerBgClass} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS} pt-[calc(env(safe-area-inset-top,0px)+0.75rem)] md:pt-5 lg:block`}
     >
       <div
-        className={`relative mx-auto flex w-full max-w-[1472px] items-center justify-between ${innerBgClass} px-[22px] lg:rounded-t-[36px] lg:pr-[53px]`}
+        className={`relative mx-auto flex w-full items-center justify-between ${innerBgClass} px-[22px] lg:rounded-t-[36px] lg:pr-[53px] ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`}
         style={{ minHeight: HEADER_SHELL_MIN_HEIGHT_PX }}
       >
         {children}
