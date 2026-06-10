@@ -25,5 +25,8 @@ export function getCategoryNavLabel(
 }
 
 export function getCategoryNavHref(slug: string): string {
-  return slug === 'all' ? '/products' : `/products?category=${encodeURIComponent(slug)}`;
+  if (slug === 'all' || slug === 'assortment') {
+    return '/products';
+  }
+  return `/products?category=${encodeURIComponent(slug)}`;
 }

@@ -39,7 +39,15 @@
       "grid3": "Ցանցի տեսք 3x3"
     },
     "filters": "Ֆիլտրեր",
-    "sortProducts": "Դասավորել ապրանքները"
+    "sortProducts": "Դասավորել ապրանքները",
+    "sortBy": "Դասավորել ըստ"
+  },
+  "shopFilters": {
+    "assortment": "Տեսականի",
+    "women": "Կանայք",
+    "men": "Տղամարդ",
+    "kids": "Մանկական",
+    "accessories": "Աքսեսուարներ"
   },
   "grid": {
     "noProducts": "Ապրանքներ չգտնվեցին։"

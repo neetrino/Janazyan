@@ -42,7 +42,7 @@ export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
 
 /** Shared category pill shape/typography — Figma buttons (node 269:895 …), h=56, Montserrat Medium 13px. */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  'inline-flex h-[54px] shrink-0 items-center justify-center gap-2 rounded-full px-5 text-[13px] font-medium tracking-[0.5px] whitespace-nowrap transition-colors';
+  'inline-flex h-14 shrink-0 items-center justify-center gap-[5px] rounded-full px-2 py-3 text-[13px] font-medium leading-[16.5px] tracking-[0.5px] whitespace-nowrap transition-colors';
 
 /** Active category pill — dark ink slate with 3px white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =

@@ -39,7 +39,15 @@
       "grid3": "Grid View 3x3"
     },
     "filters": "Filters",
-    "sortProducts": "Sort Products"
+    "sortProducts": "Sort Products",
+    "sortBy": "Sort by"
+  },
+  "shopFilters": {
+    "assortment": "Assortment",
+    "women": "Women",
+    "men": "Men",
+    "kids": "Kids",
+    "accessories": "Accessories"
   },
   "grid": {
     "noProducts": "No products found."

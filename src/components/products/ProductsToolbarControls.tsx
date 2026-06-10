@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { PRODUCTS_PAGE_TOOLBAR_PILL_CLASS } from '../../app/products/products-page-layout.constants';
@@ -8,18 +9,14 @@ import { useTranslation } from '../../lib/i18n-client';
 type ViewMode = 'list' | 'grid-2' | 'grid-3';
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
-function SortFilterIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden>
-      <path
-        d="M3 5H17M5 10H15M7 15H13"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+const VIEW_MODE_ICONS: Record<ViewMode, { src: string; width: number; height: number }> = {
+  list: { src: '/figma/shop-view-list-icon.svg', width: 28, height: 25 },
+  'grid-2': { src: '/figma/shop-view-grid-2-icon.svg', width: 16, height: 25 },
+  'grid-3': { src: '/figma/shop-view-grid-3-icon.svg', width: 26, height: 25 },
+};
+
+const VIEW_MODE_BUTTON_CLASS =
+  'flex h-[25px] items-center justify-center rounded-md transition-opacity hover:opacity-80';
 
 /**
  * View-mode toggles + sort dropdown — Figma shop toolbar (node 269:906 / 269:918).
@@ -89,77 +86,59 @@ export function ProductsToolbarControls() {
   return (
     <div className="flex shrink-0 items-center gap-[11px]">
       <div
-        className={`inline-flex h-[54px] w-[182px] items-center justify-center gap-1 bg-white px-3 ${PRODUCTS_PAGE_TOOLBAR_PILL_CLASS}`}
+        className={`inline-flex h-[54px] w-[182px] items-center justify-center gap-7 bg-white ${PRODUCTS_PAGE_TOOLBAR_PILL_CLASS}`}
+        role="group"
+        aria-label={t('products.header.sortProducts')}
       >
-        <button
-          type="button"
-          onClick={() => handleViewModeChange('list')}
-          className={`rounded-lg p-2 transition-colors ${
-            viewMode === 'list' ? 'bg-gray-100 text-ink-900' : 'text-gray-400 hover:text-gray-600'
-          }`}
-          aria-label={t('products.header.viewModes.list')}
-        >
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden>
-            <line x1="3" y1="5" x2="17" y2="5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="3" y1="10" x2="17" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            <line x1="3" y1="15" x2="17" y2="15" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => handleViewModeChange('grid-2')}
-          className={`rounded-lg p-2 transition-colors ${
-            viewMode === 'grid-2' ? 'bg-gray-100 text-ink-900' : 'text-gray-400 hover:text-gray-600'
-          }`}
-          aria-label={t('products.header.viewModes.grid2')}
-        >
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden>
-            <rect x="2" y="2" width="7" height="7" stroke="currentColor" strokeWidth="1.5" fill={viewMode === 'grid-2' ? 'currentColor' : 'none'} />
-            <rect x="11" y="2" width="7" height="7" stroke="currentColor" strokeWidth="1.5" fill={viewMode === 'grid-2' ? 'currentColor' : 'none'} />
-            <rect x="2" y="11" width="7" height="7" stroke="currentColor" strokeWidth="1.5" fill={viewMode === 'grid-2' ? 'currentColor' : 'none'} />
-            <rect x="11" y="11" width="7" height="7" stroke="currentColor" strokeWidth="1.5" fill={viewMode === 'grid-2' ? 'currentColor' : 'none'} />
-          </svg>
-        </button>
-        <button
-          type="button"
-          onClick={() => handleViewModeChange('grid-3')}
-          className={`rounded-lg p-2 transition-colors ${
-            viewMode === 'grid-3' ? 'bg-gray-100 text-ink-900' : 'text-gray-400 hover:text-gray-600'
-          }`}
-          aria-label={t('products.header.viewModes.grid3')}
-        >
-          <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden>
-            <circle cx="4" cy="4" r="1.5" fill="currentColor" />
-            <circle cx="10" cy="4" r="1.5" fill="currentColor" />
-            <circle cx="16" cy="4" r="1.5" fill="currentColor" />
-            <circle cx="4" cy="10" r="1.5" fill="currentColor" />
-            <circle cx="10" cy="10" r="1.5" fill="currentColor" />
-            <circle cx="16" cy="10" r="1.5" fill="currentColor" />
-            <circle cx="4" cy="16" r="1.5" fill="currentColor" />
-            <circle cx="10" cy="16" r="1.5" fill="currentColor" />
-            <circle cx="16" cy="16" r="1.5" fill="currentColor" />
-          </svg>
-        </button>
+        {(Object.keys(VIEW_MODE_ICONS) as ViewMode[]).map((mode) => {
+          const icon = VIEW_MODE_ICONS[mode];
+          const isSelected = viewMode === mode;
+
+          return (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => handleViewModeChange(mode)}
+              className={`${VIEW_MODE_BUTTON_CLASS} ${isSelected ? 'opacity-100' : 'opacity-70'}`}
+              aria-label={t(`products.header.viewModes.${mode === 'grid-2' ? 'grid2' : mode === 'grid-3' ? 'grid3' : 'list'}`)}
+              aria-pressed={isSelected}
+            >
+              <Image
+                src={icon.src}
+                alt=""
+                width={icon.width}
+                height={icon.height}
+                className="h-[25px] w-auto"
+                aria-hidden
+              />
+            </button>
+          );
+        })}
       </div>
 
       <div className="relative" ref={sortDropdownRef}>
         <button
           type="button"
           onClick={() => setShowSortDropdown((open) => !open)}
-          className={`inline-flex h-[54px] w-[231px] items-center justify-center gap-2 bg-sky-deep px-5 text-base text-white ${PRODUCTS_PAGE_TOOLBAR_PILL_CLASS}`}
+          className={`inline-flex h-[54px] w-[231px] items-center justify-center gap-2 bg-sky-deep px-5 text-base font-normal text-white ${PRODUCTS_PAGE_TOOLBAR_PILL_CLASS}`}
         >
-          <SortFilterIcon />
-          <span>{t('products.header.sortBy')}</span>
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 12 12"
-            fill="none"
-            className={`transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}
+          <Image
+            src="/figma/shop-sort-filter-icon.svg"
+            alt=""
+            width={16}
+            height={18}
+            className="h-[18px] w-4 shrink-0"
             aria-hidden
-          >
-            <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+          />
+          <span>{t('products.header.sortBy')}</span>
+          <Image
+            src="/figma/shop-sort-chevron.svg"
+            alt=""
+            width={8}
+            height={15}
+            className={`h-[15px] w-2 shrink-0 transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}
+            aria-hidden
+          />
         </button>
 
         {showSortDropdown ? (

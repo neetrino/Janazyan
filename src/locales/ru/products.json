@@ -39,7 +39,15 @@
       "grid3": "Вид сетки 3x3"
     },
     "filters": "Фильтры",
-    "sortProducts": "Сортировать товары"
+    "sortProducts": "Сортировать товары",
+    "sortBy": "Сортировать по"
+  },
+  "shopFilters": {
+    "assortment": "Ассортимент",
+    "women": "Женщинам",
+    "men": "Мужчинам",
+    "kids": "Детям",
+    "accessories": "Аксессуары"
   },
   "grid": {
     "noProducts": "Товары не найдены."

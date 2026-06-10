@@ -8,6 +8,7 @@ import {
   PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { getCategoryNavStripCached } from '../../lib/categories/categories-nav-strip-cache';
+import { getShopCategoryFallbackStrip } from '../../lib/categories/shop-category-fallback';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
 import { getCategoryIcon } from './utils';
 import { CategoryPillIcon } from './CategoryPillIcon';
@@ -69,7 +70,7 @@ function NavCategoryIcon({
 }
 
 function isCategoryActive(slug: string, activeCategorySlug?: string): boolean {
-  if (slug === 'all') {
+  if (slug === 'all' || slug === 'assortment') {
     return !activeCategorySlug;
   }
   return activeCategorySlug === slug;
@@ -101,7 +102,11 @@ function CategoryPillRow({
                 : PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS
             }`}
           >
-            <CategoryPillIcon title={category.title} slug={category.slug} />
+            <CategoryPillIcon
+              title={category.title}
+              slug={category.slug}
+              isActive={isActive}
+            />
             <span>{getCategoryNavLabel(category, language)}</span>
           </Link>
         );
@@ -119,7 +124,9 @@ export async function CategoryNavigationServer({
   activeCategorySlug,
   variant = 'strip',
 }: CategoryNavigationServerProps) {
-  const displayCategories = await getCategoryNavStripCached(language);
+  const dbCategories = await getCategoryNavStripCached(language);
+  const displayCategories =
+    dbCategories.length > 0 ? dbCategories : getShopCategoryFallbackStrip(language);
 
   if (variant === 'pills') {
     return (
