@@ -1,4 +1,5 @@
 import { db } from '@white-shop/db';
+import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import {
   flattenCategoryTree,
   type CategoryTreeNode,
@@ -60,6 +61,10 @@ class CategoriesNavStripService {
    * Top category strip for /products — one flat DB query, no nested includes.
    */
   async getStrip(lang: string): Promise<CategoryTreeNode[]> {
+    if (!isDatabaseConnectionUrlConfigured()) {
+      return [];
+    }
+
     const rows = await db.category.findMany({
       where: {
         published: true,

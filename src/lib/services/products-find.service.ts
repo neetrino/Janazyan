@@ -18,12 +18,15 @@ class ProductsFindService {
     const { products, bestsellerProductIds, total: totalFromQuery } =
       await productsFindQueryService.buildQueryAndFetch(filters);
 
-    // Step 2: Filter products in memory (price, colors, sizes, brand) and sort
-    const filteredProducts = productsFindFilterService.filterProducts(
-      products,
-      filters,
-      bestsellerProductIds
-    );
+    // Step 2: Filter products in memory (price, colors, sizes, brand) and sort.
+    // Catalog path is already DB-paginated/ordered, so skip the in-memory pass.
+    const filteredProducts = filters.catalog
+      ? products
+      : productsFindFilterService.filterProducts(
+          products,
+          filters,
+          bestsellerProductIds
+        );
 
     // Step 3: Pagination — use server total when provided (no filters), else client slice
     const total =

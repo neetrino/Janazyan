@@ -11,6 +11,9 @@ type WishlistProductGridProps = {
 const CATALOG_SLOT_SIZE =
   'h-[201px] w-[164px] sm:h-[250px] sm:w-[204px] md:h-[305px] md:w-[249px] lg:h-[347px] lg:w-[283px]';
 
+/** Number of leading cards eagerly loaded (above-the-fold first row). */
+const PRIORITY_CARD_COUNT = 4;
+
 function WishlistProductCardSkeleton() {
   return (
     <div
@@ -25,7 +28,7 @@ function WishlistProductCardSkeleton() {
 export function WishlistProductGrid({ products, pendingCount }: WishlistProductGridProps) {
   return (
     <div className="grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {products.map((product) => (
+      {products.map((product, index) => (
         <ProductCard
           key={product.id}
           product={{
@@ -42,6 +45,7 @@ export function WishlistProductGrid({ products, pendingCount }: WishlistProductG
             brand: product.brand,
           }}
           viewMode="grid-3"
+          priority={index < PRIORITY_CARD_COUNT}
         />
       ))}
       {Array.from({ length: pendingCount }).map((_, index) => (

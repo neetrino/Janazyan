@@ -22,6 +22,8 @@ const CATALOG_SLOT_CARD_TOP_CLASS =
 type FeaturedProductCardSlotProps = {
   product: HomeFeaturedProduct;
   scale?: FeaturedProductCardScale;
+  /** Eagerly load the product image (above-the-fold cards only). */
+  priority?: boolean;
 };
 
 /**
@@ -30,6 +32,7 @@ type FeaturedProductCardSlotProps = {
 export function FeaturedProductCardSlot({
   product,
   scale = 'catalog',
+  priority = true,
 }: FeaturedProductCardSlotProps) {
   if (scale === 'catalog') {
     return (
@@ -37,7 +40,7 @@ export function FeaturedProductCardSlot({
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.catalog}`}
         >
-          <FeaturedProductCard product={product} />
+          <FeaturedProductCard product={product} priority={priority} />
         </div>
       </div>
     );
@@ -46,7 +49,7 @@ export function FeaturedProductCardSlot({
   return (
     <div className="flex shrink-0 justify-center overflow-visible">
       <div className={`origin-top ${SCALE_CLASS[scale]}`}>
-        <FeaturedProductCard product={product} />
+        <FeaturedProductCard product={product} priority={priority} />
       </div>
     </div>
   );

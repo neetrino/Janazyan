@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import type { MouseEvent } from 'react';
+import { memo, type MouseEvent } from 'react';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useAddToCart } from '../hooks/useAddToCart';
 import { useCurrency } from '../hooks/useCurrency';
@@ -39,9 +39,11 @@ const FEATURED_HEART_PATH =
 
 type FeaturedProductCardProps = {
   product: HomeFeaturedProduct;
+  /** Eagerly load the product image; lazy-load when false. */
+  priority?: boolean;
 };
 
-export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
+function FeaturedProductCardComponent({ product, priority = true }: FeaturedProductCardProps) {
   const router = useRouter();
   const { isLoggedIn } = useAuth();
   const { t } = useTranslation();
@@ -100,7 +102,8 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
           fill
           sizes="112px"
           className="object-contain object-bottom"
-          priority
+          priority={priority}
+          loading={priority ? undefined : 'lazy'}
         />
       </Link>
 
@@ -220,3 +223,5 @@ export function FeaturedProductCard({ product }: FeaturedProductCardProps) {
     </article>
   );
 }
+
+export const FeaturedProductCard = memo(FeaturedProductCardComponent);

@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button } from '@shop/ui';
 import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
-import { useTranslation } from '../../../lib/i18n-client';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { getStoredLanguage } from '../../../lib/language';
 import { fetchPartnerStores } from '../fetch-partner-stores';
@@ -34,21 +33,24 @@ const PartnerStoresMap = dynamic(
   },
 );
 
-function usePartnerStoresContent() {
-  const [copy, setCopy] = useState<StoresTranslation | null>(null);
-  const [stores, setStores] = useState<PartnerStore[]>([]);
+type StoresPageViewProps = {
+  initialCopy: StoresTranslation;
+  initialStores: PartnerStore[];
+};
+
+/** Server-provided content as initial state; re-fetches only on runtime language change. */
+function usePartnerStoresContent(
+  initialCopy: StoresTranslation,
+  initialStores: PartnerStore[]
+) {
+  const [copy, setCopy] = useState<StoresTranslation>(initialCopy);
+  const [stores, setStores] = useState<PartnerStore[]>(initialStores);
 
   useEffect(() => {
-    const load = async () => {
+    const onLanguageUpdated = async () => {
       const lang = getStoredLanguage();
       setCopy(loadStoresPageCopy(lang));
-      const loadedStores = await fetchPartnerStores(lang);
-      setStores(loadedStores);
-    };
-
-    void load();
-    const onLanguageUpdated = () => {
-      void load();
+      setStores(await fetchPartnerStores(lang));
     };
     window.addEventListener('language-updated', onLanguageUpdated);
     return () => window.removeEventListener('language-updated', onLanguageUpdated);
@@ -60,9 +62,8 @@ function usePartnerStoresContent() {
 /**
  * Our Stores page — partner locations with interactive map.
  */
-export function StoresPageView() {
-  const { t } = useTranslation();
-  const { copy, stores } = usePartnerStoresContent();
+export function StoresPageView({ initialCopy, initialStores }: StoresPageViewProps) {
+  const { copy, stores } = usePartnerStoresContent(initialCopy, initialStores);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [mapFocusRequest, setMapFocusRequest] = useState(0);
   const mapSectionRef = useRef<HTMLDivElement>(null);
@@ -79,19 +80,6 @@ export function StoresPageView() {
     selectedStoreId ??
     stores.find((store) => normalizePartnerStoreCoordinates(store.lat, store.lng) !== null)?.id ??
     null;
-
-  if (!copy) {
-    return (
-      <ProductsHeroShell
-        sectionAriaLabel="Our stores"
-        catalog={
-          <div className="flex min-h-[50vh] items-center justify-center text-gray-500">
-            {t('stores.map.loading')}
-          </div>
-        }
-      />
-    );
-  }
 
   return (
     <ProductsHeroShell
