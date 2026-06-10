@@ -1,10 +1,15 @@
 'use client';
 
+import type { MouseEvent } from 'react';
+import { Heart } from 'lucide-react';
+import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { t } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import {
   PDP_ACTION_ROW_CLASS,
   PDP_ADD_TO_CART_CLASS,
+  PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS,
+  PDP_GLASS_ICON_BUTTON_CLASS,
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
@@ -19,8 +24,12 @@ type ProductActionBarProps = {
   isOutOfStock: boolean;
   isVariationRequired: boolean;
   hasUnavailableAttributes: boolean;
+  isInWishlist: boolean;
+  isInCompare: boolean;
   onQuantityAdjust: (delta: number) => void;
   onAddToCart: () => Promise<void>;
+  onAddToWishlist: (e: MouseEvent) => void;
+  onCompareToggle: (e: MouseEvent) => void;
   getRequiredAttributesMessage: () => string;
 };
 
@@ -59,8 +68,12 @@ export function ProductActionBar({
   isOutOfStock,
   isVariationRequired,
   hasUnavailableAttributes,
+  isInWishlist,
+  isInCompare,
   onQuantityAdjust,
   onAddToCart,
+  onAddToWishlist,
+  onCompareToggle,
   getRequiredAttributesMessage,
 }: ProductActionBarProps) {
   const addToCartLabel = resolveAddToCartLabel({
@@ -102,6 +115,22 @@ export function ProductActionBar({
         onClick={onAddToCart}
       >
         {addToCartLabel}
+      </button>
+      <button
+        type="button"
+        onClick={onCompareToggle}
+        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+        aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
+      >
+        <CompareIcon isActive={isInCompare} />
+      </button>
+      <button
+        type="button"
+        onClick={onAddToWishlist}
+        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+        aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
+      >
+        <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
       </button>
     </div>
   );

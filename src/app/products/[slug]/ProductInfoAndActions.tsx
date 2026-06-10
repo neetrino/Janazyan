@@ -1,20 +1,14 @@
 'use client';
 
 import type { MouseEvent } from 'react';
-import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice, type CurrencyCode } from '../../../lib/currency';
 import { t, getProductText } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import { sanitizeHtml } from '../../../lib/utils/sanitize';
-import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import { ProductRatingSummary } from './ProductRatingSummary';
 import { ProductActionBar } from './ProductActionBar';
-import {
-  PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS,
-  PDP_GLASS_ICON_BUTTON_CLASS,
-} from './product-action-bar.constants';
 import type { Product, ProductVariant } from './types';
 
 interface ProductInfoAndActionsProps {
@@ -212,29 +206,14 @@ export function ProductInfoAndActions({
           isOutOfStock={isOutOfStock}
           isVariationRequired={isVariationRequired}
           hasUnavailableAttributes={hasUnavailableAttributes}
+          isInWishlist={isInWishlist}
+          isInCompare={isInCompare}
           onQuantityAdjust={onQuantityAdjust}
           onAddToCart={onAddToCart}
+          onAddToWishlist={onAddToWishlist}
+          onCompareToggle={onCompareToggle}
           getRequiredAttributesMessage={getRequiredAttributesMessage}
         />
-
-        <div className="mt-3 hidden items-center justify-end gap-3 lg:flex">
-          <button
-            type="button"
-            onClick={onCompareToggle}
-            className={`${PDP_GLASS_ICON_BUTTON_CLASS} ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-            aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
-          >
-            <CompareIcon isActive={isInCompare} />
-          </button>
-          <button
-            type="button"
-            onClick={onAddToWishlist}
-            className={`${PDP_GLASS_ICON_BUTTON_CLASS} ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-            aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
-          >
-            <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-          </button>
-        </div>
       </div>
       {showMessage && <div className="mt-4 p-4 bg-gray-900 text-white rounded-md shadow-lg">{showMessage}</div>}
     </div>

@@ -48,6 +48,11 @@ export const STOREFRONT_GLASS_PILL_BUTTON_CLASS = `inline-flex h-11 items-center
 
 const STOREFRONT_GLASS_SUBMIT_BUTTON_BASE = `inline-flex h-12 items-center justify-center rounded-full px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-50 ${PDP_GLASS_PILL_TEXT_CLASS} ${PDP_GLASS_SURFACE_CLASS} ${PDP_GLASS_SURFACE_HOVER_CLASS}`;
 
+/** Rounded glass inputs — contact and storefront forms. */
+export const STOREFRONT_GLASS_INPUT_CLASS = `!rounded-full py-3 px-5 !border-white/55 ${PDP_GLASS_SURFACE_CLASS} focus:!border-white/70 focus:ring-sky-deep/15`;
+
+export const STOREFRONT_GLASS_TEXTAREA_CLASS = `!rounded-3xl px-5 py-4 !border-white/55 ${PDP_GLASS_SURFACE_CLASS} focus:!border-white/70 focus:ring-2 focus:ring-sky-deep/15 focus:outline-none`;
+
 /** Full-width glass pill — contact / cart checkout / form submit. */
 export const STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS = `${STOREFRONT_GLASS_SUBMIT_BUTTON_BASE} w-full uppercase tracking-wide`;
 

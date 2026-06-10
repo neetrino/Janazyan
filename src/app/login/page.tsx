@@ -189,9 +189,9 @@ export default function LoginPage() {
                   <div className="mb-4 h-8 w-3/4 rounded bg-white/40" />
                   <div className="mb-8 h-4 w-1/2 rounded bg-white/40" />
                   <div className="space-y-4">
-                    <div className="h-10 rounded-xl bg-white/40" />
-                    <div className="h-10 rounded-xl bg-white/40" />
-                    <div className="h-10 rounded-xl bg-white/40" />
+                    <div className="h-12 rounded-full bg-white/40" />
+                    <div className="h-12 rounded-full bg-white/40" />
+                    <div className="h-12 rounded-full bg-white/40" />
                   </div>
                 </div>
               </AuthGlassCard>

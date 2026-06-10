@@ -1,7 +1,11 @@
 'use client';
 
 import { Input } from '@shop/ui';
-import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
+import {
+  STOREFRONT_GLASS_INPUT_CLASS,
+  STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS,
+  STOREFRONT_GLASS_TEXTAREA_CLASS,
+} from '../products/[slug]/product-action-bar.constants';
 import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
@@ -141,7 +145,7 @@ export default function ContactPage() {
                       required
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full"
+                      className={`w-full ${STOREFRONT_GLASS_INPUT_CLASS}`}
                       placeholder={t('contact.form.namePlaceholder')}
                     />
                   </div>
@@ -156,7 +160,7 @@ export default function ContactPage() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full"
+                      className={`w-full ${STOREFRONT_GLASS_INPUT_CLASS}`}
                       placeholder={t('contact.form.emailPlaceholder')}
                     />
                   </div>
@@ -170,7 +174,7 @@ export default function ContactPage() {
                       type="text"
                       value={formData.subject}
                       onChange={handleChange}
-                      className="w-full"
+                      className={`w-full ${STOREFRONT_GLASS_INPUT_CLASS}`}
                       placeholder={t('contact.form.subjectPlaceholder')}
                     />
                   </div>
@@ -185,7 +189,7 @@ export default function ContactPage() {
                       required
                       value={formData.message}
                       onChange={handleChange}
-                      className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-900"
+                      className={`w-full ${STOREFRONT_GLASS_TEXTAREA_CLASS}`}
                       placeholder={t('contact.form.messagePlaceholder')}
                     />
                   </div>
