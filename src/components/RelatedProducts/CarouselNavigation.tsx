@@ -13,7 +13,7 @@ export function CarouselNavigation({ onPrevious, onNext }: CarouselNavigationPro
     <>
       <button
         onClick={onPrevious}
-        className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-12 bg-white/90 hover:bg-white text-gray-900 p-2 rounded-full shadow-lg transition-all z-20 cursor-pointer hover:scale-110"
+        className="absolute left-4 top-1/2 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 text-gray-900 shadow-lg transition-all hover:scale-110 hover:bg-white sm:left-6 lg:left-8"
         aria-label="Previous products"
       >
         <svg
@@ -33,7 +33,7 @@ export function CarouselNavigation({ onPrevious, onNext }: CarouselNavigationPro
 
       <button
         onClick={onNext}
-        className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-12 bg-white/90 hover:bg-white text-gray-900 p-2 rounded-full shadow-lg transition-all z-20 cursor-pointer hover:scale-110"
+        className="absolute right-4 top-1/2 z-20 -translate-y-1/2 cursor-pointer rounded-full bg-white/90 p-2 text-gray-900 shadow-lg transition-all hover:scale-110 hover:bg-white sm:right-6 lg:right-8"
         aria-label="Next products"
       >
         <svg

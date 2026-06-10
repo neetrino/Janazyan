@@ -19,7 +19,7 @@ export function useVisibleCards() {
       } else if (width < 1280) {
         setVisibleCards(3); // desktop
       } else {
-        setVisibleCards(4); // large desktop
+        setVisibleCards(5); // large desktop — full-width carousel
       }
     };
 

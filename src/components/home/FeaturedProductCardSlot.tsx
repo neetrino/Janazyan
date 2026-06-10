@@ -9,8 +9,15 @@ const SCALE_CLASS: Record<FeaturedProductCardScale, string> = {
   full: 'scale-100',
   catalog: 'scale-[0.58] sm:scale-[0.72] md:scale-[0.88] lg:scale-100',
   'mobile-grid': 'scale-[0.58]',
-  carousel: 'scale-[0.72] sm:scale-[0.85] lg:scale-100',
+  carousel: 'scale-[0.72] sm:scale-[0.85] lg:scale-100 xl:scale-[0.88] 2xl:scale-100',
 };
+
+/** Scaled card width caps — slot stays card-sized; carousel cell centering creates the gap. */
+const CAROUSEL_SLOT_SIZE =
+  'mx-auto h-[284px] w-full max-w-[204px] sm:h-[335px] sm:max-w-[241px] lg:h-[411px] lg:max-w-[283px] xl:h-[362px] xl:max-w-[249px] 2xl:h-[411px] 2xl:max-w-[283px]';
+
+const CAROUSEL_SLOT_CARD_TOP_CLASS =
+  'top-[46px] sm:top-[54px] lg:top-[64px] xl:top-[56px] 2xl:top-[64px]';
 
 /** Product bottle extends above the card — slot height includes that overflow at each breakpoint. */
 const CATALOG_SLOT_SIZE =
@@ -55,6 +62,18 @@ export function FeaturedProductCardSlot({
       <div className={`relative shrink-0 overflow-visible ${MOBILE_GRID_SLOT_SIZE}`}>
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${MOBILE_GRID_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS['mobile-grid']}`}
+        >
+          <FeaturedProductCard product={product} priority={priority} />
+        </div>
+      </div>
+    );
+  }
+
+  if (scale === 'carousel') {
+    return (
+      <div className={`relative shrink-0 overflow-visible ${CAROUSEL_SLOT_SIZE}`}>
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 origin-top ${CAROUSEL_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.carousel}`}
         >
           <FeaturedProductCard product={product} priority={priority} />
         </div>

@@ -64,92 +64,94 @@ export function RelatedProducts({ categorySlug, currentProductId, productSlug }:
   }, []);
 
   return (
-    <section className="py-12 mt-20 border-t border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-10">{t(language, 'product.related_products_title')}</h2>
-
-        {loading ? (
-          <div className="grid grid-cols-1 justify-items-center gap-8 sm:grid-cols-2 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
-              />
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">{t(language, 'product.noRelatedProducts')}</p>
-          </div>
-        ) : (
-          <div className="relative">
-            <div
-              ref={carouselRef}
-              className="relative overflow-hidden cursor-grab active:cursor-grabbing select-none"
-              onMouseDown={handleMouseDown}
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              onWheel={handleWheel}
-            >
-              <div
-                className="flex items-start"
-                style={{
-                  transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
-                  transition: isDragging ? 'none' : 'transform 0.5s ease-in-out',
-                }}
-              >
-                {products.map((product) => (
-                  <div
-                    key={product.id}
-                    className="flex shrink-0 justify-center overflow-visible px-2"
-                    style={{ width: `${100 / visibleCards}%` }}
-                    onClickCapture={(e) => {
-                      if (hasMoved) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                      }
-                    }}
-                  >
-                    <FeaturedProductCardSlot
-                      product={mapToHomeFeaturedProduct({
-                        id: product.id,
-                        slug: product.slug,
-                        title: product.title,
-                        price: product.price,
-                        image: product.image,
-                        inStock: product.inStock,
-                        compareAtPrice: product.compareAtPrice,
-                        originalPrice: product.originalPrice,
-                        discountPercent: product.discountPercent,
-                        brand: product.brand,
-                        categories: product.categories,
-                      })}
-                      scale="carousel"
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {products.length > visibleCards && (
-              <CarouselNavigation onPrevious={goToPrevious} onNext={goToNext} />
-            )}
-
-            {products.length > visibleCards && (
-              <CarouselDots
-                totalItems={products.length}
-                visibleItems={visibleCards}
-                currentIndex={currentIndex}
-                onDotClick={goToIndex}
-              />
-            )}
-          </div>
-        )}
+    <section className="mt-24 w-full border-t border-gray-200 py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <h2 className="mb-10 text-3xl font-bold text-gray-900">
+          {t(language, 'product.related_products_title')}
+        </h2>
       </div>
+
+      {loading ? (
+        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-5 xl:gap-x-10">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
+            />
+          ))}
+        </div>
+      ) : products.length === 0 ? (
+        <div className="py-12 text-center">
+          <p className="text-lg text-gray-500">{t(language, 'product.noRelatedProducts')}</p>
+        </div>
+      ) : (
+        <div className="relative mt-10 w-full">
+          <div
+            ref={carouselRef}
+            className="relative w-full cursor-grab overflow-hidden select-none active:cursor-grabbing"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            onWheel={handleWheel}
+          >
+            <div
+              className="flex w-full items-start"
+              style={{
+                transform: `translateX(-${currentIndex * (100 / visibleCards)}%)`,
+                transition: isDragging ? 'none' : 'transform 0.5s ease-in-out',
+              }}
+            >
+              {products.map((product) => (
+                <div
+                  key={product.id}
+                  className="flex shrink-0 justify-center overflow-visible"
+                  style={{ width: `${100 / visibleCards}%` }}
+                  onClickCapture={(e) => {
+                    if (hasMoved) {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                  }}
+                >
+                  <FeaturedProductCardSlot
+                    product={mapToHomeFeaturedProduct({
+                      id: product.id,
+                      slug: product.slug,
+                      title: product.title,
+                      price: product.price,
+                      image: product.image,
+                      inStock: product.inStock,
+                      compareAtPrice: product.compareAtPrice,
+                      originalPrice: product.originalPrice,
+                      discountPercent: product.discountPercent,
+                      brand: product.brand,
+                      categories: product.categories,
+                    })}
+                    scale="carousel"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {products.length > visibleCards && (
+            <CarouselNavigation onPrevious={goToPrevious} onNext={goToNext} />
+          )}
+
+          {products.length > visibleCards && (
+            <CarouselDots
+              totalItems={products.length}
+              visibleItems={visibleCards}
+              currentIndex={currentIndex}
+              onDotClick={goToIndex}
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 }
