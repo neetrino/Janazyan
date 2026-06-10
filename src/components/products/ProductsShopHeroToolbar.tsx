@@ -45,7 +45,7 @@ export function ProductsShopHeroToolbar({
   return (
     <div className="pb-1">
       <ProductsShopBreadcrumb language={language} />
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
+      <div className="hidden flex-col gap-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
         <Suspense
           fallback={
             <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>

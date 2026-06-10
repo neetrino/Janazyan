@@ -9,6 +9,7 @@ import {
 import { fetchProductsCatalog } from '../../lib/products/products-catalog-cache';
 import { ProductsCatalog } from './ProductsCatalog';
 import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
+import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from './products-page-layout.constants';
 
 export const revalidate = 120;
 
@@ -34,6 +35,7 @@ export default async function ProductsPage({
 
   return (
     <ProductsHeroShell
+      mobileContentSurfaceClassName={PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS}
       toolbar={
         <ProductsShopHeroToolbar
           language={language}

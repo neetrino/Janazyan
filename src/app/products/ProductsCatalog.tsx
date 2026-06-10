@@ -71,7 +71,7 @@ export async function ProductsCatalog({
   };
 
   return (
-    <div className="relative z-10 w-full overflow-x-hidden">
+    <div className="relative z-10 w-full">
       {normalizedProducts.length > 0 ? (
         <>
           <ProductsGrid products={normalizedProducts} />

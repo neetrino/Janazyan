@@ -198,7 +198,7 @@ export function MobileBottomNav() {
 
   return (
     <>
-      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-[70] px-2 pb-2 pt-1">
+      <nav className="lg:hidden fixed bottom-0 inset-x-0 z-[70] px-2 pt-1 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))]">
         <div className="mx-auto grid max-w-md grid-cols-4 items-start rounded-t-[34px] border border-white/30 bg-white/55 px-3 py-2 shadow-[0_-4px_4px_rgba(135,123,135,0.13)] backdrop-blur-md">
           {navItems.filter(item => item.visible).map(({ key, label, href, badge, action, onClick }) => {
             const isActive = key === 'shop' ? pathname?.startsWith('/products') : href ? pathname === href : false;

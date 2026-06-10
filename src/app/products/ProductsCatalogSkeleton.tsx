@@ -14,7 +14,7 @@ export function ProductsShopToolbarSkeleton() {
   return (
     <div className="pb-1" aria-busy="true" aria-label="Loading shop toolbar">
       <div className="mb-4 h-[18px] w-40 animate-pulse rounded bg-white/50 lg:mb-6" />
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
+      <div className="hidden flex-col gap-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
         <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>
           {Array.from({ length: 5 }).map((_, index) => (
             <div

@@ -52,15 +52,17 @@ export function ProductsGrid({ products }: ProductsGridProps) {
   }, []);
 
   const getGridClasses = () => {
+    const mobileGridGap = 'gap-x-1 gap-y-0 lg:gap-x-6 lg:gap-y-10';
+
     switch (viewMode) {
       case 'list':
         return 'flex flex-col items-center gap-10';
       case 'grid-2':
-        return 'grid w-full grid-cols-1 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2';
+        return `grid w-full grid-cols-1 justify-items-center ${mobileGridGap} sm:grid-cols-2`;
       case 'grid-3':
-        return 'grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+        return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`;
       default:
-        return 'grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
+        return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`;
     }
   };
 

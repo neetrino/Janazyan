@@ -1,3 +1,5 @@
+import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
+
 /** Same rounded shell as {@link HomeHero} — width follows {@link PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
   'relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
@@ -62,6 +64,14 @@ export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
 
 /** Gradient continuation for the catalog zone. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
+
+/** Mobile catalog — nav clearance + last-row card breathing room (88px nav + 16px). */
+export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-[calc(104px+env(safe-area-inset-bottom,0px))]';
+
+/** Mobile catalog — full-bleed gradient, white at top fading to shop sky blue. */
+export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
+  `relative z-10 mt-6 w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
 /** Space between toolbar and first product row. */
 export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 lg:pt-8';

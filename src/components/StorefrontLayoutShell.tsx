@@ -33,11 +33,11 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const usesHeroSurface = heroShellPage || useCatalogTheme;
 
   return (
-    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'bg-white' : ''}`}>
+    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'lg:bg-white' : ''}`}>
       {heroShellPage ? (
-        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
+        <div className="relative z-10 w-full pb-0 lg:pb-[220px]">{children}</div>
       ) : useCatalogTheme ? (
-        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">
+        <div className="relative z-10 w-full pb-0 lg:pb-[220px]">
           <ProductsHeroShell catalog={children} />
         </div>
       ) : (

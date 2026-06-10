@@ -99,7 +99,7 @@ export default function RootLayout({
         <Suspense fallback={null}>
           <ClientProviders>
             <StorefrontBackground />
-            <div className="flex min-h-screen flex-col pb-16 lg:pb-0">
+            <div className="flex min-h-screen flex-col">
               <ConditionalHeader />
               <StorefrontMain>{children}</StorefrontMain>
               <Footer />

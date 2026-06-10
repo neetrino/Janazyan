@@ -15,11 +15,14 @@ import {
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
 import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
+import { STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
   toolbar?: ReactNode;
   catalog: ReactNode;
+  /** Mobile content card surface — defaults to shared white shell. */
+  mobileContentSurfaceClassName?: string;
   sectionAriaLabel?: string;
 };
 
@@ -56,11 +59,16 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
 export function ProductsHeroShell({
   toolbar,
   catalog,
+  mobileContentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
   return (
     <>
-      <StorefrontMobileShell toolbar={toolbar} sectionAriaLabel={sectionAriaLabel}>
+      <StorefrontMobileShell
+        toolbar={toolbar}
+        contentSurfaceClassName={mobileContentSurfaceClassName}
+        sectionAriaLabel={sectionAriaLabel}
+      >
         {catalog}
       </StorefrontMobileShell>
 

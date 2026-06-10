@@ -15,6 +15,8 @@ type StorefrontMobileShellProps = {
   children: ReactNode;
   /** Breadcrumb, category pills, etc. — rendered below the search row. */
   toolbar?: ReactNode;
+  /** Override default white content card — e.g. /products catalog gradient. */
+  contentSurfaceClassName?: string;
   sectionAriaLabel?: string;
 };
 
@@ -24,6 +26,7 @@ type StorefrontMobileShellProps = {
 export function StorefrontMobileShell({
   children,
   toolbar,
+  contentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   return (
@@ -37,9 +40,7 @@ export function StorefrontMobileShell({
           </div>
         ) : null}
       </div>
-      <div
-        className={`${STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}
-      >
+      <div className={`${contentSurfaceClassName} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
         {children}
       </div>
     </section>

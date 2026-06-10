@@ -17,7 +17,7 @@ import {
 
 export default function HomePage() {
   return (
-    <div className="relative isolate overflow-hidden bg-white">
+    <div className="relative isolate overflow-hidden lg:bg-white">
       <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
 
       <div className="hidden lg:block">
