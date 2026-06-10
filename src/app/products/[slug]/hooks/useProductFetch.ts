@@ -9,6 +9,8 @@ import type { Product } from '../types';
 interface UseProductFetchProps {
   slug: string;
   variantIdFromUrl: string | null;
+  initialProduct?: Product | null;
+  initialNotFound?: boolean;
 }
 
 function isNotFoundError(error: unknown): boolean {
@@ -26,12 +28,19 @@ async function fetchProductForLang(slug: string, lang: string): Promise<Product>
   });
 }
 
-export function useProductFetch({ slug, variantIdFromUrl }: UseProductFetchProps) {
+export function useProductFetch({
+  slug,
+  variantIdFromUrl,
+  initialProduct = null,
+  initialNotFound = false,
+}: UseProductFetchProps) {
   const router = useRouter();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [notFound, setNotFound] = useState(false);
+  const hasServerPayload = initialProduct !== null || initialNotFound;
+  const [product, setProduct] = useState<Product | null>(initialProduct);
+  const [loading, setLoading] = useState(!hasServerPayload);
+  const [notFound, setNotFound] = useState(initialNotFound);
   const generationRef = useRef(0);
+  const skipInitialFetchRef = useRef(hasServerPayload);
 
   const runLoad = useCallback(async () => {
     if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) {
@@ -41,7 +50,6 @@ export function useProductFetch({ slug, variantIdFromUrl }: UseProductFetchProps
     const gen = ++generationRef.current;
     setLoading(true);
     setNotFound(false);
-    setProduct(null);
 
     const currentLang = getStoredLanguage();
 
@@ -92,7 +100,12 @@ export function useProductFetch({ slug, variantIdFromUrl }: UseProductFetchProps
 
   useEffect(() => {
     if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) return;
-    void runLoad();
+
+    if (skipInitialFetchRef.current) {
+      skipInitialFetchRef.current = false;
+    } else {
+      void runLoad();
+    }
 
     const handleLanguageUpdate = () => {
       void runLoad();

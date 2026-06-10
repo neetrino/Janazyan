@@ -1,34 +1,45 @@
 'use client';
 
-import { useState, useEffect, use, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { getStoredCurrency } from '../../../lib/currency';
 import { getStoredLanguage, type LanguageCode } from '../../../lib/language';
 import { t } from '../../../lib/i18n';
 import { snapshotFromProductPage } from '../../../lib/wishlist/wishlist-snapshot-builders';
+import { calculateAverageRating } from '../../../components/ProductReviews/utils';
+import type { Review } from '../../../components/ProductReviews/utils';
 import { useAttributeGroups } from './useAttributeGroups';
 import { useProductImages } from './hooks/useProductImages';
 import { useProductFetch } from './hooks/useProductFetch';
 import { useWishlistCompare } from './hooks/useWishlistCompare';
-import { useProductReviews } from './hooks/useProductReviews';
 import { useVariantSelection } from './hooks/useVariantSelection';
 import { useProductActions } from './hooks/useProductActions';
 import { useProductQuantity } from './hooks/useProductQuantity';
 import { useProductCalculations } from './hooks/useProductCalculations';
 import type { Product } from './types';
 
-export function useProductPage(params: Promise<{ slug?: string }>) {
+export interface UseProductPageOptions {
+  slug: string;
+  variantIdFromUrl: string | null;
+  serverLanguage: LanguageCode;
+  initialProduct: Product | null;
+  initialNotFound: boolean;
+  reviews: Review[];
+}
+
+export function useProductPage({
+  slug,
+  variantIdFromUrl,
+  serverLanguage,
+  initialProduct,
+  initialNotFound,
+  reviews,
+}: UseProductPageOptions) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currency, setCurrency] = useState(getStoredCurrency());
-  const [language, setLanguage] = useState<LanguageCode>('en');
+  const [language, setLanguage] = useState<LanguageCode>(serverLanguage);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showMessage, setShowMessage] = useState<string | null>(null);
   const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0);
-
-  const resolvedParams = use(params);
-  const rawSlug = resolvedParams?.slug ?? '';
-  const slugParts = rawSlug.includes(':') ? rawSlug.split(':') : [rawSlug];
-  const slug = slugParts[0];
-  const variantIdFromUrl = slugParts.length > 1 ? slugParts[1] : null;
 
   const {
     product,
@@ -37,6 +48,8 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
   } = useProductFetch({
     slug,
     variantIdFromUrl,
+    initialProduct,
+    initialNotFound,
   });
 
   const images = useProductImages(product);
@@ -95,10 +108,7 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
     productId: product?.id || null,
   });
 
-  const { reviews, averageRating } = useProductReviews({
-    slug,
-    productId: product?.id ?? null,
-  });
+  const averageRating = useMemo(() => calculateAverageRating(reviews), [reviews]);
 
   const { handleAddToWishlist, handleCompareToggle } = useProductActions({
     productId: product?.id || null,
@@ -128,10 +138,10 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
   useEffect(() => {
     const handleCurrencyUpdate = () => setCurrency(getStoredCurrency());
     const handleCurrencyRatesUpdate = () => setCurrency(getStoredCurrency());
-    
+
     window.addEventListener('currency-updated', handleCurrencyUpdate);
     window.addEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
-    
+
     return () => {
       window.removeEventListener('currency-updated', handleCurrencyUpdate);
       window.removeEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
@@ -165,7 +175,7 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
   const getRequiredAttributesMessage = (): string => {
     const needsColor = colorGroups.length > 0 && colorGroups.some(g => g.stock > 0) && !selectedColor;
     const needsSize = sizeGroups.length > 0 && sizeGroups.some(g => g.stock > 0) && !selectedSize;
-    
+
     if (needsColor && needsSize) return t(language, 'product.selectColorAndSize');
     if (needsColor) return t(language, 'product.selectColor');
     if (needsSize) return t(language, 'product.selectSize');
@@ -194,7 +204,6 @@ export function useProductPage(params: Promise<{ slug?: string }>) {
     isInWishlist,
     isInCompare,
     quantity,
-    reviews,
     averageRating,
     slug,
     attributeGroups,

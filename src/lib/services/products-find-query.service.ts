@@ -39,6 +39,14 @@ class ProductsFindQueryService {
       ? executeCatalogProductQuery
       : executeProductQuery;
 
+    if (filters.catalog && filters.fastCatalog) {
+      const products = await runQuery(where, limit + 1, (page - 1) * limit);
+      return {
+        products,
+        bestsellerProductIds,
+      };
+    }
+
     if (!needOverFetch) {
       const [total, products] = await Promise.all([
         db.product.count({ where }),

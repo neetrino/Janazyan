@@ -13,7 +13,7 @@ export const STOREFRONT_CACHE_TTL = {
   productsFilters: 120,
   productsPriceRange: 120,
   /** SSR /products grid (Redis layer). */
-  productsCatalog: 120,
+  productsCatalog: 600,
   /** /products category pill strip. */
   categoriesNavStrip: 300,
   /** PDP first paint (images + identifiers). */
