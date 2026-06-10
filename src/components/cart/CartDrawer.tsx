@@ -267,7 +267,7 @@ export function CartDrawer() {
       aria-hidden={!open}
     >
       <aside
-        className={`flex h-full min-h-screen w-full flex-col bg-white shadow-2xl transition-transform duration-300 ease-out ${
+        className={`flex h-full min-h-screen w-full flex-col overflow-hidden rounded-l-2xl bg-white shadow-2xl transition-transform duration-300 ease-out ${
           open && slideIn ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ maxWidth: CART_DRAWER_MAX_WIDTH_PX }}
