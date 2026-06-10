@@ -43,6 +43,8 @@
     "stores": "Магазины",
     "ourStores": "Наши магазины",
     "blog": "Блог",
+    "shop": "Магазин",
+    "myPage": "Моя страница",
     "categoriesMenuUnavailable": "Меню категорий временно недоступно"
   },
   "stock": {
