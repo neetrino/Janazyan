@@ -6,6 +6,8 @@ import {
   STOREFRONT_CACHE_TTL,
   writeJsonCache,
 } from './storefront-cache';
+import { cacheService } from '../services/cache.service';
+import { logger } from '../utils/logger';
 
 export type ProductsCatalogCacheFilters = {
   page: number;
@@ -41,6 +43,7 @@ export type ProductsCatalogCacheResponse = {
     page: number;
     limit: number;
     totalPages: number;
+    hasNextPage?: boolean;
   };
 };
 
@@ -63,8 +66,25 @@ export async function getProductsCatalogFromRedisOrDb(
   const key = STOREFRONT_CACHE_KEYS.productsCatalog(buildProductsCatalogCacheKey(filters));
   const cached = await readJsonCache<ProductsCatalogCacheResponse>(key);
   if (cached) {
+    logger.debug('[PRODUCTS CATALOG CACHE] hit', {
+      provider: cacheService.isAvailable() ? 'redis' : 'memory',
+      page: filters.page,
+      limit: filters.limit,
+      lang: filters.lang,
+      hasSearch: Boolean(filters.search?.trim()),
+      hasCategory: Boolean(filters.category?.trim()),
+    });
     return cached;
   }
+
+  logger.debug('[PRODUCTS CATALOG CACHE] miss', {
+    provider: cacheService.isAvailable() ? 'redis' : 'memory',
+    page: filters.page,
+    limit: filters.limit,
+    lang: filters.lang,
+    hasSearch: Boolean(filters.search?.trim()),
+    hasCategory: Boolean(filters.category?.trim()),
+  });
 
   if (!isDatabaseConnectionUrlConfigured()) {
     return EMPTY_CATALOG;
@@ -77,6 +97,7 @@ export async function getProductsCatalogFromRedisOrDb(
     search: filters.search?.trim() || undefined,
     category: filters.category?.trim() || undefined,
     catalog: true,
+    fastCatalog: true,
   });
 
   const response: ProductsCatalogCacheResponse = {

@@ -1,5 +1,8 @@
 export type CatalogSort = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
+const DEFAULT_CATALOG_PAGE_SIZE = 12;
+const MAX_CATALOG_PAGE_SIZE = 24;
+
 export type SearchParamsInput = Record<string, string | string[] | undefined>;
 
 export type ParsedCatalogParams = {
@@ -39,7 +42,9 @@ export function parseCatalogSearchParams(params: SearchParamsInput): ParsedCatal
     limitParam && !Number.isNaN(parseInt(limitParam, 10))
       ? parseInt(limitParam, 10)
       : null;
-  const perPage = parsedLimit ? Math.min(parsedLimit, 200) : 12;
+  const perPage = parsedLimit
+    ? Math.min(parsedLimit, MAX_CATALOG_PAGE_SIZE)
+    : DEFAULT_CATALOG_PAGE_SIZE;
   const sort = (typeof params.sort === 'string' ? params.sort : 'default') as CatalogSort;
 
   const colors = typeof params.colors === 'string' ? params.colors : undefined;

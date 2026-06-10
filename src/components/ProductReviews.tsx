@@ -10,16 +10,31 @@ import { ReviewForm } from './ProductReviews/ReviewForm';
 import { ReviewList } from './ProductReviews/ReviewList';
 import { ProductReviewsLoading } from './ProductReviews/ProductReviewsLoading';
 
+import type { Review } from './ProductReviews/utils';
+
 interface ProductReviewsProps {
-  productId?: string; // For backward compatibility
-  productSlug?: string; // Preferred: use slug for API calls
+  productId?: string;
+  productSlug?: string;
+  /** SSR payload — skips client fetch on first paint. */
+  initialReviews?: Review[];
+  onReviewsChange?: (reviews: Review[]) => void;
 }
 
-export function ProductReviews({ productId, productSlug }: ProductReviewsProps) {
+export function ProductReviews({
+  productId,
+  productSlug,
+  initialReviews,
+  onReviewsChange,
+}: ProductReviewsProps) {
   const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
-  
-  const { reviews, loading, setReviews } = useReviews(productId, productSlug);
+
+  const { reviews, loading, setReviews } = useReviews({
+    productId,
+    productSlug,
+    initialReviews,
+    onReviewsChange,
+  });
   
   const {
     showForm,

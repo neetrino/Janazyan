@@ -227,7 +227,9 @@ model Product {
 
   @@index([brandId])
   @@index([published, publishedAt])
+  @@index([published, deletedAt, createdAt])
   @@index([featured])
+  @@index([primaryCategoryId])
   @@index([deletedAt])
   @@map("products")
 }
@@ -274,6 +276,7 @@ model ProductVariant {
   orderItems OrderItem[]
 
   @@index([productId])
+  @@index([productId, published, price])
   @@map("product_variants")
 }
 

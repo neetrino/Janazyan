@@ -1,14 +1,18 @@
-'use client';
-
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 import { FeaturedProductCard } from './FeaturedProductCard';
 
-export type FeaturedProductCardScale = 'full' | 'catalog' | 'mobile-grid' | 'carousel';
+export type FeaturedProductCardScale =
+  | 'full'
+  | 'catalog'
+  | 'mobile-grid'
+  | 'responsive-catalog'
+  | 'carousel';
 
 const SCALE_CLASS: Record<FeaturedProductCardScale, string> = {
   full: 'scale-100',
   catalog: 'scale-[0.58] sm:scale-[0.72] md:scale-[0.88] lg:scale-100',
   'mobile-grid': 'scale-[0.58]',
+  'responsive-catalog': 'product-card-responsive-scale scale-[0.58] sm:scale-[0.72] md:scale-[0.88] lg:scale-100',
   carousel: 'scale-[0.72] sm:scale-[0.85] lg:scale-100 xl:scale-[0.88] 2xl:scale-100',
 };
 
@@ -25,6 +29,11 @@ const CATALOG_SLOT_SIZE =
 
 const CATALOG_SLOT_CARD_TOP_CLASS =
   'top-[37px] sm:top-[46px] md:top-[56px] lg:top-[64px]';
+
+const RESPONSIVE_CATALOG_SLOT_SIZE =
+  'product-card-responsive-slot h-[238px] w-[164px] sm:h-[296px] sm:w-[204px] md:h-[361px] md:w-[249px] lg:h-[411px] lg:w-[283px]';
+const RESPONSIVE_CATALOG_SLOT_CARD_TOP_CLASS =
+  'product-card-responsive-card-top top-[37px] sm:top-[46px] md:top-[56px] lg:top-[64px]';
 
 /** scale 0.58 — image overflow (37px) + scaled card height (201px). */
 const MOBILE_GRID_SLOT_SIZE = 'h-[238px] w-[164px]';
@@ -45,6 +54,18 @@ export function FeaturedProductCardSlot({
   scale = 'catalog',
   priority = true,
 }: FeaturedProductCardSlotProps) {
+  if (scale === 'responsive-catalog') {
+    return (
+      <div className={`relative shrink-0 overflow-visible ${RESPONSIVE_CATALOG_SLOT_SIZE}`}>
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 origin-top ${RESPONSIVE_CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS['responsive-catalog']}`}
+        >
+          <FeaturedProductCard product={product} priority={priority} />
+        </div>
+      </div>
+    );
+  }
+
   if (scale === 'catalog') {
     return (
       <div className={`relative shrink-0 overflow-visible ${CATALOG_SLOT_SIZE}`}>

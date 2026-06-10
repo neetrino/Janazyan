@@ -1,6 +1,3 @@
-'use client';
-
-import { memo } from 'react';
 import { FeaturedProductCardSlot } from './home/FeaturedProductCardSlot';
 import type { ProductLabel } from './ProductLabels';
 import { mapToHomeFeaturedProduct } from '../lib/home/map-to-home-featured-product';
@@ -36,10 +33,8 @@ interface ProductCardProps {
   priority?: boolean;
 }
 
-/**
- * Product card — uses the same Figma featured card as the home page.
- */
-function ProductCardComponent({ product, viewMode = 'grid-3', priority = false }: ProductCardProps) {
+/** Product card — server-rendered visual shell with client action islands inside. */
+export function ProductCard({ product, viewMode = 'grid-3', priority = false }: ProductCardProps) {
   const featuredProduct = mapToHomeFeaturedProduct({
     id: product.id,
     slug: product.slug,
@@ -65,19 +60,8 @@ function ProductCardComponent({ product, viewMode = 'grid-3', priority = false }
   }
 
   return (
-    <>
-      <div data-product-card className="flex w-auto justify-center lg:hidden">
-        <FeaturedProductCardSlot
-          product={featuredProduct}
-          scale="mobile-grid"
-          priority={priority}
-        />
-      </div>
-      <div data-product-card className="hidden w-auto justify-center lg:flex">
-        <FeaturedProductCardSlot product={featuredProduct} scale="catalog" priority={priority} />
-      </div>
-    </>
+    <div data-product-card className="flex w-auto justify-center">
+      <FeaturedProductCardSlot product={featuredProduct} scale="responsive-catalog" priority={priority} />
+    </div>
   );
 }
-
-export const ProductCard = memo(ProductCardComponent);

@@ -29,13 +29,21 @@ class ProductsFindService {
         );
 
     // Step 3: Pagination — use server total when provided (no filters), else client slice
+    const isFastCatalog = filters.catalog === true && filters.fastCatalog === true;
+    const hasNextPage = isFastCatalog ? filteredProducts.length > limit : undefined;
     const total =
-      totalFromQuery !== undefined ? totalFromQuery : filteredProducts.length;
+      totalFromQuery !== undefined
+        ? totalFromQuery
+        : isFastCatalog
+          ? page * limit + (hasNextPage ? 1 : 0)
+          : filteredProducts.length;
     const start = (page - 1) * limit;
     const paginatedProducts =
       totalFromQuery !== undefined
         ? filteredProducts
-        : filteredProducts.slice(start, start + limit);
+        : isFastCatalog
+          ? filteredProducts.slice(0, limit)
+          : filteredProducts.slice(start, start + limit);
 
     // Step 4: Transform products to response format
     const data = await productsFindTransformService.transformProducts(
@@ -51,6 +59,7 @@ class ProductsFindService {
         page,
         limit,
         totalPages: Math.ceil(total / limit),
+        hasNextPage,
       },
     };
   }

@@ -129,6 +129,19 @@ body {
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  [data-view-mode='list'] .product-card-responsive-slot {
+    width: 283px;
+    height: 347px;
+  }
+
+  [data-view-mode='list'] .product-card-responsive-card-top {
+    top: 0;
+  }
+
+  [data-view-mode='list'] .product-card-responsive-scale {
+    transform: scale(1);
+  }
 }
 
 /* Policy pages typography & spacing */

@@ -19,6 +19,8 @@ export interface ProductFilters {
   lang?: string;
   /** Lighter transform + query for catalog grids (cards do not need full color swatches). */
   catalog?: boolean;
+  /** Catalog pages can skip exact count so cards are not blocked by a second DB query. */
+  fastCatalog?: boolean;
 }
 
 /**

@@ -54,21 +54,10 @@ export async function ProductsCatalog({
     return `/products?${q.toString()}`;
   };
 
-  const getPaginationPages = (): (number | 'ellipsis')[] => {
-    const total = productsData.meta.totalPages;
-    const current = parsed.page;
-    if (total <= 7) {
-      return Array.from({ length: total }, (_, i) => i + 1);
-    }
-    const set = new Set<number>([1, total, current - 1, current, current + 1]);
-    const sorted = Array.from(set).filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
-    const out: (number | 'ellipsis')[] = [];
-    for (let i = 0; i < sorted.length; i++) {
-      if (i > 0 && sorted[i]! - sorted[i - 1]! > 1) out.push('ellipsis');
-      out.push(sorted[i]!);
-    }
-    return out;
-  };
+  const hasPreviousPage = parsed.page > 1;
+  const hasNextPage =
+    productsData.meta.hasNextPage ?? parsed.page < productsData.meta.totalPages;
+  const shouldShowPagination = hasPreviousPage || hasNextPage;
 
   return (
     <div className="relative z-10 w-full">
@@ -76,12 +65,12 @@ export async function ProductsCatalog({
         <>
           <ProductsGrid products={normalizedProducts} />
 
-          {productsData.meta.totalPages > 1 && (
+          {shouldShowPagination && (
             <nav
               className="mt-10 flex flex-wrap items-center justify-center gap-2"
               aria-label="Pagination"
             >
-              {parsed.page > 1 ? (
+              {hasPreviousPage ? (
                 <Link href={buildPaginationUrl(parsed.page - 1)}>
                   <Button
                     variant="outline"
@@ -97,34 +86,15 @@ export async function ProductsCatalog({
               )}
 
               <div className="flex items-center gap-1">
-                {getPaginationPages().map((item, idx) =>
-                  item === 'ellipsis' ? (
-                    <span key={`ellipsis-${idx}`} className="px-2 text-neutral-400" aria-hidden>
-                      …
-                    </span>
-                  ) : (
-                    <span key={item}>
-                      {item === parsed.page ? (
-                        <span
-                          className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
-                          aria-current="page"
-                        >
-                          {item}
-                        </span>
-                      ) : (
-                        <Link
-                          href={buildPaginationUrl(item)}
-                          className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
-                        >
-                          {item}
-                        </Link>
-                      )}
-                    </span>
-                  ),
-                )}
+                <span
+                  className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
+                  aria-current="page"
+                >
+                  {parsed.page}
+                </span>
               </div>
 
-              {parsed.page < productsData.meta.totalPages ? (
+              {hasNextPage ? (
                 <Link href={buildPaginationUrl(parsed.page + 1)}>
                   <Button
                     variant="outline"

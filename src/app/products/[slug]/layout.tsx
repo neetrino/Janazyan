@@ -1,22 +1,38 @@
-import type { Metadata } from "next";
-import { productsService } from "@/lib/services/products.service";
+import type { Metadata } from 'next';
+import { getServerLanguage } from '@/lib/language-server';
+import { parseProductSlugParam } from '@/lib/products/parse-product-slug';
+import { fetchProductPageProduct } from '@/lib/products/product-page-cache';
+import { RESERVED_ROUTES } from './types';
 
-const DEFAULT_TITLE = "Product";
-const SITE_NAME = "WhiteShop.am";
+const DEFAULT_TITLE = 'Product';
+const SITE_NAME = 'WhiteShop.am';
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const { slug } = parseProductSlugParam(rawSlug);
+  if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) {
+    return { title: `${DEFAULT_TITLE} | ${SITE_NAME}` };
+  }
+
+  const language = await getServerLanguage();
   try {
-    const product = await productsService.findBySlug(slug, "en");
-    const title = product.seo?.title || product.title || DEFAULT_TITLE;
-    const description = product.seo?.description || product.description || null;
+    const product = await fetchProductPageProduct(slug, language);
+    if (!product) {
+      return { title: `${DEFAULT_TITLE} | ${SITE_NAME}` };
+    }
+    const title = product.title || DEFAULT_TITLE;
+    const description = product.description || null;
     const firstImage =
       Array.isArray(product.media) && product.media.length > 0
-        ? String(product.media[0])
+        ? String(
+            typeof product.media[0] === 'string'
+              ? product.media[0]
+              : (product.media[0] as { url?: string }).url ?? product.media[0],
+          )
         : null;
 
     return {
@@ -26,10 +42,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         title,
         description: description ?? undefined,
         ...(firstImage && { images: [{ url: firstImage, alt: title }] }),
-        type: "website",
+        type: 'website',
       },
       twitter: {
-        card: "summary_large_image",
+        card: 'summary_large_image',
         title,
         description: description ?? undefined,
         ...(firstImage && { images: [firstImage] }),

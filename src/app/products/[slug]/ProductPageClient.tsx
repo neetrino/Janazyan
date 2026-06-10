@@ -1,0 +1,263 @@
+'use client';
+
+import dynamic from 'next/dynamic';
+import Link from 'next/link';
+import { useLayoutEffect, useState } from 'react';
+import { apiClient } from '../../../lib/api-client';
+import { t } from '../../../lib/i18n';
+import { useAuth } from '../../../lib/auth/AuthContext';
+import type { LanguageCode } from '../../../lib/language';
+import type { Review } from '../../../components/ProductReviews/utils';
+import { ProductImageGallery } from './ProductImageGallery';
+import { ProductInfoAndActions } from './ProductInfoAndActions';
+import { ProductPageShell } from './ProductPageShell';
+import { useProductPage } from './useProductPage';
+import { playCartFlyAnimation } from '../../../lib/cart-fly-animation';
+import type { Product } from './types';
+
+const RelatedProducts = dynamic(
+  () => import('../../../components/RelatedProducts').then((m) => ({ default: m.RelatedProducts })),
+  {
+    loading: () => (
+      <section className="mt-24 w-full border-t border-gray-200 py-12" aria-hidden>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-10 h-9 w-64 animate-pulse rounded-lg bg-gray-200" />
+        </div>
+        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-5 xl:gap-x-10">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div
+              key={i}
+              className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
+            />
+          ))}
+        </div>
+      </section>
+    ),
+  },
+);
+
+const ProductReviews = dynamic(
+  () => import('../../../components/ProductReviews').then((m) => ({ default: m.ProductReviews })),
+  {
+    loading: () => (
+      <div className="mx-auto max-w-7xl border-t border-gray-200 px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-6 h-9 w-48 animate-pulse rounded-lg bg-gray-200" />
+        <div className="h-24 animate-pulse rounded-lg bg-gray-100" />
+      </div>
+    ),
+  },
+);
+
+export interface ProductPageClientProps {
+  slug: string;
+  variantIdFromUrl: string | null;
+  language: LanguageCode;
+  initialProduct: Product | null;
+  initialNotFound: boolean;
+}
+
+export function ProductPageClient({
+  slug,
+  variantIdFromUrl,
+  language: serverLanguage,
+  initialProduct,
+  initialNotFound,
+}: ProductPageClientProps) {
+  const { isLoggedIn } = useAuth();
+  const [reviews, setReviews] = useState<Review[]>([]);
+
+  const {
+    product,
+    loading,
+    notFound,
+    images,
+    currentImageIndex,
+    setCurrentImageIndex,
+    thumbnailStartIndex,
+    setThumbnailStartIndex,
+    currency,
+    language,
+    selectedColor,
+    selectedSize,
+    selectedAttributeValues,
+    isAddingToCart,
+    setIsAddingToCart,
+    showMessage,
+    setShowMessage,
+    isInWishlist,
+    isInCompare,
+    quantity,
+    averageRating,
+    attributeGroups,
+    colorGroups,
+    sizeGroups,
+    currentVariant,
+    price,
+    originalPrice,
+    compareAtPrice,
+    discountPercent,
+    maxQuantity,
+    isOutOfStock,
+    isVariationRequired,
+    hasUnavailableAttributes,
+    unavailableAttributes,
+    canAddToCart,
+    scrollToReviews,
+    getOptionValue,
+    adjustQuantity,
+    handleColorSelect,
+    handleSizeSelect,
+    handleAttributeValueSelect,
+    handleAddToWishlist,
+    handleCompareToggle,
+    getRequiredAttributesMessage,
+  } = useProductPage({
+    slug,
+    variantIdFromUrl,
+    serverLanguage,
+    initialProduct,
+    initialNotFound,
+    reviews,
+  });
+
+  useLayoutEffect(() => {
+    if (!product) return;
+    window.scrollTo(0, 0);
+  }, [product?.id]);
+
+  const handleAddToCart = async () => {
+    if (!canAddToCart || !product || !currentVariant) return;
+    const flyOrigin = document.querySelector('[data-product-fly-origin]');
+    const imageUrl = images[currentImageIndex] ?? images[0] ?? null;
+    playCartFlyAnimation({
+      fromElement: flyOrigin,
+      imageUrl,
+    });
+    setIsAddingToCart(true);
+    try {
+      if (!isLoggedIn) {
+        const stored = localStorage.getItem('shop_cart_guest');
+        const cart = stored ? JSON.parse(stored) : [];
+        const existing = cart.find(
+          (i: unknown): i is { variantId: string; quantity: number; productId?: string; productSlug?: string } =>
+            typeof i === 'object' && i !== null && 'variantId' in i && i.variantId === currentVariant.id,
+        );
+        if (existing) existing.quantity += quantity;
+        else cart.push({ productId: product.id, productSlug: product.slug, variantId: currentVariant.id, quantity });
+        localStorage.setItem('shop_cart_guest', JSON.stringify(cart));
+      } else {
+        await apiClient.post('/api/v1/cart/items', { productId: product.id, variantId: currentVariant.id, quantity });
+      }
+      setShowMessage(`${t(language, 'product.addedToCart')} ${quantity} ${t(language, 'product.pcs')}`);
+      window.dispatchEvent(new Event('cart-updated'));
+    } catch {
+      setShowMessage(t(language, 'product.errorAddingToCart'));
+    } finally {
+      setIsAddingToCart(false);
+      setTimeout(() => setShowMessage(null), 2000);
+    }
+  };
+
+  if (loading && !product) {
+    return <ProductPageShell />;
+  }
+
+  if (notFound && !product) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center space-y-4">
+        <p className="text-lg text-neutral-600">{t(language, 'common.messages.noProductsFound')}</p>
+        <Link href="/products" className="inline-block text-blue-600 font-medium hover:underline">
+          {t(language, 'common.navigation.products')}
+        </Link>
+      </div>
+    );
+  }
+
+  if (!product) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center space-y-4">
+        <p className="text-lg text-neutral-600">{t(language, 'common.messages.invalidProduct')}</p>
+        <Link href="/products" className="inline-block text-blue-600 font-medium hover:underline">
+          {t(language, 'common.navigation.products')}
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="max-w-7xl mx-auto py-4 lg:px-8 lg:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-start">
+          <ProductImageGallery
+            images={images}
+            product={product}
+            discountPercent={discountPercent}
+            language={language}
+            currentImageIndex={currentImageIndex}
+            onImageIndexChange={setCurrentImageIndex}
+            thumbnailStartIndex={thumbnailStartIndex}
+            onThumbnailStartIndexChange={setThumbnailStartIndex}
+            mainImagePriority={currentImageIndex === 0}
+          />
+
+          <ProductInfoAndActions
+            product={product}
+            price={price}
+            originalPrice={originalPrice}
+            compareAtPrice={compareAtPrice}
+            discountPercent={discountPercent}
+            currency={currency}
+            language={language}
+            averageRating={averageRating}
+            reviewsCount={reviews.length}
+            quantity={quantity}
+            maxQuantity={maxQuantity}
+            isOutOfStock={isOutOfStock}
+            isVariationRequired={isVariationRequired}
+            hasUnavailableAttributes={hasUnavailableAttributes}
+            unavailableAttributes={unavailableAttributes}
+            canAddToCart={canAddToCart}
+            isAddingToCart={isAddingToCart}
+            isInWishlist={isInWishlist}
+            isInCompare={isInCompare}
+            showMessage={showMessage}
+            isLoggedIn={isLoggedIn}
+            currentVariant={currentVariant}
+            attributeGroups={attributeGroups}
+            selectedColor={selectedColor}
+            selectedSize={selectedSize}
+            selectedAttributeValues={selectedAttributeValues}
+            colorGroups={colorGroups}
+            sizeGroups={sizeGroups}
+            onQuantityAdjust={adjustQuantity}
+            onAddToCart={handleAddToCart}
+            onAddToWishlist={handleAddToWishlist}
+            onCompareToggle={handleCompareToggle}
+            onScrollToReviews={scrollToReviews}
+            onColorSelect={handleColorSelect}
+            onSizeSelect={handleSizeSelect}
+            onAttributeValueSelect={handleAttributeValueSelect}
+            getOptionValue={getOptionValue}
+            getRequiredAttributesMessage={getRequiredAttributesMessage}
+          />
+        </div>
+      </div>
+
+      <RelatedProducts
+        productSlug={slug}
+        categorySlug={product.categories?.[0]?.slug}
+        currentProductId={product.id}
+      />
+
+      <div className="max-w-7xl mx-auto px-4 lg:px-8">
+        <div id="product-reviews" className="mt-16 scroll-mt-24">
+          <ProductReviews
+            productSlug={slug}
+            productId={product.id}
+            onReviewsChange={setReviews}
+          />
+        </div>
+      </div>
+    </>
+  );
+}
