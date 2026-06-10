@@ -15,7 +15,10 @@ type CategoryPillIcon = {
   className: string;
 };
 
-const CATEGORY_PILL_ICONS: Record<Exclude<CategoryPillIconKey, 'default'>, CategoryPillIcon> = {
+const CATEGORY_PILL_ICONS: Record<
+  Exclude<CategoryPillIconKey, 'default' | 'sun'>,
+  CategoryPillIcon
+> = {
   all: { src: '/figma/filter-active-grid-icon.svg', className: 'h-7 w-7' },
   face: { src: '/figma/filter-face-icon.svg', className: 'h-6 w-6' },
   hair: { src: '/figma/filter-hair-icon.svg', className: 'h-6 w-[22px]' },
