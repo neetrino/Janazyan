@@ -9,7 +9,6 @@ import { logger } from '../../lib/utils/logger';
 import { productsService } from '../../lib/services/products.service';
 import {
   parseCatalogSearchParams,
-  parseOptionalPrice,
   resolveSearchParams,
   sortCatalogProducts,
   type SearchParamsInput,
@@ -57,12 +56,7 @@ const getProductsCached = unstable_cache(
     limit: number,
     lang: string,
     search?: string,
-    category?: string,
-    minPrice?: number,
-    maxPrice?: number,
-    colors?: string,
-    sizes?: string,
-    brand?: string
+    category?: string
   ): Promise<ProductsResponse> =>
     productsService.findAll({
       page,
@@ -70,14 +64,9 @@ const getProductsCached = unstable_cache(
       lang,
       search,
       category,
-      minPrice,
-      maxPrice,
-      colors,
-      sizes,
-      brand,
       catalog: true,
     }),
-  ['products-catalog-db-v1'],
+  ['products-catalog-db-v2'],
   { revalidate: PRODUCTS_LIST_REVALIDATE_SECONDS }
 );
 
@@ -85,11 +74,6 @@ async function getProducts(
   page: number,
   search: string | undefined,
   category: string | undefined,
-  minPrice: string | undefined,
-  maxPrice: string | undefined,
-  colors: string | undefined,
-  sizes: string | undefined,
-  brand: string | undefined,
   limit: number,
   language: LanguageCode
 ): Promise<ProductsResponse> {
@@ -99,12 +83,7 @@ async function getProducts(
       limit,
       language,
       search?.trim() || undefined,
-      category?.trim() || undefined,
-      parseOptionalPrice(minPrice),
-      parseOptionalPrice(maxPrice),
-      colors?.trim() || undefined,
-      sizes?.trim() || undefined,
-      brand?.trim() || undefined
+      category?.trim() || undefined
     );
     if (!Array.isArray(response.data)) {
       return {
@@ -138,11 +117,6 @@ export async function ProductsCatalog({
     parsed.page,
     parsed.search,
     parsed.category,
-    parsed.minPrice,
-    parsed.maxPrice,
-    parsed.colors,
-    parsed.sizes,
-    parsed.brand,
     parsed.perPage,
     language
   );

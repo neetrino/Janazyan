@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ProductCard } from './ProductCard';
 import { useTranslation } from '../lib/i18n-client';
+
+/** Number of leading cards eagerly loaded (above-the-fold first row). */
+const PRIORITY_CARD_COUNT = 4;
 
 interface Product {
   id: string;
@@ -29,7 +32,6 @@ interface ProductsGridProps {
 export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps) {
   const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<ViewMode>('grid-3');
-  const [sortedProducts, setSortedProducts] = useState<Product[]>(products);
 
   // Load view mode from localStorage
   useEffect(() => {
@@ -54,29 +56,21 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
     };
   }, []);
 
-  // Sort products
-  useEffect(() => {
+  // Derive sorted list during render (no extra post-hydration re-render).
+  const sortedProducts = useMemo(() => {
     const sorted = [...products];
-
     switch (sortBy) {
       case 'price-asc':
-        sorted.sort((a, b) => a.price - b.price);
-        break;
+        return sorted.sort((a, b) => a.price - b.price);
       case 'price-desc':
-        sorted.sort((a, b) => b.price - a.price);
-        break;
+        return sorted.sort((a, b) => b.price - a.price);
       case 'name-asc':
-        sorted.sort((a, b) => a.title.localeCompare(b.title));
-        break;
+        return sorted.sort((a, b) => a.title.localeCompare(b.title));
       case 'name-desc':
-        sorted.sort((a, b) => b.title.localeCompare(a.title));
-        break;
+        return sorted.sort((a, b) => b.title.localeCompare(a.title));
       default:
-        // Keep original order
-        break;
+        return sorted;
     }
-
-    setSortedProducts(sorted);
   }, [products, sortBy]);
 
   const getGridClasses = () => {
@@ -102,7 +96,7 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
 
   return (
     <div className={getGridClasses()}>
-      {sortedProducts.map((product) => (
+      {sortedProducts.map((product, index) => (
         <ProductCard 
           key={product.id} 
           product={{
@@ -110,6 +104,7 @@ export function ProductsGrid({ products, sortBy = 'default' }: ProductsGridProps
             compareAtPrice: product.compareAtPrice ?? undefined
           }} 
           viewMode={viewMode} 
+          priority={index < PRIORITY_CARD_COUNT}
         />
       ))}
     </div>
