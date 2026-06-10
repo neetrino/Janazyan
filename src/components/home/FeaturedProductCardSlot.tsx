@@ -19,6 +19,10 @@ const CATALOG_SLOT_SIZE =
 const CATALOG_SLOT_CARD_TOP_CLASS =
   'top-[37px] sm:top-[46px] md:top-[56px] lg:top-[64px]';
 
+/** scale 0.58 — image overflow (37px) + scaled card height (201px). */
+const MOBILE_GRID_SLOT_SIZE = 'h-[238px] w-[164px]';
+const MOBILE_GRID_SLOT_CARD_TOP_CLASS = 'top-[37px]';
+
 type FeaturedProductCardSlotProps = {
   product: HomeFeaturedProduct;
   scale?: FeaturedProductCardScale;
@@ -39,6 +43,18 @@ export function FeaturedProductCardSlot({
       <div className={`relative shrink-0 overflow-visible ${CATALOG_SLOT_SIZE}`}>
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.catalog}`}
+        >
+          <FeaturedProductCard product={product} priority={priority} />
+        </div>
+      </div>
+    );
+  }
+
+  if (scale === 'mobile-grid') {
+    return (
+      <div className={`relative shrink-0 overflow-visible ${MOBILE_GRID_SLOT_SIZE}`}>
+        <div
+          className={`absolute left-1/2 -translate-x-1/2 origin-top ${MOBILE_GRID_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS['mobile-grid']}`}
         >
           <FeaturedProductCard product={product} priority={priority} />
         </div>

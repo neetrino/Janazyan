@@ -9,12 +9,12 @@ import {
   PRODUCTS_PAGE_DESKTOP_SHELL_CLASS,
   PRODUCTS_PAGE_HERO_ASPECT_CLASS,
   PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS,
-  PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
+import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
 
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
@@ -34,7 +34,7 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
         </div>
         <Header embedded />
         <div
-          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
+          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
         >
           {toolbar}
         </div>
@@ -59,13 +59,19 @@ export function ProductsHeroShell({
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
   return (
-    <div className={PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}>
-      <section
-        aria-label={sectionAriaLabel}
-        className="relative w-full lg:pt-3 lg:md:pt-5"
-      >
-        <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
-      </section>
-    </div>
+    <>
+      <StorefrontMobileShell toolbar={toolbar} sectionAriaLabel={sectionAriaLabel}>
+        {catalog}
+      </StorefrontMobileShell>
+
+      <div className={`hidden lg:block ${PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}`}>
+        <section
+          aria-label={sectionAriaLabel}
+          className="relative w-full lg:pt-3 lg:md:pt-5"
+        >
+          <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
+        </section>
+      </div>
+    </>
   );
 }

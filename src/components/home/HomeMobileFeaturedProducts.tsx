@@ -31,7 +31,7 @@ export function HomeMobileFeaturedProducts({
           {t('home.featured.mobile.viewAll')}
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-1 justify-items-center">
+      <div className="grid grid-cols-2 gap-x-1 gap-y-0 justify-items-center">
         {products.slice(0, 4).map((product) => (
           <FeaturedProductCardSlot
             key={product.id}
@@ -51,11 +51,11 @@ export function HomeMobileFeaturedSkeleton() {
         <div className="h-4 w-32 rounded bg-white/30" />
         <div className="h-4 w-16 rounded bg-white/30" />
       </div>
-      <div className="grid grid-cols-2 gap-1 justify-items-center">
+      <div className="grid grid-cols-2 gap-x-1 gap-y-0 justify-items-center">
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className="relative h-[220px] w-full max-w-[170px] overflow-hidden rounded-3xl bg-white/25"
+            className="relative h-[238px] w-[164px] overflow-hidden rounded-3xl bg-white/25"
           >
             <div className="absolute inset-x-3 top-3 h-24 rounded-2xl bg-white/30" />
             <div className="absolute inset-x-3 bottom-4 space-y-2">

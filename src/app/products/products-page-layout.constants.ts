@@ -32,17 +32,25 @@ export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[
 export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
 export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 
-/** Figma asymmetric pill radius (nodes 269:907 / 269:919). */
-export const PRODUCTS_PAGE_TOOLBAR_PILL_CLASS =
-  'rounded-tl-[30px] rounded-tr-[89px] rounded-bl-[30px] rounded-br-[89px]';
+/** Figma toolbar pills — fully rounded capsule on both edges (nodes 269:907 / 269:919). */
+export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 
-/** Category filter pills row — Figma "categories" frame (node 269:894), gap 11px. */
+/** Shared toolbar control pill height — aligned with category pills. */
+export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-16';
+
+/** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
+export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
+
+/** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
+export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
+
+/** Category filter pills row — Figma "categories" frame (node 269:894). */
 export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
-  'flex items-center gap-[11px] overflow-x-auto scrollbar-hide';
+  'flex items-center gap-3 overflow-x-auto scrollbar-hide';
 
-/** Shared category pill shape/typography — Figma buttons (node 269:895 …), h=56, Montserrat Medium 13px. */
+/** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  'inline-flex h-14 shrink-0 items-center justify-center gap-[5px] rounded-full px-2 py-3 text-[13px] font-medium leading-[16.5px] tracking-[0.5px] whitespace-nowrap transition-colors';
+  'inline-flex h-16 shrink-0 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-medium leading-[18px] tracking-[0.5px] whitespace-nowrap transition-colors';
 
 /** Active category pill — dark ink slate with 3px white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =

@@ -43,11 +43,11 @@
     "sortBy": "Sort by"
   },
   "shopFilters": {
-    "assortment": "Assortment",
-    "women": "Women",
-    "men": "Men",
+    "face": "Face",
+    "hair": "Hair",
+    "body": "Body",
     "kids": "Kids",
-    "accessories": "Accessories"
+    "sun": "Sun"
   },
   "grid": {
     "noProducts": "No products found."

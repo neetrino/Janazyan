@@ -7,8 +7,7 @@ import { ProductInfoColumnSkeleton } from './ProductInfoColumnSkeleton';
  */
 export function ProductPageShell() {
   return (
-    <div
-      className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 min-h-[min(100dvh,720px)]"
+    <div className="max-w-7xl mx-auto py-4 lg:px-8 lg:py-12 min-h-[min(100dvh,720px)]"
       aria-busy="true"
       aria-label="Product loading"
     >
