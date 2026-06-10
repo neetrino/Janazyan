@@ -175,11 +175,8 @@ export function RelatedProducts({
 
 
       {loading ? (
-
         <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
-
           {[1, 2, 3, 4].map((i) => (
-
             <div
 
               key={i}
