@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { formatPriceInCurrency } from '../../lib/currency';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CHECKOUT_GLASS_ERROR_CLASS } from './checkout-glass-styles';
@@ -93,16 +93,14 @@ export function OrderSummary({
           </div>
         )}
 
-        <Button
+        <button
           type="submit"
-          variant="primary"
-          className="w-full rounded-2xl"
-          size="lg"
+          className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
           disabled={isSubmitting}
           onClick={onPlaceOrder}
         >
           {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.placeOrder')}
-        </Button>
+        </button>
       </CheckoutGlassCard>
     </div>
   );

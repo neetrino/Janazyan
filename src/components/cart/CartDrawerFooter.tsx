@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
-import { Button } from '@shop/ui';
 import { buildCartShippingAndTotalLabels } from '../../app/cart/cart-summary-labels';
+import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import type { Cart } from '../../app/cart/types';
 import { useCartDeliveryEstimate } from '../../app/cart/use-cart-delivery-estimate';
 import { formatPrice } from '../../lib/currency';
@@ -59,17 +59,16 @@ export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
       </div>
 
       <div className="mt-5 space-y-3">
-        <Button
-          variant="primary"
-          className="w-full rounded-full bg-ink-800 hover:bg-ink-800/90"
-          size="lg"
+        <button
+          type="button"
+          className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
           onClick={() => {
             closeCartDrawer();
             router.push('/checkout');
           }}
         >
           {t('common.buttons.proceedToCheckout')}
-        </Button>
+        </button>
       </div>
     </footer>
   );

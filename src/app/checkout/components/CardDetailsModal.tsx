@@ -1,6 +1,9 @@
 'use client';
 
-import { Button } from '@shop/ui';
+import {
+  STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS,
+  STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS,
+} from '../../products/[slug]/product-action-bar.constants';
 import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../../lib/i18n-client';
 import { PaymentMethodLogo } from './PaymentMethodLogo';
@@ -151,19 +154,17 @@ export function CardDetailsModal({
         </div>
 
         <div className="flex gap-3">
-          <Button
+          <button
             type="button"
-            variant="outline"
-            className="flex-1"
+            className={STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS}
             onClick={onClose}
             disabled={isSubmitting}
           >
             {t('checkout.buttons.cancel')}
-          </Button>
-          <Button
+          </button>
+          <button
             type="button"
-            variant="primary"
-            className="flex-1"
+            className={STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS}
             onClick={handleSubmit(
               (data) => {
                 onClose();
@@ -174,7 +175,7 @@ export function CardDetailsModal({
             disabled={isSubmitting}
           >
             {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.continueToPayment')}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

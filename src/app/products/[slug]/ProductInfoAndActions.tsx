@@ -11,6 +11,10 @@ import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import { ProductRatingSummary } from './ProductRatingSummary';
 import { ProductActionBar } from './ProductActionBar';
+import {
+  PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS,
+  PDP_GLASS_ICON_BUTTON_CLASS,
+} from './product-action-bar.constants';
 import type { Product, ProductVariant } from './types';
 
 interface ProductInfoAndActionsProps {
@@ -215,14 +219,18 @@ export function ProductInfoAndActions({
 
         <div className="mt-3 hidden items-center justify-end gap-3 lg:flex">
           <button
+            type="button"
             onClick={onCompareToggle}
-            className={`flex size-12 items-center justify-center rounded-xl border-2 transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
+            className={`${PDP_GLASS_ICON_BUTTON_CLASS} ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+            aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
           >
             <CompareIcon isActive={isInCompare} />
           </button>
           <button
+            type="button"
             onClick={onAddToWishlist}
-            className={`flex size-12 items-center justify-center rounded-xl border-2 ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
+            className={`${PDP_GLASS_ICON_BUTTON_CLASS} ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+            aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
           >
             <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
           </button>

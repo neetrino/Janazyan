@@ -1,6 +1,7 @@
 'use client';
 
-import { Button, Input } from '@shop/ui';
+import { Input } from '@shop/ui';
+import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useState } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
@@ -188,14 +189,13 @@ export default function ContactPage() {
                       placeholder={t('contact.form.messagePlaceholder')}
                     />
                   </div>
-                  <Button
+                  <button
                     type="submit"
-                    variant="primary"
-                    className="w-full rounded-md bg-gray-900 py-3 font-semibold uppercase tracking-wide text-white hover:bg-gray-800"
+                    className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
                     disabled={submitting}
                   >
                     {submitting ? (t('contact.form.submitting') || 'Ուղարկվում է...') : t('contact.form.submit')}
-                  </Button>
+                  </button>
                 </form>
               </div>
             </div>

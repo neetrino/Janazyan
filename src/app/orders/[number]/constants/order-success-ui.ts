@@ -1,3 +1,8 @@
+import {
+  STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS,
+  STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS,
+} from '../../../products/[slug]/product-action-bar.constants';
+
 /**
  * Storefront order confirmation / success (monochrome panel + CTAs).
  */
@@ -14,10 +19,8 @@ export const ORDER_SUCCESS_RECEIPT_OUTER_CLASS =
 export const ORDER_SUCCESS_RECEIPT_INNER_CLASS =
   'rounded-t-2xl border border-b-0 border-gray-200 bg-white px-6 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8';
 
-/** Primary CTA — solid black on white layout. */
-export const ORDER_SUCCESS_PRIMARY_CTA_CLASS =
-  'inline-flex min-h-[48px] flex-1 items-center justify-center gap-2 rounded-xl border border-black bg-black px-5 py-3 text-center text-base font-semibold text-white shadow-sm transition hover:bg-zinc-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black';
+/** Primary CTA — glass pill (order again). */
+export const ORDER_SUCCESS_PRIMARY_CTA_CLASS = `${STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS} w-full gap-2 sm:w-auto`;
 
-/** Secondary outline CTA. */
-export const ORDER_SUCCESS_SECONDARY_CTA_CLASS =
-  'inline-flex min-h-[48px] flex-1 items-center justify-center rounded-xl border-2 border-black bg-white px-5 py-3 text-center text-base font-semibold text-black transition hover:bg-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black';
+/** Secondary CTA — glass pill (home). */
+export const ORDER_SUCCESS_SECONDARY_CTA_CLASS = `${STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS} w-full sm:w-auto`;

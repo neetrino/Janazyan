@@ -2,8 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
-import { Button } from '@shop/ui';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
+import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
 import { OrderSummary } from './OrderSummary';
@@ -63,9 +63,13 @@ export function CheckoutPageClient() {
             <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
             <CheckoutGlassCard className="text-center">
               <p className="mb-4 text-gray-600">{t('checkout.errors.cartEmpty')}</p>
-              <Button variant="primary" className="rounded-2xl" onClick={() => router.push('/products')}>
+              <button
+                type="button"
+                className={STOREFRONT_GLASS_PILL_BUTTON_CLASS}
+                onClick={() => router.push('/products')}
+              >
                 {t('checkout.buttons.continueShopping')}
-              </Button>
+              </button>
             </CheckoutGlassCard>
           </div>
         }

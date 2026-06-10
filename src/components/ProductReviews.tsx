@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@shop/ui';
 import { useAuth } from '../lib/auth/AuthContext';
+import { PDP_WRITE_REVIEW_BUTTON_CLASS } from '../app/products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../lib/i18n-client';
 import { useReviews } from './ProductReviews/hooks/useReviews';
 import { useReviewForm } from './ProductReviews/hooks/useReviewForm';
@@ -74,13 +74,13 @@ export function ProductReviews({ productId, productSlug }: ProductReviewsProps) 
 
         {/* Write Review Button */}
         {!showForm && (
-          <Button
-            variant="primary"
+          <button
+            type="button"
             onClick={handleShowForm}
-            className="mb-8"
+            className={`mb-8 ${PDP_WRITE_REVIEW_BUTTON_CLASS}`}
           >
             {t('common.reviews.writeReview')}
-          </Button>
+          </button>
         )}
 
         {/* Review Form */}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Button } from '@shop/ui';
+import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import type { StoresTranslation } from '../../features/stores/types';
 
 export function StoresPageHeader({ copy }: { copy: StoresTranslation }) {
@@ -30,10 +30,8 @@ export function StoresPageFooter({ copy }: { copy: StoresTranslation }) {
           {copy.cantFind.title}
         </h2>
         <p className="mt-3 text-gray-600">{copy.cantFind.description}</p>
-        <Link href="/contact" className="mt-6 inline-block">
-          <Button variant="primary" size="lg">
-            {copy.cantFind.contactUs}
-          </Button>
+        <Link href="/contact" className={`mt-6 ${STOREFRONT_GLASS_PILL_BUTTON_CLASS}`}>
+          {copy.cantFind.contactUs}
         </Link>
       </div>
     </section>

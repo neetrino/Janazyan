@@ -1,7 +1,7 @@
 'use client';
 
-import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
+import { PDP_WRITE_REVIEW_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import { ReviewItem } from './ReviewItem';
 import type { Review } from './utils';
 
@@ -34,12 +34,13 @@ export function ReviewList({
           {t('common.reviews.noReviews')}
         </p>
         {!showForm && (
-          <Button
-            variant="primary"
+          <button
+            type="button"
             onClick={onShowForm}
+            className={PDP_WRITE_REVIEW_BUTTON_CLASS}
           >
             {t('common.reviews.writeReview')}
-          </Button>
+          </button>
         )}
       </div>
     );
