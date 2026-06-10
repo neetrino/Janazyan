@@ -19,6 +19,11 @@ export function isProductDetailPage(pathname: string): boolean {
   return /^\/products\/[^/]+$/.test(pathname);
 }
 
+/** Order confirmation / detail — `/orders/[number]`. */
+export function isOrderDetailPage(pathname: string): boolean {
+  return /^\/orders\/[^/]+$/.test(pathname);
+}
+
 const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
   '/products',
   '/about',
@@ -41,6 +46,10 @@ export function shouldHideGlobalHeader(pathname: string): boolean {
 /** Storefront pages that use the rounded hero shell with embedded header (same as /products). */
 export function usesStorefrontHeroShell(pathname: string): boolean {
   if (STOREFRONT_HERO_SHELL_EXACT_PATHS.some((path) => pathname === path)) {
+    return true;
+  }
+
+  if (isOrderDetailPage(pathname)) {
     return true;
   }
 

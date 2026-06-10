@@ -1,9 +1,6 @@
 /**
  * Storefront order detail page layout and badge styles (design reference).
  */
-export const ORDER_DETAIL_PAGE_SURFACE_CLASS =
-  'min-h-[calc(100vh-6rem)] bg-white';
-
 export const ORDER_DETAIL_INNER_CLASS =
   'mx-auto w-full max-w-2xl py-4 lg:px-8 lg:py-12';
 
