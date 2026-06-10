@@ -1,10 +1,15 @@
 import { db } from "@white-shop/db";
+import { isDatabaseConnectionUrlConfigured } from "@white-shop/db/env";
 
 class CategoriesService {
   /**
    * Get category tree
    */
   async getTree(lang: string = "en") {
+    if (!isDatabaseConnectionUrlConfigured()) {
+      return { data: [] };
+    }
+
     const categories = await db.category.findMany({
       where: {
         published: true,

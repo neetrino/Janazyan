@@ -1,4 +1,5 @@
 import { db } from '@white-shop/db';
+import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import type { PartnerStore } from '@/features/stores/types';
 import { normalizePartnerStoreCoordinates } from '@/features/stores/coordinates';
 
@@ -49,6 +50,10 @@ function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
  * Published partner stores for the public /stores page.
  */
 export async function getPublishedPartnerStores(locale: string): Promise<PartnerStore[]> {
+  if (!isDatabaseConnectionUrlConfigured()) {
+    return [];
+  }
+
   const stores = await db.partnerStore.findMany({
     where: {
       deletedAt: null,

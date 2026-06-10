@@ -1,3 +1,4 @@
+import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import type { BlogPostDetail, BlogPostSummary } from '@/features/blog/types';
 import type { FaqSection } from '@/features/faq/types';
 import {
@@ -21,6 +22,10 @@ export async function getBlogPostsFromRedisOrDb(
     return cached;
   }
 
+  if (!isDatabaseConnectionUrlConfigured()) {
+    return [];
+  }
+
   const data = await getPublishedBlogPosts(locale);
   await writeJsonCache(key, STOREFRONT_CACHE_TTL.blogPosts, data);
   return data;
@@ -36,6 +41,10 @@ export async function getBlogPostBySlugFromRedisOrDb(
     return cached;
   }
 
+  if (!isDatabaseConnectionUrlConfigured()) {
+    return null;
+  }
+
   const data = await getPublishedBlogPostBySlug(slug, locale);
   if (data) {
     await writeJsonCache(key, STOREFRONT_CACHE_TTL.blogPostBySlug, data);
@@ -48,6 +57,10 @@ export async function getFaqFromRedisOrDb(locale: string): Promise<FaqSection[]>
   const cached = await readJsonCache<FaqSection[]>(key);
   if (cached) {
     return cached;
+  }
+
+  if (!isDatabaseConnectionUrlConfigured()) {
+    return [];
   }
 
   const data = await getPublishedFaq(locale);
