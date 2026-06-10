@@ -22,7 +22,16 @@ const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
   '/faq',
   '/blog',
   '/checkout',
+  '/login',
+  '/register',
 ] as const;
+
+/** Global layout header is omitted — page supplies embedded header (hero shell or home). */
+export function shouldHideGlobalHeader(pathname: string): boolean {
+  return (
+    pathname === '/' || isStorefrontPage(pathname) || isAdminPath(pathname)
+  );
+}
 
 /** Storefront pages that use the rounded hero shell with embedded header (same as /products). */
 export function usesStorefrontHeroShell(pathname: string): boolean {

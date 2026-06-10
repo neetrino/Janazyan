@@ -28,9 +28,9 @@ export default function HomePage() {
           </div>
         </div>
 
-        <div className={STOREFRONT_ARC_SHELL_CLASS}>
-          <div className="relative overflow-x-hidden rounded-[70px]">
-            <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
+        <div className="relative w-full overflow-x-hidden rounded-[70px]">
+          <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
+          <div className={STOREFRONT_ARC_SHELL_CLASS}>
             <DesktopFeaturedAsync />
             <PromoPoster />
             <WhyChooseUs />

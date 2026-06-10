@@ -7,9 +7,9 @@ import {
   isStorefrontPage,
   usesStorefrontHeroShell,
 } from '../lib/nav/is-storefront-page';
-import { StorefrontPageShell } from './StorefrontPageShell';
+import { ProductsHeroShell } from './products/ProductsHeroShell';
 
-/** Legacy fixed backdrop — storefront pages use `StorefrontPageShell` instead. */
+/** Legacy fixed backdrop — storefront pages use the hero shell instead. */
 export function StorefrontBackground() {
   const pathname = usePathname();
 
@@ -30,12 +30,16 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const heroShellPage = usesStorefrontHeroShell(pathname);
   const useCatalogTheme = isStorefrontPage(pathname) && !heroShellPage;
 
+  const usesHeroSurface = heroShellPage || useCatalogTheme;
+
   return (
-    <main className={`relative flex-1 w-full ${heroShellPage ? 'bg-white' : ''}`}>
+    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'bg-white' : ''}`}>
       {heroShellPage ? (
         <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
       ) : useCatalogTheme ? (
-        <StorefrontPageShell>{children}</StorefrontPageShell>
+        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">
+          <ProductsHeroShell catalog={children} />
+        </div>
       ) : (
         children
       )}

@@ -5,6 +5,7 @@ import { Button, Input } from '@shop/ui';
 import Link from 'next/link';
 import { AuthGlassCard } from '../../components/auth/AuthGlassCard';
 import { AuthPageShell } from '../../components/auth/AuthPageShell';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import {
   AUTH_GLASS_ERROR_CLASS,
   AUTH_GLASS_INPUT_CLASS,
@@ -127,8 +128,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <AuthPageShell>
-      <AuthGlassCard>
+    <ProductsHeroShell
+      sectionAriaLabel="Register"
+      catalog={
+        <AuthPageShell>
+          <AuthGlassCard>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('register.title')}</h1>
         <p className="text-gray-600 mb-8">{t('register.subtitle')}</p>
 
@@ -312,8 +316,10 @@ export default function RegisterPage() {
             {t('register.form.signIn')}
           </Link>
         </div>
-      </AuthGlassCard>
-    </AuthPageShell>
+          </AuthGlassCard>
+        </AuthPageShell>
+      }
+    />
   );
 }
 

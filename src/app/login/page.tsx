@@ -6,6 +6,7 @@ import { Button, Input } from '@shop/ui';
 import Link from 'next/link';
 import { AuthGlassCard } from '../../components/auth/AuthGlassCard';
 import { AuthPageShell } from '../../components/auth/AuthPageShell';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import {
   AUTH_GLASS_ERROR_CLASS,
   AUTH_GLASS_INPUT_CLASS,
@@ -75,8 +76,11 @@ function LoginPageContent() {
   }, [isLoggedIn, isLoading, isAdmin, redirectTo, router]);
 
   return (
-    <AuthPageShell>
-      <AuthGlassCard>
+    <ProductsHeroShell
+      sectionAriaLabel="Login"
+      catalog={
+        <AuthPageShell>
+          <AuthGlassCard>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('login.title')}</h1>
         <p className="text-gray-600 mb-8">{t('login.subtitle')}</p>
 
@@ -165,28 +169,37 @@ function LoginPageContent() {
             {t('login.form.signUp')}
           </Link>
         </div>
-      </AuthGlassCard>
-    </AuthPageShell>
+          </AuthGlassCard>
+        </AuthPageShell>
+      }
+    />
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <AuthPageShell>
-        <AuthGlassCard>
-          <div className="animate-pulse">
-            <div className="h-8 bg-white/40 rounded w-3/4 mb-4"></div>
-            <div className="h-4 bg-white/40 rounded w-1/2 mb-8"></div>
-            <div className="space-y-4">
-              <div className="h-10 bg-white/40 rounded-xl"></div>
-              <div className="h-10 bg-white/40 rounded-xl"></div>
-              <div className="h-10 bg-white/40 rounded-xl"></div>
-            </div>
-          </div>
-        </AuthGlassCard>
-      </AuthPageShell>
-    }>
+    <Suspense
+      fallback={
+        <ProductsHeroShell
+          sectionAriaLabel="Login"
+          catalog={
+            <AuthPageShell>
+              <AuthGlassCard>
+                <div className="animate-pulse">
+                  <div className="mb-4 h-8 w-3/4 rounded bg-white/40" />
+                  <div className="mb-8 h-4 w-1/2 rounded bg-white/40" />
+                  <div className="space-y-4">
+                    <div className="h-10 rounded-xl bg-white/40" />
+                    <div className="h-10 rounded-xl bg-white/40" />
+                    <div className="h-10 rounded-xl bg-white/40" />
+                  </div>
+                </div>
+              </AuthGlassCard>
+            </AuthPageShell>
+          }
+        />
+      }
+    >
       <LoginPageContent />
     </Suspense>
   );
