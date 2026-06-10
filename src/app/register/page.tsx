@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { Button, Input } from '@shop/ui';
+import { Input } from '@shop/ui';
+import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import Link from 'next/link';
 import { AuthGlassCard } from '../../components/auth/AuthGlassCard';
 import { AuthPageShell } from '../../components/auth/AuthPageShell';
@@ -10,6 +11,10 @@ import {
   AUTH_GLASS_ERROR_CLASS,
   AUTH_GLASS_INPUT_CLASS,
 } from '../../components/auth/auth-glass-styles';
+import {
+  AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
+  AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
+} from '../../components/auth/auth-layout.constants';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { resolveRegisterApiError } from '../../lib/auth/client-api-error-messages';
@@ -130,6 +135,8 @@ export default function RegisterPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Register"
+      mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
+      mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalog={
         <AuthPageShell>
           <AuthGlassCard>
@@ -300,14 +307,13 @@ export default function RegisterPage() {
           {!acceptTerms && error === t('register.errors.acceptTerms') && (
             <p className="text-xs text-red-600 -mt-2">{t('register.errors.mustAcceptTerms')}</p>
           )}
-          <Button 
-            variant="primary" 
-            className="w-full"
+          <button
             type="submit"
+            className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
             disabled={isSubmitting || isLoading}
           >
             {isSubmitting || isLoading ? t('register.form.creatingAccount') : t('register.form.createAccount')}
-          </Button>
+          </button>
         </form>
 
         <div className="relative z-20 mt-6 text-center text-sm text-gray-600">

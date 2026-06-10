@@ -18,7 +18,7 @@ export default function AboutPage() {
       sectionAriaLabel="About us"
       catalog={
         <>
-          <section className="py-8 md:py-12 lg:py-16">
+          <section className="py-4 lg:py-16">
             <div className="mx-auto max-w-7xl">
               <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2">
                 <div className="relative h-[400px] w-full overflow-hidden rounded-lg shadow-lg md:h-[500px] lg:h-[600px]">

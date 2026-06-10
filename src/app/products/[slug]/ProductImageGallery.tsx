@@ -8,6 +8,16 @@ import { ProductImagePlaceholder } from "../../../components/ProductImagePlaceho
 import { t } from "../../../lib/i18n";
 import type { LanguageCode } from "../../../lib/language";
 import type { Product } from "./types";
+import {
+  PDP_GALLERY_MAIN_IMAGE_INSET_CLASS,
+  PDP_GALLERY_MAIN_PANEL_CLASS,
+  PDP_GALLERY_MAIN_PADDING_CLASS,
+  PDP_GALLERY_THUMB_TILE_ACTIVE_CLASS,
+  PDP_GALLERY_THUMB_TILE_CLASS,
+  PDP_GALLERY_THUMB_TILE_INACTIVE_CLASS,
+  PDP_GALLERY_THUMB_WIDTH_CLASS,
+  PDP_GALLERY_ZOOM_BUTTON_CLASS,
+} from "./product-gallery.constants";
 
 const PDP_MAIN_IMAGE_SIZES = "(max-width: 1024px) 100vw, 55vw";
 
@@ -65,10 +75,10 @@ export function ProductImageGallery({
 
   return (
     <>
-      <div className="flex gap-6 items-start">
+      <div className="flex items-start gap-5 lg:gap-6">
         {/* Left Column - Thumbnails (Vertical) - Show 3 at a time, scrollable */}
-        <div className="flex flex-col gap-4 w-28 flex-shrink-0">
-          <div className="flex flex-col gap-4 flex-1 overflow-hidden">
+        <div className={`flex shrink-0 flex-col gap-3 ${PDP_GALLERY_THUMB_WIDTH_CLASS}`}>
+          <div className="flex flex-1 flex-col gap-3 overflow-hidden">
             {visibleThumbnails.map((image, index) => {
               const actualIndex = thumbnailStartIndex + index;
               const isActive = actualIndex === currentImageIndex;
@@ -76,19 +86,19 @@ export function ProductImageGallery({
                 <button 
                   key={actualIndex}
                   onClick={() => onImageIndexChange(actualIndex)}
-                  className={`relative w-full aspect-[3/4] rounded-lg overflow-hidden border bg-white transition-all duration-300 flex-shrink-0 ${
-                    isActive 
-                      ? "border-gray-400 shadow-[0_2px_8px_rgba(0,0,0,0.12)] ring-2 ring-gray-300" 
-                      : "border-gray-200 hover:border-gray-300 hover:shadow-[0_2px_6px_rgba(0,0,0,0.08)]"
+                  className={`${PDP_GALLERY_THUMB_TILE_CLASS} ${
+                    isActive
+                      ? PDP_GALLERY_THUMB_TILE_ACTIVE_CLASS
+                      : PDP_GALLERY_THUMB_TILE_INACTIVE_CLASS
                   }`}
                 >
                   {failedIndices.has(actualIndex) ? (
-                    <ProductImagePlaceholder className="w-full h-full" aria-label="" />
+                    <ProductImagePlaceholder className="h-full w-full" aria-label="" />
                   ) : (
                     <img
                       src={image}
                       alt=""
-                      className="w-full h-full object-cover transition-transform duration-300"
+                      className="h-full w-full object-contain p-2 transition-transform duration-300"
                       loading="lazy"
                       decoding="async"
                       onError={() => markFailed(actualIndex)}
@@ -118,7 +128,7 @@ export function ProductImageGallery({
                   }
                 }}
                 disabled={thumbnailStartIndex <= 0}
-                className="w-9 h-9 rounded border transition-all duration-200 flex items-center justify-center border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-200 hover:shadow-[0_1px_3px_rgba(0,0,0,0.1)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-100 disabled:hover:border-gray-300 disabled:hover:shadow-none bg-gray-100"
+                className="flex size-9 items-center justify-center rounded-[12px] border border-sky-mist bg-white text-ink-700 transition-all duration-200 hover:border-sky-deep/30 hover:bg-sky-mist/30 hover:shadow-[0_2px_8px_rgba(147,182,227,0.2)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-sky-mist disabled:hover:bg-white disabled:hover:shadow-none"
                 aria-label={t(language, 'common.ariaLabels.previousThumbnail')}
               >
                 <svg 
@@ -151,7 +161,7 @@ export function ProductImageGallery({
                   }
                 }}
                 disabled={thumbnailStartIndex >= images.length - THUMBNAILS_PER_VIEW}
-                className="w-9 h-9 rounded border transition-all duration-200 flex items-center justify-center border-gray-300 text-gray-700 hover:border-gray-400 hover:bg-gray-200 hover:shadow-[0_1px_3px_rgba(0,0,0,0.1)] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-gray-100 disabled:hover:border-gray-300 disabled:hover:shadow-none bg-gray-100"
+                className="flex size-9 items-center justify-center rounded-[12px] border border-sky-mist bg-white text-ink-700 transition-all duration-200 hover:border-sky-deep/30 hover:bg-sky-mist/30 hover:shadow-[0_2px_8px_rgba(147,182,227,0.2)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-sky-mist disabled:hover:bg-white disabled:hover:shadow-none"
                 aria-label={t(language, 'common.ariaLabels.nextThumbnail')}
               >
                 <svg 
@@ -173,17 +183,18 @@ export function ProductImageGallery({
         </div>
         
         {/* Right Column - Main Image */}
-        <div className="flex-1">
+        <div className="min-w-0 flex-1">
           <div
             data-product-fly-origin
-            className="relative aspect-square bg-white rounded-lg overflow-hidden group shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
+            className={`group ${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS}`}
           >
-          {images.length > 0 && !mainImageFailed ? (
+          <div className={PDP_GALLERY_MAIN_IMAGE_INSET_CLASS}>
+          {images.length > 0 && !mainImageFailed && currentSrc ? (
             <Image
               src={currentSrc}
               alt={product.title}
               fill
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
               sizes={PDP_MAIN_IMAGE_SIZES}
               priority={mainImagePriority}
               unoptimized
@@ -191,29 +202,30 @@ export function ProductImageGallery({
             />
           ) : (
             <ProductImagePlaceholder
-              className="w-full h-full"
+              className="h-full w-full"
               aria-label={t(language, "common.messages.noImage")}
             />
           )}
+          </div>
           
           {/* Discount Badge on Image - Blue circle in top-right */}
           {discountPercent && (
-            <div className="absolute top-4 right-4 w-14 h-14 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-bold z-10 shadow-[0_2px_8px_rgba(37,99,235,0.3)]">
+            <div className="absolute right-5 top-5 z-10 flex size-14 items-center justify-center rounded-full bg-sky-deep text-sm font-bold text-white shadow-[0_4px_14px_rgba(147,182,227,0.45)]">
               -{discountPercent}%
             </div>
           )}
 
-          {product.labels && <ProductLabels labels={product.labels} />}
+          {product.labels && <ProductLabels labels={product.labels} variant="pdp" />}
           
           {/* Control Buttons - Bottom left */}
-          <div className="absolute bottom-4 left-4 flex flex-col gap-3 z-10">
+          <div className="absolute bottom-5 left-5 z-10 flex flex-col gap-3">
             {/* Fullscreen Button */}
             <button 
               onClick={() => setShowZoom(true)} 
-              className="w-12 h-12 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/50 shadow-[0_2px_8px_rgba(0,0,0,0.15)] hover:bg-white/90 transition-all duration-300 hover:shadow-[0_4px_12px_rgba(0,0,0,0.2)]"
+              className={PDP_GALLERY_ZOOM_BUTTON_CLASS}
               aria-label={t(language, 'common.ariaLabels.fullscreenImage')}
             >
-              <Maximize2 className="w-5 h-5 text-gray-800" />
+              <Maximize2 className="size-5" strokeWidth={2.25} />
             </button>
           </div>
           </div>

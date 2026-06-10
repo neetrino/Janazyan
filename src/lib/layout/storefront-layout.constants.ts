@@ -56,6 +56,9 @@ export const STOREFRONT_SIDE_PADDING_MIN_PX = 24;
  */
 export const STOREFRONT_SIDE_PADDING_CLASS = 'px-[clamp(24px,3.2vw,36px)]';
 
+/** Negative horizontal margin — cancels {@link STOREFRONT_SIDE_PADDING_CLASS} for full-bleed surfaces. */
+export const STOREFRONT_SIDE_PADDING_NEG_CLASS = '-mx-[clamp(24px,3.2vw,36px)]';
+
 /** Responsive horizontal gutter — same as shell side padding. */
 export const STOREFRONT_HORIZONTAL_GUTTER_CLASS = STOREFRONT_SIDE_PADDING_CLASS;
 

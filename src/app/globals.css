@@ -136,15 +136,6 @@ body {
   max-width: 56rem; /* ~max-w-4xl */
   margin-left: auto;
   margin-right: auto;
-  padding-left: 1rem;  /* px-4 */
-  padding-right: 1rem;
-}
-
-@media (min-width: 640px) {
-  .policy-page {
-    padding-left: 1.5rem; /* sm:px-6 */
-    padding-right: 1.5rem;
-  }
 }
 
 @media (min-width: 1024px) {
@@ -155,13 +146,14 @@ body {
 }
 
 .policy-page-inner {
-  padding-top: 3rem;   /* pt-12 */
-  padding-bottom: 4rem; /* pb-16 */
+  padding-top: 1rem;
+  padding-bottom: 2rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1024px) {
   .policy-page-inner {
-    padding-top: 4rem; /* md:pt-16 */
+    padding-top: 3rem;
+    padding-bottom: 4rem;
   }
 }
 

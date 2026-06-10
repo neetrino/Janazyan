@@ -2,6 +2,11 @@
 
 import Image from 'next/image';
 import { MapPin } from 'lucide-react';
+import {
+  STOREFRONT_GLASS_ACTION_BUTTON_ACTIVE_CLASS,
+  STOREFRONT_GLASS_ACTION_BUTTON_CLASS,
+  STOREFRONT_GLASS_ACTION_BUTTON_COMPACT_CLASS,
+} from '../../../app/products/[slug]/product-action-bar.constants';
 import { getDirectionsUrl } from '../get-directions-url';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 
@@ -115,16 +120,16 @@ export function PartnerStoreCardActions({
     ? 'relative z-[1] mt-2 flex flex-col gap-1'
     : 'mt-4 flex flex-wrap gap-2';
   const primaryButtonClassName = compact
-    ? 'w-full cursor-pointer rounded-md px-2 py-1 text-center text-[10px] font-medium leading-tight transition-all duration-200'
-    : 'cursor-pointer rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200';
+    ? STOREFRONT_GLASS_ACTION_BUTTON_COMPACT_CLASS
+    : STOREFRONT_GLASS_ACTION_BUTTON_CLASS;
   const secondaryLinkClassName = compact
-    ? 'w-full rounded-md border border-gray-300 px-2 py-1 text-center text-[10px] font-medium leading-tight text-gray-800 transition-colors hover:border-gray-400 hover:bg-gray-50'
-    : 'rounded-xl border border-gray-300 px-4 py-2 text-sm font-medium text-gray-800 transition-colors hover:border-gray-400 hover:bg-gray-50';
+    ? STOREFRONT_GLASS_ACTION_BUTTON_COMPACT_CLASS
+    : STOREFRONT_GLASS_ACTION_BUTTON_CLASS;
 
   if (previewOnly) {
     return (
       <div className={actionsClassName} aria-hidden>
-        <span className={`${primaryButtonClassName} bg-gray-100 text-gray-800`}>
+        <span className={primaryButtonClassName}>
           {viewOnMapLabel}
         </span>
         <span className={`${secondaryLinkClassName} pointer-events-none`}>
@@ -145,11 +150,7 @@ export function PartnerStoreCardActions({
           event.stopPropagation();
           onSelect(store.id, { scrollToMap: true });
         }}
-        className={`${primaryButtonClassName} ${
-          isSelected
-            ? 'bg-[#7CB342] text-white shadow-sm hover:bg-[#689f38] hover:shadow-md active:scale-[0.98]'
-            : 'bg-gray-100 text-gray-800 hover:bg-[#eef5e6] hover:text-[#4d7c2a] hover:shadow-sm active:scale-[0.98]'
-        }`}
+        className={`${primaryButtonClassName} ${isSelected ? STOREFRONT_GLASS_ACTION_BUTTON_ACTIVE_CLASS : ''}`}
       >
         {viewOnMapLabel}
       </button>

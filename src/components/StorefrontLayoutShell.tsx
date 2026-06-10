@@ -2,8 +2,10 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
+import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from '../app/products/products-page-layout.constants';
 import {
   isAdminPath,
+  isProductDetailPage,
   isStorefrontPage,
   usesStorefrontHeroShell,
 } from '../lib/nav/is-storefront-page';
@@ -33,12 +35,20 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const usesHeroSurface = heroShellPage || useCatalogTheme;
 
   return (
-    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'bg-white' : ''}`}>
+    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'lg:bg-white' : ''}`}>
       {heroShellPage ? (
-        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">{children}</div>
+        <div className="relative z-10 w-full pb-0 lg:pb-[220px]">{children}</div>
       ) : useCatalogTheme ? (
-        <div className="relative z-10 w-full pb-12 lg:pb-[220px]">
-          <ProductsHeroShell catalog={children} />
+        <div className="relative z-10 w-full pb-0 lg:pb-[220px]">
+          <ProductsHeroShell
+            catalog={children}
+            mobileContentSurfaceClassName={
+              isProductDetailPage(pathname)
+                ? PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS
+                : undefined
+            }
+            sectionAriaLabel={isProductDetailPage(pathname) ? 'Product' : 'Shop'}
+          />
         </div>
       ) : (
         children

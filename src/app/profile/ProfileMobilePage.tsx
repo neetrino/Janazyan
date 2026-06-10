@@ -51,7 +51,7 @@ export function ProfileMobilePage({
   }, [isSheetOpen]);
 
   return (
-    <div className="mx-auto w-full max-w-md px-4 pb-8 pt-6 md:hidden">
+    <div className="mx-auto w-full max-w-md pb-8 pt-2 lg:hidden">
       <div className="rounded-[2rem] bg-white px-5 pb-7 pt-5 shadow-sm ring-1 ring-gray-200/80">
 
         <div className="mb-5 flex items-center gap-4">

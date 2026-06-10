@@ -20,10 +20,10 @@ export function OrderPageHeader({ orderNumber, placedAt }: OrderPageHeaderProps)
     <header className="mb-10">
       <div className="flex flex-col items-center text-center">
         <div
-          className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-100 shadow-md shadow-gray-300/40 ring-4 ring-gray-50"
+          className="mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-green-200 bg-green-50 shadow-md shadow-green-200/40 ring-4 ring-green-50"
           aria-hidden
         >
-          <Check className="h-10 w-10 text-gray-900" strokeWidth={2.75} />
+          <Check className="h-10 w-10 text-green-600" strokeWidth={2.75} />
         </div>
 
         <h1 className="max-w-lg text-2xl font-bold leading-tight tracking-tight text-gray-900 sm:text-3xl">

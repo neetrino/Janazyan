@@ -1,9 +1,12 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslation } from '../../../../lib/i18n-client';
 import { formatPriceInCurrency, convertPrice } from '../../../../lib/currency';
 import { getColorValue } from '../utils/color-helpers';
 import type { OrderItem as OrderItemType } from '../types';
+
+const ORDER_ITEM_IMAGE_SIZE_PX = 72;
 
 interface OrderItemProps {
   item: OrderItemType;
@@ -48,14 +51,19 @@ export function OrderItem({ item, currency }: OrderItemProps) {
   })();
 
   return (
-    <div className="flex gap-4 border-b border-gray-200 pb-4 last:border-0">
+    <div className="flex gap-3 border-b border-gray-200 pb-4 last:border-0">
       {item.imageUrl && (
-        <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
-          <img 
-            src={item.imageUrl} 
-            alt={item.productTitle}
-            className="w-full h-full object-cover"
-          />
+        <div className="h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-1.5">
+          <div className="relative h-full w-full">
+            <Image
+              src={item.imageUrl}
+              alt={item.productTitle}
+              fill
+              className="object-contain"
+              sizes={`${ORDER_ITEM_IMAGE_SIZE_PX}px`}
+              unoptimized
+            />
+          </div>
         </div>
       )}
       <div className="flex-1">

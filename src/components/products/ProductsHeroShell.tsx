@@ -9,17 +9,22 @@ import {
   PRODUCTS_PAGE_DESKTOP_SHELL_CLASS,
   PRODUCTS_PAGE_HERO_ASPECT_CLASS,
   PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS,
-  PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
+import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
+import { STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
   toolbar?: ReactNode;
   catalog: ReactNode;
+  /** Mobile content card surface — defaults to shared white shell. */
+  mobileContentSurfaceClassName?: string;
+  /** Mobile content horizontal inset — defaults to products page inset. */
+  mobileContentInsetClassName?: string;
   sectionAriaLabel?: string;
 };
 
@@ -34,7 +39,7 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
         </div>
         <Header embedded />
         <div
-          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
+          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
         >
           {toolbar}
         </div>
@@ -56,16 +61,29 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
 export function ProductsHeroShell({
   toolbar,
   catalog,
+  mobileContentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
+  mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
   return (
-    <div className={PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}>
-      <section
-        aria-label={sectionAriaLabel}
-        className="relative w-full lg:pt-3 lg:md:pt-5"
+    <>
+      <StorefrontMobileShell
+        toolbar={toolbar}
+        contentSurfaceClassName={mobileContentSurfaceClassName}
+        contentInsetClassName={mobileContentInsetClassName}
+        sectionAriaLabel={sectionAriaLabel}
       >
-        <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
-      </section>
-    </div>
+        {catalog}
+      </StorefrontMobileShell>
+
+      <div className={`hidden lg:block ${PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}`}>
+        <section
+          aria-label={sectionAriaLabel}
+          className="relative w-full lg:pt-3 lg:md:pt-5"
+        >
+          <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
+        </section>
+      </div>
+    </>
   );
 }

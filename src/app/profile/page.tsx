@@ -247,7 +247,7 @@ function ProfilePageContent() {
       >
         {tabContent}
       </ProfileMobilePage>
-      <div className="mx-auto hidden max-w-7xl px-4 py-8 md:block md:px-6 lg:px-8">
+      <div className="mx-auto hidden max-w-7xl px-4 py-8 lg:block md:px-6 lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
           <aside className="w-full shrink-0 md:sticky md:top-24 md:w-64 md:self-start md:border-r md:border-gray-200/90 md:pr-8 lg:w-72">
             <ProfileHeader profile={profile} tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} onLogout={logout} t={t} />

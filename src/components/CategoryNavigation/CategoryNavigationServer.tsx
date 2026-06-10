@@ -70,7 +70,7 @@ function NavCategoryIcon({
 }
 
 function isCategoryActive(slug: string, activeCategorySlug?: string): boolean {
-  if (slug === 'all' || slug === 'assortment') {
+  if (slug === 'all') {
     return !activeCategorySlug;
   }
   return activeCategorySlug === slug;
@@ -126,7 +126,11 @@ export async function CategoryNavigationServer({
 }: CategoryNavigationServerProps) {
   const dbCategories = await getCategoryNavStripCached(language);
   const displayCategories =
-    dbCategories.length > 0 ? dbCategories : getShopCategoryFallbackStrip(language);
+    variant === 'pills'
+      ? getShopCategoryFallbackStrip(language)
+      : dbCategories.length > 0
+        ? dbCategories
+        : getShopCategoryFallbackStrip(language);
 
   if (variant === 'pills') {
     return (

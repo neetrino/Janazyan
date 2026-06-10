@@ -5,6 +5,11 @@ import Link from 'next/link';
 import { formatPrice } from '../../lib/currency';
 import type { CurrencyCode } from '../../lib/currency';
 import type { CartItem } from '../../app/cart/types';
+import {
+  CART_QTY_GLASS_CAPSULE_CLASS,
+  CART_QTY_STEP_BUTTON_CLASS,
+  CART_QTY_VALUE_CLASS,
+} from '../../app/products/[slug]/product-action-bar.constants';
 
 const DRAWER_ITEM_IMAGE_SIZE_PX = 72;
 
@@ -87,21 +92,17 @@ export function CartDrawerItemRow({
         <div className="mt-1 flex items-center justify-between gap-2">
           <p className="text-base font-bold text-ink-800">{formatPrice(item.total, currency)}</p>
 
-          <div className="flex shrink-0 items-center gap-2">
+          <div className={CART_QTY_GLASS_CAPSULE_CLASS}>
             <button
               type="button"
               onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
               disabled={isUpdating}
-              className="grid h-8 w-8 place-items-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+              className={CART_QTY_STEP_BUTTON_CLASS}
               aria-label={t('common.ariaLabels.decreaseQuantity')}
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-              </svg>
+              −
             </button>
-            <span className="min-w-[1.5rem] text-center text-sm font-semibold text-ink-800">
-              {item.quantity}
-            </span>
+            <span className={CART_QTY_VALUE_CLASS}>{item.quantity}</span>
             <button
               type="button"
               onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
@@ -109,12 +110,10 @@ export function CartDrawerItemRow({
                 isUpdating ||
                 (item.variant.stock !== undefined && item.quantity >= item.variant.stock)
               }
-              className="grid h-8 w-8 place-items-center rounded-lg border border-gray-200 text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50"
+              className={CART_QTY_STEP_BUTTON_CLASS}
               aria-label={t('common.ariaLabels.increaseQuantity')}
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
+              +
             </button>
           </div>
         </div>

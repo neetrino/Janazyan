@@ -56,15 +56,27 @@ function ProductCardComponent({ product, viewMode = 'grid-3', priority = false }
     categories: product.categories,
   });
 
-  const scale = viewMode === 'list' ? 'full' : 'catalog';
-
-  const wrapperClass =
-    viewMode === 'list' ? 'flex w-full justify-center' : 'flex w-auto justify-center';
+  if (viewMode === 'list') {
+    return (
+      <div data-product-card className="flex w-full justify-center">
+        <FeaturedProductCardSlot product={featuredProduct} scale="full" priority={priority} />
+      </div>
+    );
+  }
 
   return (
-    <div data-product-card className={wrapperClass}>
-      <FeaturedProductCardSlot product={featuredProduct} scale={scale} priority={priority} />
-    </div>
+    <>
+      <div data-product-card className="flex w-auto justify-center lg:hidden">
+        <FeaturedProductCardSlot
+          product={featuredProduct}
+          scale="mobile-grid"
+          priority={priority}
+        />
+      </div>
+      <div data-product-card className="hidden w-auto justify-center lg:flex">
+        <FeaturedProductCardSlot product={featuredProduct} scale="catalog" priority={priority} />
+      </div>
+    </>
   );
 }
 

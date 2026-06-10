@@ -1,15 +1,14 @@
 'use client';
 
 import type { MouseEvent } from 'react';
-import { Heart } from 'lucide-react';
 import Image from 'next/image';
 import { formatPrice, type CurrencyCode } from '../../../lib/currency';
 import { t, getProductText } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import { sanitizeHtml } from '../../../lib/utils/sanitize';
-import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import { ProductRatingSummary } from './ProductRatingSummary';
+import { ProductActionBar } from './ProductActionBar';
 import type { Product, ProductVariant } from './types';
 
 interface ProductInfoAndActionsProps {
@@ -198,44 +197,23 @@ export function ProductInfoAndActions({
             </p>
           </div>
         )}
-        <div className="flex items-center gap-3 pt-4 border-t">
-          <div className="flex items-center border rounded-xl overflow-hidden bg-gray-50">
-            <button 
-              onClick={() => onQuantityAdjust(-1)} 
-              disabled={quantity <= 1}
-              className="w-12 h-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              -
-            </button>
-            <div className="w-12 text-center font-bold">{quantity}</div>
-            <button 
-              onClick={() => onQuantityAdjust(1)} 
-              disabled={quantity >= maxQuantity}
-              className="w-12 h-12 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              +
-            </button>
-          </div>
-          <button 
-            disabled={!canAddToCart || isAddingToCart} 
-            className="flex-1 h-12 bg-gray-900 text-white rounded-xl uppercase font-bold disabled:bg-gray-300 disabled:cursor-not-allowed"
-            onClick={onAddToCart}
-          >
-            {isAddingToCart ? t(language, 'product.adding') : (isOutOfStock ? t(language, 'product.outOfStock') : (isVariationRequired ? getRequiredAttributesMessage() : (hasUnavailableAttributes ? t(language, 'product.outOfStock') : t(language, 'product.addToCart'))))}
-          </button>
-          <button 
-            onClick={onCompareToggle} 
-            className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all duration-200 ${isInCompare ? 'border-gray-900 bg-gray-50' : 'border-gray-200 hover:border-gray-300'}`}
-          >
-            <CompareIcon isActive={isInCompare} />
-          </button>
-          <button 
-            onClick={onAddToWishlist} 
-            className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center ${isInWishlist ? 'border-gray-900 bg-gray-50' : 'border-gray-200'}`}
-          >
-            <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-          </button>
-        </div>
+        <ProductActionBar
+          language={language}
+          quantity={quantity}
+          maxQuantity={maxQuantity}
+          canAddToCart={canAddToCart}
+          isAddingToCart={isAddingToCart}
+          isOutOfStock={isOutOfStock}
+          isVariationRequired={isVariationRequired}
+          hasUnavailableAttributes={hasUnavailableAttributes}
+          isInWishlist={isInWishlist}
+          isInCompare={isInCompare}
+          onQuantityAdjust={onQuantityAdjust}
+          onAddToCart={onAddToCart}
+          onAddToWishlist={onAddToWishlist}
+          onCompareToggle={onCompareToggle}
+          getRequiredAttributesMessage={getRequiredAttributesMessage}
+        />
       </div>
       {showMessage && <div className="mt-4 p-4 bg-gray-900 text-white rounded-md shadow-lg">{showMessage}</div>}
     </div>

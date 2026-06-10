@@ -3,8 +3,9 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
-import { MobileTopBar } from './MobileTopBar';
 import type { ReactNode } from 'react';
+import { MobileBackdrop } from '../storefront/MobileBackdrop';
+import { MobileTopBar } from './MobileTopBar';
 import {
   CATEGORY_BG,
   CATEGORY_FIGMA_GRID_IDS,
@@ -16,6 +17,7 @@ import {
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -45,9 +47,9 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   const hairCategory = categoryPosters.find((item) => item.id === 'hair');
 
   return (
-    <section className={`relative pb-28 lg:hidden ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+    <section className="relative lg:hidden">
       <MobileBackdrop />
-      <div className="relative z-10 pt-10">
+      <div className={`relative z-10 pt-10 ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />
@@ -57,19 +59,15 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
         />
       </div>
 
-      <div className="relative z-10 mt-8 rounded-t-[44px] bg-gradient-to-b from-sky to-pink pb-10 pt-9">
-        {featuredSlot}
-        <MobileWhyChooseUs cards={whyCards} />
+      <div
+        className={`relative z-10 mt-8 w-full rounded-t-[44px] bg-gradient-to-b from-sky to-pink pt-9 ${HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS}`}
+      >
+        <div className={STOREFRONT_HORIZONTAL_GUTTER_CLASS}>
+          {featuredSlot}
+          <MobileWhyChooseUs cards={whyCards} />
+        </div>
       </div>
     </section>
-  );
-}
-
-function MobileBackdrop() {
-  return (
-    <div className="absolute inset-0 -z-10 bg-[linear-gradient(139deg,#ecf5ff_2%,#e6cbd5_31%)]">
-      <div className="absolute left-0 top-24 h-[84%] w-full rounded-t-[44px] bg-white" />
-    </div>
   );
 }
 

@@ -34,6 +34,21 @@ type PartnerStoresMapProps = {
 
 type LeafletModule = typeof import('leaflet');
 
+/** Leaflet flyTo throws when the map container has no layout size yet. */
+function focusMapOnCoordinates(
+  map: LeafletMap,
+  latLng: [number, number],
+  zoom: number,
+): void {
+  map.invalidateSize();
+  const { x, y } = map.getSize();
+  if (x > 0 && y > 0) {
+    map.flyTo(latLng, zoom, { duration: 0.8 });
+    return;
+  }
+  map.setView(latLng, zoom);
+}
+
 function createMarkerIcon(
   L: LeafletModule,
   isSelected: boolean,
@@ -97,9 +112,7 @@ export function PartnerStoresMap({
       return;
     }
 
-    map.flyTo([coordinates.lat, coordinates.lng], selectedZoom, {
-      duration: 0.8,
-    });
+    focusMapOnCoordinates(map, [coordinates.lat, coordinates.lng], selectedZoom);
 
     const marker = markersRef.current.get(selectedStoreId);
     marker?.openPopup();
@@ -138,7 +151,14 @@ export function PartnerStoresMap({
       }).addTo(map);
 
       mapRef.current = map;
-      setMapReady(true);
+      map.invalidateSize();
+      requestAnimationFrame(() => {
+        if (cancelled || mapRef.current !== map) {
+          return;
+        }
+        map.invalidateSize();
+        setMapReady(true);
+      });
     });
 
     return () => {

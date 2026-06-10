@@ -28,8 +28,8 @@ export function CategoryPillIcon({
     <Image
       src={icon.src}
       alt=""
-      width={24}
-      height={24}
+      width={28}
+      height={28}
       className={`shrink-0 ${icon.className}`}
       aria-hidden
     />
