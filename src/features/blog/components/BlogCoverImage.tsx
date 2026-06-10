@@ -13,7 +13,6 @@ export function BlogCoverImage({
   loading = 'lazy',
 }: BlogCoverImageProps) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- user-uploaded URLs; fill layout is unreliable here
     <img src={src} alt={alt} loading={loading} decoding="async" className={className} />
   );
 }
