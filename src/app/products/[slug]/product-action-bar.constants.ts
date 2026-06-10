@@ -1,4 +1,10 @@
+export const PDP_ACTION_STACK_CLASS = 'flex flex-col gap-4 lg:gap-0';
+
 export const PDP_ACTION_ROW_CLASS = 'flex items-center gap-4';
+
+export const PDP_SECONDARY_ACTION_ROW_CLASS = 'flex items-center justify-end gap-4 lg:hidden';
+
+export const PDP_DESKTOP_ICON_ACTIONS_CLASS = 'hidden shrink-0 items-center gap-4 lg:flex';
 
 /** Shared frosted water-glass surface for PDP controls. */
 export const PDP_GLASS_SURFACE_CLASS =

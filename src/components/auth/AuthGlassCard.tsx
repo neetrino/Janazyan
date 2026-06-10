@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode } from 'react';
+import { AUTH_GLASS_CARD_PADDING_CLASS } from './auth-layout.constants';
 import { AUTH_GLASS_CARD_CLASS } from './auth-glass-styles';
 
 interface AuthGlassCardProps extends HTMLAttributes<HTMLDivElement> {
@@ -12,7 +13,10 @@ export function AuthGlassCard({
   ...props
 }: AuthGlassCardProps) {
   return (
-    <div className={`${AUTH_GLASS_CARD_CLASS} p-8 ${className}`.trim()} {...props}>
+    <div
+      className={`w-full ${AUTH_GLASS_CARD_CLASS} ${AUTH_GLASS_CARD_PADDING_CLASS} ${className}`.trim()}
+      {...props}
+    >
       {children}
     </div>
   );

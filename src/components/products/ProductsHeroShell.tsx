@@ -23,6 +23,8 @@ type ProductsHeroShellProps = {
   catalog: ReactNode;
   /** Mobile content card surface — defaults to shared white shell. */
   mobileContentSurfaceClassName?: string;
+  /** Mobile content horizontal inset — defaults to products page inset. */
+  mobileContentInsetClassName?: string;
   sectionAriaLabel?: string;
 };
 
@@ -60,6 +62,7 @@ export function ProductsHeroShell({
   toolbar,
   catalog,
   mobileContentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
+  mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
   return (
@@ -67,6 +70,7 @@ export function ProductsHeroShell({
       <StorefrontMobileShell
         toolbar={toolbar}
         contentSurfaceClassName={mobileContentSurfaceClassName}
+        contentInsetClassName={mobileContentInsetClassName}
         sectionAriaLabel={sectionAriaLabel}
       >
         {catalog}

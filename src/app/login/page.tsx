@@ -12,6 +12,10 @@ import {
   AUTH_GLASS_ERROR_CLASS,
   AUTH_GLASS_INPUT_CLASS,
 } from '../../components/auth/auth-glass-styles';
+import {
+  AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
+  AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
+} from '../../components/auth/auth-layout.constants';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '../../lib/i18n-client';
@@ -79,6 +83,8 @@ function LoginPageContent() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Login"
+      mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
+      mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalog={
         <AuthPageShell>
           <AuthGlassCard>
@@ -182,6 +188,8 @@ export default function LoginPage() {
       fallback={
         <ProductsHeroShell
           sectionAriaLabel="Login"
+          mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
+          mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
           catalog={
             <AuthPageShell>
               <AuthGlassCard>

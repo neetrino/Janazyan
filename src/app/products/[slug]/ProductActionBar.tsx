@@ -7,12 +7,15 @@ import { t } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import {
   PDP_ACTION_ROW_CLASS,
+  PDP_ACTION_STACK_CLASS,
   PDP_ADD_TO_CART_CLASS,
   PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS,
   PDP_GLASS_ICON_BUTTON_CLASS,
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
+  PDP_DESKTOP_ICON_ACTIONS_CLASS,
+  PDP_SECONDARY_ACTION_ROW_CLASS,
 } from './product-action-bar.constants';
 
 type ProductActionBarProps = {
@@ -32,6 +35,40 @@ type ProductActionBarProps = {
   onCompareToggle: (e: MouseEvent) => void;
   getRequiredAttributesMessage: () => string;
 };
+
+type CompareWishlistButtonsProps = Pick<
+  ProductActionBarProps,
+  'language' | 'isInCompare' | 'isInWishlist' | 'onCompareToggle' | 'onAddToWishlist'
+>;
+
+function CompareWishlistButtons({
+  language,
+  isInCompare,
+  isInWishlist,
+  onCompareToggle,
+  onAddToWishlist,
+}: CompareWishlistButtonsProps) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={onCompareToggle}
+        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+        aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
+      >
+        <CompareIcon isActive={isInCompare} />
+      </button>
+      <button
+        type="button"
+        onClick={onAddToWishlist}
+        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+        aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
+      >
+        <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
+      </button>
+    </>
+  );
+}
 
 function resolveAddToCartLabel({
   language,
@@ -86,52 +123,56 @@ export function ProductActionBar({
   });
 
   return (
-    <div className={PDP_ACTION_ROW_CLASS}>
-      <div className={PDP_QTY_GLASS_CAPSULE_CLASS}>
+    <div className={PDP_ACTION_STACK_CLASS}>
+      <div className={PDP_ACTION_ROW_CLASS}>
+        <div className={PDP_QTY_GLASS_CAPSULE_CLASS}>
+          <button
+            type="button"
+            onClick={() => onQuantityAdjust(-1)}
+            disabled={quantity <= 1}
+            className={PDP_QTY_STEP_BUTTON_CLASS}
+            aria-label={t(language, 'common.ariaLabels.decreaseQuantity')}
+          >
+            −
+          </button>
+          <span className={PDP_QTY_VALUE_CLASS}>{quantity}</span>
+          <button
+            type="button"
+            onClick={() => onQuantityAdjust(1)}
+            disabled={quantity >= maxQuantity}
+            className={PDP_QTY_STEP_BUTTON_CLASS}
+            aria-label={t(language, 'common.ariaLabels.increaseQuantity')}
+          >
+            +
+          </button>
+        </div>
         <button
           type="button"
-          onClick={() => onQuantityAdjust(-1)}
-          disabled={quantity <= 1}
-          className={PDP_QTY_STEP_BUTTON_CLASS}
-          aria-label={t(language, 'common.ariaLabels.decreaseQuantity')}
+          disabled={!canAddToCart || isAddingToCart}
+          className={PDP_ADD_TO_CART_CLASS}
+          onClick={onAddToCart}
         >
-          −
+          {addToCartLabel}
         </button>
-        <span className={PDP_QTY_VALUE_CLASS}>{quantity}</span>
-        <button
-          type="button"
-          onClick={() => onQuantityAdjust(1)}
-          disabled={quantity >= maxQuantity}
-          className={PDP_QTY_STEP_BUTTON_CLASS}
-          aria-label={t(language, 'common.ariaLabels.increaseQuantity')}
-        >
-          +
-        </button>
+        <div className={PDP_DESKTOP_ICON_ACTIONS_CLASS}>
+          <CompareWishlistButtons
+            language={language}
+            isInCompare={isInCompare}
+            isInWishlist={isInWishlist}
+            onCompareToggle={onCompareToggle}
+            onAddToWishlist={onAddToWishlist}
+          />
+        </div>
       </div>
-      <button
-        type="button"
-        disabled={!canAddToCart || isAddingToCart}
-        className={PDP_ADD_TO_CART_CLASS}
-        onClick={onAddToCart}
-      >
-        {addToCartLabel}
-      </button>
-      <button
-        type="button"
-        onClick={onCompareToggle}
-        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-        aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
-      >
-        <CompareIcon isActive={isInCompare} />
-      </button>
-      <button
-        type="button"
-        onClick={onAddToWishlist}
-        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-        aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
-      >
-        <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-      </button>
+      <div className={PDP_SECONDARY_ACTION_ROW_CLASS}>
+        <CompareWishlistButtons
+          language={language}
+          isInCompare={isInCompare}
+          isInWishlist={isInWishlist}
+          onCompareToggle={onCompareToggle}
+          onAddToWishlist={onAddToWishlist}
+        />
+      </div>
     </div>
   );
 }

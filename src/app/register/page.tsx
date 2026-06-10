@@ -11,6 +11,10 @@ import {
   AUTH_GLASS_ERROR_CLASS,
   AUTH_GLASS_INPUT_CLASS,
 } from '../../components/auth/auth-glass-styles';
+import {
+  AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
+  AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
+} from '../../components/auth/auth-layout.constants';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { resolveRegisterApiError } from '../../lib/auth/client-api-error-messages';
@@ -131,6 +135,8 @@ export default function RegisterPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Register"
+      mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
+      mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalog={
         <AuthPageShell>
           <AuthGlassCard>

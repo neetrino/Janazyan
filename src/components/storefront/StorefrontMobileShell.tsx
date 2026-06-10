@@ -17,6 +17,8 @@ type StorefrontMobileShellProps = {
   toolbar?: ReactNode;
   /** Override default white content card — e.g. /products catalog gradient. */
   contentSurfaceClassName?: string;
+  /** Inner horizontal inset on the content surface — defaults to products page inset. */
+  contentInsetClassName?: string;
   sectionAriaLabel?: string;
 };
 
@@ -27,6 +29,7 @@ export function StorefrontMobileShell({
   children,
   toolbar,
   contentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
+  contentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   return (
@@ -40,7 +43,7 @@ export function StorefrontMobileShell({
           </div>
         ) : null}
       </div>
-      <div className={`${contentSurfaceClassName} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
+      <div className={`${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
         {children}
       </div>
     </section>
