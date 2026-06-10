@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPublishedPartnerStores } from '@/lib/services/partner-stores.service';
-import { LANGUAGES } from '@/lib/language';
+import { buildPartnerStoresFromLocale } from '@/features/stores/fetch-partner-stores';
+import type { PartnerStore } from '@/features/stores/types';
+import {
+  readJsonCache,
+  STOREFRONT_CACHE_KEYS,
+  STOREFRONT_CACHE_TTL,
+  writeJsonCache,
+} from '@/lib/cache/storefront-cache';
+import { getPartnerStoresFromRedisOrDb } from '@/lib/cache/partner-stores-redis-cache';
+import { LANGUAGES, type LanguageCode } from '@/lib/language';
 
 const DEFAULT_LOCALE = 'en';
 
@@ -18,8 +26,24 @@ function parseLocale(value: string | null): string {
 export async function GET(req: NextRequest) {
   try {
     const locale = parseLocale(req.nextUrl.searchParams.get('locale'));
-    const data = await getPublishedPartnerStores(locale);
-    return NextResponse.json({ data });
+    const cacheKey = STOREFRONT_CACHE_KEYS.partnerStores(locale);
+
+    const cached = await readJsonCache<PartnerStore[]>(cacheKey);
+    if (cached) {
+      return NextResponse.json({ data: cached }, { headers: { 'X-Cache': 'HIT' } });
+    }
+
+    const dbStores = await getPartnerStoresFromRedisOrDb(locale);
+    const data =
+      dbStores.length > 0
+        ? dbStores
+        : buildPartnerStoresFromLocale(locale as LanguageCode);
+
+    if (dbStores.length === 0 && data.length > 0) {
+      await writeJsonCache(cacheKey, STOREFRONT_CACHE_TTL.partnerStores, data);
+    }
+
+    return NextResponse.json({ data }, { headers: { 'X-Cache': 'MISS' } });
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };
     return NextResponse.json(

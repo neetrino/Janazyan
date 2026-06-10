@@ -1,3 +1,4 @@
+import { revalidateTag } from "next/cache";
 import { cacheService } from "@/lib/services/cache.service";
 
 /**
@@ -11,6 +12,10 @@ export const STOREFRONT_CACHE_TTL = {
   currencyRates: 180,
   productsFilters: 120,
   productsPriceRange: 120,
+  /** SSR /products grid (Redis layer). */
+  productsCatalog: 120,
+  /** /products category pill strip. */
+  categoriesNavStrip: 300,
   /** PDP first paint (images + identifiers). */
   productVisual: 300,
   /** PDP full product JSON for info column. */
@@ -20,6 +25,8 @@ export const STOREFRONT_CACHE_TTL = {
   blogPosts: 300,
   blogPostBySlug: 300,
   faqPublished: 300,
+  /** /stores partner locations list. */
+  partnerStores: 300,
 } as const;
 
 export const STOREFRONT_CACHE_KEYS = {
@@ -29,12 +36,15 @@ export const STOREFRONT_CACHE_KEYS = {
   currencyRates: () => "settings:currency-rates",
   productsFilters: (stableQuery: string) => `products:filters:${stableQuery}`,
   productsPriceRange: (stableQuery: string) => `products:price-range:${stableQuery}`,
+  productsCatalog: (stableKey: string) => `products:catalog:${stableKey}`,
+  categoriesNavStrip: (lang: string) => `categories:nav-strip:${lang}`,
   productVisual: (lang: string, slug: string) => `product:visual:${lang}:${slug}`,
   productDetails: (lang: string, slug: string) => `product:details:${lang}:${slug}`,
   productRelated: (lang: string, slug: string) => `product:related:${lang}:${slug}`,
   blogPosts: (locale: string) => `blog:posts:${locale}`,
   blogPostBySlug: (locale: string, slug: string) => `blog:post:${locale}:${slug}`,
   faqPublished: (locale: string) => `faq:published:${locale}`,
+  partnerStores: (locale: string) => `partner-stores:${locale}`,
 } as const;
 
 /** Deterministic cache key fragment from URL search params (sorted keys). */
@@ -61,11 +71,14 @@ export async function writeJsonCache(key: string, ttlSeconds: number, body: unkn
 
 /** After category create/update/delete (admin). */
 export async function invalidateStorefrontCategoryCaches(): Promise<void> {
+  // @ts-expect-error - revalidateTag type issue in Next.js
+  revalidateTag("categories");
   await Promise.all([
     cacheService.deletePattern("categories:tree:*"),
     cacheService.deletePattern("categories:navigation-previews:*"),
     cacheService.deletePattern("categories:slug:*"),
     cacheService.deletePattern("categories:top:*"),
+    cacheService.deletePattern("categories:nav-strip:*"),
   ]);
 }
 
@@ -126,4 +139,9 @@ export async function invalidateBlogCaches(): Promise<void> {
 /** After FAQ category/item mutations (admin). */
 export async function invalidateFaqCaches(): Promise<void> {
   await cacheService.deletePattern("faq:published:*");
+}
+
+/** After partner store create/update/delete (admin). */
+export async function invalidatePartnerStoresCaches(): Promise<void> {
+  await cacheService.deletePattern("partner-stores:*");
 }

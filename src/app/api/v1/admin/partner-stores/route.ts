@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePartnerStoresPublicCache } from '@/lib/partner-stores/revalidate-partner-stores-cache';
 import { authenticateToken, requireAdmin } from '@/lib/middleware/auth';
 import { adminService } from '@/lib/services/admin.service';
 
@@ -59,6 +60,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const result = await adminService.createPartnerStore(body);
+    await revalidatePartnerStoresPublicCache();
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };

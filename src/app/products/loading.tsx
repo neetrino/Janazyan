@@ -1,14 +1,14 @@
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
-import { ProductsShopHeroToolbar } from '../../components/products/ProductsShopHeroToolbar';
-import { getServerLanguage } from '../../lib/language-server';
-import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
+import {
+  ProductsCatalogMainSkeleton,
+  ProductsShopToolbarSkeleton,
+} from './ProductsCatalogSkeleton';
 
-export default async function ProductsLoading() {
-  const language = await getServerLanguage();
-
+/** Instant shell on client navigation — no async work before paint. */
+export default function ProductsLoading() {
   return (
     <ProductsHeroShell
-      toolbar={<ProductsShopHeroToolbar language={language} />}
+      toolbar={<ProductsShopToolbarSkeleton />}
       catalog={<ProductsCatalogMainSkeleton />}
     />
   );

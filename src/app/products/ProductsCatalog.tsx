@@ -1,141 +1,46 @@
 import Link from 'next/link';
-import { unstable_cache } from 'next/cache';
 import { Button } from '@shop/ui';
 import type { LanguageCode } from '../../lib/language';
-import { getServerLanguage } from '../../lib/language-server';
 import { t } from '../../lib/i18n';
 import { ProductsGrid } from '../../components/ProductsGrid';
-import { logger } from '../../lib/utils/logger';
-import { productsService } from '../../lib/services/products.service';
+import type { ProductsCatalogCacheResponse } from '../../lib/cache/products-catalog-redis-cache';
 import {
   parseCatalogSearchParams,
-  resolveSearchParams,
   sortCatalogProducts,
+  type ParsedCatalogParams,
   type SearchParamsInput,
 } from '../../lib/products/catalog-search-params';
 
-interface Product {
-  id: string;
-  slug: string;
-  title: string;
-  price: number;
-  compareAtPrice: number | null;
-  image: string | null;
-  inStock: boolean;
-  brand: {
-    id: string;
-    name: string;
-  } | null;
-  defaultVariantId?: string | null;
-  colors?: unknown[];
-  labels?: Array<{
-    id: string;
-    type: 'text' | 'percentage';
-    value: string;
-    position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-    color: string | null;
-  }>;
-  originalPrice?: number | null;
-}
-
-interface ProductsResponse {
-  data: Product[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}
-
-const PRODUCTS_LIST_REVALIDATE_SECONDS = 60;
-
-const getProductsCached = unstable_cache(
-  async (
-    page: number,
-    limit: number,
-    lang: string,
-    search?: string,
-    category?: string
-  ): Promise<ProductsResponse> =>
-    productsService.findAll({
-      page,
-      limit,
-      lang,
-      search,
-      category,
-      catalog: true,
-    }),
-  ['products-catalog-db-v2'],
-  { revalidate: PRODUCTS_LIST_REVALIDATE_SECONDS }
-);
-
-async function getProducts(
-  page: number,
-  search: string | undefined,
-  category: string | undefined,
-  limit: number,
-  language: LanguageCode
-): Promise<ProductsResponse> {
-  try {
-    const response = await getProductsCached(
-      page,
-      limit,
-      language,
-      search?.trim() || undefined,
-      category?.trim() || undefined
-    );
-    if (!Array.isArray(response.data)) {
-      return {
-        data: [],
-        meta: { total: 0, page: 1, limit: 12, totalPages: 0 },
-      };
-    }
-
-    return response;
-  } catch (e) {
-    logger.error('Product catalog fetch failed', e);
-    return {
-      data: [],
-      meta: { total: 0, page: 1, limit: 12, totalPages: 0 },
-    };
-  }
-}
+type ProductsCatalogProps = {
+  catalogPromise: Promise<ProductsCatalogCacheResponse>;
+  parsed: ParsedCatalogParams;
+  raw: SearchParamsInput;
+  language: LanguageCode;
+};
 
 export async function ProductsCatalog({
-  searchParams,
-  language: languageProp,
-}: {
-  searchParams: Promise<SearchParamsInput> | SearchParamsInput;
-  language?: LanguageCode;
-}) {
-  const raw = await resolveSearchParams(searchParams);
-  const parsed = parseCatalogSearchParams(raw);
-  const language = languageProp ?? (await getServerLanguage());
-
-  const productsData = await getProducts(
-    parsed.page,
-    parsed.search,
-    parsed.category,
-    parsed.perPage,
-    language
-  );
+  catalogPromise,
+  parsed,
+  raw,
+  language,
+}: ProductsCatalogProps) {
+  const productsData = await catalogPromise;
 
   const normalizedProducts = sortCatalogProducts(
-    productsData.data.map((p: Product) => ({
-      id: p.id,
-      slug: p.slug,
-      title: p.title,
-      price: p.price,
-      compareAtPrice: p.compareAtPrice ?? p.originalPrice ?? null,
-      image: p.image ?? null,
-      inStock: p.inStock ?? true,
-      brand: p.brand ?? null,
-      defaultVariantId: p.defaultVariantId ?? null,
-      colors: Array.isArray(p.colors) ? p.colors : [],
-      labels: p.labels ?? [],
+    productsData.data.map((product) => ({
+      id: product.id,
+      slug: product.slug,
+      title: product.title,
+      price: product.price,
+      compareAtPrice: product.compareAtPrice ?? product.originalPrice ?? null,
+      image: product.image ?? null,
+      inStock: product.inStock ?? true,
+      brand: product.brand ?? null,
+      defaultVariantId: product.defaultVariantId ?? null,
+      colors: Array.isArray(product.colors) ? product.colors : [],
+      labels: product.labels ?? [],
     })),
-    parsed.sort
+    parsed.sort,
   );
 
   const buildPaginationUrl = (num: number) => {
@@ -169,78 +74,78 @@ export async function ProductsCatalog({
     <div className="relative z-10 w-full overflow-x-hidden">
       {normalizedProducts.length > 0 ? (
         <>
-          <ProductsGrid products={normalizedProducts} sortBy={parsed.sort} />
+          <ProductsGrid products={normalizedProducts} />
 
           {productsData.meta.totalPages > 1 && (
             <nav
               className="mt-10 flex flex-wrap items-center justify-center gap-2"
               aria-label="Pagination"
             >
-                {parsed.page > 1 ? (
-                  <Link href={buildPaginationUrl(parsed.page - 1)}>
-                    <Button
-                      variant="outline"
-                      className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
-                    >
-                      {t(language, 'common.pagination.previous')}
-                    </Button>
-                  </Link>
-                ) : (
-                  <span className="min-w-[90px] rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-center text-sm font-medium text-neutral-400">
+              {parsed.page > 1 ? (
+                <Link href={buildPaginationUrl(parsed.page - 1)}>
+                  <Button
+                    variant="outline"
+                    className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
+                  >
                     {t(language, 'common.pagination.previous')}
-                  </span>
+                  </Button>
+                </Link>
+              ) : (
+                <span className="min-w-[90px] rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-center text-sm font-medium text-neutral-400">
+                  {t(language, 'common.pagination.previous')}
+                </span>
+              )}
+
+              <div className="flex items-center gap-1">
+                {getPaginationPages().map((item, idx) =>
+                  item === 'ellipsis' ? (
+                    <span key={`ellipsis-${idx}`} className="px-2 text-neutral-400" aria-hidden>
+                      …
+                    </span>
+                  ) : (
+                    <span key={item}>
+                      {item === parsed.page ? (
+                        <span
+                          className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
+                          aria-current="page"
+                        >
+                          {item}
+                        </span>
+                      ) : (
+                        <Link
+                          href={buildPaginationUrl(item)}
+                          className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
+                        >
+                          {item}
+                        </Link>
+                      )}
+                    </span>
+                  ),
                 )}
+              </div>
 
-                <div className="flex items-center gap-1">
-                  {getPaginationPages().map((item, idx) =>
-                    item === 'ellipsis' ? (
-                      <span key={`ellipsis-${idx}`} className="px-2 text-neutral-400" aria-hidden>
-                        …
-                      </span>
-                    ) : (
-                      <span key={item}>
-                        {item === parsed.page ? (
-                          <span
-                            className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg bg-neutral-800 px-3 py-1.5 text-sm font-semibold text-white shadow-sm"
-                            aria-current="page"
-                          >
-                            {item}
-                          </span>
-                        ) : (
-                          <Link
-                            href={buildPaginationUrl(item)}
-                            className="flex h-9 min-w-[2.25rem] items-center justify-center rounded-lg border border-neutral-300 bg-white px-3 py-1.5 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
-                          >
-                            {item}
-                          </Link>
-                        )}
-                      </span>
-                    )
-                  )}
-                </div>
-
-                {parsed.page < productsData.meta.totalPages ? (
-                  <Link href={buildPaginationUrl(parsed.page + 1)}>
-                    <Button
-                      variant="outline"
-                      className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
-                    >
-                      {t(language, 'common.pagination.next')}
-                    </Button>
-                  </Link>
-                ) : (
-                  <span className="min-w-[90px] rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-center text-sm font-medium text-neutral-400">
+              {parsed.page < productsData.meta.totalPages ? (
+                <Link href={buildPaginationUrl(parsed.page + 1)}>
+                  <Button
+                    variant="outline"
+                    className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
+                  >
                     {t(language, 'common.pagination.next')}
-                  </span>
-                )}
-              </nav>
-            )}
-          </>
-        ) : (
-          <div className="py-12 text-center">
-            <p className="text-lg text-gray-500">{t(language, 'common.messages.noProductsFound')}</p>
-          </div>
-        )}
+                  </Button>
+                </Link>
+              ) : (
+                <span className="min-w-[90px] rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-2 text-center text-sm font-medium text-neutral-400">
+                  {t(language, 'common.pagination.next')}
+                </span>
+              )}
+            </nav>
+          )}
+        </>
+      ) : (
+        <div className="py-12 text-center">
+          <p className="text-lg text-gray-500">{t(language, 'common.messages.noProductsFound')}</p>
+        </div>
+      )}
     </div>
   );
 }

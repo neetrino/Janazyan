@@ -11,9 +11,7 @@ type FaqApiResponse = {
  */
 export async function fetchFaqSections(locale: LanguageCode): Promise<FaqSection[]> {
   try {
-    const response = await fetch(`/api/v1/faq?locale=${locale}`, {
-      next: { revalidate: 300 },
-    });
+    const response = await fetch(`/api/v1/faq?locale=${locale}`);
     if (response.ok) {
       const payload = (await response.json()) as FaqApiResponse;
       if (payload.data?.length > 0) {
