@@ -14,6 +14,11 @@ export function isProductsListingPage(pathname: string): boolean {
   return pathname === '/products';
 }
 
+/** Single product PDP — `/products/[slug]`. */
+export function isProductDetailPage(pathname: string): boolean {
+  return /^\/products\/[^/]+$/.test(pathname);
+}
+
 const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
   '/products',
   '/about',
