@@ -1,5 +1,7 @@
 'use client';
 
+import 'leaflet/dist/leaflet.css';
+
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CAROUSEL_MOBILE_BREAKPOINT_PX } from '../carousel-constants';
 import type {

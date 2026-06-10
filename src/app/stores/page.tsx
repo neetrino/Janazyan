@@ -1,28 +1,38 @@
-import { unstable_cache } from 'next/cache';
+import { Suspense } from 'react';
+import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { getServerLanguage } from '../../lib/language-server';
-import { getPublishedPartnerStores } from '../../lib/services/partner-stores.service';
-import { buildPartnerStoresFromLocale } from '../../features/stores/fetch-partner-stores';
+import { fetchPartnerStores } from '../../lib/partner-stores/partner-stores-cache';
 import { loadStoresPageCopy } from '../../features/stores/load-stores-page-copy';
-import { StoresPageView } from '../../features/stores/components/StoresPageView';
+import { StoresPageMain } from './StoresPageMain';
+import { StoresPageFooter, StoresPageHeader } from './StoresPageSections';
+import { StoresPageMainSkeleton } from './StoresPageSkeleton';
 
-const PARTNER_STORES_REVALIDATE_SECONDS = 300;
-
-const getPartnerStoresCached = unstable_cache(
-  (locale: string) => getPublishedPartnerStores(locale),
-  ['partner-stores-v1'],
-  { revalidate: PARTNER_STORES_REVALIDATE_SECONDS }
-);
+export const revalidate = 300;
 
 /**
- * Our Stores page — partner locations fetched on the server (no client waterfall),
- * passed to the interactive client view.
+ * Our Stores — hero copy paints immediately; store list streams in via Suspense.
  */
 export default async function StoresPage() {
   const language = await getServerLanguage();
   const copy = loadStoresPageCopy(language);
-  const dbStores = await getPartnerStoresCached(language);
-  const stores =
-    dbStores.length > 0 ? dbStores : buildPartnerStoresFromLocale(language);
+  const storesPromise = fetchPartnerStores(language);
 
-  return <StoresPageView initialCopy={copy} initialStores={stores} />;
+  return (
+    <ProductsHeroShell
+      sectionAriaLabel="Our stores"
+      catalog={
+        <>
+          <StoresPageHeader copy={copy} />
+          <Suspense fallback={<StoresPageMainSkeleton />}>
+            <StoresPageMain
+              storesPromise={storesPromise}
+              copy={copy}
+              language={language}
+            />
+          </Suspense>
+          <StoresPageFooter copy={copy} />
+        </>
+      }
+    />
+  );
 }

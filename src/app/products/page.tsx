@@ -6,10 +6,11 @@ import {
   parseCatalogSearchParams,
   resolveSearchParams,
 } from '../../lib/products/catalog-search-params';
+import { fetchProductsCatalog } from '../../lib/products/products-catalog-cache';
 import { ProductsCatalog } from './ProductsCatalog';
 import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
 
-export const revalidate = 60;
+export const revalidate = 120;
 
 /**
  * Shop catalog — hero-gradient shell grows with the product grid.
@@ -23,6 +24,14 @@ export default async function ProductsPage({
   const language = await getServerLanguage();
   const parsed = parseCatalogSearchParams(raw);
 
+  const catalogPromise = fetchProductsCatalog(
+    parsed.page,
+    parsed.perPage,
+    language,
+    parsed.search,
+    parsed.category,
+  );
+
   return (
     <ProductsHeroShell
       toolbar={
@@ -33,7 +42,12 @@ export default async function ProductsPage({
       }
       catalog={
         <Suspense fallback={<ProductsCatalogMainSkeleton />}>
-          <ProductsCatalog searchParams={raw} language={language} />
+          <ProductsCatalog
+            catalogPromise={catalogPromise}
+            parsed={parsed}
+            raw={raw}
+            language={language}
+          />
         </Suspense>
       }
     />

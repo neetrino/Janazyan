@@ -13,9 +13,7 @@ type PartnerStoresApiResponse = {
  */
 export async function fetchPartnerStores(locale: LanguageCode): Promise<PartnerStore[]> {
   try {
-    const response = await fetch(`/api/v1/partner-stores?locale=${locale}`, {
-      cache: 'no-store',
-    });
+    const response = await fetch(`/api/v1/partner-stores?locale=${locale}`);
     if (response.ok) {
       const payload = (await response.json()) as PartnerStoresApiResponse;
       if (payload.data?.length > 0) {
