@@ -8,6 +8,10 @@ import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
 import { HERO_SLIDES } from './hero-slides';
+import {
+  HOME_HERO_TITLE_DESKTOP_CLASS,
+  HOME_HERO_TITLE_MOBILE_CLASS,
+} from './hero-typography.constants';
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
 
@@ -246,7 +250,7 @@ export function HomeHero() {
               <p className="text-[28px] font-light leading-none text-cream">{heroKidsLabel}</p>
             ) : null}
 
-            <h1 className="font-wide mt-2 max-w-full text-[clamp(56px,13vw,170px)] leading-[0.9] tracking-[0.01em] text-cream md:mt-6">
+            <h1 className={`mt-2 max-w-full md:mt-6 ${HOME_HERO_TITLE_MOBILE_CLASS}`}>
               {heroTitle}
             </h1>
 
@@ -263,7 +267,7 @@ export function HomeHero() {
 
         <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
           <div className="pointer-events-auto absolute left-[43px] top-[255px] max-w-[min(760px,52%)]">
-            <h1 className="overflow-visible pb-2 font-wide text-[198px] leading-[1.04] tracking-[2px] text-cream">
+            <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
               {heroTitle}
             </h1>
             <p className="mt-10 w-[486px] text-[18px] leading-[28px] tracking-[-0.44px] text-white">
