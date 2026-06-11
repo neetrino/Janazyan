@@ -8,6 +8,7 @@ import {
   HEADER_ACTIVE_PILL_HEIGHT_PX,
   HEADER_ACTIVE_PILL_RADIUS_PX,
   HEADER_NAV_ACTIVE_PILL_CLASS,
+  HEADER_NAV_ACTIVE_PILL_DRAGGING_CLASS,
   HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS,
 } from './header-nav-pill.constants';
 import {
@@ -93,9 +94,9 @@ function HeaderNav({
     >
       <span
         aria-hidden
-        className={`absolute touch-none select-none ${HEADER_NAV_ACTIVE_PILL_CLASS} ${
-          isDragging ? 'z-30 cursor-grabbing bg-sky/50' : 'z-20 cursor-grab'
-        }`}
+        className={`absolute touch-none select-none ${
+          isDragging ? HEADER_NAV_ACTIVE_PILL_DRAGGING_CLASS : HEADER_NAV_ACTIVE_PILL_CLASS
+        } ${isDragging ? 'z-30 cursor-grabbing' : 'z-20 cursor-grab'}`}
         style={{
           borderRadius: HEADER_ACTIVE_PILL_RADIUS_PX,
           height: HEADER_ACTIVE_PILL_HEIGHT_PX,
