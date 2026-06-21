@@ -3,6 +3,12 @@
 import { useEffect, type ReactNode } from 'react';
 import { Home } from 'lucide-react';
 import { UserAvatar } from '../../components/UserAvatar';
+import {
+  PROFILE_MOBILE_CARD_CLASS,
+  PROFILE_MOBILE_OUTER_CLASS,
+  PROFILE_MOBILE_SHEET_BODY_CLASS,
+  PROFILE_MOBILE_SHEET_HEIGHT_CLASS,
+} from '../../lib/layout/account-pages-layout.constants';
 import type { ProfileTab, ProfileTabConfig, UserProfile } from './types';
 
 interface ProfileMobilePageProps {
@@ -51,8 +57,8 @@ export function ProfileMobilePage({
   }, [isSheetOpen]);
 
   return (
-    <div className="mx-auto w-full max-w-md pb-8 pt-2 lg:hidden">
-      <div className="rounded-[2rem] bg-white px-5 pb-7 pt-5 shadow-sm ring-1 ring-gray-200/80">
+    <div className={PROFILE_MOBILE_OUTER_CLASS}>
+      <div className={PROFILE_MOBILE_CARD_CLASS}>
 
         <div className="mb-5 flex items-center gap-4">
           <UserAvatar
@@ -153,13 +159,12 @@ export function ProfileMobilePage({
       </div>
 
       {isSheetOpen && (
-        <div className="fixed inset-0 z-[70] flex items-end bg-black/35 backdrop-blur-[1px]" onClick={onCloseSheet}>
+        <div className="fixed inset-0 z-[100] flex items-end bg-black/35 backdrop-blur-[1px]" onClick={onCloseSheet}>
           <div
             role="dialog"
             aria-modal="true"
             aria-label={activeTabLabel}
-            className="w-full rounded-t-3xl bg-white shadow-2xl"
-            style={{ height: '72vh' }}
+            className={`w-full rounded-t-3xl bg-white shadow-2xl ${PROFILE_MOBILE_SHEET_HEIGHT_CLASS}`}
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mx-auto mt-2 h-1.5 w-14 rounded-full bg-gray-300" />
@@ -176,7 +181,7 @@ export function ProfileMobilePage({
                 </svg>
               </button>
             </div>
-            <div className="h-[calc(72vh-4.75rem)] overflow-y-auto px-4 py-4">{children}</div>
+            <div className={PROFILE_MOBILE_SHEET_BODY_CLASS}>{children}</div>
           </div>
         </div>
       )}

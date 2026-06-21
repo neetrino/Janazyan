@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
+import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS, ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
 import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
@@ -10,6 +11,7 @@ import { OrderSummary } from './OrderSummary';
 import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { useCheckout } from './useCheckout';
+import { CHECKOUT_FORM_ID } from './utils/scroll-to-checkout-error';
 
 const CheckoutModals = dynamic(
   () => import('./CheckoutModals').then((module) => ({ default: module.CheckoutModals })),
@@ -44,13 +46,18 @@ export function CheckoutPageClient() {
     shippingCity,
     paymentMethods,
     orderSummary,
-    handlePlaceOrder,
+    onCheckoutSubmit,
     onSubmit,
   } = useCheckout();
 
   if (loading) {
     return (
-      <ProductsHeroShell sectionAriaLabel="Checkout" catalog={<CheckoutPageSkeleton />} />
+      <ProductsHeroShell
+        sectionAriaLabel="Checkout"
+        compactHero
+        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+        catalog={<CheckoutPageSkeleton />}
+      />
     );
   }
 
@@ -58,8 +65,10 @@ export function CheckoutPageClient() {
     return (
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
+        compactHero
+        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={
-          <div className="mx-auto max-w-7xl py-8 md:py-12">
+          <div className={ACCOUNT_PAGE_INNER_CLASS}>
             <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
             <CheckoutGlassCard className="text-center">
               <p className="mb-4 text-gray-600">{t('checkout.errors.cartEmpty')}</p>
@@ -82,12 +91,14 @@ export function CheckoutPageClient() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Checkout"
+      compactHero
+      {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
-        <div className="mx-auto max-w-7xl py-8 md:py-12">
+        <div className={ACCOUNT_PAGE_INNER_CLASS}>
           <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
 
-          <form onSubmit={handlePlaceOrder}>
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+          <form id={CHECKOUT_FORM_ID} noValidate onSubmit={onCheckoutSubmit}>
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
               <CheckoutForm
                 register={register}
                 setValue={setValue}
@@ -112,13 +123,6 @@ export function CheckoutPageClient() {
                 deliveryPrice={deliveryPrice}
                 error={error}
                 isSubmitting={isSubmitting}
-                onPlaceOrder={(e) => {
-                  if (e) {
-                    handlePlaceOrder(e);
-                  } else {
-                    handlePlaceOrder({ preventDefault: () => {} } as React.FormEvent);
-                  }
-                }}
               />
             </div>
           </form>

@@ -17,10 +17,13 @@ export const ORDER_SUCCESS_RECEIPT_OUTER_CLASS =
 
 /** Inner receipt body: rounded top only; bottom edge comes from clip-path. */
 export const ORDER_SUCCESS_RECEIPT_INNER_CLASS =
-  'rounded-t-2xl border border-b-0 border-gray-200 bg-white px-6 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8';
+  'rounded-t-2xl border border-b-0 border-gray-200 bg-white px-4 pb-10 pt-6 sm:px-8 sm:pb-12 sm:pt-8';
+
+/** Shared size bump for order confirmation footer CTAs. */
+const ORDER_SUCCESS_CTA_SIZE_CLASS = '!h-16 !px-10 !text-lg';
 
 /** Primary CTA — glass pill (order again). */
-export const ORDER_SUCCESS_PRIMARY_CTA_CLASS = `${STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS} w-full gap-2 sm:w-auto`;
+export const ORDER_SUCCESS_PRIMARY_CTA_CLASS = `${STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS} ${ORDER_SUCCESS_CTA_SIZE_CLASS} w-full gap-3 sm:w-auto sm:min-w-[260px]`;
 
 /** Secondary CTA — glass pill (home). */
-export const ORDER_SUCCESS_SECONDARY_CTA_CLASS = `${STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS} w-full sm:w-auto`;
+export const ORDER_SUCCESS_SECONDARY_CTA_CLASS = `${STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS} ${ORDER_SUCCESS_CTA_SIZE_CLASS} w-full sm:w-auto sm:min-w-[220px]`;

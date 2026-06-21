@@ -8,6 +8,7 @@ import { Heart } from 'lucide-react';
 import { getCompareCount, getWishlistCount } from '../lib/storageCounts';
 import { openCartDrawer } from '../lib/cart-drawer-events';
 import { useTranslation } from '../lib/i18n-client';
+import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 
 interface MobileNavItem {
   key: 'home' | 'wishlist' | 'shop' | 'cart' | 'account';
@@ -62,6 +63,7 @@ const MOBILE_NAV_ICONS: Record<
 export function MobileBottomNav() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const cartCount = useCartItemCount();
   const [wishlistCount, setWishlistCount] = useState(0);
   const [compareCount, setCompareCount] = useState(0);
 
@@ -131,7 +133,8 @@ export function MobileBottomNav() {
       <div className="mx-auto grid max-w-md grid-cols-4 items-start rounded-t-[34px] border border-white/30 bg-white/55 px-3 py-2 shadow-[0_-4px_4px_rgba(135,123,135,0.13)] backdrop-blur-md">
         {navItems.filter(item => item.visible).map(({ key, label, href, badge, action, onClick }) => {
           const isActive = key === 'shop' ? pathname?.startsWith('/products') : href ? pathname === href : false;
-          const badgeValue = resolveBadgeValue(badge);
+          const cartBadgeValue = key === 'cart' ? cartCount : 0;
+          const wishlistBadgeValue = resolveBadgeValue(badge);
           const slotClass =
             key === 'home'
               ? 'col-start-1'
@@ -145,9 +148,14 @@ export function MobileBottomNav() {
             <>
               <div className="relative">
                 <NavIcon itemKey={key} isActive={Boolean(isActive)} />
-                {badgeValue > 0 && (
+                {cartBadgeValue > 0 && (
+                  <span className="absolute -right-2 -top-2 grid min-h-4 min-w-4 place-items-center rounded-full bg-error px-1 text-[10px] font-semibold leading-none text-white">
+                    {formatCartBadgeCount(cartBadgeValue)}
+                  </span>
+                )}
+                {wishlistBadgeValue > 0 && (
                   <span className="absolute -right-2 -top-2 rounded-full bg-coral px-1.5 text-[10px] font-semibold text-white">
-                    {badgeValue > 99 ? '99+' : badgeValue}
+                    {wishlistBadgeValue > 99 ? '99+' : wishlistBadgeValue}
                   </span>
                 )}
               </div>
@@ -163,7 +171,11 @@ export function MobileBottomNav() {
                 key={key}
                 type="button"
                 onClick={action}
-                aria-label={label}
+                aria-label={
+                  cartBadgeValue > 0
+                    ? `${label}, ${formatCartBadgeCount(cartBadgeValue)}`
+                    : label
+                }
                 className={`flex flex-col items-center rounded-xl px-2 py-1 transition ${slotClass}`}
               >
                 {defaultContent}

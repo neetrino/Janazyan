@@ -1,22 +1,26 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { getStoredCurrency } from '../../lib/currency';
 import { useAuth } from '../../lib/auth/AuthContext';
-import { useTranslation } from '../../lib/i18n-client';
 import { usePaymentMethods } from './utils/payment-methods';
-import { useCheckoutSchema } from './utils/validation-schema';
+import {
+  mapZodIssuesToCheckoutFieldErrors,
+  useCheckoutSchema,
+} from './utils/validation-schema';
 import { useDeliveryPrice } from './hooks/useDeliveryPrice';
 import { useCart } from './hooks/useCart';
 import { useUserProfile } from './hooks/useUserProfile';
 import { useOrderSubmission } from './hooks/useOrderSubmission';
 import { useOrderSummary } from './hooks/useOrderSummary';
 import type { CheckoutFormData } from './types';
+import {
+  scrollToFirstCheckoutError,
+} from './utils/scroll-to-checkout-error';
 
 export function useCheckout() {
   const { isLoggedIn, isLoading } = useAuth();
-  const { t } = useTranslation();
-  const [error, setError] = useState<string | null>(null);
+  const [error, setCheckoutError] = useState<string | null>(null);
   const [currency, setCurrency] = useState(getStoredCurrency());
   const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
   const [showShippingModal, setShowShippingModal] = useState(false);
@@ -31,8 +35,12 @@ export function useCheckout() {
     formState: { errors, isSubmitting },
     setValue,
     watch,
+    getValues,
+    setError: setFieldError,
+    clearErrors,
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
+    shouldFocusError: false,
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -61,7 +69,7 @@ export function useCheckout() {
     cart,
     isLoggedIn,
     deliveryPrice,
-    setError,
+    setError: setCheckoutError,
   });
 
   const { orderSummary } = useOrderSummary({
@@ -89,30 +97,39 @@ export function useCheckout() {
     };
   }, []);
 
-  const handlePlaceOrder = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (shippingMethod === 'delivery') {
-      const formData = watch();
-      const hasShippingAddress = formData.shippingAddress && formData.shippingAddress.trim().length > 0;
-      const hasShippingCity = formData.shippingCity && formData.shippingCity.trim().length > 0;
-      
-      if (!hasShippingAddress || !hasShippingCity) {
-        setError(t('checkout.errors.fillShippingAddress'));
-        const shippingSection = document.querySelector('[data-shipping-section]');
-        if (shippingSection) {
-          shippingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-        return;
+  const applyCheckoutFieldErrors = (validationErrors: FieldErrors<CheckoutFormData>) => {
+    clearErrors();
+
+    for (const [fieldName, fieldError] of Object.entries(validationErrors)) {
+      if (fieldError?.message) {
+        setFieldError(fieldName as keyof CheckoutFormData, {
+          type: 'manual',
+          message: fieldError.message,
+        });
       }
     }
-    
+  };
+
+  const onCheckoutSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setCheckoutError(null);
+
+    const values = getValues();
+    const parsed = checkoutSchema.safeParse(values);
+
+    if (!parsed.success) {
+      const validationErrors = mapZodIssuesToCheckoutFieldErrors(parsed.error.issues);
+      applyCheckoutFieldErrors(validationErrors);
+      scrollToFirstCheckoutError(validationErrors, { immediate: true });
+      return;
+    }
+
     if (paymentMethod === 'arca' || paymentMethod === 'idram') {
       setShowCardModal(true);
       return;
     }
 
-    handleSubmit(submitOrder)(e);
+    void submitOrder(parsed.data);
   };
 
   const onSubmit = (data: CheckoutFormData) => {
@@ -124,7 +141,7 @@ export function useCheckout() {
     cart,
     loading,
     error,
-    setError,
+    setError: setCheckoutError,
     currency,
     logoErrors,
     setLogoErrors,
@@ -148,7 +165,7 @@ export function useCheckout() {
     paymentMethods,
     orderSummary,
     // Actions
-    handlePlaceOrder,
+    onCheckoutSubmit,
     onSubmit,
     // Auth
     isLoggedIn,

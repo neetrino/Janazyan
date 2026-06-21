@@ -8,6 +8,7 @@ import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
 import { readGuestOrderAccess } from '../../checkout/utils/guest-order-access';
 import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
+import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS } from '../../../lib/layout/account-pages-layout.constants';
 import { LoadingState } from './components/LoadingState';
 import { ErrorState } from './components/ErrorState';
 import { OrderItems } from './components/OrderItems';
@@ -76,7 +77,11 @@ export default function OrderPage() {
 
   if (loading) {
     return (
-      <ProductsHeroShell sectionAriaLabel="Order confirmation" catalog={<LoadingState />} />
+      <ProductsHeroShell
+        sectionAriaLabel="Order confirmation"
+        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+        catalog={<LoadingState />}
+      />
     );
   }
 
@@ -84,6 +89,7 @@ export default function OrderPage() {
     return (
       <ProductsHeroShell
         sectionAriaLabel="Order confirmation"
+        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={<ErrorState error={error} />}
       />
     );
@@ -92,6 +98,7 @@ export default function OrderPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Order confirmation"
+      {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
         <div className={ORDER_DETAIL_INNER_CLASS}>
           <OrderPageHeader orderNumber={order.number} placedAt={order.createdAt} />

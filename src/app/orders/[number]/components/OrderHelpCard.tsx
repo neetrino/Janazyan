@@ -10,7 +10,7 @@ export function OrderHelpCard() {
 
   return (
     <section
-      className="mb-8 rounded-2xl border border-gray-200 bg-zinc-50 px-5 py-6 sm:px-7 sm:py-7"
+      className="mb-8 rounded-2xl border border-gray-200 bg-zinc-50 px-4 py-6 sm:px-7 sm:py-7"
       aria-labelledby="order-help-heading"
     >
       <h2 id="order-help-heading" className="mb-2 text-lg font-bold text-gray-900">

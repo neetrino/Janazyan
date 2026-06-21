@@ -1,6 +1,29 @@
 import { useMemo } from 'react';
+import type { FieldErrors } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslation } from '../../../lib/i18n-client';
+import type { CheckoutFormData } from '../types';
+
+/** Map Zod issues to RHF field errors (first issue per field). */
+export function mapZodIssuesToCheckoutFieldErrors(
+  issues: z.ZodIssue[],
+): FieldErrors<CheckoutFormData> {
+  const errors: FieldErrors<CheckoutFormData> = {};
+
+  for (const issue of issues) {
+    const fieldName = issue.path[0];
+    if (typeof fieldName !== 'string') {
+      continue;
+    }
+
+    const key = fieldName as keyof CheckoutFormData;
+    if (!errors[key]) {
+      errors[key] = { type: issue.code, message: issue.message };
+    }
+  }
+
+  return errors;
+}
 
 export function useCheckoutSchema() {
   const { t } = useTranslation();

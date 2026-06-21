@@ -10,6 +10,7 @@ import {
   PRODUCTS_PAGE_HERO_ASPECT_CLASS,
   PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
+  PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
@@ -21,6 +22,8 @@ type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
   toolbar?: ReactNode;
   catalog: ReactNode;
+  /** Shorter hero band when there is no toolbar row (e.g. /checkout). */
+  compactHero?: boolean;
   /** Mobile content card surface — defaults to shared white shell. */
   mobileContentSurfaceClassName?: string;
   /** Mobile content horizontal inset — defaults to products page inset. */
@@ -28,7 +31,25 @@ type ProductsHeroShellProps = {
   sectionAriaLabel?: string;
 };
 
-function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
+function resolveHeroToolbarOffsetClass(toolbar: ReactNode | undefined, compactHero: boolean): string {
+  if (toolbar) {
+    return PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS;
+  }
+
+  if (compactHero) {
+    return PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS;
+  }
+
+  return PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS;
+}
+
+function ProductsHeroShellInner({
+  toolbar,
+  catalog,
+  compactHero = false,
+}: ProductsHeroShellProps) {
+  const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(toolbar, compactHero);
+
   return (
     <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
       <div className="relative shrink-0 overflow-hidden">
@@ -39,14 +60,14 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
         </div>
         <Header embedded />
         <div
-          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS}`}
+          className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${heroToolbarOffsetClass}`}
         >
           {toolbar}
         </div>
       </div>
 
       <div
-        className={`relative z-20 ${PRODUCTS_PAGE_CATALOG_SURFACE_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS} ${PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS}`}
+        className={`relative z-20 overflow-visible ${PRODUCTS_PAGE_CATALOG_SURFACE_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS} ${PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS}`}
       >
         {catalog}
       </div>
@@ -61,6 +82,7 @@ function ProductsHeroShellInner({ toolbar, catalog }: ProductsHeroShellProps) {
 export function ProductsHeroShell({
   toolbar,
   catalog,
+  compactHero = false,
   mobileContentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   sectionAriaLabel = 'Shop',
@@ -81,7 +103,11 @@ export function ProductsHeroShell({
           aria-label={sectionAriaLabel}
           className="relative w-full lg:pt-3 lg:md:pt-5"
         >
-          <ProductsHeroShellInner toolbar={toolbar} catalog={catalog} />
+          <ProductsHeroShellInner
+            toolbar={toolbar}
+            catalog={catalog}
+            compactHero={compactHero}
+          />
         </section>
       </div>
     </>

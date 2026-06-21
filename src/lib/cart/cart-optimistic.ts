@@ -29,7 +29,7 @@ function buildTotals(items: CartItem[]): Cart['totals'] {
     shipping: 0,
     tax: 0,
     total: subtotal,
-    currency: 'AMD',
+    currency: 'USD',
   };
 }
 

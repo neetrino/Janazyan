@@ -2,7 +2,7 @@ import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-l
 
 /** Same rounded shell as {@link HomeHero} — width follows {@link PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  'relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
+  'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
 
 /** Slightly wider than home column — tighter outer gutters on /products. */
 export const PRODUCTS_PAGE_MAX_WIDTH_CLASS =
@@ -26,6 +26,10 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-[56px]';
 
 /** Breadcrumb baseline from shell top (node 269:900, y=210). */
 export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'lg:pt-[210px]';
+
+/** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
+export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
+  'pt-[120px] sm:pt-[140px] lg:pt-[156px]';
 
 /** Mobile — clear embedded header before breadcrumb / category pills. */
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[140px]';

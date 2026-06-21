@@ -151,7 +151,7 @@ function ProfilePageContent() {
     },
   ];
 
-  const tabContent = (
+  const renderTabContent = (compact: boolean) => (
     <>
       {error && <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">{error}</div>}
       {success && <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">{success}</div>}
@@ -211,6 +211,7 @@ function ProfilePageContent() {
           savingPassword={savingPassword}
           onSave={handleChangePassword}
           t={t}
+          compact={compact}
         />
       )}
       {activeTab === 'deleteAccount' && (
@@ -245,16 +246,16 @@ function ProfilePageContent() {
         isSheetOpen={isMobileSheetOpen}
         onCloseSheet={() => setIsMobileSheetOpen(false)}
       >
-        {tabContent}
+        {renderTabContent(true)}
       </ProfileMobilePage>
-      <div className="mx-auto hidden max-w-7xl px-4 py-8 lg:block md:px-6 lg:px-8">
+      <div className="mx-auto hidden max-w-7xl px-3 py-8 sm:px-6 lg:block lg:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
           <aside className="w-full shrink-0 md:sticky md:top-24 md:w-64 md:self-start md:border-r md:border-gray-200/90 md:pr-8 lg:w-72">
             <ProfileHeader profile={profile} tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} onLogout={logout} t={t} />
           </aside>
           <main className="min-w-0 flex-1">
-            <div className="space-y-6 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200/80 md:space-y-8 md:p-6 lg:rounded-3xl lg:p-8">
-              {tabContent}
+            <div className="space-y-6 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200/80 sm:p-6 md:space-y-8 lg:rounded-3xl lg:p-8">
+              {renderTabContent(false)}
             </div>
           </main>
         </div>

@@ -24,6 +24,11 @@ export function isOrderDetailPage(pathname: string): boolean {
   return /^\/orders\/[^/]+$/.test(pathname);
 }
 
+/** Profile area — `/profile`. */
+export function isProfilePage(pathname: string): boolean {
+  return pathname === '/profile' || pathname.startsWith('/profile/');
+}
+
 const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
   '/products',
   '/about',

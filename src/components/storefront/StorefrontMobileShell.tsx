@@ -34,7 +34,7 @@ export function StorefrontMobileShell({
 }: StorefrontMobileShellProps) {
   return (
     <section aria-label={sectionAriaLabel} className={STOREFRONT_MOBILE_SHELL_CLASS}>
-      <MobileBackdrop />
+      <MobileBackdrop extendWhiteToBottom />
       <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS}`}>
         <MobileTopBar />
         {toolbar ? (

@@ -3,9 +3,11 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from '../app/products/products-page-layout.constants';
+import { ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS } from '../lib/layout/account-pages-layout.constants';
 import {
   isAdminPath,
   isProductDetailPage,
+  isProfilePage,
   isStorefrontPage,
   usesStorefrontHeroShell,
 } from '../lib/nav/is-storefront-page';
@@ -42,6 +44,11 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
         <div className="relative z-10 w-full pb-0 lg:pb-[220px]">
           <ProductsHeroShell
             catalog={children}
+            mobileContentInsetClassName={
+              isProfilePage(pathname)
+                ? ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS
+                : undefined
+            }
             mobileContentSurfaceClassName={
               isProductDetailPage(pathname)
                 ? PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS
