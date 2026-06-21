@@ -28,6 +28,8 @@ type ProductsHeroShellProps = {
   mobileContentSurfaceClassName?: string;
   /** Mobile content horizontal inset — defaults to products page inset. */
   mobileContentInsetClassName?: string;
+  /** Hide mobile search top bar (e.g. /profile). */
+  hideMobileTopBar?: boolean;
   sectionAriaLabel?: string;
 };
 
@@ -85,6 +87,7 @@ export function ProductsHeroShell({
   compactHero = false,
   mobileContentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
+  hideMobileTopBar = false,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
   return (
@@ -93,6 +96,7 @@ export function ProductsHeroShell({
         toolbar={toolbar}
         contentSurfaceClassName={mobileContentSurfaceClassName}
         contentInsetClassName={mobileContentInsetClassName}
+        hideTopBar={hideMobileTopBar}
         sectionAriaLabel={sectionAriaLabel}
       >
         {catalog}

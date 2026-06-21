@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from '../app/products/products-page-layout.constants';
-import { ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS } from '../lib/layout/account-pages-layout.constants';
+import { PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS } from '../lib/layout/account-pages-layout.constants';
 import {
   isAdminPath,
   isProductDetailPage,
@@ -44,17 +44,17 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
         <div className="relative z-10 w-full pb-0 lg:pb-[220px]">
           <ProductsHeroShell
             catalog={children}
-            mobileContentInsetClassName={
+            {...(isProfilePage(pathname) ? PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS : {})}
+            {...(isProductDetailPage(pathname)
+              ? { mobileContentSurfaceClassName: PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS }
+              : {})}
+            sectionAriaLabel={
               isProfilePage(pathname)
-                ? ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS
-                : undefined
+                ? 'Profile'
+                : isProductDetailPage(pathname)
+                  ? 'Product'
+                  : 'Shop'
             }
-            mobileContentSurfaceClassName={
-              isProductDetailPage(pathname)
-                ? PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS
-                : undefined
-            }
-            sectionAriaLabel={isProductDetailPage(pathname) ? 'Product' : 'Shop'}
           />
         </div>
       ) : (

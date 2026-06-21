@@ -19,8 +19,12 @@ type StorefrontMobileShellProps = {
   contentSurfaceClassName?: string;
   /** Inner horizontal inset on the content surface — defaults to products page inset. */
   contentInsetClassName?: string;
+  /** Hide search / phone / language row (e.g. /profile). */
+  hideTopBar?: boolean;
   sectionAriaLabel?: string;
 };
+
+const STOREFRONT_MOBILE_PLAIN_SHELL_CLASS = 'min-h-[100dvh] bg-white';
 
 /**
  * Shared mobile chrome for storefront pages — same backdrop and top bar as home.
@@ -30,19 +34,27 @@ export function StorefrontMobileShell({
   toolbar,
   contentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   contentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
+  hideTopBar = false,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
+  const showHeaderChrome = !hideTopBar || Boolean(toolbar);
+  const shellClassName = hideTopBar
+    ? `${STOREFRONT_MOBILE_SHELL_CLASS} ${STOREFRONT_MOBILE_PLAIN_SHELL_CLASS}`
+    : STOREFRONT_MOBILE_SHELL_CLASS;
+
   return (
-    <section aria-label={sectionAriaLabel} className={STOREFRONT_MOBILE_SHELL_CLASS}>
-      <MobileBackdrop extendWhiteToBottom />
-      <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS}`}>
-        <MobileTopBar />
-        {toolbar ? (
-          <div className={`${STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
-            {toolbar}
-          </div>
-        ) : null}
-      </div>
+    <section aria-label={sectionAriaLabel} className={shellClassName}>
+      {hideTopBar ? null : <MobileBackdrop extendWhiteToBottom />}
+      {showHeaderChrome ? (
+        <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS}`}>
+          {hideTopBar ? null : <MobileTopBar />}
+          {toolbar ? (
+            <div className={`${STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
+              {toolbar}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
       <div className={`${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
         {children}
       </div>

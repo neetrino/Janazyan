@@ -1,3 +1,6 @@
+import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from './storefront-layout.constants';
+import { STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS } from './storefront-mobile-layout.constants';
+
 /** Tighter mobile inset for checkout, orders, and profile (less side gutter). */
 export const ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS = 'px-0 sm:px-6 lg:px-8';
 
@@ -10,8 +13,18 @@ export const ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS = {
   mobileContentInsetClassName: ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS,
 } as const;
 
+/** Profile mobile — plain white shell, no search row or gradient header band. */
+export const PROFILE_MOBILE_CONTENT_SURFACE_CLASS =
+  `relative z-10 w-auto bg-white pt-[max(env(safe-area-inset-top,0px),0.75rem)] ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
+
+export const PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS = {
+  mobileContentInsetClassName: ACCOUNT_PAGE_MOBILE_CONTENT_INSET_CLASS,
+  mobileContentSurfaceClassName: PROFILE_MOBILE_CONTENT_SURFACE_CLASS,
+  hideMobileTopBar: true,
+} as const;
+
 /** Profile mobile shell — full width inside storefront gutter. */
-export const PROFILE_MOBILE_OUTER_CLASS = 'mx-auto w-full pb-8 pt-2 lg:hidden';
+export const PROFILE_MOBILE_OUTER_CLASS = 'mx-auto w-full pb-8 lg:hidden';
 
 /** Profile mobile card — reduced horizontal padding on narrow screens. */
 export const PROFILE_MOBILE_CARD_CLASS =
