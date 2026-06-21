@@ -8,6 +8,11 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 interface Brand {
   id: string;
@@ -52,7 +57,10 @@ function BrandsSection() {
     try {
       setLoading(true);
       logger.debug('🏷️ [ADMIN] Fetching brands...');
-      const response = await apiClient.get<{ data: Brand[] }>('/api/v1/admin/brands');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.brands,
+        () => apiClient.get<{ data: Brand[] }>('/api/v1/admin/brands'),
+      );
       setBrands(response.data || []);
       logger.debug('✅ [ADMIN] Brands loaded:', response.data?.length || 0);
     } catch (err) {
@@ -82,6 +90,7 @@ function BrandsSection() {
       logger.debug(`🗑️ [ADMIN] Deleting brand: ${brandName} (${brandId})`);
       await apiClient.delete(`/api/v1/admin/brands/${brandId}`);
       logger.debug('✅ [ADMIN] Brand deleted successfully');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.brands);
       fetchBrands();
       alert(t('admin.brands.deletedSuccess'));
     } catch (err: any) {
@@ -194,6 +203,7 @@ function BrandsSection() {
         alert(t('admin.brands.createdSuccess'));
       }
       
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.brands);
       fetchBrands();
       handleCloseModal();
     } catch (err: any) {

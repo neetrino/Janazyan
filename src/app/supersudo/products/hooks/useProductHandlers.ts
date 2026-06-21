@@ -5,6 +5,7 @@ import { useTranslation } from '../../../../lib/i18n-client';
 import type { Product, ProductsResponse } from '../types';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../../context/AdminDialogsContext';
+import { invalidateAdminProductsCache } from '@/lib/admin/admin-list-client-cache';
 
 interface UseProductHandlersProps {
   products: Product[];
@@ -34,7 +35,6 @@ export function useProductHandlers({
   const handleSearch = (e: FormEvent) => {
     e.preventDefault();
     setPage(1);
-    fetchProducts();
   };
 
   const toggleSelect = (id: string) => {
@@ -71,6 +71,7 @@ export function useProductHandlers({
       );
       const failed = results.filter(r => r.status === 'rejected');
       setSelectedIds(new Set());
+      invalidateAdminProductsCache();
       await fetchProducts();
       alert(t('admin.products.bulkDeleteFinished').replace('{success}', (ids.length - failed.length).toString()).replace('{total}', ids.length.toString()));
     } catch (err) {
@@ -91,6 +92,7 @@ export function useProductHandlers({
         `/api/v1/admin/products/${productId}/duplicate`,
         {}
       );
+      invalidateAdminProductsCache();
       await fetchProducts();
       alert(t('admin.products.duplicateSuccess'));
     } catch (err: unknown) {
@@ -118,7 +120,7 @@ export function useProductHandlers({
       await apiClient.delete(`/api/v1/admin/products/${productId}`);
       logger.debug('✅ [ADMIN] Product deleted successfully');
       
-      // Refresh products list
+      invalidateAdminProductsCache();
       fetchProducts();
       
       alert(t('admin.products.deletedSuccess'));
@@ -145,7 +147,7 @@ export function useProductHandlers({
       
       logger.debug(`✅ [ADMIN] Product ${newStatus ? 'published' : 'unpublished'} successfully`);
       
-      // Refresh products list
+      invalidateAdminProductsCache();
       fetchProducts();
       
       if (newStatus) {
@@ -173,7 +175,7 @@ export function useProductHandlers({
       
       logger.debug(`✅ [ADMIN] Product ${newStatus ? 'marked as featured' : 'removed from featured'} successfully`);
       
-      // Refresh products list
+      invalidateAdminProductsCache();
       fetchProducts();
     } catch (err: any) {
       console.error('❌ [ADMIN] Error updating product featured status:', err);
@@ -201,7 +203,7 @@ export function useProductHandlers({
       
       logger.debug(`✅ [ADMIN] Toggle all featured completed: ${successCount}/${products.length} successful`);
       
-      // Refresh products list
+      invalidateAdminProductsCache();
       await fetchProducts();
       
       if (failed.length > 0) {

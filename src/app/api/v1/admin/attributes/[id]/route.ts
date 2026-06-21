@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
+import { invalidateAdminAttributesServerList } from "@/lib/cache/invalidate-admin-attributes-cache";
 
 /**
  * DELETE /api/v1/admin/attributes/[id]
@@ -27,6 +28,7 @@ export async function DELETE(
 
     const { id } = await params;
     const result = await adminService.deleteAttribute(id);
+    await invalidateAdminAttributesServerList();
     return NextResponse.json(result, { status: 200 });
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTES] DELETE Error:", error);

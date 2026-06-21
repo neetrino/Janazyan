@@ -1,6 +1,7 @@
+import { DEFAULT_CATALOG_PAGE_SIZE } from './catalog-page.constants';
+
 export type CatalogSort = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
-const DEFAULT_CATALOG_PAGE_SIZE = 12;
 const MAX_CATALOG_PAGE_SIZE = 24;
 
 export type SearchParamsInput = Record<string, string | string[] | undefined>;

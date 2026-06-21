@@ -12,6 +12,11 @@ import { apiClient } from '../../../lib/api-client';
 import { FAQ_LOCALES } from '../../../features/faq/faq-locales';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import {
   createEmptyItemFormData,
@@ -48,8 +53,15 @@ export function FaqItemsSection({ categoriesVersion }: FaqItemsSectionProps) {
     try {
       setLoading(true);
       const [categoriesRes, itemsRes] = await Promise.all([
-        apiClient.get<{ data: AdminFaqCategory[] }>('/api/v1/admin/faq/categories'),
-        apiClient.get<{ data: AdminFaqItem[] }>('/api/v1/admin/faq/items'),
+        fetchAdminListCached(
+          ADMIN_LIST_CACHE_KEYS.faqCategories,
+          () =>
+            apiClient.get<{ data: AdminFaqCategory[] }>('/api/v1/admin/faq/categories'),
+        ),
+        fetchAdminListCached(
+          ADMIN_LIST_CACHE_KEYS.faqItems,
+          () => apiClient.get<{ data: AdminFaqItem[] }>('/api/v1/admin/faq/items'),
+        ),
       ]);
       setCategories(categoriesRes.data ?? []);
       setItems(itemsRes.data ?? []);
@@ -93,6 +105,8 @@ export function FaqItemsSection({ categoriesVersion }: FaqItemsSectionProps) {
 
     try {
       await apiClient.delete(`/api/v1/admin/faq/items/${item.id}`);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqCategories);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqItems);
       await fetchData();
       alert(t('admin.faq.itemDeletedSuccess'));
     } catch {
@@ -122,6 +136,8 @@ export function FaqItemsSection({ categoriesVersion }: FaqItemsSectionProps) {
         await apiClient.post('/api/v1/admin/faq/items', payload);
         alert(t('admin.faq.itemCreatedSuccess'));
       }
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqCategories);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqItems);
       await fetchData();
       setShowModal(false);
       setEditing(null);

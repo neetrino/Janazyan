@@ -1,4 +1,3 @@
-import { db } from "@white-shop/db";
 import {
   processImageUrl,
   smartSplitUrls,
@@ -6,32 +5,9 @@ import {
   separateMainAndVariantImages,
 } from "../../utils/image-utils";
 import { logger } from "../../utils/logger";
+import { getProductDiscountSettings, type ProductDiscountSettings } from "../products-discount-settings.cache";
 import { getOutOfStockLabel } from "./utils";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
-
-/**
- * Get discount settings from database
- */
-async function getDiscountSettings() {
-  const discountSettings = await db.settings.findMany({
-    where: {
-      key: {
-        in: ["globalDiscount", "categoryDiscounts", "brandDiscounts"],
-      },
-    },
-  });
-
-  const globalDiscountSetting = discountSettings.find((s: { key: string; value: unknown }) => s.key === "globalDiscount");
-  const globalDiscount = Number(globalDiscountSetting?.value) || 0;
-  
-  const categoryDiscountsSetting = discountSettings.find((s: { key: string; value: unknown }) => s.key === "categoryDiscounts");
-  const categoryDiscounts = categoryDiscountsSetting ? (categoryDiscountsSetting.value as Record<string, number>) || {} : {};
-  
-  const brandDiscountsSetting = discountSettings.find((s: { key: string; value: unknown }) => s.key === "brandDiscounts");
-  const brandDiscounts = brandDiscountsSetting ? (brandDiscountsSetting.value as Record<string, number>) || {} : {};
-
-  return { globalDiscount, categoryDiscounts, brandDiscounts };
-}
 
 /**
  * Calculate actual discount with priority: productDiscount > categoryDiscount > brandDiscount > globalDiscount
@@ -100,13 +76,7 @@ function transformMedia(
   
   // Clean and validate final main images
   const cleanedMain = cleanImageUrls(main);
-  
-  logger.debug('Main media images count (after cleanup)', { count: cleanedMain.length });
-  logger.debug('Variant images excluded', { count: variantImages.length });
-  if (cleanedMain.length > 0) {
-    logger.debug('Main media (first 3)', { images: cleanedMain.slice(0, 3).map((img: string) => img.substring(0, 50)) });
-  }
-  
+
   return cleanedMain;
 }
 
@@ -205,14 +175,6 @@ function transformVariants(
       }
 
       const variantImageUrl = transformVariantImageUrl(variant);
-      
-      if (variantImageUrl) {
-        logger.debug('Variant has imageUrl', {
-          variantId: variant.id,
-          sku: variant.sku,
-          imageUrl: variantImageUrl.substring(0, 50) + (variantImageUrl.length > 50 ? '...' : ''),
-        });
-      }
 
       return {
         id: variant.id,
@@ -260,11 +222,7 @@ function transformProductAttributes(
   lang: string
 ) {
   const productAttrs = (product as { productAttributes?: unknown[] }).productAttributes;
-  logger.debug('Raw productAttributes from DB', {
-    isArray: Array.isArray(productAttrs),
-    length: productAttrs?.length || 0,
-  });
-  
+
   if (Array.isArray(productAttrs) && productAttrs.length > 0) {
     type ProductAttribute = {
       id: string;
@@ -311,10 +269,8 @@ function transformProductAttributes(
         },
       };
     });
-    logger.debug('Mapped productAttributes', { count: mapped.length });
     return mapped;
   }
-  logger.debug('No productAttributes, returning empty array');
   return [];
 }
 
@@ -323,7 +279,8 @@ function transformProductAttributes(
  */
 export async function transformProduct(
   product: ProductWithFullRelations,
-  lang: string = "en"
+  lang: string = "en",
+  discountSettings?: ProductDiscountSettings,
 ) {
   // Get translations
   const translations = Array.isArray(product.translations) ? product.translations : [];
@@ -337,8 +294,8 @@ export async function transformProduct(
     ? brandTranslations.find((t: { locale: string }) => t.locale === lang) || brandTranslations[0]
     : null;
 
-  // Get discount settings
-  const { globalDiscount, categoryDiscounts, brandDiscounts } = await getDiscountSettings();
+  const settings = discountSettings ?? (await getProductDiscountSettings());
+  const { globalDiscount, categoryDiscounts, brandDiscounts } = settings;
   
   const productDiscount = product.discountPercent || 0;
   

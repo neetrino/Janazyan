@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
+import {
+  ADMIN_LIST_SERVER_CACHE_KEYS,
+  invalidateAdminListServerCache,
+  loadAdminListServerCached,
+} from "@/lib/cache/admin-list-server-cache";
+import { invalidateAdminAttributesServerList } from "@/lib/cache/invalidate-admin-attributes-cache";
 
 /**
  * GET /api/v1/admin/attributes
@@ -22,7 +28,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const result = await adminService.getAttributes();
+    const result = await loadAdminListServerCached(
+      ADMIN_LIST_SERVER_CACHE_KEYS.attributes,
+      () => adminService.getAttributes(),
+    );
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTES] GET Error:", error);
@@ -61,6 +70,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const result = await adminService.createAttribute(body);
+    await invalidateAdminAttributesServerList();
     return NextResponse.json({ data: result }, { status: 201 });
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTES] POST Error:", error);

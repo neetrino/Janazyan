@@ -4,6 +4,7 @@ import { Card, Button } from '@shop/ui';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '../../../lib/i18n-client';
 import { formatCurrency } from '../utils/dashboardUtils';
+import { AdminThumbnailImage } from './AdminThumbnailImage';
 
 interface TopProduct {
   variantId: string;
@@ -62,15 +63,15 @@ export function TopProductsCard({ topProducts, topProductsLoading }: TopProducts
                   {index + 1}
                 </div>
               </div>
-              {product.image && (
+              {product.image ? (
                 <div className="flex-shrink-0">
-                  <img
+                  <AdminThumbnailImage
                     src={product.image}
                     alt={product.title}
-                    className="w-12 h-12 object-cover rounded"
+                    className="h-12 w-12 rounded object-cover"
                   />
                 </div>
-              )}
+              ) : null}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">{product.title}</p>
                 <p className="text-xs text-gray-600">SKU: {product.sku}</p>

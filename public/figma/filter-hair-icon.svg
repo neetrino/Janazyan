@@ -1,14 +1,1 @@
-<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 19.3712 20.8241" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Group">
-<path id="Vector" d="M6.38933 14.435C7.95143 15.9971 11.7504 14.7308 14.8746 11.6066C17.9988 8.4824 19.2651 4.68345 17.703 3.12134" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_2" d="M10.9853 2.06054L11.6924 2.76765" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_3" d="M8.51068 4.5354L9.21778 5.2425" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_4" d="M6.38908 7.364L7.09618 8.0711" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_5" d="M5.68203 10.8994L6.38913 11.6065" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_6" d="M14.8744 1L15.5815 1.7071" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_7" d="M14.1674 5.2427L15.5816 6.6569" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_8" d="M11.6928 7.71755L13.107 9.13175" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_9" d="M8.86418 9.83885L10.2784 11.2531" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path id="Vector_10" d="M6.38909 16.5564C6.97487 15.9706 6.97487 15.0208 6.38909 14.4351C5.8033 13.8493 4.85355 13.8493 4.26777 14.4351L1.43934 17.2635C0.853553 17.8493 0.853553 18.799 1.43934 19.3848C2.02513 19.9706 2.97487 19.9706 3.56066 19.3848L6.38909 16.5564Z" stroke="var(--stroke-0, #93B6E3)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" overflow="visible" preserveAspectRatio="none" style="display:block" viewBox="0 0 19.371 20.824"><g stroke="var(--stroke-0, #93b6e3)" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M6.39 14.435c1.561 1.562 5.36.296 8.485-2.828 3.124-3.125 4.39-6.924 2.828-8.486M10.985 2.06l.707.708M8.51 4.535l.708.707M6.39 7.364l.706.707M5.682 10.9l.707.707M14.874 1l.707.707m-1.414 3.536 1.415 1.414m-3.889 1.061 1.414 1.414m-4.243.707 1.414 1.414"/><path d="M6.39 16.556a1.5 1.5 0 1 0-2.122-2.12l-2.829 2.828a1.5 1.5 0 1 0 2.122 2.12z"/></g></svg>

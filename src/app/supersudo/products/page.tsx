@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { apiClient } from '../../../lib/api-client';
@@ -12,6 +12,11 @@ import { ProductsTable } from './components/ProductsTable';
 import { useProductHandlers } from './hooks/useProductHandlers';
 import type { Product, ProductsResponse, Category } from './types';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  buildAdminProductsCacheKey,
+  fetchAdminListCached,
+} from '@/lib/admin/admin-list-client-cache';
 
 export default function ProductsPage() {
   const { t } = useTranslation();
@@ -19,12 +24,14 @@ export default function ProductsPage() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [skuSearch, setSkuSearch] = useState('');
+  const [skuInput, setSkuInput] = useState('');
+  const [appliedSku, setAppliedSku] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'inStock' | 'outOfStock'>('all');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<ProductsResponse['meta'] | null>(null);
@@ -103,7 +110,10 @@ export default function ProductsPage() {
     try {
       setCategoriesLoading(true);
       logger.debug('📂 [ADMIN] Fetching categories...');
-      const response = await apiClient.get<{ data: Category[] }>('/api/v1/admin/categories');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.categories,
+        () => apiClient.get<{ data: Category[] }>('/api/v1/admin/categories'),
+      );
       setCategories(response.data || []);
       logger.debug('✅ [ADMIN] Categories loaded:', response.data?.length || 0);
     } catch (err: any) {
@@ -126,9 +136,9 @@ export default function ProductsPage() {
     isLoggedIn,
     isAdmin,
     page,
-    search,
+    appliedSearch,
     categoryFilterKey,
-    skuSearch,
+    appliedSku,
     stockFilter,
     sortParamForApi,
     minPrice,
@@ -143,16 +153,16 @@ export default function ProductsPage() {
         limit: '20',
       };
       
-      if (search.trim()) {
-        params.search = search.trim();
+      if (appliedSearch.trim()) {
+        params.search = appliedSearch.trim();
       }
 
       if (selectedCategories.size > 0) {
         params.category = Array.from(selectedCategories).join(',');
       }
 
-      if (skuSearch.trim()) {
-        params.sku = skuSearch.trim();
+      if (appliedSku.trim()) {
+        params.sku = appliedSku.trim();
       }
 
       if (minPrice.trim()) {
@@ -167,9 +177,10 @@ export default function ProductsPage() {
         params.sort = sortBy;
       }
 
-      const response = await apiClient.get<ProductsResponse>('/api/v1/admin/products', {
-        params,
-      });
+      const response = await fetchAdminListCached(
+        buildAdminProductsCacheKey(params),
+        () => apiClient.get<ProductsResponse>('/api/v1/admin/products', { params }),
+      );
       
       let filteredProducts = response.data || [];
 
@@ -292,6 +303,17 @@ export default function ProductsPage() {
     });
   };
 
+  const applySearchFilters = () => {
+    setAppliedSearch(searchInput.trim());
+    setAppliedSku(skuInput.trim());
+    setPage(1);
+  };
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    applySearchFilters();
+  };
+
   const handlers = useProductHandlers({
     products,
     setProducts,
@@ -304,9 +326,11 @@ export default function ProductsPage() {
   });
 
   const handleClearFilters = () => {
-    setSearch('');
+    setSearchInput('');
+    setAppliedSearch('');
+    setSkuInput('');
+    setAppliedSku('');
     setSelectedCategories(new Set());
-    setSkuSearch('');
     setStockFilter('all');
     setPage(1);
   };
@@ -330,7 +354,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      {(search || selectedCategories.size > 0 || skuSearch || stockFilter !== 'all') && (
+      {(appliedSearch || selectedCategories.size > 0 || appliedSku || stockFilter !== 'all') && (
         <div className="mb-6 flex justify-end">
           <button
             type="button"
@@ -346,10 +370,10 @@ export default function ProductsPage() {
             </div>
 
             <ProductFilters
-              search={search}
-              setSearch={setSearch}
-              skuSearch={skuSearch}
-              setSkuSearch={setSkuSearch}
+              search={searchInput}
+              setSearch={setSearchInput}
+              skuSearch={skuInput}
+              setSkuSearch={setSkuInput}
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}
               categories={categories}
@@ -362,7 +386,7 @@ export default function ProductsPage() {
               setMinPrice={setMinPrice}
               maxPrice={maxPrice}
               setMaxPrice={setMaxPrice}
-              handleSearch={handlers.handleSearch}
+              handleSearch={handleSearch}
               setPage={setPage}
             />
 

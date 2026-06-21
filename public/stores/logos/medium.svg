@@ -1,4 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" role="img" aria-hidden="true">
-  <rect width="200" height="64" rx="12" fill="#F57C00"/>
-  <text x="100" y="40" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="24" font-weight="700">MEDIUM</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 200 64"><rect width="200" height="64" fill="#f57c00" rx="12"/><text x="100" y="40" fill="#fff" font-family="Arial, sans-serif" font-size="24" font-weight="700" text-anchor="middle">MEDIUM</text></svg>

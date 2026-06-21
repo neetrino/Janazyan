@@ -5,6 +5,10 @@ import { apiClient } from '@/lib/api-client';
 import { CURRENCIES, type CurrencyCode } from '@/lib/currency';
 import type { Brand, Category, Attribute } from '../types';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface UseProductDataLoadingProps {
   isLoggedIn: boolean;
@@ -70,9 +74,16 @@ export function useProductDataLoading({
 
   // Load default currency from settings
   useEffect(() => {
+    if (!isLoggedIn || !isAdmin) {
+      return;
+    }
+
     const loadDefaultCurrency = async () => {
       try {
-        const settingsRes = await apiClient.get<{ defaultCurrency?: string }>('/api/v1/admin/settings');
+        const settingsRes = await fetchAdminListCached(
+          ADMIN_LIST_CACHE_KEYS.settings,
+          () => apiClient.get<{ defaultCurrency?: string }>('/api/v1/admin/settings'),
+        );
         const currency = (settingsRes.defaultCurrency || 'AMD') as CurrencyCode;
         if (currency in CURRENCIES) {
           setDefaultCurrency(currency);
@@ -83,21 +94,32 @@ export function useProductDataLoading({
         setDefaultCurrency('AMD');
       }
     };
-    
-    if (isLoggedIn && isAdmin) {
-      loadDefaultCurrency();
-    }
+
+    void loadDefaultCurrency();
   }, [isLoggedIn, isAdmin, setDefaultCurrency]);
 
   // Fetch brands, categories, and attributes
   useEffect(() => {
+    if (!isLoggedIn || !isAdmin) {
+      return;
+    }
+
     const fetchData = async () => {
       try {
         logger.debug('📥 [ADMIN] Fetching brands, categories, and attributes...');
         const [brandsRes, categoriesRes, attributesRes] = await Promise.all([
-          apiClient.get<{ data: Brand[] }>('/api/v1/admin/brands'),
-          apiClient.get<{ data: Category[] }>('/api/v1/admin/categories'),
-          apiClient.get<{ data: Attribute[] }>('/api/v1/admin/attributes'),
+          fetchAdminListCached(
+            ADMIN_LIST_CACHE_KEYS.brands,
+            () => apiClient.get<{ data: Brand[] }>('/api/v1/admin/brands'),
+          ),
+          fetchAdminListCached(
+            ADMIN_LIST_CACHE_KEYS.categories,
+            () => apiClient.get<{ data: Category[] }>('/api/v1/admin/categories'),
+          ),
+          fetchAdminListCached(
+            ADMIN_LIST_CACHE_KEYS.attributes,
+            () => apiClient.get<{ data: Attribute[] }>('/api/v1/admin/attributes'),
+          ),
         ]);
         setBrands(brandsRes.data || []);
         setCategories(categoriesRes.data || []);
@@ -153,8 +175,8 @@ export function useProductDataLoading({
         console.error('❌ [ADMIN] Error fetching data:', err);
       }
     };
-    fetchData();
-  }, [setBrands, setCategories, setAttributes]);
+    void fetchData();
+  }, [isLoggedIn, isAdmin, setBrands, setCategories, setAttributes]);
 
   // Close category dropdown when clicking outside
   useEffect(() => {

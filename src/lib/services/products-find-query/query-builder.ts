@@ -2,7 +2,8 @@ import { Prisma } from "@white-shop/db";
 import { db } from "@white-shop/db";
 import { logger } from "../../utils/logger";
 import type { ProductFilters } from "./types";
-import { getAllChildCategoryIds, findCategoryBySlug } from "./category-utils";
+import { getCachedCategoryDescendantIds } from "@/lib/categories/category-descendant-ids.cache";
+import { getCachedCategoryBySlug } from "@/lib/categories/category-by-slug.cache";
 
 /**
  * Build search filter for where clause
@@ -52,14 +53,14 @@ async function buildCategoryFilter(
   lang: string,
   existingWhere: Prisma.ProductWhereInput
 ): Promise<Prisma.ProductWhereInput | null> {
-  const categoryDoc = await findCategoryBySlug(category, lang);
+  const categoryDoc = await getCachedCategoryBySlug(category, lang);
 
   if (!categoryDoc) {
     return null; // Category not found - return null to indicate empty result
   }
 
   // Get all child categories (subcategories) recursively
-  const childCategoryIds = await getAllChildCategoryIds(categoryDoc.id);
+  const childCategoryIds = await getCachedCategoryDescendantIds(categoryDoc.id);
   const allCategoryIds = [categoryDoc.id, ...childCategoryIds];
   
   logger.debug('Category IDs to include', {

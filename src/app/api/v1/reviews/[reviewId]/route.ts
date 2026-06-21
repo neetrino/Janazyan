@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { reviewsService } from "@/lib/services/reviews.service";
 import { authenticateToken } from "@/lib/middleware/auth";
+import { invalidateProductReviewsCaches } from "@/lib/cache/storefront-cache";
 import { logger } from "@/lib/utils/logger";
 
 export const dynamic = "force-dynamic";
@@ -56,6 +57,8 @@ export async function PUT(
 
     logger.debug('✅ [REVIEWS API] Review updated:', review.id);
 
+    await invalidateProductReviewsCaches();
+
     return NextResponse.json(review);
   } catch (error: any) {
     console.error("❌ [REVIEWS API] PUT Error:", error);
@@ -103,6 +106,8 @@ export async function DELETE(
     await reviewsService.deleteReview(reviewId, user.id);
 
     logger.debug('✅ [REVIEWS API] Review deleted:', reviewId);
+
+    await invalidateProductReviewsCaches();
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

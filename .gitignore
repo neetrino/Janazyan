@@ -23,6 +23,9 @@ tmp/
 temp/
 .cache/
 
+# Local migrated product images (dev fallback storage)
+public/product-media/
+
 # IDE (optional, uncomment if needed)
 # .idea/
 # .vscode/

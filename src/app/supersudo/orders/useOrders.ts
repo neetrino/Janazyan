@@ -7,6 +7,11 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { formatPriceInCurrency, convertPrice, getStoredCurrency, initializeCurrencyRates, CurrencyCode } from '../../../lib/currency';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  buildAdminPaginatedListCacheKey,
+  fetchAdminListCached,
+  invalidateAdminResourceCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 export interface Order {
   id: string;
@@ -128,17 +133,20 @@ export function useOrders() {
       setLoading(true);
       logger.debug('📦 [ADMIN] Fetching orders...', { page, statusFilter, paymentStatusFilter, searchQuery, sortBy, sortOrder });
       
-      const response = await apiClient.get<OrdersResponse>('/api/v1/admin/orders', {
-        params: {
-          page: page.toString(),
-          limit: '20',
-          status: statusFilter || '',
-          paymentStatus: paymentStatusFilter || '',
-          search: searchQuery || '',
-          sortBy: sortBy || '',
-          sortOrder: sortOrder || '',
-        },
-      });
+      const listParams = {
+        page: page.toString(),
+        limit: '20',
+        status: statusFilter || '',
+        paymentStatus: paymentStatusFilter || '',
+        search: searchQuery || '',
+        sortBy: sortBy || '',
+        sortOrder: sortOrder || '',
+      };
+
+      const response = await fetchAdminListCached(
+        buildAdminPaginatedListCacheKey('orders', listParams),
+        () => apiClient.get<OrdersResponse>('/api/v1/admin/orders', { params: listParams }),
+      );
 
       logger.debug('✅ [ADMIN] Orders fetched:', response);
       setOrders(response.data || []);
@@ -307,6 +315,7 @@ export function useOrders() {
       });
       
       setSelectedIds(new Set());
+      invalidateAdminResourceCache('orders');
       await fetchOrders();
       
       if (failed.length > 0) {

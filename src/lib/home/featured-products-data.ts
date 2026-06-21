@@ -2,7 +2,8 @@ import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
 import { db } from '@white-shop/db';
 import type { ProductLabel } from '../../components/ProductLabels';
-import { productsService } from '../services/products.service';
+import { sanitizeStoredProductImageUrl } from '../products/resolve-stored-product-image-url';
+import { productsFindService } from '../services/products-find.service';
 import { mapToHomeFeaturedProduct } from './map-to-home-featured-product';
 
 const HOME_FEATURED_LIMIT = 4;
@@ -74,7 +75,7 @@ async function fetchCatalogProducts(
   limit: number,
   filter?: string,
 ): Promise<CatalogProduct[]> {
-  const result = await productsService.findAll({
+  const result = await productsFindService.findAll({
     filter,
     limit,
     page: 1,
@@ -85,7 +86,11 @@ async function fetchCatalogProducts(
 }
 
 async function loadFeaturedCatalog(limit: number): Promise<CatalogProduct[]> {
-  const featured = await fetchCatalogProducts(limit, 'featured');
+  const [featured, latest] = await Promise.all([
+    fetchCatalogProducts(limit, 'featured'),
+    fetchCatalogProducts(limit * 2),
+  ]);
+
   if (featured.length >= limit) {
     return featured.slice(0, limit);
   }
@@ -93,17 +98,14 @@ async function loadFeaturedCatalog(limit: number): Promise<CatalogProduct[]> {
   const seen = new Set(featured.map((item) => item.id));
   const merged = [...featured];
 
-  if (merged.length < limit) {
-    const latest = await fetchCatalogProducts(limit * 2);
-    for (const product of latest) {
-      if (seen.has(product.id)) {
-        continue;
-      }
-      merged.push(product);
-      seen.add(product.id);
-      if (merged.length >= limit) {
-        break;
-      }
+  for (const product of latest) {
+    if (seen.has(product.id)) {
+      continue;
+    }
+    merged.push(product);
+    seen.add(product.id);
+    if (merged.length >= limit) {
+      break;
     }
   }
 
@@ -116,10 +118,16 @@ async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
     const ratings = await fetchAverageRatings(catalog.map((item) => item.id));
 
     return catalog.map((product) =>
-      mapToHomeFeaturedProduct(product, {
-        ratingAverage: ratings.get(product.id),
-        currency: 'AMD',
-      }),
+      mapToHomeFeaturedProduct(
+        {
+          ...product,
+          image: sanitizeStoredProductImageUrl(product.image),
+        },
+        {
+          ratingAverage: ratings.get(product.id),
+          currency: 'AMD',
+        },
+      ),
     );
   } catch {
     return [];
@@ -128,7 +136,7 @@ async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
 
 const getHomeFeaturedProductsCached = unstable_cache(
   loadHomeFeaturedProducts,
-  ['home-featured-products-v1'],
+  ['home-featured-products-v2'],
   {
     revalidate: HOME_FEATURED_REVALIDATE_SECONDS,
     tags: ['products', 'home-featured'],

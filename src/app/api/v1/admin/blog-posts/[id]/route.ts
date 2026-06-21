@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateToken, requireAdmin } from '@/lib/middleware/auth';
 import { adminService } from '@/lib/services/admin.service';
+import {
+  ADMIN_LIST_SERVER_CACHE_KEYS,
+  invalidateAdminListServerCache,
+} from '@/lib/cache/admin-list-server-cache';
 
 /**
  * PUT /api/v1/admin/blog-posts/[id]
@@ -27,6 +31,7 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
     const result = await adminService.updateBlogPost(id, body);
+    await invalidateAdminListServerCache(ADMIN_LIST_SERVER_CACHE_KEYS.blogPosts);
     return NextResponse.json(result);
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };
@@ -67,6 +72,7 @@ export async function DELETE(
 
     const { id } = await params;
     await adminService.deleteBlogPost(id);
+    await invalidateAdminListServerCache(ADMIN_LIST_SERVER_CACHE_KEYS.blogPosts);
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };

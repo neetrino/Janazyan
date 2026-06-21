@@ -7,6 +7,13 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { QuickSettingsContent } from './QuickSettingsContent';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  buildAdminProductsCacheKey,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+  invalidateAdminProductsCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface AdminSettingsResponse {
   globalDiscount: number;
@@ -72,7 +79,10 @@ export default function QuickSettingsPage() {
     try {
       logger.debug('⚙️ [QUICK SETTINGS] Fetching settings...');
       setDiscountLoading(true);
-      const settings = await apiClient.get<AdminSettingsResponse>('/api/v1/admin/settings');
+      const settings = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.settings,
+        () => apiClient.get<AdminSettingsResponse>('/api/v1/admin/settings'),
+      );
       setGlobalDiscount(settings.globalDiscount || 0);
       setCategoryDiscounts(settings.categoryDiscounts || {});
       setBrandDiscounts(settings.brandDiscounts || {});
@@ -91,13 +101,21 @@ export default function QuickSettingsPage() {
       setProductsLoading(true);
       const normalizedSearch = search.trim();
 
-      const response = await apiClient.get<AdminProductsResponse>('/api/v1/admin/products', {
-        params: {
+      const response = await fetchAdminListCached(
+        buildAdminProductsCacheKey({
           page: page.toString(),
           limit: PRODUCTS_PAGE_LIMIT.toString(),
           ...(normalizedSearch ? { search: normalizedSearch } : {}),
-        },
-      });
+        }),
+        () =>
+          apiClient.get<AdminProductsResponse>('/api/v1/admin/products', {
+            params: {
+              page: page.toString(),
+              limit: PRODUCTS_PAGE_LIMIT.toString(),
+              ...(normalizedSearch ? { search: normalizedSearch } : {}),
+            },
+          }),
+      );
 
       if (response?.data && Array.isArray(response.data)) {
         const safeTotalPages = Math.max(1, response.meta?.totalPages || 1);
@@ -145,7 +163,10 @@ export default function QuickSettingsPage() {
     try {
       logger.debug('📂 [QUICK SETTINGS] Fetching categories...');
       setCategoriesLoading(true);
-      const response = await apiClient.get<{ data: AdminCategory[] }>('/api/v1/admin/categories');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.categories,
+        () => apiClient.get<{ data: AdminCategory[] }>('/api/v1/admin/categories'),
+      );
       if (response?.data && Array.isArray(response.data)) {
         setCategories(response.data);
         logger.debug('✅ [QUICK SETTINGS] Categories loaded:', response.data.length);
@@ -164,7 +185,10 @@ export default function QuickSettingsPage() {
     try {
       logger.debug('🏷️ [QUICK SETTINGS] Fetching brands...');
       setBrandsLoading(true);
-      const response = await apiClient.get<{ data: AdminBrand[] }>('/api/v1/admin/brands');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.brands,
+        () => apiClient.get<{ data: AdminBrand[] }>('/api/v1/admin/brands'),
+      );
       if (response?.data && Array.isArray(response.data)) {
         setBrands(response.data);
         logger.debug('✅ [QUICK SETTINGS] Brands loaded:', response.data.length);
@@ -263,6 +287,8 @@ export default function QuickSettingsPage() {
         globalDiscount: discountValue,
         ...buildDiscountPayload(),
       });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.settings);
+      invalidateAdminProductsCache();
       
       // Refresh products to get updated labels with new discount percentage
       await fetchProducts(productsPage, productsSearch);
@@ -286,6 +312,8 @@ export default function QuickSettingsPage() {
         globalDiscount,
         ...buildDiscountPayload(),
       });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.settings);
+      invalidateAdminProductsCache();
       await fetchProducts(productsPage, productsSearch);
       alert(t('admin.quickSettings.savedSuccess'));
       logger.debug('✅ [QUICK SETTINGS] Category discounts saved');
@@ -306,6 +334,8 @@ export default function QuickSettingsPage() {
         globalDiscount,
         ...buildDiscountPayload(),
       });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.settings);
+      invalidateAdminProductsCache();
       await fetchProducts(productsPage, productsSearch);
       alert(t('admin.quickSettings.savedSuccess'));
       logger.debug('✅ [QUICK SETTINGS] Brand discounts saved');
@@ -338,6 +368,7 @@ export default function QuickSettingsPage() {
       logger.debug('📤 [QUICK SETTINGS] Sending update data to discount endpoint:', updateData);
       
       await apiClient.patch(`/api/v1/admin/products/${productId}/discount`, updateData);
+      invalidateAdminProductsCache();
       
       // Refresh products to get updated labels with new discount percentage
       await fetchProducts(productsPage, productsSearch);

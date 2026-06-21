@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '../../../lib/api-client';
+import { fetchDeliveryPriceCached } from '@/lib/delivery/fetch-delivery-price-cached';
 
 export function useDeliveryPrice(
   shippingMethod: 'pickup' | 'delivery',
@@ -13,13 +13,11 @@ export function useDeliveryPrice(
       if (shippingMethod === 'delivery' && shippingCity && shippingCity.trim().length > 0) {
         setLoadingDeliveryPrice(true);
         try {
-          const response = await apiClient.get<{ price: number }>('/api/v1/delivery/price', {
-            params: {
-              city: shippingCity.trim(),
-              country: 'Armenia',
-            },
+          const price = await fetchDeliveryPriceCached({
+            city: shippingCity.trim(),
+            country: 'Armenia',
           });
-          setDeliveryPrice(response.price);
+          setDeliveryPrice(price);
         } catch {
           setDeliveryPrice(0);
         } finally {

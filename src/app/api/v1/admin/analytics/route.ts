@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
-import { adminService } from "@/lib/services/admin.service";
+import { loadAdminAnalyticsCached } from "@/lib/cache/load-admin-analytics-cached";
 import { logger } from "@/lib/utils/logger";
 
 /**
@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get("endDate") || undefined;
 
     logger.debug(`✅ [ANALYTICS] User authenticated: ${user.id}, period: ${period}`);
-    const result = await adminService.getAnalytics(period, startDate, endDate);
+    const result = await loadAdminAnalyticsCached({ period, startDate, endDate });
     logger.debug("✅ [ANALYTICS] Analytics data retrieved successfully");
     
     return NextResponse.json(result);

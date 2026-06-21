@@ -18,7 +18,7 @@ function isNotFoundError(error: unknown): boolean {
     error &&
       typeof error === 'object' &&
       'status' in error &&
-      Number((error as { status: number }).status) === 404
+      Number((error as { status: number }).status) === 404,
   );
 }
 
@@ -40,7 +40,12 @@ export function useProductFetch({
   const [loading, setLoading] = useState(!hasServerPayload);
   const [notFound, setNotFound] = useState(initialNotFound);
   const generationRef = useRef(0);
-  const skipInitialFetchRef = useRef(hasServerPayload);
+
+  useEffect(() => {
+    setProduct(initialProduct);
+    setNotFound(initialNotFound);
+    setLoading(!hasServerPayload);
+  }, [initialProduct, initialNotFound, hasServerPayload]);
 
   const runLoad = useCallback(async () => {
     if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) {
@@ -100,12 +105,12 @@ export function useProductFetch({
 
   useEffect(() => {
     if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) return;
+    if (hasServerPayload) return;
+    void runLoad();
+  }, [slug, variantIdFromUrl, hasServerPayload, runLoad]);
 
-    if (skipInitialFetchRef.current) {
-      skipInitialFetchRef.current = false;
-    } else {
-      void runLoad();
-    }
+  useEffect(() => {
+    if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) return;
 
     const handleLanguageUpdate = () => {
       void runLoad();
@@ -115,7 +120,7 @@ export function useProductFetch({
     return () => {
       window.removeEventListener('language-updated', handleLanguageUpdate);
     };
-  }, [slug, variantIdFromUrl, router, runLoad]);
+  }, [slug, runLoad]);
 
   return {
     product,

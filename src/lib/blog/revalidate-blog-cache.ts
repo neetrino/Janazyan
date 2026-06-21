@@ -1,5 +1,7 @@
+import 'server-only';
+
 import { revalidatePath, revalidateTag } from 'next/cache';
-import { invalidateBlogCaches } from '@/lib/cache/storefront-cache';
+import { invalidateBlogCaches } from '@/lib/cache/storefront-cache-invalidation';
 import { logger } from '@/lib/utils/logger';
 
 /** Clears public blog cache (Redis + Next.js) after admin mutations. */

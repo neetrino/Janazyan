@@ -8,6 +8,7 @@ import { Heart } from 'lucide-react';
 import { getCompareCount, getWishlistCount } from '../lib/storageCounts';
 import { openCartDrawer } from '../lib/cart-drawer-events';
 import { useTranslation } from '../lib/i18n-client';
+import { isAdminPath } from '../lib/nav/is-storefront-page';
 import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
 
 interface MobileNavItem {
@@ -61,8 +62,17 @@ const MOBILE_NAV_ICONS: Record<
  * որպեսզի հիմնական գործողությունները միշտ լինեն ձեռքի տակ փոքր էկրաններում։
  */
 export function MobileBottomNav() {
-  const { t } = useTranslation();
   const pathname = usePathname();
+
+  if (isAdminPath(pathname ?? '')) {
+    return null;
+  }
+
+  return <MobileBottomNavPanel pathname={pathname ?? ''} />;
+}
+
+function MobileBottomNavPanel({ pathname }: { pathname: string }) {
+  const { t } = useTranslation();
   const cartCount = useCartItemCount();
   const [wishlistCount, setWishlistCount] = useState(0);
   const [compareCount, setCompareCount] = useState(0);
@@ -187,6 +197,7 @@ export function MobileBottomNav() {
             <Link
               key={key}
               href={href || '#'}
+              prefetch={key === 'shop' ? true : undefined}
               onClick={onClick}
               aria-label={label}
               className={`flex flex-col items-center rounded-xl px-2 py-1 transition ${slotClass}`}

@@ -1,17 +1,23 @@
+import { Suspense } from 'react';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import {
   ProductsCatalogMainSkeleton,
   ProductsShopToolbarSkeleton,
 } from './ProductsCatalogSkeleton';
 import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from './products-page-layout.constants';
+import { ProductsCatalogLoadingGate } from './ProductsCatalogLoadingGate';
 
-/** Instant shell on client navigation — no async work before paint. */
+/** Instant shell + cached catalog during client navigation (no server catalog await). */
 export default function ProductsLoading() {
   return (
     <ProductsHeroShell
       mobileContentSurfaceClassName={PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS}
       toolbar={<ProductsShopToolbarSkeleton />}
-      catalog={<ProductsCatalogMainSkeleton />}
+      catalog={
+        <Suspense fallback={<ProductsCatalogMainSkeleton />}>
+          <ProductsCatalogLoadingGate />
+        </Suspense>
+      }
     />
   );
 }

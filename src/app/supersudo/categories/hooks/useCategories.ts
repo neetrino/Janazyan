@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../../../lib/api-client';
 import { logger } from '../../../../lib/utils/logger';
 import type { Category } from '../types';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface UseCategoriesReturn {
   categories: Category[];
@@ -23,7 +27,10 @@ export function useCategories(): UseCategoriesReturn {
       setLoading(true);
       setError(null);
       logger.debug('Fetching categories');
-      const response = await apiClient.get<{ data: Category[] }>('/api/v1/admin/categories');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.categories,
+        () => apiClient.get<{ data: Category[] }>('/api/v1/admin/categories'),
+      );
       setCategories(response.data || []);
       logger.info('Categories loaded', { count: response.data?.length || 0 });
     } catch (err: unknown) {

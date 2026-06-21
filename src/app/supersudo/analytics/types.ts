@@ -33,6 +33,7 @@ export interface AnalyticsData {
     count: number;
     revenue: number;
   }>;
+  totalUsers: number;
 }
 
 export interface AdminStatsSummary {

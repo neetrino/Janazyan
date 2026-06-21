@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
 import { logger } from "@/lib/utils/logger";
+import { invalidateAdminAttributesServerList } from "@/lib/cache/invalidate-admin-attributes-cache";
 
 /**
  * PATCH /api/v1/admin/attributes/[id]/values/[valueId]
@@ -38,6 +39,7 @@ export async function PATCH(
       locale: body.locale || "en",
     });
 
+    await invalidateAdminAttributesServerList();
     return NextResponse.json({ data: result }, { status: 200 });
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTE VALUES] PATCH Error:", error);
@@ -79,6 +81,7 @@ export async function DELETE(
 
     const { valueId } = await params;
     const result = await adminService.deleteAttributeValue(valueId);
+    await invalidateAdminAttributesServerList();
     return NextResponse.json({ data: result }, { status: 200 });
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTE VALUES] DELETE Error:", error);

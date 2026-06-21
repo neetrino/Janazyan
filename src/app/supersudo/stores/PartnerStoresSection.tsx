@@ -15,6 +15,11 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { PARTNER_STORE_LOCALES } from '../../../features/stores/partner-store-locales';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import { createEmptyFormData, formDataFromStore, parseFormPayload } from './form-utils';
 import type { AdminPartnerStore, PartnerStoreFormData } from './types';
 
@@ -45,8 +50,10 @@ export function PartnerStoresSection() {
   const fetchStores = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get<{ data: AdminPartnerStore[] }>(
-        '/api/v1/admin/partner-stores',
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.partnerStores,
+        () =>
+          apiClient.get<{ data: AdminPartnerStore[] }>('/api/v1/admin/partner-stores'),
       );
       setStores(response.data ?? []);
     } catch (err) {
@@ -151,6 +158,7 @@ export function PartnerStoresSection() {
 
     try {
       await apiClient.delete(`/api/v1/admin/partner-stores/${store.id}`);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
       await fetchStores();
       alert(t('admin.partnerStores.deletedSuccess'));
     } catch (err: unknown) {
@@ -177,6 +185,7 @@ export function PartnerStoresSection() {
         await apiClient.post('/api/v1/admin/partner-stores', payload);
         alert(t('admin.partnerStores.createdSuccess'));
       }
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
       await fetchStores();
       handleCloseModal();
     } catch (err: unknown) {

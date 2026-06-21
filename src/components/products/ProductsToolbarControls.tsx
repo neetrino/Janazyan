@@ -18,10 +18,28 @@ type DropdownPosition = {
   right: number;
 };
 
-const VIEW_MODE_ICONS: Record<ViewMode, { src: string; width: number; height: number }> = {
-  list: { src: '/figma/shop-view-list-icon.svg', width: 28, height: 25 },
-  'grid-2': { src: '/figma/shop-view-grid-2-icon.svg', width: 16, height: 25 },
-  'grid-3': { src: '/figma/shop-view-grid-3-icon.svg', width: 26, height: 25 },
+const VIEW_MODE_ICONS: Record<
+  ViewMode,
+  { src: string; width: number; height: number; className: string }
+> = {
+  list: {
+    src: '/figma/shop-view-list-icon.svg',
+    width: 28,
+    height: 25,
+    className: 'h-[25px] w-[28px]',
+  },
+  'grid-2': {
+    src: '/figma/shop-view-grid-2-icon.svg',
+    width: 16,
+    height: 25,
+    className: 'h-[25px] w-4',
+  },
+  'grid-3': {
+    src: '/figma/shop-view-grid-3-icon.svg',
+    width: 26,
+    height: 25,
+    className: 'h-[25px] w-[26px]',
+  },
 };
 
 const VIEW_MODE_BUTTON_CLASS =
@@ -214,7 +232,7 @@ export function ProductsToolbarControls() {
                 alt=""
                 width={icon.width}
                 height={icon.height}
-                className="h-[25px] w-auto"
+                className={icon.className}
                 aria-hidden
               />
             </button>

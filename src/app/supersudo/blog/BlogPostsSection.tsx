@@ -15,6 +15,11 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { BLOG_LOCALES } from '../../../features/blog/blog-locales';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import { createEmptyFormData, formDataFromPost, parseFormPayload } from './form-utils';
 import type { AdminBlogPost, BlogPostFormData } from './types';
 
@@ -45,7 +50,10 @@ export function BlogPostsSection() {
   const fetchPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get<{ data: AdminBlogPost[] }>('/api/v1/admin/blog-posts');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.blogPosts,
+        () => apiClient.get<{ data: AdminBlogPost[] }>('/api/v1/admin/blog-posts'),
+      );
       setPosts(response.data ?? []);
     } catch {
       setPosts([]);
@@ -162,6 +170,7 @@ export function BlogPostsSection() {
 
     try {
       await apiClient.delete(`/api/v1/admin/blog-posts/${post.id}`);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.blogPosts);
       await fetchPosts();
       alert(t('admin.blog.deletedSuccess'));
     } catch {
@@ -187,6 +196,7 @@ export function BlogPostsSection() {
         await apiClient.post('/api/v1/admin/blog-posts', payload);
         alert(t('admin.blog.createdSuccess'));
       }
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.blogPosts);
       await fetchPosts();
       handleCloseModal();
     } catch {

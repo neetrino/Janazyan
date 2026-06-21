@@ -8,6 +8,11 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { clearCurrencyRatesCache } from '../../../lib/currency';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface Settings {
   defaultCurrency?: string;
@@ -53,7 +58,10 @@ export default function SettingsPage() {
     try {
       setLoading(true);
       logger.debug('⚙️ [ADMIN] Fetching settings...');
-      const data = await apiClient.get<Settings>('/api/v1/admin/settings');
+      const data = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.settings,
+        () => apiClient.get<Settings>('/api/v1/admin/settings'),
+      );
       setSettings({
         defaultCurrency: data.defaultCurrency || 'AMD',
         globalDiscount: data.globalDiscount,
@@ -104,6 +112,7 @@ export default function SettingsPage() {
         defaultCurrency: settings.defaultCurrency,
         currencyRates: currencyRatesToSave,
       });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.settings);
       
       // Clear currency rates cache to force reload
       logger.debug('🔄 [ADMIN] Clearing currency rates cache...');

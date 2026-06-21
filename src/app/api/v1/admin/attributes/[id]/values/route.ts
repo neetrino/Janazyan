@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
+import { invalidateAdminAttributesServerList } from "@/lib/cache/invalidate-admin-attributes-cache";
 
 /**
  * POST /api/v1/admin/attributes/[id]/values
@@ -28,6 +29,7 @@ export async function POST(
     const { id } = await params;
     const body = await req.json();
     const result = await adminService.addAttributeValue(id, body);
+    await invalidateAdminAttributesServerList();
     return NextResponse.json({ data: result }, { status: 201 });
   } catch (error: any) {
     console.error("❌ [ADMIN ATTRIBUTE VALUES] POST Error:", error);

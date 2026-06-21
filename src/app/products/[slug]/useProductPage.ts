@@ -10,6 +10,7 @@ import type { Review } from '../../../components/ProductReviews/utils';
 import { useAttributeGroups } from './useAttributeGroups';
 import { useProductImages } from './hooks/useProductImages';
 import { useProductFetch } from './hooks/useProductFetch';
+import { useProductGalleryHydration } from './hooks/useProductGalleryHydration';
 import { useWishlistCompare } from './hooks/useWishlistCompare';
 import { useVariantSelection } from './hooks/useVariantSelection';
 import { useProductActions } from './hooks/useProductActions';
@@ -23,6 +24,7 @@ export interface UseProductPageOptions {
   serverLanguage: LanguageCode;
   initialProduct: Product | null;
   initialNotFound: boolean;
+  galleryHydrationRequired: boolean;
   reviews: Review[];
 }
 
@@ -32,6 +34,7 @@ export function useProductPage({
   serverLanguage,
   initialProduct,
   initialNotFound,
+  galleryHydrationRequired,
   reviews,
 }: UseProductPageOptions) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -52,7 +55,16 @@ export function useProductPage({
     initialNotFound,
   });
 
-  const images = useProductImages(product);
+  const hydratedGalleryUrls = useProductGalleryHydration(
+    slug,
+    language,
+    galleryHydrationRequired,
+  );
+
+  const images = useProductImages(
+    product,
+    galleryHydrationRequired ? hydratedGalleryUrls : undefined,
+  );
 
   const {
     selectedVariant,

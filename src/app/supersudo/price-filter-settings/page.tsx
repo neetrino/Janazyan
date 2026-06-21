@@ -7,6 +7,11 @@ import { Card, Button, Input } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 export default function PriceFilterSettingsPage() {
   const { t } = useTranslation();
@@ -29,17 +34,21 @@ export default function PriceFilterSettingsPage() {
     try {
       logger.debug('⚙️ [PRICE FILTER SETTINGS] Fetching settings...');
       setLoading(true);
-      const response = await apiClient.get<{
-        minPrice?: number;
-        maxPrice?: number;
-        stepSize?: number;
-        stepSizePerCurrency?: {
-          USD?: number;
-          AMD?: number;
-          RUB?: number;
-          GEL?: number;
-        };
-      }>('/api/v1/admin/settings/price-filter');
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.priceFilter,
+        () =>
+          apiClient.get<{
+            minPrice?: number;
+            maxPrice?: number;
+            stepSize?: number;
+            stepSizePerCurrency?: {
+              USD?: number;
+              AMD?: number;
+              RUB?: number;
+              GEL?: number;
+            };
+          }>('/api/v1/admin/settings/price-filter'),
+      );
       const minPriceStr = response.minPrice?.toString() || '';
       const maxPriceStr = response.maxPrice?.toString() || '';
       const per = response.stepSizePerCurrency || {};
@@ -201,6 +210,7 @@ export default function PriceFilterSettingsPage() {
         stepSize: stepValueUSD, // keep legacy field for backwards compatibility (USD as base)
         stepSizePerCurrency: Object.keys(stepSizePerCurrency).length ? stepSizePerCurrency : null,
       });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.priceFilter);
       
       alert(t('admin.priceFilter.savedSuccess'));
       logger.debug('✅ [PRICE FILTER SETTINGS] Settings saved');

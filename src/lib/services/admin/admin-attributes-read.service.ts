@@ -1,12 +1,17 @@
 import { db } from "@white-shop/db";
 import { logger } from "@/lib/utils/logger";
 
+let attributeValueColumnsVerified = false;
+
 class AdminAttributesReadService {
   /**
    * Ensure colors and imageUrl columns exist in attribute_values table
    * This is a runtime migration that runs automatically when needed
    */
   private async ensureColorsColumnsExist() {
+    if (attributeValueColumnsVerified) {
+      return;
+    }
     try {
       // Check if colors column exists
       const colorsCheck = await db.$queryRawUnsafe(`
@@ -35,7 +40,8 @@ class AdminAttributesReadService {
       const imageUrlExists = imageUrlCheck[0]?.exists || false;
 
       if (colorsExists && imageUrlExists) {
-        return; // Columns already exist
+        attributeValueColumnsVerified = true;
+        return;
       }
 
       logger.debug('📝 [ADMIN ATTRIBUTES READ SERVICE] Adding missing colors/imageUrl columns...');
@@ -63,6 +69,7 @@ class AdminAttributesReadService {
       `);
 
       logger.debug('✅ [ADMIN ATTRIBUTES READ SERVICE] Migration completed successfully!');
+      attributeValueColumnsVerified = true;
     } catch (error: any) {
       console.error('❌ [ADMIN ATTRIBUTES READ SERVICE] Migration error:', error.message);
       throw error; // Re-throw to handle in calling code
@@ -250,15 +257,6 @@ class AdminAttributesReadService {
             if (!Array.isArray(colorsArray)) {
               colorsArray = [];
             }
-            
-            logger.debug('🎨 [ADMIN ATTRIBUTES READ SERVICE] Parsed colors for value:', {
-              valueId: value.id,
-              valueLabel: valueTranslation?.label || value.value,
-              colorsData,
-              colorsDataType: typeof colorsData,
-              colorsArray,
-              colorsArrayLength: colorsArray.length
-            });
             
             return {
               id: value.id,

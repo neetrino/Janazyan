@@ -4,6 +4,10 @@ import { logger } from '../../../../lib/utils/logger';
 import { showToast } from '../../../../components/Toast';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category, CategoryFormData } from '../types';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface UseCategoryActionsReturn {
   showAddModal: boolean;
@@ -81,6 +85,7 @@ export function useCategoryActions(): UseCategoryActionsReturn {
       });
       setShowAddModal(false);
       resetForm();
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.categories);
       await fetchCategories();
       showToast(t('admin.categories.createdSuccess'), 'success');
     } catch (err: unknown) {
@@ -151,6 +156,7 @@ export function useCategoryActions(): UseCategoryActionsReturn {
       setShowEditModal(false);
       setEditingCategory(null);
       resetForm();
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.categories);
       await fetchCategories();
       showToast(t('admin.categories.updatedSuccess'), 'success');
     } catch (err: unknown) {
@@ -223,6 +229,7 @@ export function useCategoryActions(): UseCategoryActionsReturn {
       });
       await apiClient.delete(`/api/v1/admin/categories/${pendingDeleteCategory.id}`);
       logger.info('Category deleted successfully');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.categories);
       await fetchCategories();
       setPendingDeleteCategory(null);
       showToast(t('admin.categories.deletedSuccess'), 'success');
