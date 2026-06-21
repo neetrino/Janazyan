@@ -24,6 +24,11 @@ import {
 } from '../constants/admin-table-classes';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  buildAdminPaginatedListCacheKey,
+  fetchAdminListCached,
+  invalidateAdminResourceCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface Message {
   id: string;
@@ -133,12 +138,15 @@ export default function MessagesPage() {
       setLoading(true);
       logger.debug('📧 [ADMIN] Fetching messages...', { page });
       
-      const response = await apiClient.get<MessagesResponse>('/api/v1/admin/messages', {
-        params: {
-          page: page.toString(),
-          limit: '20',
-        },
-      });
+      const listParams = {
+        page: page.toString(),
+        limit: '20',
+      };
+
+      const response = await fetchAdminListCached(
+        buildAdminPaginatedListCacheKey('messages', listParams),
+        () => apiClient.get<MessagesResponse>('/api/v1/admin/messages', { params: listParams }),
+      );
 
       logger.debug('✅ [ADMIN] Messages fetched:', response);
       setMessages(response.data || []);
@@ -151,11 +159,12 @@ export default function MessagesPage() {
   }, [page]);
 
   useEffect(() => {
-    if (isLoggedIn && isAdmin) {
-      fetchMessages();
+    if (!isLoggedIn || !isAdmin) {
+      return;
     }
-     
-  }, [isLoggedIn, isAdmin, page]);
+
+    void fetchMessages();
+  }, [isLoggedIn, isAdmin, fetchMessages]);
 
   const toggleSelect = (id: string) => {
     setSelectedIds(prev => {
@@ -202,6 +211,7 @@ export default function MessagesPage() {
       }
       
       setSelectedIds(new Set());
+      invalidateAdminResourceCache('messages');
       await fetchMessages();
       alert(t('admin.messages.deletedSuccess'));
     } catch (err: any) {

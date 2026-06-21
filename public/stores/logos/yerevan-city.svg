@@ -1,5 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 64" role="img" aria-hidden="true">
-  <rect width="200" height="64" rx="12" fill="#1565C0"/>
-  <text x="100" y="28" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="700">YEREVAN</text>
-  <text x="100" y="48" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="16" font-weight="700">CITY</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" viewBox="0 0 200 64"><rect width="200" height="64" fill="#1565c0" rx="12"/><text x="100" y="28" fill="#fff" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">YEREVAN</text><text x="100" y="48" fill="#fff" font-family="Arial, sans-serif" font-size="16" font-weight="700" text-anchor="middle">CITY</text></svg>

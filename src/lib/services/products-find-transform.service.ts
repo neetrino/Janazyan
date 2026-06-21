@@ -1,8 +1,12 @@
 import type { ProductLabel } from "../../components/ProductLabels";
 import { processImageUrl } from "../utils/image-utils";
+import { sanitizeStoredProductImageUrl } from "../products/resolve-stored-product-image-url";
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
-import { getProductDiscountSettings } from "./products-discount-settings.cache";
+import {
+  getProductDiscountSettings,
+  type ProductDiscountSettings,
+} from "./products-discount-settings.cache";
 
 /**
  * Get "Out of Stock" translation for a given language
@@ -33,6 +37,8 @@ export type ProductListItem = {
 type TransformOptions = {
   /** Skip expensive per-variant color aggregation (catalog cards). */
   catalog?: boolean;
+  /** Preloaded discount settings — avoids a sequential DB round-trip on cache miss. */
+  discountSettings?: ProductDiscountSettings;
 };
 
 function collectProductColors(
@@ -202,7 +208,7 @@ class ProductsFindTransformService {
     options?: TransformOptions
   ): Promise<ProductListItem[]> {
     const { globalDiscount, categoryDiscounts, brandDiscounts } =
-      await getProductDiscountSettings();
+      options?.discountSettings ?? (await getProductDiscountSettings());
     const isCatalog = options?.catalog === true;
 
     const data = products.map((product: ProductWithRelations) => {
@@ -289,16 +295,21 @@ class ProductsFindTransformService {
         originalPrice: appliedDiscount > 0 ? originalPrice : variant?.compareAtPrice || null,
         compareAtPrice: variant?.compareAtPrice || null,
         discountPercent: appliedDiscount > 0 ? appliedDiscount : null,
-        image: (() => {
-          // Use unified image utilities to get first valid main image
-          if (!Array.isArray(product.media) || product.media.length === 0) {
-            return null;
-          }
-          
-          // Process first image - cast JsonValue to ImageUrlInput
-          const firstImage = processImageUrl(product.media[0] as string | null | undefined | { url?: string; src?: string; value?: string });
-          return firstImage || null;
-        })(),
+        image: sanitizeStoredProductImageUrl(
+          (() => {
+            if (!Array.isArray(product.media) || product.media.length === 0) {
+              return null;
+            }
+
+            return processImageUrl(
+              product.media[0] as
+                | string
+                | null
+                | undefined
+                | { url?: string; src?: string; value?: string },
+            );
+          })(),
+        ),
         inStock: (variant?.stock || 0) > 0,
         labels: (() => {
           // Map existing labels

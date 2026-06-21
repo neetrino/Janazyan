@@ -1,187 +1,57 @@
 import { db } from "@white-shop/db";
+import {
+  isSyntheticCartItemId,
+  parseSyntheticCartItemId,
+} from "@/lib/cart/cart-item-id";
+import { getCartViewCached } from "@/lib/cart/load-cart-view-cached";
+import { invalidateCartViewCache } from "@/lib/cart/invalidate-cart-view-cache";
+import type { CartViewResponse } from "@/lib/cart/cart-view-cache.types";
+import { getProductDiscountSettings } from "./products-discount-settings.cache";
+import { CART_WITH_ITEMS_INCLUDE } from "./cart/cart-query.constants";
+import { buildCartViewResponse } from "./cart/format-cart-response";
 import { logger } from "../utils/logger";
-import { extractMediaUrl } from "../utils/extractMediaUrl";
+
+const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 class CartService {
-  /**
-   * Get or create user's cart
-   */
-  async getCart(userId: string, locale: string = "en") {
-    // Get discount settings
-    const discountSettings = await db.settings.findMany({
-      where: {
-        key: {
-          in: ["globalDiscount", "categoryDiscounts", "brandDiscounts"],
-        },
-      },
-    });
+  /** Get or create user's cart (Redis view cache + slim DB read on miss). */
+  async getCart(userId: string, locale: string = "en"): Promise<CartViewResponse> {
+    return getCartViewCached(userId, locale, (id, lang) =>
+      this.loadCartViewFromDb(id, lang),
+    );
+  }
 
-    const globalDiscount =
-      Number(
-        discountSettings.find((s: { key: string; value: unknown }) => s.key === "globalDiscount")?.value
-      ) || 0;
-    
-    const categoryDiscountsSetting = discountSettings.find((s: { key: string; value: unknown }) => s.key === "categoryDiscounts");
-    const categoryDiscounts = categoryDiscountsSetting ? (categoryDiscountsSetting.value as Record<string, number>) || {} : {};
-    
-    const brandDiscountsSetting = discountSettings.find((s: { key: string; value: unknown }) => s.key === "brandDiscounts");
-    const brandDiscounts = brandDiscountsSetting ? (brandDiscountsSetting.value as Record<string, number>) || {} : {};
-    let cart = await db.cart.findFirst({
-      where: {
-        userId,
-      },
-      include: {
-        items: {
-          include: {
-            variant: {
-              include: {
-                product: {
-                  include: {
-                    translations: true,
-                  },
-                },
-              },
-            },
-            product: {
-              include: {
-                translations: true,
-              },
-            },
-          },
-        },
-      },
-    });
+  private async loadCartViewFromDb(
+    userId: string,
+    locale: string,
+  ): Promise<CartViewResponse> {
+    const [{ globalDiscount, categoryDiscounts, brandDiscounts }, cartRow] =
+      await Promise.all([
+        getProductDiscountSettings(),
+        db.cart.findFirst({
+          where: { userId },
+          include: CART_WITH_ITEMS_INCLUDE,
+        }),
+      ]);
 
+    let cart = cartRow;
     if (!cart) {
       cart = await db.cart.create({
         data: {
           userId,
           locale,
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-          items: {
-            create: [],
-          },
+          expiresAt: new Date(Date.now() + CART_TTL_MS),
+          items: { create: [] },
         },
-        include: {
-          items: {
-            include: {
-              variant: {
-                include: {
-                  product: {
-                    include: {
-                      translations: true,
-                    },
-                  },
-                },
-              },
-              product: {
-                include: {
-                  translations: true,
-                },
-              },
-            },
-          },
-        },
+        include: CART_WITH_ITEMS_INCLUDE,
       });
     }
 
-    // Format items using already-loaded cart data (no N+1: no extra DB calls per item)
-    const itemsWithDetails = cart.items.map(
-      (item: {
-        id: string;
-        productId: string;
-        variantId: string;
-        quantity: number;
-        product: {
-          id: string;
-          media: unknown;
-          discountPercent?: number;
-          primaryCategoryId?: string | null;
-          brandId?: string | null;
-          translations: Array<{ locale: string; title?: string; slug?: string }>;
-        };
-        variant: {
-          id: string;
-          sku: string | null;
-          stock: number;
-          price: number;
-          compareAtPrice?: number | null;
-        };
-      }) => {
-        const product = item.product;
-        const variant = item.variant;
-        const translation =
-          product?.translations?.find((t: { locale: string }) => t.locale === locale) ||
-          product?.translations?.[0];
-
-        const imageUrl = extractMediaUrl(product?.media);
-
-        const productDiscount = product?.discountPercent ?? 0;
-        let appliedDiscount = 0;
-        if (productDiscount > 0) {
-          appliedDiscount = productDiscount;
-        } else {
-          const primaryCategoryId = product?.primaryCategoryId;
-          if (primaryCategoryId && categoryDiscounts[primaryCategoryId]) {
-            appliedDiscount = categoryDiscounts[primaryCategoryId];
-          } else {
-            const brandId = product?.brandId;
-            if (brandId && brandDiscounts[brandId]) {
-              appliedDiscount = brandDiscounts[brandId];
-            } else if (globalDiscount > 0) {
-              appliedDiscount = globalDiscount;
-            }
-          }
-        }
-
-        const variantOriginalPrice = variant?.price ?? 0;
-        let finalPrice = variantOriginalPrice;
-        let originalPrice: number | null = null;
-        if (appliedDiscount > 0 && variantOriginalPrice > 0) {
-          finalPrice = variantOriginalPrice * (1 - appliedDiscount / 100);
-          originalPrice = variantOriginalPrice;
-        } else if (variant?.compareAtPrice != null && variant.compareAtPrice > variantOriginalPrice) {
-          originalPrice = Number(variant.compareAtPrice);
-        }
-
-        return {
-          id: item.id,
-          variant: {
-            id: variant?.id ?? item.variantId,
-            sku: variant?.sku ?? "",
-            stock: variant?.stock ?? 0,
-            product: {
-              id: product?.id ?? "",
-              title: translation?.title ?? "",
-              slug: translation?.slug ?? "",
-              image: imageUrl,
-            },
-          },
-          quantity: item.quantity,
-          price: finalPrice,
-          originalPrice,
-          total: finalPrice * item.quantity,
-        };
-      }
-    );
-
-    const subtotal = itemsWithDetails.reduce((sum, item) => sum + item.total, 0);
-
-    return {
-      cart: {
-        id: cart.id,
-        items: itemsWithDetails,
-        totals: {
-          subtotal,
-          discount: 0,
-          shipping: 0,
-          tax: 0,
-          total: subtotal,
-          currency: "AMD",
-        },
-        itemsCount: itemsWithDetails.reduce((sum, item) => sum + item.quantity, 0),
-      },
-    };
+    return buildCartViewResponse(cart.id, cart.items, locale, {
+      globalDiscount,
+      categoryDiscounts,
+      brandDiscounts,
+    });
   }
 
   /**
@@ -220,7 +90,7 @@ class CartService {
         data: {
           userId,
           locale,
-          expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          expiresAt: new Date(Date.now() + CART_TTL_MS),
           items: { create: [] },
         },
         include: { items: true },
@@ -236,11 +106,8 @@ class CartService {
     }
 
     const existingItem = resolvedCart.items.find((item: { variantId: string }) => item.variantId === variantId);
-
-    // Calculate total quantity that will be in cart after adding
     const totalQuantity = existingItem ? existingItem.quantity + quantity : quantity;
 
-    // Check if total quantity exceeds available stock
     if (totalQuantity > variant.stock) {
       logger.warn("Cart: stock limit exceeded", {
         variantId,
@@ -266,11 +133,8 @@ class CartService {
       });
       item = await db.cartItem.update({
         where: { id: existingItem.id },
-        data: {
-          quantity: totalQuantity,
-        },
+        data: { quantity: totalQuantity },
       });
-      // Summary from current state: other items + this updated item (no extra DB query)
       const otherItems = resolvedCart.items.filter((i: { id: string }) => i.id !== existingItem.id);
       const itemsForSum = [
         ...otherItems.map((i: { quantity: number; priceSnapshot: unknown }) => ({ q: i.quantity, p: Number(i.priceSnapshot) })),
@@ -278,32 +142,65 @@ class CartService {
       ];
       const itemsCount = itemsForSum.reduce((sum, i) => sum + i.q, 0);
       const total = itemsForSum.reduce((sum, i) => sum + i.q * i.p, 0);
-      return {
-        item: { id: item.id, variantId, quantity: item.quantity, price: Number(item.priceSnapshot) },
-        cartSummary: { itemsCount, total },
-      };
-    } else {
-      logger.debug("Cart: creating new item", { variantId, quantity });
-      item = await db.cartItem.create({
-        data: {
-          cartId: resolvedCart.id,
-          variantId,
-          productId,
-          quantity,
-          priceSnapshot: variant.price,
-        },
-      });
-      const itemsForSum = [
-        ...resolvedCart.items.map((i: { quantity: number; priceSnapshot: unknown }) => ({ q: i.quantity, p: Number(i.priceSnapshot) })),
-        { q: quantity, p: Number(variant.price) },
-      ];
-      const itemsCount = itemsForSum.reduce((sum, i) => sum + i.q, 0);
-      const total = itemsForSum.reduce((sum, i) => sum + i.q * i.p, 0);
+      await invalidateCartViewCache(userId);
       return {
         item: { id: item.id, variantId, quantity: item.quantity, price: Number(item.priceSnapshot) },
         cartSummary: { itemsCount, total },
       };
     }
+
+    logger.debug("Cart: creating new item", { variantId, quantity });
+    item = await db.cartItem.create({
+      data: {
+        cartId: resolvedCart.id,
+        variantId,
+        productId,
+        quantity,
+        priceSnapshot: variant.price,
+      },
+    });
+    const itemsForSum = [
+      ...resolvedCart.items.map((i: { quantity: number; priceSnapshot: unknown }) => ({ q: i.quantity, p: Number(i.priceSnapshot) })),
+      { q: quantity, p: Number(variant.price) },
+    ];
+    const itemsCount = itemsForSum.reduce((sum, i) => sum + i.q, 0);
+    const total = itemsForSum.reduce((sum, i) => sum + i.q * i.p, 0);
+    await invalidateCartViewCache(userId);
+    return {
+      item: { id: item.id, variantId, quantity: item.quantity, price: Number(item.priceSnapshot) },
+      cartSummary: { itemsCount, total },
+    };
+  }
+
+  /** Maps optimistic `{productId}-{variantId}-{index}` ids to DB cart item ids. */
+  private async resolveCartItemId(userId: string, itemId: string): Promise<string> {
+    if (!isSyntheticCartItemId(itemId)) {
+      return itemId;
+    }
+
+    const parsed = parseSyntheticCartItemId(itemId);
+    if (!parsed) {
+      return itemId;
+    }
+
+    const item = await db.cartItem.findFirst({
+      where: {
+        cart: { userId },
+        productId: parsed.productId,
+        variantId: parsed.variantId,
+      },
+      select: { id: true },
+    });
+
+    if (!item) {
+      throw {
+        status: 404,
+        type: "https://api.shop.am/problems/not-found",
+        title: "Cart item not found",
+      };
+    }
+
+    return item.id;
   }
 
   /**
@@ -319,19 +216,15 @@ class CartService {
       };
     }
 
+    const resolvedItemId = await this.resolveCartItemId(userId, itemId);
+
     const cart = await db.cart.findFirst({
       where: {
         userId,
-        items: {
-          some: {
-            id: itemId,
-          },
-        },
+        items: { some: { id: resolvedItemId } },
       },
       include: {
-        items: {
-          where: { id: itemId },
-        },
+        items: { where: { id: resolvedItemId } },
       },
     });
 
@@ -358,10 +251,11 @@ class CartService {
     }
 
     const updatedItem = await db.cartItem.update({
-      where: { id: itemId },
+      where: { id: resolvedItemId },
       data: { quantity },
     });
 
+    await invalidateCartViewCache(userId);
     return {
       item: {
         id: updatedItem.id,
@@ -374,14 +268,12 @@ class CartService {
    * Remove item from cart
    */
   async removeItem(userId: string, itemId: string) {
+    const resolvedItemId = await this.resolveCartItemId(userId, itemId);
+
     const cart = await db.cart.findFirst({
       where: {
         userId,
-        items: {
-          some: {
-            id: itemId,
-          },
-        },
+        items: { some: { id: resolvedItemId } },
       },
     });
 
@@ -393,13 +285,10 @@ class CartService {
       };
     }
 
-    await db.cartItem.delete({
-      where: { id: itemId },
-    });
-
+    await db.cartItem.delete({ where: { id: resolvedItemId } });
+    await invalidateCartViewCache(userId);
     return null;
   }
 }
 
 export const cartService = new CartService();
-

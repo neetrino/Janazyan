@@ -6,6 +6,11 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { showToast } from '../../../components/Toast';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 export interface AttributeValue {
   id: string;
@@ -59,27 +64,10 @@ export function useAttributes() {
     try {
       setLoading(true);
       logger.debug('📋 [ADMIN] Fetching attributes...');
-      const response = await apiClient.get<{ data: Attribute[] }>('/api/v1/admin/attributes');
-      logger.debug('📋 [ADMIN] Attributes response:', response.data);
-      // Log colors for each value to debug
-      if (response.data && Array.isArray(response.data)) {
-        response.data.forEach((attr) => {
-          if (attr.values && Array.isArray(attr.values)) {
-            attr.values.forEach((val) => {
-              logger.debug('🎨 [ADMIN] Attribute value colors:', {
-                attributeId: attr.id,
-                attributeName: attr.name,
-                valueId: val.id,
-                valueLabel: val.label,
-                colors: val.colors,
-                colorsType: typeof val.colors,
-                colorsIsArray: Array.isArray(val.colors),
-                colorsLength: val.colors?.length
-              });
-            });
-          }
-        });
-      }
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.attributes,
+        () => apiClient.get<{ data: Attribute[] }>('/api/v1/admin/attributes'),
+      );
       setAttributes(response.data || []);
       logger.debug('✅ [ADMIN] Attributes loaded:', response.data?.length || 0);
     } catch (err) {
@@ -118,6 +106,7 @@ export function useAttributes() {
       logger.debug('✅ [ADMIN] Attribute created successfully');
       setShowAddForm(false);
       setFormData({ name: '' });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.createdSuccess'), 'success');
     } catch (err: any) {
@@ -142,6 +131,7 @@ export function useAttributes() {
       logger.debug(`🗑️ [ADMIN] Deleting attribute: ${attributeName} (${attributeId})`);
       await apiClient.delete(`/api/v1/admin/attributes/${attributeId}`);
       logger.debug('✅ [ADMIN] Attribute deleted successfully');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.deletedSuccess'), 'success');
     } catch (err: any) {
@@ -169,6 +159,7 @@ export function useAttributes() {
       logger.debug('✅ [ADMIN] Attribute name updated successfully');
       setEditingAttribute(null);
       setEditingAttributeName('');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.nameUpdatedSuccess') || 'Attribute name updated successfully', 'success');
     } catch (err: any) {
@@ -238,6 +229,7 @@ export function useAttributes() {
       setValueError(null);
       setAddingValueTo(null);
       showToast(t('admin.attributes.valueAddedSuccess'), 'success');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
     } catch (err: any) {
       console.error('❌ [ADMIN] Error adding value:', err);
@@ -272,6 +264,7 @@ export function useAttributes() {
       logger.debug(`🗑️ [ADMIN] Deleting value: ${valueLabel} (${valueId})`);
       await apiClient.delete(`/api/v1/admin/attributes/${attributeId}/values/${valueId}`);
       logger.debug('✅ [ADMIN] Value deleted successfully');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       setDeletingValue(null);
       showToast(t('admin.attributes.valueDeletedSuccess'), 'success');
@@ -304,6 +297,7 @@ export function useAttributes() {
         locale: 'en',
       });
       logger.debug('✅ [ADMIN] Value updated successfully');
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.valueUpdatedSuccess'), 'success');
     } catch (err: any) {

@@ -11,6 +11,7 @@ import { ContactInformation } from './ContactInformation';
 import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
 import { CheckoutFormData, Cart } from '../types';
+import { scrollToFirstCheckoutError } from '../utils/scroll-to-checkout-error';
 
 interface ShippingAddressModalProps {
   isOpen: boolean;
@@ -61,13 +62,7 @@ export function ShippingAddressModal({
   }
 
   const handleValidationError = (validationErrors: FieldErrors<CheckoutFormData>) => {
-    const firstErrorField = Object.keys(validationErrors)[0];
-    if (firstErrorField) {
-      const errorElement = document.querySelector(`[name="${firstErrorField}"]`);
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
+    scrollToFirstCheckoutError(validationErrors);
   };
 
   return (

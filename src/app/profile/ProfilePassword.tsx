@@ -11,6 +11,7 @@ interface ProfilePasswordProps {
   savingPassword: boolean;
   onSave: (e: FormEvent) => void;
   t: (key: string) => string;
+  compact?: boolean;
 }
 
 export function ProfilePassword({
@@ -19,13 +20,25 @@ export function ProfilePassword({
   savingPassword,
   onSave,
   t,
+  compact = false,
 }: ProfilePasswordProps) {
   return (
-    <Card className="rounded-2xl border border-gray-200/80 p-5 shadow-none sm:p-7 lg:p-8">
-      <div className="mb-8 border-b border-gray-100 pb-5 sm:mb-10 sm:pb-6">
-        <h2 className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl">{t('profile.password.title')}</h2>
-      </div>
-      <form onSubmit={onSave} className="mx-auto max-w-xl space-y-6 lg:mx-0 lg:max-w-2xl">
+    <Card
+      className={
+        compact
+          ? 'rounded-none border-0 p-0 shadow-none'
+          : 'rounded-2xl border border-gray-200/80 p-5 shadow-none sm:p-7 lg:p-8'
+      }
+    >
+      {!compact && (
+        <div className="mb-8 border-b border-gray-100 pb-5 sm:mb-10 sm:pb-6">
+          <h2 className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl">{t('profile.password.title')}</h2>
+        </div>
+      )}
+      <form
+        onSubmit={onSave}
+        className={`mx-auto max-w-xl lg:mx-0 lg:max-w-2xl ${compact ? 'space-y-4' : 'space-y-6'}`}
+      >
         <Input
           label={t('profile.password.currentPassword')}
           type="password"

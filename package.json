@@ -24,7 +24,10 @@
     "db:migrate": "pnpm --filter @white-shop/db db:migrate",
     "db:studio": "pnpm --filter @white-shop/db db:studio",
     "db:seed": "node shared/db/prisma/seed.cjs",
-    "db:migrate:deploy": "node src/scripts/run-migrations.js"
+    "db:migrate:deploy": "node src/scripts/run-migrations.js",
+    "migrate:product-images": "node scripts/migrate-product-base64-to-urls.js --dry-run",
+    "migrate:product-images:apply": "node scripts/migrate-product-base64-to-urls.js --apply",
+    "optimize:public": "node src/scripts/optimize-public-assets.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.995.0",
@@ -65,6 +68,8 @@
     "eslint": "^9.0.0",
     "eslint-config-next": "^16.0.7",
     "postcss": "^8.4.0",
+    "sharp": "^0.35.2",
+    "svgo": "^4.0.1",
     "tailwindcss": "^3.4.0",
     "typescript": "^5.3.0",
     "vitest": "^4.0.18"

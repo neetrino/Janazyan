@@ -1,5 +1,6 @@
 import { apiClient } from '../../lib/api-client';
 import { logger } from '../../lib/utils/logger';
+import { parseSyntheticCartItemId } from '../../lib/cart/cart-item-id';
 import { persistCartSnapshotFromAuth } from '../../lib/cart/cart-snapshot-cache';
 import type { Cart, CartItem } from './types';
 import { CART_KEY } from './constants';
@@ -12,20 +13,6 @@ interface GuestCartItem {
   productSlug?: string;
   variantId: string;
   quantity: number;
-}
-
-/**
- * Parse item ID to extract productId and variantId
- */
-function parseItemId(itemId: string): { productId: string; variantId: string } | null {
-  // itemId format: `${productId}-${variantId}-${index}`
-  const parts = itemId.split('-');
-  if (parts.length >= 2) {
-    const productId = parts[0];
-    const variantId = parts.slice(1, -1).join('-'); // variantId-ն կարող է պարունակել '-'
-    return { productId, variantId };
-  }
-  return null;
 }
 
 /**
@@ -46,7 +33,7 @@ function calculateCartTotals(items: CartItem[], existingTotals: Cart['totals']):
 function removeFromGuestCart(itemId: string): void {
   if (typeof window === 'undefined') return;
 
-  const parsed = parseItemId(itemId);
+  const parsed = parseSyntheticCartItemId(itemId);
   if (!parsed) return;
 
   const stored = localStorage.getItem(CART_KEY);
@@ -66,7 +53,7 @@ function removeFromGuestCart(itemId: string): void {
 function updateGuestCartQuantity(itemId: string, quantity: number): void {
   if (typeof window === 'undefined') return;
 
-  const parsed = parseItemId(itemId);
+  const parsed = parseSyntheticCartItemId(itemId);
   if (!parsed) return;
 
   const stored = localStorage.getItem(CART_KEY);

@@ -4,6 +4,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { formatPriceInCurrency } from '../../lib/currency';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS } from './checkout-layout.constants';
 import { CHECKOUT_GLASS_ERROR_CLASS } from './checkout-glass-styles';
 
 interface Cart {
@@ -35,7 +36,6 @@ interface OrderSummaryProps {
   deliveryPrice: number | null;
   error: string | null;
   isSubmitting: boolean;
-  onPlaceOrder: (e?: React.FormEvent) => void;
 }
 
 export function OrderSummary({
@@ -48,13 +48,12 @@ export function OrderSummary({
   deliveryPrice,
   error,
   isSubmitting,
-  onPlaceOrder,
 }: OrderSummaryProps) {
   const { t } = useTranslation();
 
   return (
-    <div>
-      <CheckoutGlassCard className="sticky top-4">
+    <div className={CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS}>
+      <CheckoutGlassCard>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
         <div className="space-y-4 mb-6">
           <div className="flex justify-between text-gray-600">
@@ -97,7 +96,6 @@ export function OrderSummary({
           type="submit"
           className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
           disabled={isSubmitting}
-          onClick={onPlaceOrder}
         >
           {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.placeOrder')}
         </button>

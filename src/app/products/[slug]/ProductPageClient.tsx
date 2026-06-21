@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useLayoutEffect, useState } from 'react';
+import { useLayoutEffect, useState, useEffect } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { t } from '../../../lib/i18n';
 import { useAuth } from '../../../lib/auth/AuthContext';
@@ -14,6 +14,7 @@ import { ProductPageShell } from './ProductPageShell';
 import { useProductPage } from './useProductPage';
 import { playCartFlyAnimation } from '../../../lib/cart-fly-animation';
 import type { Product } from './types';
+import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
 
 const RelatedProducts = dynamic(
   () => import('../../../components/RelatedProducts').then((m) => ({ default: m.RelatedProducts })),
@@ -23,8 +24,8 @@ const RelatedProducts = dynamic(
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 h-9 w-64 animate-pulse rounded-lg bg-gray-200" />
         </div>
-        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-5 xl:gap-x-10">
-          {[1, 2, 3, 4, 5].map((i) => (
+        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
+          {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
               className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
@@ -54,6 +55,9 @@ export interface ProductPageClientProps {
   language: LanguageCode;
   initialProduct: Product | null;
   initialNotFound: boolean;
+  initialReviews: Review[];
+  galleryHydrationRequired: boolean;
+  initialRelated?: RelatedCardPayload[];
 }
 
 export function ProductPageClient({
@@ -62,9 +66,16 @@ export function ProductPageClient({
   language: serverLanguage,
   initialProduct,
   initialNotFound,
+  initialReviews,
+  galleryHydrationRequired,
+  initialRelated = [],
 }: ProductPageClientProps) {
   const { isLoggedIn } = useAuth();
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+
+  useEffect(() => {
+    setReviews(initialReviews);
+  }, [initialReviews]);
 
   const {
     product,
@@ -117,6 +128,7 @@ export function ProductPageClient({
     serverLanguage,
     initialProduct,
     initialNotFound,
+    galleryHydrationRequired,
     reviews,
   });
 
@@ -247,6 +259,8 @@ export function ProductPageClient({
         productSlug={slug}
         categorySlug={product.categories?.[0]?.slug}
         currentProductId={product.id}
+        language={language}
+        initialRelated={initialRelated}
       />
 
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
@@ -254,6 +268,7 @@ export function ProductPageClient({
           <ProductReviews
             productSlug={slug}
             productId={product.id}
+            initialReviews={initialReviews}
             onReviewsChange={setReviews}
           />
         </div>

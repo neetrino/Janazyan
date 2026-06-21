@@ -1,7 +1,7 @@
 import { db } from "@white-shop/db";
 import { logger } from "../../utils/logger";
 import { computeProductGalleryUrls } from "./product-gallery-urls";
-import { getBaseWhere } from "./product-query-builder";
+import { getBaseWhere } from "./product-query-where";
 
 export interface ProductVisualPayload {
   id: string;

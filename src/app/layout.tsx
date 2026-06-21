@@ -5,7 +5,6 @@ import {
   Montserrat,
   DM_Serif_Display,
   Noto_Sans_Armenian,
-  Special_Gothic_Expanded_One,
   Space_Grotesk,
   DM_Sans,
 } from 'next/font/google';
@@ -30,11 +29,11 @@ const dmSerif = DM_Serif_Display({
   display: 'swap',
 });
 
-const specialGothic = Special_Gothic_Expanded_One({
-  subsets: ['latin'],
-  weight: ['400'],
+const wideDisplay = localFont({
+  src: '../assets/fonts/Special-Gothic-Expanded-One.ttf',
   variable: '--font-wide-display',
   display: 'swap',
+  weight: '400',
 });
 
 const spaceGrotesk = Space_Grotesk({
@@ -64,7 +63,20 @@ const mirageExpanded = localFont({
   display: 'swap',
 });
 
+function resolveMetadataBase(): URL {
+  const configured =
+    process.env.NEXT_PUBLIC_APP_URL?.trim() || process.env.APP_URL?.trim();
+  if (configured) {
+    return new URL(configured);
+  }
+  if (process.env.VERCEL_URL) {
+    return new URL(`https://${process.env.VERCEL_URL}`);
+  }
+  return new URL('http://localhost:3000');
+}
+
 export const metadata: Metadata = {
+  metadataBase: resolveMetadataBase(),
   title: 'Janazyan — Premium Baby & Family Care',
   description:
     'Premium baby & family skincare crafted with love, safety and your family comfort in mind.',
@@ -88,7 +100,7 @@ export default function RootLayout({
         'h-full',
         montserrat.variable,
         dmSerif.variable,
-        specialGothic.variable,
+        wideDisplay.variable,
         spaceGrotesk.variable,
         dmSans.variable,
         notoSansArmenian.variable,

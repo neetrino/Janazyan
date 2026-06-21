@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { reviewsService } from "@/lib/services/reviews.service";
 import { authenticateToken } from "@/lib/middleware/auth";
 import { productsService } from "@/lib/services/products.service";
+import { invalidateProductReviewsCaches } from "@/lib/cache/storefront-cache";
+import { getProductReviewsBySlugCached } from "@/lib/products/load-product-reviews-cached";
 import { logger } from "@/lib/utils/logger";
 
 export const dynamic = "force-dynamic";
@@ -24,23 +26,21 @@ export async function GET(
     
     logger.debug('📝 [REVIEWS API] GET request for product slug:', slug, { myReview });
 
-    // First, get the product by slug to get the productId
-    const product = await productsService.findBySlug(slug, lang);
-    if (!product || !product.id) {
-      return NextResponse.json(
-        {
-          type: "https://api.shop.am/problems/not-found",
-          title: "Product not found",
-          status: 404,
-          detail: `Product with slug '${slug}' does not exist`,
-          instance: req.url,
-        },
-        { status: 404 }
-      );
-    }
-
-    // If my=true, return user's review
     if (myReview) {
+      const product = await productsService.findBySlug(slug, lang);
+      if (!product?.id) {
+        return NextResponse.json(
+          {
+            type: "https://api.shop.am/problems/not-found",
+            title: "Product not found",
+            status: 404,
+            detail: `Product with slug '${slug}' does not exist`,
+            instance: req.url,
+          },
+          { status: 404 }
+        );
+      }
+
       const user = await authenticateToken(req);
       if (!user) {
         return NextResponse.json(
@@ -59,10 +59,20 @@ export async function GET(
       return NextResponse.json(review);
     }
 
-    // Otherwise, return all published reviews
-    const reviews = await reviewsService.getProductReviews(product.id, {
-      publishedOnly: true,
-    });
+    // Published reviews — Redis-backed; lightweight slug lookup inside cache loader
+    const reviews = await getProductReviewsBySlugCached(slug, lang);
+    if (reviews === null) {
+      return NextResponse.json(
+        {
+          type: "https://api.shop.am/problems/not-found",
+          title: "Product not found",
+          status: 404,
+          detail: `Product with slug '${slug}' does not exist`,
+          instance: req.url,
+        },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(reviews);
   } catch (error: any) {
@@ -160,6 +170,8 @@ export async function POST(
     });
 
     logger.debug('✅ [REVIEWS API] Review created:', review.id);
+
+    await invalidateProductReviewsCaches();
 
     return NextResponse.json(review, { status: 201 });
   } catch (error: any) {

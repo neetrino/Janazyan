@@ -2,6 +2,7 @@
 
 import { Card } from '@shop/ui';
 import { useTranslation } from '../../../../lib/i18n-client';
+import { AdminThumbnailImage } from '../../components/AdminThumbnailImage';
 import { formatCurrency } from '../utils';
 import type { AnalyticsData } from '../types';
 
@@ -43,15 +44,15 @@ export function TopProducts({ products }: TopProductsProps) {
                   {index + 1}
                 </div>
               </div>
-              {product.image && (
+              {product.image ? (
                 <div className="flex-shrink-0">
-                  <img
+                  <AdminThumbnailImage
                     src={product.image}
                     alt={product.title}
-                    className="w-14 h-14 object-cover rounded-lg border border-gray-200 group-hover:scale-105 transition-transform"
+                    className="h-14 w-14 rounded-lg border border-gray-200 object-cover transition-transform group-hover:scale-105"
                   />
                 </div>
-              )}
+              ) : null}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-semibold text-gray-900 truncate mb-1">{product.title}</p>
                 <p className="text-xs text-gray-500 mb-1">{t('admin.analytics.skuLabel')}: {product.sku}</p>

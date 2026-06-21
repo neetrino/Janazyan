@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { apiClient } from '../../lib/api-client';
 import type { Cart } from '../../app/cart/types';
 import { useAuth } from '../../lib/auth/AuthContext';
 import {
@@ -12,6 +11,7 @@ import {
 } from '../../lib/cart/cart-snapshot-cache';
 import { isCartSnapshotFresh } from '../../lib/cart/cart-snapshot-cache';
 import { getGuestCartItemCount } from '../../lib/storageCounts';
+import { fetchLoggedInCart } from '../../app/cart/cart-fetcher';
 
 const CART_COUNT_CAP = 99;
 
@@ -79,11 +79,11 @@ export function useCartItemCount(): number {
     }
 
     try {
-      const response = await apiClient.get<{ cart: Cart | null }>('/api/v1/cart');
-      setCount(resolveItemsCount(response.cart));
+      const cart = await fetchLoggedInCart();
+      setCount(resolveItemsCount(cart));
       if (scope) {
-        if (response.cart) {
-          writeCartSnapshot(scope, response.cart);
+        if (cart) {
+          writeCartSnapshot(scope, cart);
         } else {
           clearCartSnapshot(scope);
         }

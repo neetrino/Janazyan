@@ -1,6 +1,7 @@
 import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
 import type { UpdateOrderData } from "./types";
+import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
 
 /**
  * Delete order
@@ -54,6 +55,9 @@ export async function deleteOrder(orderId: string) {
         where: { id: orderId },
       });
       logger.info('Order deleted successfully', { orderId, orderNumber: existing.number });
+      void invalidateAdminDashboardCache().catch((error: unknown) => {
+        logger.warn('Failed to invalidate admin dashboard cache after order delete', { error });
+      });
     } catch (deleteError: unknown) {
       const errorMessage = deleteError instanceof Error ? deleteError.message : String(deleteError);
       const errorCode = deleteError && typeof deleteError === 'object' && 'code' in deleteError ? String(deleteError.code) : '';
@@ -219,6 +223,10 @@ export async function updateOrder(orderId: string, data: UpdateOrderData) {
           newStatus: data.status || existing.status,
         },
       },
+    });
+
+    void invalidateAdminDashboardCache().catch((error: unknown) => {
+      logger.warn('Failed to invalidate admin dashboard cache after order update', { error });
     });
 
     return order;

@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { revalidatePartnerStoresPublicCache } from '@/lib/partner-stores/revalidate-partner-stores-cache';
 import { authenticateToken, requireAdmin } from '@/lib/middleware/auth';
 import { adminService } from '@/lib/services/admin.service';
+import {
+  ADMIN_LIST_SERVER_CACHE_KEYS,
+  invalidateAdminListServerCache,
+} from '@/lib/cache/admin-list-server-cache';
 
 /**
  * PUT /api/v1/admin/partner-stores/[id]
@@ -28,6 +32,7 @@ export async function PUT(
     const { id } = await params;
     const body = await req.json();
     const result = await adminService.updatePartnerStore(id, body);
+    await invalidateAdminListServerCache(ADMIN_LIST_SERVER_CACHE_KEYS.partnerStores);
     await revalidatePartnerStoresPublicCache();
     return NextResponse.json(result);
   } catch (error: unknown) {
@@ -69,6 +74,7 @@ export async function DELETE(
 
     const { id } = await params;
     await adminService.deletePartnerStore(id);
+    await invalidateAdminListServerCache(ADMIN_LIST_SERVER_CACHE_KEYS.partnerStores);
     await revalidatePartnerStoresPublicCache();
     return NextResponse.json({ success: true });
   } catch (error: unknown) {

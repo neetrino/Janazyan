@@ -1,8 +1,9 @@
+import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getServerLanguage } from '@/lib/language-server';
 import { parseProductSlugParam } from '@/lib/products/parse-product-slug';
-import { fetchProductPageProduct } from '@/lib/products/product-page-cache';
-import { ProductPageClient } from './ProductPageClient';
+import { ProductPageServer } from './ProductPageServer';
+import { ProductPageShell } from './ProductPageShell';
 import { RESERVED_ROUTES } from './types';
 
 export const revalidate = 300;
@@ -12,7 +13,7 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const resolvedParams = await params;
+  const [resolvedParams, language] = await Promise.all([params, getServerLanguage()]);
   const rawSlug = resolvedParams?.slug ?? '';
   const { slug, variantIdFromUrl } = parseProductSlugParam(rawSlug);
 
@@ -20,16 +21,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
     redirect(`/${slug}`);
   }
 
-  const language = await getServerLanguage();
-  const product = await fetchProductPageProduct(slug, language);
-
   return (
-    <ProductPageClient
-      slug={slug}
-      variantIdFromUrl={variantIdFromUrl}
-      language={language}
-      initialProduct={product}
-      initialNotFound={!product}
-    />
+    <Suspense fallback={<ProductPageShell />}>
+      <ProductPageServer
+        slug={slug}
+        variantIdFromUrl={variantIdFromUrl}
+        language={language}
+      />
+    </Suspense>
   );
 }

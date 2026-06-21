@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateToken, requireAdmin } from '@/lib/middleware/auth';
 import { adminService } from '@/lib/services/admin.service';
+import {
+  ADMIN_LIST_SERVER_CACHE_KEYS,
+  invalidateAdminListServerCache,
+  loadAdminListServerCached,
+} from '@/lib/cache/admin-list-server-cache';
 
 /**
  * GET /api/v1/admin/blog-posts
@@ -21,7 +26,10 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const result = await adminService.getBlogPosts();
+    const result = await loadAdminListServerCached(
+      ADMIN_LIST_SERVER_CACHE_KEYS.blogPosts,
+      () => adminService.getBlogPosts(),
+    );
     return NextResponse.json(result);
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };
@@ -59,6 +67,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     const result = await adminService.createBlogPost(body);
+    await invalidateAdminListServerCache(ADMIN_LIST_SERVER_CACHE_KEYS.blogPosts);
     return NextResponse.json(result, { status: 201 });
   } catch (error: unknown) {
     const err = error as { status?: number; type?: string; title?: string; detail?: string; message?: string };

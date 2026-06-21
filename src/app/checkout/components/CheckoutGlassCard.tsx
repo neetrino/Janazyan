@@ -12,7 +12,7 @@ export function CheckoutGlassCard({
   ...props
 }: CheckoutGlassCardProps) {
   return (
-    <div className={`${CHECKOUT_GLASS_CARD_CLASS} p-6 ${className}`.trim()} {...props}>
+    <div className={`${CHECKOUT_GLASS_CARD_CLASS} p-4 sm:p-6 ${className}`.trim()} {...props}>
       {children}
     </div>
   );

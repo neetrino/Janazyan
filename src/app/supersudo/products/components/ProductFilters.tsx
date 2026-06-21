@@ -77,9 +77,12 @@ export function ProductFilters({
           <input
             type="text"
             value={skuSearch}
-            onChange={(e) => {
-              setSkuSearch(e.target.value);
-              setPage(1);
+            onChange={(e) => setSkuSearch(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSearch(e as FormEvent);
+              }
             }}
             placeholder={t('admin.products.skuPlaceholder')}
             className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"

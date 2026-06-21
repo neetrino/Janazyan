@@ -16,52 +16,49 @@ export interface ActivityItem {
 export async function getActivity(limit: number = 10): Promise<ActivityItem[]> {
   const activities: ActivityItem[] = [];
 
-  // Get recent orders
-  const recentOrders = await db.order.findMany({
-    take: limit,
-    orderBy: { createdAt: "desc" },
-    include: {
-      items: true,
-    },
-  });
+  const [recentOrders, recentUsers] = await Promise.all([
+    db.order.findMany({
+      take: limit,
+      orderBy: { createdAt: "desc" },
+      select: {
+        number: true,
+        total: true,
+        currency: true,
+        createdAt: true,
+        _count: {
+          select: { items: true },
+        },
+      },
+    }),
+    db.user.findMany({
+      take: Math.floor(limit / 2),
+      orderBy: { createdAt: "desc" },
+      where: { deletedAt: null },
+      select: {
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        createdAt: true,
+      },
+    }),
+  ]);
 
-  recentOrders.forEach((order: { 
-    number: string; 
-    items: Array<unknown>; 
-    total: number; 
-    currency: string | null; 
-    createdAt: Date 
-  }) => {
+  recentOrders.forEach((order) => {
     activities.push({
       type: "order",
       title: `New Order #${order.number}`,
-      description: `${order.items.length} items • ${order.total} ${order.currency}`,
+      description: `${order._count.items} items • ${order.total} ${order.currency}`,
       timestamp: order.createdAt.toISOString(),
     });
   });
 
-  // Get recent user registrations
-  const recentUsers = await db.user.findMany({
-    take: Math.floor(limit / 2),
-    orderBy: { createdAt: "desc" },
-    where: { deletedAt: null },
-    select: {
-      firstName: true,
-      lastName: true,
-      email: true,
-      phone: true,
-      createdAt: true,
-    },
-  });
-
-  recentUsers.forEach((user: { 
-    firstName: string | null; 
-    lastName: string | null; 
-    email: string | null; 
-    phone: string | null; 
-    createdAt: Date 
-  }) => {
-    const name = [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email || user.phone || "New User";
+  recentUsers.forEach((user) => {
+    const name =
+      [user.firstName, user.lastName].filter(Boolean).join(" ") ||
+      user.email ||
+      user.phone ||
+      "New User";
     activities.push({
       type: "user",
       title: "New User Registration",
@@ -70,12 +67,7 @@ export async function getActivity(limit: number = 10): Promise<ActivityItem[]> {
     });
   });
 
-  // Sort by timestamp (most recent first) and limit
   return activities
     .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
     .slice(0, limit);
 }
-
-
-
-

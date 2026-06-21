@@ -1,8 +1,9 @@
 'use client';
 
 import { useMemo } from 'react';
+import Link from 'next/link';
 import type { AdminMenuItem } from '../../../components/AdminMenuDrawer';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { BrandLogoLink } from '../../../components/BrandLogoLink';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -47,7 +48,6 @@ function isProductsNestedTabVisible(
 
 export function AdminSidebar() {
   const { t } = useTranslation();
-  const router = useRouter();
   const pathname = usePathname() ?? '/supersudo';
   const adminTabs = useMemo(() => getAdminMenuTABS(t), [t]);
   const { collapsed } = useAdminSidebarCollapse();
@@ -90,12 +90,10 @@ export function AdminSidebar() {
                     isActive ? 'bg-gray-900 text-white' : 'text-gray-700'
                   }`}
                 >
-                  <button
-                    type="button"
+                  <Link
+                    href={tab.path}
+                    prefetch={false}
                     title={tab.label}
-                    onClick={() => {
-                      router.push(tab.path);
-                    }}
                     className={`flex min-w-0 flex-1 items-center gap-3 rounded-l-md px-4 py-3 text-left text-sm font-medium transition-all ${
                       isActive
                         ? 'text-white hover:bg-gray-800'
@@ -104,7 +102,7 @@ export function AdminSidebar() {
                   >
                     <span className={`shrink-0 ${isActive ? 'text-white' : 'text-gray-500'}`}>{tab.icon}</span>
                     <span className="min-w-0 truncate">{tab.label}</span>
-                  </button>
+                  </Link>
                   <button
                     type="button"
                     aria-expanded={productsNestedExpanded}
@@ -134,20 +132,18 @@ export function AdminSidebar() {
             }
 
             return (
-              <button
+              <Link
                 key={tab.id}
-                type="button"
+                href={tab.path}
+                prefetch={false}
                 title={tab.label}
-                onClick={() => {
-                  router.push(tab.path);
-                }}
                 className={rowClasses}
               >
                 <span className={`flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500'}`}>
                   {tab.icon}
                 </span>
                 {!collapsed ? <span className="min-w-0 text-left">{tab.label}</span> : null}
-              </button>
+              </Link>
             );
           })}
         </nav>

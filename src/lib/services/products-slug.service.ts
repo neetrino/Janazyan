@@ -1,5 +1,6 @@
 import { buildProductQuery } from "./products-slug/product-query-builder";
 import { transformProduct } from "./products-slug/product-transformer";
+import { getProductDiscountSettings } from "./products-discount-settings.cache";
 
 /**
  * Service for fetching products by slug
@@ -9,8 +10,10 @@ class ProductsSlugService {
    * Get product by slug
    */
   async findBySlug(slug: string, lang: string = "en") {
-    // Build and execute query with comprehensive error handling
-    const product = await buildProductQuery(slug, lang);
+    const [product, discountSettings] = await Promise.all([
+      buildProductQuery(slug, lang),
+      getProductDiscountSettings(),
+    ]);
 
     if (!product) {
       throw {
@@ -21,8 +24,7 @@ class ProductsSlugService {
       };
     }
 
-    // Transform product data to response format
-    return transformProduct(product, lang);
+    return transformProduct(product, lang, discountSettings);
   }
 }
 

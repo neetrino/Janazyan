@@ -22,6 +22,11 @@ import {
   ADMIN_TABLE_THEAD,
 } from '../constants/admin-table-classes';
 import { logger } from "@/lib/utils/logger";
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  buildAdminPaginatedListCacheKey,
+  fetchAdminListCached,
+} from '@/lib/admin/admin-list-client-cache';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 
 interface User {
@@ -53,7 +58,8 @@ export default function UsersPage() {
   const router = useRouter();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
+  const [appliedSearch, setAppliedSearch] = useState('');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<UsersResponse['meta'] | null>(null);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -72,16 +78,19 @@ export default function UsersPage() {
   const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
-      logger.debug('👥 [ADMIN] Fetching users...', { page, search, roleFilter });
-      
-      const response = await apiClient.get<UsersResponse>('/api/v1/admin/users', {
-        params: {
-          page: page.toString(),
-          limit: '20',
-          search: search || '',
-          role: roleFilter === 'all' ? '' : roleFilter,
-        },
-      });
+      logger.debug('👥 [ADMIN] Fetching users...', { page, appliedSearch, roleFilter });
+
+      const listParams = {
+        page: page.toString(),
+        limit: '20',
+        search: appliedSearch || '',
+        role: roleFilter === 'all' ? '' : roleFilter,
+      };
+
+      const response = await fetchAdminListCached(
+        buildAdminPaginatedListCacheKey('users', listParams),
+        () => apiClient.get<UsersResponse>('/api/v1/admin/users', { params: listParams }),
+      );
 
       logger.debug('✅ [ADMIN] Users fetched:', response);
       setUsers(response.data || []);
@@ -91,19 +100,19 @@ export default function UsersPage() {
     } finally {
       setLoading(false);
     }
-  }, [page, search, roleFilter]);
+  }, [page, appliedSearch, roleFilter]);
 
   useEffect(() => {
     if (isLoggedIn && isAdmin) {
       fetchUsers();
     }
      
-  }, [isLoggedIn, isAdmin, page, search, roleFilter]);
+  }, [isLoggedIn, isAdmin, page, appliedSearch, roleFilter, fetchUsers]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setAppliedSearch(searchInput.trim());
     setPage(1);
-    fetchUsers();
   };
 
   const toggleSelect = (id: string) => {
@@ -216,8 +225,8 @@ export default function UsersPage() {
             <div className="flex gap-4">
               <Input
                 type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
                 placeholder={t('admin.users.searchPlaceholder')}
                 className="flex-1"
               />

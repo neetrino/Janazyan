@@ -1,6 +1,6 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
-import { adminService } from "./admin.service";
+import { adminSettingsService } from "./admin/admin-settings.service";
 import { ProductWithRelations } from "./products-find-query.service";
 
 class ProductsFiltersService {
@@ -375,7 +375,7 @@ class ProductsFiltersService {
       let stepSize: number | null = null;
       let stepSizePerCurrency: Record<string, number> | null = null;
       try {
-        const settings = await adminService.getPriceFilterSettings();
+        const settings = await adminSettingsService.getPriceFilterSettings();
         stepSize = settings.stepSize ?? null;
         if (settings.stepSizePerCurrency) {
           stepSizePerCurrency = {
@@ -472,7 +472,7 @@ class ProductsFiltersService {
     } | null = null;
 
     try {
-      const settings = await adminService.getPriceFilterSettings();
+      const settings = await adminSettingsService.getPriceFilterSettings();
       stepSize = settings.stepSize ?? null;
 
       if (settings.stepSizePerCurrency) {

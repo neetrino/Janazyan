@@ -2,6 +2,7 @@ import { ProductFilters } from "./products-find-query.service";
 import { productsFindQueryService } from "./products-find-query.service";
 import { productsFindFilterService } from "./products-find-filter.service";
 import { productsFindTransformService } from "./products-find-transform.service";
+import { getProductDiscountSettings } from "./products-discount-settings.cache";
 
 class ProductsFindService {
   /**
@@ -14,9 +15,12 @@ class ProductsFindService {
       lang = "en",
     } = filters;
 
-    // Step 1: Build query and fetch products from database
-    const { products, bestsellerProductIds, total: totalFromQuery } =
-      await productsFindQueryService.buildQueryAndFetch(filters);
+    // Step 1: Fetch products and discount settings in parallel (catalog hot path).
+    const [{ products, bestsellerProductIds, total: totalFromQuery }, discountSettings] =
+      await Promise.all([
+        productsFindQueryService.buildQueryAndFetch(filters),
+        getProductDiscountSettings(),
+      ]);
 
     // Step 2: Filter products in memory (price, colors, sizes, brand) and sort.
     // Catalog path is already DB-paginated/ordered, so skip the in-memory pass.
@@ -49,7 +53,10 @@ class ProductsFindService {
     const data = await productsFindTransformService.transformProducts(
       paginatedProducts,
       lang,
-      { catalog: filters.catalog === true }
+      {
+        catalog: filters.catalog === true,
+        discountSettings,
+      },
     );
 
     return {

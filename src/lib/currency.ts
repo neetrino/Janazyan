@@ -28,41 +28,50 @@ function formatAmountWithCurrencySymbol(amount: number, currency: CurrencyCode):
 // Cache for currency rates from API
 let currencyRatesCache: Record<string, number> | null = null;
 let currencyRatesCacheTime: number = 0;
+let currencyRatesInflight: Promise<Record<string, number>> | null = null;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 /**
  * Get currency rates from API with caching
  */
 async function getCurrencyRates(): Promise<Record<string, number>> {
-  // Return cached rates if still valid
   if (currencyRatesCache && Date.now() - currencyRatesCacheTime < CACHE_DURATION) {
     return currencyRatesCache;
   }
 
-  try {
-    const response = await fetch('/api/v1/currency-rates', {
-      cache: 'no-store', // Always fetch fresh rates
-    });
-    if (response.ok) {
-      const rates = await response.json();
-      currencyRatesCache = rates;
-      currencyRatesCacheTime = Date.now();
-      return rates;
-    } else {
-      console.error('❌ [CURRENCY] API returned error:', response.status, response.statusText);
-    }
-  } catch (error) {
-    console.error('❌ [CURRENCY] Failed to fetch currency rates:', error);
+  if (currencyRatesInflight) {
+    return currencyRatesInflight;
   }
 
-  // Return default rates on error
-  return {
-    USD: 1,
-    AMD: 400,
-    EUR: 0.92,
-    RUB: 90,
-    GEL: 2.7,
-  };
+  currencyRatesInflight = (async () => {
+    try {
+      const response = await fetch('/api/v1/currency-rates', {
+        cache: 'no-store',
+      });
+      if (response.ok) {
+        const rates = await response.json();
+        currencyRatesCache = rates;
+        currencyRatesCacheTime = Date.now();
+        return rates;
+      }
+
+      console.error('❌ [CURRENCY] API returned error:', response.status, response.statusText);
+    } catch (error) {
+      console.error('❌ [CURRENCY] Failed to fetch currency rates:', error);
+    } finally {
+      currencyRatesInflight = null;
+    }
+
+    return {
+      USD: 1,
+      AMD: 400,
+      EUR: 0.92,
+      RUB: 90,
+      GEL: 2.7,
+    };
+  })();
+
+  return currencyRatesInflight;
 }
 
 /**
@@ -71,6 +80,7 @@ async function getCurrencyRates(): Promise<Record<string, number>> {
 export function clearCurrencyRatesCache(): void {
   currencyRatesCache = null;
   currencyRatesCacheTime = 0;
+  currencyRatesInflight = null;
   // Dispatch event to notify components
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new Event('currency-rates-updated'));

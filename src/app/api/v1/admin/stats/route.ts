@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateToken, requireAdmin } from "@/lib/middleware/auth";
 import { adminService } from "@/lib/services/admin.service";
 import { logger } from "@/lib/utils/logger";
+import { readJsonCache, writeJsonCache } from "@/lib/cache/storefront-cache-io";
+import { dedupeInFlight } from "@/lib/cache/in-flight-dedup";
+import { ADMIN_DASHBOARD_CACHE_TTL_SECONDS } from "@/lib/cache/admin-dashboard-cache.constants";
+
+const ADMIN_STATS_CACHE_KEY = "admin:stats:v1";
 
 /**
  * Force dynamic rendering for this route
@@ -33,7 +38,26 @@ export async function GET(req: NextRequest) {
     }
 
     logger.debug(`✅ [ADMIN STATS] User authenticated: ${user.id}`);
-    const result = await adminService.getStats();
+
+    const cached = await readJsonCache<Awaited<ReturnType<typeof adminService.getStats>>>(
+      ADMIN_STATS_CACHE_KEY,
+    );
+    if (cached) {
+      return NextResponse.json(cached);
+    }
+
+    const result = await dedupeInFlight(ADMIN_STATS_CACHE_KEY, async () => {
+      const cachedAfterLock = await readJsonCache<Awaited<ReturnType<typeof adminService.getStats>>>(
+        ADMIN_STATS_CACHE_KEY,
+      );
+      if (cachedAfterLock) {
+        return cachedAfterLock;
+      }
+
+      const fresh = await adminService.getStats();
+      await writeJsonCache(ADMIN_STATS_CACHE_KEY, ADMIN_DASHBOARD_CACHE_TTL_SECONDS, fresh);
+      return fresh;
+    });
     logger.debug("✅ [ADMIN STATS] Stats data retrieved successfully");
     
     return NextResponse.json(result);

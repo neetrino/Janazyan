@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { apiClient } from '../../lib/api-client';
 import { CART_DELIVERY_ESTIMATE_CITY } from './constants';
+import { fetchDeliveryPriceCached } from '@/lib/delivery/fetch-delivery-price-cached';
 
 const DELIVERY_ESTIMATE_CACHE_KEY = 'shop_cart_delivery_estimate_amd_v1';
 
@@ -45,15 +45,13 @@ export function useCartDeliveryEstimate(): UseCartDeliveryEstimateResult {
         setLoadingDelivery(true);
       }
       try {
-        const response = await apiClient.get<{ price: number }>('/api/v1/delivery/price', {
-          params: {
-            city: CART_DELIVERY_ESTIMATE_CITY,
-            country: 'Armenia',
-          },
+        const price = await fetchDeliveryPriceCached({
+          city: CART_DELIVERY_ESTIMATE_CITY,
+          country: 'Armenia',
         });
         if (!cancelled) {
-          setDeliveryPriceAMD(response.price);
-          sessionStorage.setItem(DELIVERY_ESTIMATE_CACHE_KEY, String(response.price));
+          setDeliveryPriceAMD(price);
+          sessionStorage.setItem(DELIVERY_ESTIMATE_CACHE_KEY, String(price));
         }
       } catch {
         if (!cancelled) {

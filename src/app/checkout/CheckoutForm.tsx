@@ -11,7 +11,10 @@ import {
   CHECKOUT_GLASS_OPTION_IDLE,
   CHECKOUT_GLASS_OPTION_SELECTED,
 } from './checkout-glass-styles';
+import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from './checkout-layout.constants';
 import { CheckoutFormData } from './types';
+
+const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
 interface CheckoutFormProps {
   register: UseFormRegister<CheckoutFormData>;
@@ -55,46 +58,61 @@ export function CheckoutForm({
 
   return (
     <div className="lg:col-span-2 space-y-6">
-      <CheckoutGlassCard>
+      <CheckoutGlassCard
+        className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
+        data-checkout-section="contact"
+      >
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.contactInformation')}</h2>
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label={t('checkout.form.firstName')}
-              type="text"
-              {...register('firstName')}
-              error={errors.firstName?.message}
-              disabled={isSubmitting}
-            />
-            <Input
-              label={t('checkout.form.lastName')}
-              type="text"
-              {...register('lastName')}
-              error={errors.lastName?.message}
-              disabled={isSubmitting}
-            />
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="firstName">
+              <Input
+                label={t('checkout.form.firstName')}
+                type="text"
+                {...register('firstName')}
+                error={errors.firstName?.message}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="lastName">
+              <Input
+                label={t('checkout.form.lastName')}
+                type="text"
+                {...register('lastName')}
+                error={errors.lastName?.message}
+                disabled={isSubmitting}
+              />
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input
-              label={t('checkout.form.email')}
-              type="email"
-              {...register('email')}
-              error={errors.email?.message}
-              disabled={isSubmitting}
-            />
-            <Input
-              label={t('checkout.form.phone')}
-              type="tel"
-              placeholder={t('checkout.placeholders.phone')}
-              {...register('phone')}
-              error={errors.phone?.message}
-              disabled={isSubmitting}
-            />
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="email">
+              <Input
+                label={t('checkout.form.email')}
+                type="email"
+                {...register('email')}
+                error={errors.email?.message}
+                disabled={isSubmitting}
+              />
+            </div>
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="phone">
+              <Input
+                label={t('checkout.form.phone')}
+                type="tel"
+                placeholder={t('checkout.placeholders.phone')}
+                {...register('phone')}
+                error={errors.phone?.message}
+                disabled={isSubmitting}
+              />
+            </div>
           </div>
         </div>
       </CheckoutGlassCard>
 
-      <CheckoutGlassCard>
+      <CheckoutGlassCard
+        className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
+        data-checkout-field="shippingMethod"
+        data-checkout-section="shipping-method"
+      >
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingMethod')}</h2>
         {errors.shippingMethod && (
           <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
@@ -136,7 +154,10 @@ export function CheckoutForm({
       </CheckoutGlassCard>
 
       {shippingMethod === 'delivery' && (
-        <CheckoutGlassCard data-shipping-section>
+        <CheckoutGlassCard
+          className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
+          data-shipping-section
+        >
           <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
           {(error && error.includes('shipping address')) || (errors.shippingAddress || errors.shippingCity) ? (
             <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
@@ -148,7 +169,7 @@ export function CheckoutForm({
             </div>
           ) : null}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingCity">
               <Input
                 label={t('checkout.form.city')}
                 type="text"
@@ -164,7 +185,7 @@ export function CheckoutForm({
                 disabled={isSubmitting}
               />
             </div>
-            <div>
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingAddress">
               <Input
                 label={t('checkout.form.address')}
                 type="text"
@@ -184,7 +205,11 @@ export function CheckoutForm({
         </CheckoutGlassCard>
       )}
 
-      <CheckoutGlassCard>
+      <CheckoutGlassCard
+        className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
+        data-checkout-field="paymentMethod"
+        data-checkout-section="payment-method"
+      >
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.paymentMethod')}</h2>
         {errors.paymentMethod && (
           <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>

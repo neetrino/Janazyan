@@ -8,6 +8,7 @@ import {
 import { logger } from "../utils/logger";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
+import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -457,6 +458,10 @@ class OrdersService {
       },
         { timeout: 10000, maxWait: 5000 }
       );
+
+      void invalidateAdminDashboardCache().catch((error: unknown) => {
+        logger.warn('Failed to invalidate admin dashboard cache after order create', { error });
+      });
 
       // Return order and payment info
       return {

@@ -129,7 +129,7 @@ function buildCartFromItems(validItems: CartItem[]): Cart {
       shipping: 0,
       tax: 0,
       total: subtotal,
-      currency: 'AMD',
+      currency: 'USD',
     },
     itemsCount,
   };
@@ -204,14 +204,26 @@ export async function fetchGuestCart(
 /**
  * Fetch logged-in user cart
  */
+let loggedInCartInflight: Promise<Cart | null> | null = null;
+
 export async function fetchLoggedInCart(): Promise<Cart | null> {
-  try {
-    const response = await apiClient.get<{ cart: Cart }>('/api/v1/cart');
-    return response.cart;
-  } catch (error: unknown) {
-    logger.error('Error fetching cart', { error });
-    return null;
+  if (loggedInCartInflight) {
+    return loggedInCartInflight;
   }
+
+  loggedInCartInflight = (async () => {
+    try {
+      const response = await apiClient.get<{ cart: Cart }>('/api/v1/cart');
+      return response.cart;
+    } catch (error: unknown) {
+      logger.error('Error fetching cart', { error });
+      return null;
+    } finally {
+      loggedInCartInflight = null;
+    }
+  })();
+
+  return loggedInCartInflight;
 }
 
 function persistFetchedCart(

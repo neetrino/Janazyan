@@ -2,71 +2,70 @@
 
 import { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api-client';
-import { getStoredLanguage, type LanguageCode } from '../../lib/language';
-import { logger } from "@/lib/utils/logger";
-
-interface RelatedProduct {
-  id: string;
-  slug: string;
-  title: string;
-  price: number;
-  originalPrice?: number | null;
-  compareAtPrice: number | null;
-  discountPercent?: number | null;
-  image: string | null;
-  inStock: boolean;
-  brand?: {
-    id: string;
-    name: string;
-  } | null;
-  categories?: Array<{
-    id: string;
-    slug: string;
-    title: string;
-  }>;
-  variants?: Array<{
-    options?: Array<{
-      key: string;
-      value: string;
-    }>;
-  }>;
-}
+import { type LanguageCode } from '../../lib/language';
+import { fetchProductRelatedClient } from '../../lib/products/fetch-product-related-client';
+import { logger } from '@/lib/utils/logger';
+import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
 
 interface UseRelatedProductsProps {
   categorySlug?: string;
   currentProductId: string;
   language: LanguageCode;
-  /** When set (PDP), uses cached `/api/v1/products/[slug]/related` instead of list API. */
   productSlug?: string;
+  /** When defined (including `[]`), SSR already resolved related — skip client fetch for matching language. */
+  initialRelated?: RelatedCardPayload[];
+  initialLanguage?: LanguageCode;
+}
+
+function filterRelatedProducts(
+  items: RelatedCardPayload[],
+  currentProductId: string,
+): RelatedCardPayload[] {
+  return items.filter((product) => product.id !== currentProductId).slice(0, 10);
 }
 
 /**
- * Hook for fetching related products
+ * Hook for fetching related products.
+ * PDP path uses SSR seed + in-flight dedup so Strict Mode / remounts share one request.
  */
 export function useRelatedProducts({
   categorySlug,
   currentProductId,
   language,
   productSlug,
+  initialRelated,
+  initialLanguage,
 }: UseRelatedProductsProps) {
-  const [products, setProducts] = useState<RelatedProduct[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<RelatedCardPayload[]>(() =>
+    initialRelated !== undefined
+      ? filterRelatedProducts(initialRelated, currentProductId)
+      : [],
+  );
+  const [loading, setLoading] = useState(initialRelated === undefined);
 
   useEffect(() => {
+    if (
+      initialRelated !== undefined &&
+      initialLanguage &&
+      language === initialLanguage
+    ) {
+      setProducts(filterRelatedProducts(initialRelated, currentProductId));
+      setLoading(false);
+      return;
+    }
+
+    let cancelled = false;
+
     const fetchRelatedProducts = async () => {
       try {
         setLoading(true);
 
         if (productSlug) {
-          const encoded = encodeURIComponent(productSlug.trim());
-          const response = await apiClient.get<{
-            data: RelatedProduct[];
-            meta: { total: number };
-          }>(`/api/v1/products/${encoded}/related`, {
-            params: { lang: language },
-          });
-          const filtered = response.data.filter((p) => p.id !== currentProductId);
-          setProducts(filtered.slice(0, 10));
+          const response = await fetchProductRelatedClient(productSlug, language);
+          if (cancelled) {
+            return;
+          }
+          setProducts(filterRelatedProducts(response.data, currentProductId));
           return;
         }
 
@@ -83,36 +82,44 @@ export function useRelatedProducts({
         }
 
         const response = await apiClient.get<{
-          data: RelatedProduct[];
-          meta: {
-            total: number;
-          };
-        }>('/api/v1/products', {
-          params,
-        });
+          data: RelatedCardPayload[];
+          meta: { total: number };
+        }>('/api/v1/products', { params });
+
+        if (cancelled) {
+          return;
+        }
 
         logger.debug('[RelatedProducts] Received products:', response.data.length);
-        const filtered = response.data.filter((p) => p.id !== currentProductId);
-        logger.debug('[RelatedProducts] After filtering current product:', filtered.length);
-        const finalProducts = filtered.slice(0, 10);
-        logger.debug('[RelatedProducts] Final products to display:', finalProducts.length);
-        setProducts(finalProducts);
+        setProducts(filterRelatedProducts(response.data, currentProductId));
       } catch (error: unknown) {
+        if (cancelled) {
+          return;
+        }
         logger.warn('[RelatedProducts] Error fetching related products', {
           error: error instanceof Error ? error.message : String(error),
         });
         setProducts([]);
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     };
 
     void fetchRelatedProducts();
-  }, [categorySlug, currentProductId, language, productSlug]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    categorySlug,
+    currentProductId,
+    initialLanguage,
+    initialRelated,
+    language,
+    productSlug,
+  ]);
 
   return { products, loading };
 }
-
-
-
-

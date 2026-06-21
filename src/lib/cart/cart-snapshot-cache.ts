@@ -166,6 +166,33 @@ export function clearCartSnapshotMemory(): void {
 }
 
 /**
+ * Replaces optimistic line id with the persisted cart item id after add-to-cart.
+ */
+export function patchCartLineIdInSnapshot(
+  scope: CartCacheScope,
+  productId: string,
+  variantId: string,
+  realItemId: string,
+): void {
+  const cart = readCartSnapshot(scope);
+  if (!cart) {
+    return;
+  }
+
+  const items = cart.items.map((item) => {
+    if (
+      item.variant.product.id === productId &&
+      item.variant.id === variantId
+    ) {
+      return { ...item, id: realItemId };
+    }
+    return item;
+  });
+
+  writeCartSnapshot(scope, { ...cart, items });
+}
+
+/**
  * Writes snapshot after optimistic cart mutations in the drawer.
  */
 export function persistCartSnapshotFromAuth(

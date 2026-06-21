@@ -124,23 +124,19 @@ export async function CategoryNavigationServer({
   activeCategorySlug,
   variant = 'strip',
 }: CategoryNavigationServerProps) {
-  const dbCategories = await getCategoryNavStripCached(language);
-  const displayCategories =
-    variant === 'pills'
-      ? getShopCategoryFallbackStrip(language)
-      : dbCategories.length > 0
-        ? dbCategories
-        : getShopCategoryFallbackStrip(language);
-
   if (variant === 'pills') {
     return (
       <CategoryPillRow
-        categories={displayCategories}
+        categories={getShopCategoryFallbackStrip(language)}
         activeCategorySlug={activeCategorySlug}
         language={language}
       />
     );
   }
+
+  const dbCategories = await getCategoryNavStripCached(language);
+  const displayCategories =
+    dbCategories.length > 0 ? dbCategories : getShopCategoryFallbackStrip(language);
 
   return (
     <div className="border-b border-black/5 py-3 sm:py-4 md:py-6 w-full">

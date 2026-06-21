@@ -327,6 +327,52 @@ export function resolveProcessedImageType(file: File): string {
   return 'image/jpeg';
 }
 
+export type ImageCompressionOptions = {
+  maxSizeMB?: number;
+  maxWidthOrHeight?: number;
+  useWebWorker?: boolean;
+  fileType?: string;
+  initialQuality?: number;
+};
+
+/**
+ * Compresses an image file with EXIF orientation correction and size optimization.
+ */
+export async function compressImageFile(
+  file: File,
+  options?: ImageCompressionOptions,
+): Promise<File> {
+  logger.debug('Starting image compression', {
+    fileName: file.name,
+    originalSize: `${Math.round(file.size / 1024)}KB`,
+    type: file.type,
+  });
+
+  const {
+    maxSizeMB = 2,
+    maxWidthOrHeight = 1920,
+    useWebWorker = true,
+    fileType = resolveProcessedImageType(file),
+    initialQuality = 0.8,
+  } = options ?? {};
+
+  const compressedFile = await imageCompression(file, {
+    maxSizeMB,
+    maxWidthOrHeight,
+    useWebWorker,
+    fileType,
+    initialQuality,
+  });
+
+  logger.info('Image compressed successfully', {
+    originalSize: `${Math.round(file.size / 1024)}KB`,
+    compressedSize: `${Math.round(compressedFile.size / 1024)}KB`,
+    reduction: `${Math.round((1 - compressedFile.size / file.size) * 100)}%`,
+  });
+
+  return compressedFile;
+}
+
 /**
  * Processes an image file with compression, EXIF orientation correction, and size optimization
  * Automatically handles:
@@ -341,47 +387,11 @@ export function resolveProcessedImageType(file: File): string {
  */
 export async function processImageFile(
   file: File,
-  options?: {
-    maxSizeMB?: number; // Maximum file size in MB (default: 2)
-    maxWidthOrHeight?: number; // Maximum width or height in pixels (default: 1920)
-    useWebWorker?: boolean; // Use web worker for processing (default: true)
-    fileType?: string; // Output file type (auto-detected from input when omitted)
-    initialQuality?: number; // Initial quality 0-1 (default: 0.8)
-  }
+  options?: ImageCompressionOptions,
 ): Promise<string> {
   try {
-    logger.debug('Starting image processing', {
-      fileName: file.name,
-      originalSize: `${Math.round(file.size / 1024)}KB`,
-      type: file.type
-    });
+    const compressedFile = await compressImageFile(file, options);
 
-    const {
-      maxSizeMB = 2,
-      maxWidthOrHeight = 1920,
-      useWebWorker = true,
-      fileType = resolveProcessedImageType(file),
-      initialQuality = 0.8
-    } = options || {};
-
-    // Process image with compression and EXIF orientation correction
-    // browser-image-compression automatically handles EXIF orientation
-    const compressedFile = await imageCompression(file, {
-      maxSizeMB,
-      maxWidthOrHeight,
-      useWebWorker,
-      fileType,
-      initialQuality,
-      // EXIF orientation is automatically handled by browser-image-compression
-    });
-
-    logger.info('Image processed successfully', {
-      originalSize: `${Math.round(file.size / 1024)}KB`,
-      compressedSize: `${Math.round(compressedFile.size / 1024)}KB`,
-      reduction: `${Math.round((1 - compressedFile.size / file.size) * 100)}%`
-    });
-
-    // Convert to base64
     return new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => {

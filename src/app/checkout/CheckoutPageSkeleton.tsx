@@ -1,16 +1,17 @@
 import { CHECKOUT_GLASS_CARD_CLASS } from './checkout-glass-styles';
+import { ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
 
 export function CheckoutPageSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl py-8 md:py-12">
+    <div className={ACCOUNT_PAGE_INNER_CLASS}>
       <div className="animate-pulse" aria-busy="true" aria-label="Loading checkout">
         <div className="h-8 bg-white/40 rounded-2xl w-1/4 mb-8 backdrop-blur-sm" />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
           <div className="lg:col-span-2 space-y-6">
             <div className={`h-52 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
             <div className={`h-44 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
           </div>
-          <div className={`h-64 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
+          <div className={`h-64 lg:sticky lg:top-8 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
         </div>
       </div>
     </div>

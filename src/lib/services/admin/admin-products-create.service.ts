@@ -10,6 +10,10 @@ import {
 } from "../../utils/image-utils";
 import { logger } from "@/lib/utils/logger";
 import { ensureUniqueProductSlug } from "./product-slug-utils";
+import {
+  resolveProductMediaArray,
+  resolveVariantImageUrlField,
+} from "@/lib/products/resolve-product-media-urls";
 
 const PRODUCT_CREATE_TX_TIMEOUT_MS = 15000;
 const PRODUCT_CREATE_TX_MAX_WAIT_MS = 5000;
@@ -264,10 +268,15 @@ class AdminProductsCreateService {
             // Process and validate variant imageUrl
             let processedVariantImageUrl: string | undefined = undefined;
             if (variant.imageUrl) {
-              const urls = smartSplitUrls(variant.imageUrl);
-              const processedUrls = urls.map(url => processImageUrl(url)).filter((url): url is string => url !== null);
-              if (processedUrls.length > 0) {
-                processedVariantImageUrl = processedUrls.join(',');
+              const resolvedField = await resolveVariantImageUrlField(variant.imageUrl);
+              if (resolvedField) {
+                const urls = smartSplitUrls(resolvedField);
+                const processedUrls = urls
+                  .map((url) => processImageUrl(url))
+                  .filter((url): url is string => url !== null);
+                if (processedUrls.length > 0) {
+                  processedVariantImageUrl = processedUrls.join(',');
+                }
               }
             }
 
@@ -338,7 +347,7 @@ class AdminProductsCreateService {
 
         // Separate main images from variant images and clean them
         const { main } = separateMainAndVariantImages(rawMedia, allVariantImages);
-        const finalMedia = cleanImageUrls(main);
+        const finalMedia = await resolveProductMediaArray(cleanImageUrls(main));
         
         logger.debug('📸 [ADMIN PRODUCTS CREATE SERVICE] Final main media count:', finalMedia.length);
         logger.debug('📸 [ADMIN PRODUCTS CREATE SERVICE] Variant images excluded:', allVariantImages.length);

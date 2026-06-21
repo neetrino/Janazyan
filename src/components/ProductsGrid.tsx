@@ -1,8 +1,6 @@
 import { ProductCard } from './ProductCard';
 import { ProductsGridViewMode } from './ProductsGridViewMode.client';
-
-/** Prioritize only the likely mobile LCP row; the rest lazy-load. */
-const PRIORITY_CARD_COUNT = 2;
+import { CATALOG_PRIORITY_CARD_COUNT } from '../lib/products/catalog-page.constants';
 
 interface Product {
   id: string;
@@ -42,7 +40,7 @@ export function ProductsGrid({ products }: ProductsGridProps) {
             ...product,
             compareAtPrice: product.compareAtPrice ?? undefined
           }} 
-          priority={index < PRIORITY_CARD_COUNT}
+          priority={index < CATALOG_PRIORITY_CARD_COUNT}
         />
       ))}
     </ProductsGridViewMode>

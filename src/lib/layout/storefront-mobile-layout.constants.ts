@@ -1,4 +1,7 @@
-import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from './storefront-layout.constants';
+import {
+  STOREFRONT_HORIZONTAL_GUTTER_CLASS,
+  STOREFRONT_SIDE_PADDING_NEG_CLASS,
+} from './storefront-layout.constants';
 
 /** Safe-area + breathing room below status bar. */
 export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-10';
@@ -13,9 +16,9 @@ export const STOREFRONT_MOBILE_BOTTOM_NAV_HEIGHT_PX = 88;
 export const STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS =
   'pb-[calc(88px+env(safe-area-inset-bottom,0px))]';
 
-/** White content card — rounded top matches home backdrop curve. */
+/** White content card — full-bleed, no pink gutter/backdrop at the bottom (home uses its own shell). */
 export const STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS =
-  `relative z-10 mt-6 rounded-t-[44px] bg-white pt-6 ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
+  `relative z-10 mt-6 w-auto rounded-t-[44px] bg-white pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
 
 /** Gap between search row and optional page toolbar (breadcrumb, pills). */
 export const STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS = 'mt-5';

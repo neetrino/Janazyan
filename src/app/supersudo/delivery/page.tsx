@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { Card, Button } from '@shop/ui';
@@ -8,6 +8,11 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { logger } from "@/lib/utils/logger";
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 
 interface DeliveryLocation {
   id?: string;
@@ -39,33 +44,36 @@ export default function DeliveryPage() {
     }
   }, [isLoggedIn, isAdmin, isLoading, router]);
 
-  useEffect(() => {
-    if (isLoggedIn && isAdmin) {
-      fetchDeliverySettings();
-    }
-  }, [isLoggedIn, isAdmin]);
-
-  const fetchDeliverySettings = async () => {
+  const fetchDeliverySettings = useCallback(async () => {
     try {
       setLoading(true);
       logger.debug('🚚 [ADMIN] Fetching delivery settings...');
-      const data = await apiClient.get<DeliverySettings>('/api/v1/admin/delivery');
+      const data = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.delivery,
+        () => apiClient.get<DeliverySettings>('/api/v1/admin/delivery'),
+      );
       setLocations(data.locations || []);
       logger.debug('✅ [ADMIN] Delivery settings loaded:', data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ [ADMIN] Error fetching delivery settings:', err);
-      // Use defaults if error
       setLocations([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (isLoggedIn && isAdmin) {
+      void fetchDeliverySettings();
+    }
+  }, [isLoggedIn, isAdmin, fetchDeliverySettings]);
 
   const handleSave = async () => {
     setSaving(true);
     try {
       logger.debug('🚚 [ADMIN] Saving delivery settings...', { locations });
       await apiClient.put('/api/v1/admin/delivery', { locations });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.delivery);
       alert(t('admin.delivery.savedSuccess'));
       logger.debug('✅ [ADMIN] Delivery settings saved');
       setEditingId(null);

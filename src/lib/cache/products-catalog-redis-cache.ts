@@ -1,64 +1,31 @@
+import 'server-only';
+
 import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import { productsService } from '@/lib/services/products.service';
 import {
   readJsonCache,
+  writeJsonCache,
+} from './storefront-cache-io';
+import {
   STOREFRONT_CACHE_KEYS,
   STOREFRONT_CACHE_TTL,
-  writeJsonCache,
-} from './storefront-cache';
+} from './storefront-cache.constants';
 import { cacheService } from '../services/cache.service';
 import { logger } from '../utils/logger';
+import { dedupeInFlight } from './in-flight-dedup';
+import {
+  buildProductsCatalogCacheKey,
+  type ProductsCatalogCacheFilters,
+  type ProductsCatalogCacheResponse,
+} from './products-catalog-cache.types';
 
-export type ProductsCatalogCacheFilters = {
-  page: number;
-  limit: number;
-  lang: string;
-  search?: string;
-  category?: string;
-};
-
-export type ProductsCatalogCacheResponse = {
-  data: Array<{
-    id: string;
-    slug: string;
-    title: string;
-    price: number;
-    compareAtPrice: number | null;
-    originalPrice: number | null;
-    image: string | null;
-    inStock: boolean;
-    brand: { id: string; name: string } | null;
-    defaultVariantId: string | null;
-    colors: unknown[];
-    labels: Array<{
-      id: string;
-      type: 'text' | 'percentage';
-      value: string;
-      position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-      color: string | null;
-    }>;
-  }>;
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-    hasNextPage?: boolean;
-  };
-};
+export type { ProductsCatalogCacheFilters, ProductsCatalogCacheResponse };
+export { buildProductsCatalogCacheKey };
 
 const EMPTY_CATALOG: ProductsCatalogCacheResponse = {
   data: [],
   meta: { total: 0, page: 1, limit: 12, totalPages: 0 },
 };
-
-export function buildProductsCatalogCacheKey(
-  filters: ProductsCatalogCacheFilters,
-): string {
-  const search = filters.search?.trim() || '-';
-  const category = filters.category?.trim() || '-';
-  return `v1:${filters.lang}:${filters.page}:${filters.limit}:${category}:${search}`;
-}
 
 export async function getProductsCatalogFromRedisOrDb(
   filters: ProductsCatalogCacheFilters,
@@ -85,6 +52,20 @@ export async function getProductsCatalogFromRedisOrDb(
     hasSearch: Boolean(filters.search?.trim()),
     hasCategory: Boolean(filters.category?.trim()),
   });
+
+  return dedupeInFlight(`products-catalog:${key}`, () =>
+    loadProductsCatalogFromDbAndCache(filters, key),
+  );
+}
+
+async function loadProductsCatalogFromDbAndCache(
+  filters: ProductsCatalogCacheFilters,
+  cacheKey: string,
+): Promise<ProductsCatalogCacheResponse> {
+  const cachedAfterLock = await readJsonCache<ProductsCatalogCacheResponse>(cacheKey);
+  if (cachedAfterLock) {
+    return cachedAfterLock;
+  }
 
   if (!isDatabaseConnectionUrlConfigured()) {
     return EMPTY_CATALOG;
@@ -118,6 +99,6 @@ export async function getProductsCatalogFromRedisOrDb(
     meta: result.meta,
   };
 
-  await writeJsonCache(key, STOREFRONT_CACHE_TTL.productsCatalog, response);
+  await writeJsonCache(cacheKey, STOREFRONT_CACHE_TTL.productsCatalog, response);
   return response;
 }

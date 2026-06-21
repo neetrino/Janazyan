@@ -8,6 +8,11 @@ import { apiClient, ApiError } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { logger } from '@/lib/utils/logger';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import type { PromoCodeAdminRow } from '@/lib/promo-codes/types';
 import {
   formatIsoForDatetimeLocal,
@@ -116,7 +121,10 @@ export function CouponsAdminClient() {
   const loadList = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get<PromoListResponse>('/api/v1/admin/coupons');
+      const res = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.coupons,
+        () => apiClient.get<PromoListResponse>('/api/v1/admin/coupons'),
+      );
       setRows(res.data);
     } catch (e) {
       logger.error('[ADMIN COUPONS] load failed', { err: e });
@@ -213,6 +221,7 @@ export function CouponsAdminClient() {
         await apiClient.post('/api/v1/admin/coupons', payload);
       }
       closeForm();
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.coupons);
       await loadList();
     } catch (e) {
       const msg =
@@ -236,6 +245,7 @@ export function CouponsAdminClient() {
     }
     try {
       await apiClient.delete(`/api/v1/admin/coupons/${row.id}`);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.coupons);
       await loadList();
     } catch (e) {
       const msg =

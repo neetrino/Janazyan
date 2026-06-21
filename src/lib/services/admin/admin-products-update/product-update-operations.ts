@@ -7,6 +7,10 @@ import { collectVariantImages, buildProductUpdateData, updateProductTranslation,
 import { updateOrCreateVariant } from "./variant-updater";
 import { updateAttributeValueImageUrls } from "./attribute-value-updater";
 import { ensureUniqueProductSlug } from "../product-slug-utils";
+import {
+  resolveProductMediaArray,
+  resolveVariantImageUrlField,
+} from "@/lib/products/resolve-product-media-urls";
 
 const PRODUCT_UPDATE_TX_TIMEOUT_MS = 15000;
 const PRODUCT_UPDATE_TX_MAX_WAIT_MS = 5000;
@@ -40,6 +44,18 @@ export async function updateProduct(
 
     if (data.attributeIds && data.attributeIds.length > 0) {
       await ensureProductAttributesTable();
+    }
+
+    if (data.media) {
+      data.media = (await resolveProductMediaArray(data.media as unknown[])) as UpdateProductData['media'];
+    }
+
+    if (data.variants) {
+      for (const variant of data.variants) {
+        if (variant.imageUrl) {
+          variant.imageUrl = (await resolveVariantImageUrlField(variant.imageUrl)) ?? undefined;
+        }
+      }
     }
 
     // Execute everything in a transaction for atomicity and speed

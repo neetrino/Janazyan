@@ -10,7 +10,10 @@ import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { CART_KEY } from '../../app/cart/constants';
 import { applyOptimisticAddToSnapshot } from '../../lib/cart/cart-optimistic';
-import { resolveCartCacheScope } from '../../lib/cart/cart-snapshot-cache';
+import {
+  patchCartLineIdInSnapshot,
+  resolveCartCacheScope,
+} from '../../lib/cart/cart-snapshot-cache';
 import { scheduleCartRevalidate } from '../../lib/cart/cart-revalidate';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
@@ -239,6 +242,10 @@ export function useAddToCart({
         variantId,
         quantity: 1,
       });
+
+      if (scope && response.item?.id) {
+        patchCartLineIdInSnapshot(scope, productId, variantId, response.item.id);
+      }
 
       const itemsCount = response.cartSummary?.itemsCount;
       if (typeof itemsCount === 'number') {

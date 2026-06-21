@@ -1,13 +1,15 @@
 import type { Prisma } from "@white-shop/db";
 import { db } from "@white-shop/db";
 import { logger } from "../../utils/logger";
-import { findCategoryBySlug, getAllChildCategoryIds } from "../products-find-query/category-utils";
-import { getBaseWhere } from "./product-query-builder";
+import { getPublishedProductRefCached } from "@/lib/products/published-product-ref.cache";
+import { getCachedCategoryBySlug } from "@/lib/categories/category-by-slug.cache";
+import { getCachedCategoryDescendantIds } from "@/lib/categories/category-descendant-ids.cache";
 import {
   transformRelatedProductRows,
   type RelatedCardPayload,
   type RelatedProductRow,
 } from "./product-related-transform";
+import { getProductDiscountSettings } from "../products-discount-settings.cache";
 
 const RELATED_CANDIDATE_LIMIT = 14;
 
@@ -56,11 +58,11 @@ async function categoryScopeWhere(
   categorySlug: string,
   lang: string
 ): Promise<Prisma.ProductWhereInput | null> {
-  const categoryDoc = await findCategoryBySlug(categorySlug, lang);
+  const categoryDoc = await getCachedCategoryBySlug(categorySlug, lang);
   if (!categoryDoc) {
     return null;
   }
-  const childCategoryIds = await getAllChildCategoryIds(categoryDoc.id);
+  const childCategoryIds = await getCachedCategoryDescendantIds(categoryDoc.id);
   const allCategoryIds = [categoryDoc.id, ...childCategoryIds];
   const categoryConditions = allCategoryIds.flatMap((catId: string) => [
     { primaryCategoryId: catId },
@@ -91,14 +93,21 @@ async function fetchRelatedRows(
     where = { ...baseWhere, AND: catWhere };
   }
 
-  const rows = await db.product.findMany({
-    where,
-    orderBy: { publishedAt: "desc" },
-    take: RELATED_CANDIDATE_LIMIT,
-    select: relatedProductSelect,
-  });
+  const [rows, discountSettings] = await Promise.all([
+    db.product.findMany({
+      where,
+      orderBy: { publishedAt: "desc" },
+      take: RELATED_CANDIDATE_LIMIT,
+      select: relatedProductSelect,
+    }),
+    getProductDiscountSettings(),
+  ]);
 
-  return transformRelatedProductRows(rows as RelatedProductRow[], lang);
+  return transformRelatedProductRows(
+    rows as RelatedProductRow[],
+    lang,
+    discountSettings,
+  );
 }
 
 /**
@@ -106,58 +115,18 @@ async function fetchRelatedRows(
  */
 export async function findRelatedByProductSlug(slug: string, lang: string) {
   try {
-    let product = await db.product.findFirst({
-      where: getBaseWhere(slug, lang),
-      select: {
-        id: true,
-        primaryCategoryId: true,
-        categories: {
-          select: {
-            id: true,
-            translations: {
-              where: { locale: lang },
-              select: { slug: true },
-              take: 1,
-            },
-          },
-        },
-      },
-    });
-
-    if (!product && lang !== "en") {
-      product = await db.product.findFirst({
-        where: getBaseWhere(slug, "en"),
-        select: {
-          id: true,
-          primaryCategoryId: true,
-          categories: {
-            select: {
-              id: true,
-              translations: {
-                where: { locale: "en" },
-                select: { slug: true },
-                take: 1,
-              },
-            },
-          },
-        },
-      });
-    }
-
-    if (!product) {
+    const ref = await getPublishedProductRefCached(slug, lang);
+    if (!ref) {
       return { data: [] as RelatedCardPayload[], meta: { total: 0 } };
     }
 
-    const primary =
-      product.primaryCategoryId != null
-        ? product.categories.find((c) => c.id === product.primaryCategoryId)
-        : undefined;
-    const primarySlug =
-      primary?.translations[0]?.slug ?? product.categories[0]?.translations[0]?.slug;
-
-    const data = await fetchRelatedRows(product.id, lang, primarySlug);
+    const data = await fetchRelatedRows(
+      ref.id,
+      lang,
+      ref.primaryCategorySlug ?? undefined,
+    );
     const filtered = data
-      .filter((p) => p.id !== product.id && p.slug.length > 0)
+      .filter((item) => item.id !== ref.id && item.slug.length > 0)
       .slice(0, 10);
     return { data: filtered, meta: { total: filtered.length } };
   } catch (error: unknown) {

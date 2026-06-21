@@ -12,6 +12,11 @@ import { apiClient } from '../../../lib/api-client';
 import { FAQ_LOCALES } from '../../../features/faq/faq-locales';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
+import {
+  ADMIN_LIST_CACHE_KEYS,
+  fetchAdminListCached,
+  invalidateAdminListCache,
+} from '@/lib/admin/admin-list-client-cache';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import {
   categoryFormDataFromRow,
@@ -41,8 +46,10 @@ export function FaqCategoriesSection({ onCategoriesChanged }: FaqCategoriesSecti
   const fetchCategories = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await apiClient.get<{ data: AdminFaqCategory[] }>(
-        '/api/v1/admin/faq/categories',
+      const response = await fetchAdminListCached(
+        ADMIN_LIST_CACHE_KEYS.faqCategories,
+        () =>
+          apiClient.get<{ data: AdminFaqCategory[] }>('/api/v1/admin/faq/categories'),
       );
       setCategories(response.data ?? []);
     } catch {
@@ -85,6 +92,8 @@ export function FaqCategoriesSection({ onCategoriesChanged }: FaqCategoriesSecti
 
     try {
       await apiClient.delete(`/api/v1/admin/faq/categories/${category.id}`);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqCategories);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqItems);
       await fetchCategories();
       notifyChanged();
       alert(t('admin.faq.categoryDeletedSuccess'));
@@ -111,6 +120,8 @@ export function FaqCategoriesSection({ onCategoriesChanged }: FaqCategoriesSecti
         await apiClient.post('/api/v1/admin/faq/categories', payload);
         alert(t('admin.faq.categoryCreatedSuccess'));
       }
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqCategories);
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.faqItems);
       await fetchCategories();
       notifyChanged();
       setShowModal(false);

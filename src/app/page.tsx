@@ -14,8 +14,16 @@ import {
   STOREFRONT_ARC_SHELL_CLASS,
   STOREFRONT_CONTENT_SHELL_CLASS,
 } from '../lib/layout/storefront-layout.constants';
+import { getServerLanguage } from '../lib/language-server';
+import { warmDefaultProductsCatalogCache } from '../lib/products/warm-products-catalog-cache';
+import { after } from 'next/server';
 
-export default function HomePage() {
+export default async function HomePage() {
+  after(async () => {
+    const language = await getServerLanguage();
+    await warmDefaultProductsCatalogCache(language);
+  });
+
   return (
     <div className="relative isolate overflow-hidden lg:bg-white">
       <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
