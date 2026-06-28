@@ -12,7 +12,7 @@ import { useFeaturedRowScale } from './useFeaturedRowScale';
 const SECTION_HEIGHT_PX = 772;
 const CARD_WIDTH_PX = 283;
 const CARD_GAP_PX = 30;
-const FEATURED_CARDS_TOP_PX = 188;
+const FEATURED_CARDS_TOP_PX = 174;
 /** Allow the fixed-width row to grow gently on wide arcs, matching the ~1.22x widening. */
 const FEATURED_ROW_MAX_SCALE = 1.18;
 /** Product bottle extends above the card body — row needs headroom so it is not clipped. */
@@ -73,7 +73,7 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
           </div>
         </div>
 
-        <div className="absolute left-1/2 top-[622px] -translate-x-1/2">
+        <div className="absolute left-1/2 top-[608px] -translate-x-1/2">
           <Link
             href="/products?filter=featured"
             className="inline-flex h-[56px] items-center gap-1 rounded-[72px] bg-white px-6 text-[18px] font-bold leading-6 text-sky-deep transition-transform duration-700 ease-in-out hover:-translate-y-0.5"

@@ -3,28 +3,48 @@ export type FooterLink = {
   href: string;
 };
 
-export const FOOTER_PURCHASES: ReadonlyArray<FooterLink> = [
-  { label: 'Բոլոր ապրանքները', href: '/products' },
-  { label: 'Բեսթսելլերներ', href: '/products?sort=bestsellers' },
-  { label: 'Նոր թողարկում', href: '/products?sort=new' },
-  { label: 'Փաթեթներ', href: '/products?category=packages' },
-  { label: 'Նվեր քարտեր', href: '/gift-cards' },
+/** Footer column titles (rendered uppercase via CSS) — Figma node 136:402. */
+export const FOOTER_COLUMN_TITLES = {
+  company: 'Ընկերություն',
+  contact: 'Կապ մեզ հետ',
+  support: 'Աջակցություն',
+} as const;
+
+/** Column 1 "Ընկերություն" — Figma node 136:403. */
+export const FOOTER_COMPANY_LINKS: ReadonlyArray<FooterLink> = [
+  { label: 'Խանութ', href: '/products' },
+  { label: 'Մեր մասին', href: '/about' },
+  { label: 'Մեր խանութները', href: '/stores' },
+  { label: 'Հարցեր', href: '/faq' },
+  { label: 'Կապ', href: '/contact' },
+  { label: 'Բլոգ', href: '/blog' },
 ];
 
-export const FOOTER_SUPPORT: ReadonlyArray<FooterLink> = [
-  { label: 'Կապ մեզ հետ', href: '/contact' },
+/** Column 3 "Աջակցություն" — Figma node 136:419. */
+export const FOOTER_SUPPORT_LINKS: ReadonlyArray<FooterLink> = [
   { label: 'Առաքում', href: '/delivery' },
   { label: 'Վերադարձ', href: '/returns' },
-  { label: 'Հաճախ տրվող հարցեր', href: '/faq' },
-  { label: '+374 11 234 567', href: 'tel:+37411234567' },
+  { label: 'Գաղտնիություն', href: '/privacy' },
+  { label: 'Պայմաններ և դրույթներ', href: '/terms' },
 ];
 
-export const FOOTER_BRAND: ReadonlyArray<FooterLink> = [
-  { label: 'Մեր մասին', href: '/about' },
-  { label: 'Բաղադրիչներ', href: '/ingredients' },
-  { label: 'Կայունություն', href: '/sustainability' },
-  { label: 'Բլոգ', href: '/blog' },
-  { label: 'Մամուլ', href: '/press' },
+export type FooterContactType = 'email' | 'address' | 'phone';
+
+export type FooterContactItem = {
+  type: FooterContactType;
+  label: string;
+  href?: string;
+};
+
+/** Contact block "Կապ մեզ հետ" — Figma node 136:413. */
+export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
+  {
+    type: 'email',
+    label: 'infojanazyan@mail.com',
+    href: 'mailto:infojanazyan@mail.com',
+  },
+  { type: 'address', label: 'Megamall, 2-րդ հարկ' },
+  { type: 'phone', label: '+374 11 234 567', href: 'tel:+37411234567' },
 ];
 
 export type FooterSocialLink = {

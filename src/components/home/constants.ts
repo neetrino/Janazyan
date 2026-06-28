@@ -9,7 +9,6 @@ export const HOME_NAV_LINK_HREFS: ReadonlyArray<{
   { labelKey: 'about', href: '/about' },
   { labelKey: 'ourStores', href: '/stores' },
   { labelKey: 'contact', href: '/contact' },
-  { labelKey: 'faq', href: '/faq' },
   { labelKey: 'blog', href: '/blog' },
 ];
 

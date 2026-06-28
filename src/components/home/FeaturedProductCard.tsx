@@ -59,7 +59,7 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
       {product.labels.length > 0 ? (
         <ProductLabels labels={product.labels} variant="featured" />
       ) : product.discountLabel ? (
-        <span className="absolute left-[13px] top-[63px] z-20 inline-flex h-[33px] min-w-[70px] items-center justify-center rounded-[20px] bg-[#e05d5d] px-3 text-[14px] font-medium tracking-[-0.5px] text-cream">
+        <span className="absolute left-[13px] top-[63px] z-20 inline-flex h-[33px] min-w-[70px] items-center justify-center rounded-[20px] bg-sale px-3 text-[14px] font-medium tracking-[-0.5px] text-cream">
           {product.discountLabel}
         </span>
       ) : null}
