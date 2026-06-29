@@ -13,6 +13,8 @@ import {
   fetchAdminListCached,
   invalidateAdminListCache,
 } from '@/lib/admin/admin-list-client-cache';
+import { R2_IMAGE_FOLDERS } from '@/lib/r2/r2-image-folders';
+import { uploadAdminImagesToR2 } from '@/lib/r2/upload-admin-images-client';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 interface Brand {
   id: string;
@@ -44,14 +46,6 @@ function BrandsSection() {
   const [imageUploading, setImageUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   useBodyScrollLock(showModal);
-
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
 
   const fetchBrands = useCallback(async () => {
     try {
@@ -154,8 +148,12 @@ function BrandsSection() {
 
     try {
       setImageUploading(true);
-      const base64 = await fileToBase64(imageFile);
-      setFormData((current) => ({ ...current, logoUrl: base64 }));
+      const uploadedUrls = await uploadAdminImagesToR2([imageFile], R2_IMAGE_FOLDERS.brands);
+      if (uploadedUrls.length === 0) {
+        alert(t('admin.attributes.valueModal.failedToProcessImage'));
+        return;
+      }
+      setFormData((current) => ({ ...current, logoUrl: uploadedUrls[0] }));
     } catch (error) {
       const message = error instanceof Error ? error.message : t('admin.attributes.valueModal.failedToProcessImage');
       alert(message);

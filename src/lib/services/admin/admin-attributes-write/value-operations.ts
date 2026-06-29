@@ -2,6 +2,8 @@ import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
 import { ensureColorsColumnsExist } from "./migration";
 import { formatAttribute, parseColors } from "./utils";
+import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
+import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
 
 /**
  * Add attribute value
@@ -161,7 +163,7 @@ export async function updateAttributeValue(
 
   // Update imageUrl if provided
   if (data.imageUrl !== undefined) {
-    updateData.imageUrl = data.imageUrl || null;
+    updateData.imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.attributes);
   }
 
   // Update translation label if provided

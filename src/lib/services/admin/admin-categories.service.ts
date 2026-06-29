@@ -1,6 +1,8 @@
 import { db } from "@white-shop/db";
 import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
+import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
+import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
 
 class AdminCategoriesService {
   private extractImageUrl(media: unknown): string | null {
@@ -131,14 +133,15 @@ class AdminCategoriesService {
     
     // Generate slug from title (ReDoS-safe)
     const slug = toSlug(data.title);
+    const imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.categories);
 
     const category = await db.category.create({
       data: {
         parentId: data.parentId || undefined,
         requiresSizes: data.requiresSizes || false,
         published: data.published ?? true,
-        media: data.imageUrl
-          ? [{ type: "image", url: data.imageUrl }]
+        media: imageUrl
+          ? [{ type: "image", url: imageUrl }]
           : [],
         translations: {
           create: {
@@ -348,8 +351,9 @@ class AdminCategoriesService {
     }
 
     if (data.imageUrl !== undefined) {
-      updateData.media = data.imageUrl
-        ? [{ type: "image", url: data.imageUrl }]
+      const imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.categories);
+      updateData.media = imageUrl
+        ? [{ type: "image", url: imageUrl }]
         : [];
     }
 

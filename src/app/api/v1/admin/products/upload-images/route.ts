@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateToken, requireAdmin } from '@/lib/middleware/auth';
-import { persistProductImageFromBuffer } from '@/lib/products/persist-product-image';
+import { persistR2ImageFromBuffer } from '@/lib/r2/persist-r2-image';
+import { parseR2ImageFolder } from '@/lib/r2/r2-image-folders';
 import { logger } from '@/lib/utils/logger';
 
 /**
  * POST /api/v1/admin/products/upload-images
- * Upload product images (multipart/form-data) to R2, or to public/product-media in local dev.
+ * Upload admin images (multipart/form-data) to R2. Optional form field: folder.
  */
 export async function POST(req: NextRequest) {
   const requestStartTime = Date.now();
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     }
 
     const formData = await req.formData();
+    const folder = parseR2ImageFolder(formData.get('folder'));
     const entries = formData.getAll('images');
     const files = entries.filter((entry): entry is File => entry instanceof File);
 
@@ -62,7 +64,7 @@ export async function POST(req: NextRequest) {
       }
 
       const buffer = Buffer.from(await file.arrayBuffer());
-      const url = await persistProductImageFromBuffer(buffer, file.type);
+      const url = await persistR2ImageFromBuffer(buffer, file.type, folder);
       urls.push(url);
     }
 

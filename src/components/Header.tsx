@@ -1,26 +1,14 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
+import type { ReactNode } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { HeaderAccountMenu } from './header/HeaderAccountMenu';
 import { HeaderBrandCluster } from './header/HeaderBrandCluster';
-import { openCartDrawer } from '../lib/cart-drawer-events';
-import { formatCartBadgeCount, useCartItemCount } from './hooks/useCartItemCount';
-import { formatWishlistBadgeCount, useWishlistItemCount } from './hooks/useWishlistItemCount';
+import { HeaderStorefrontActions } from './header/HeaderStorefrontActions';
 import {
   STOREFRONT_CONTENT_MAX_WIDTH_CLASS,
   STOREFRONT_HORIZONTAL_GUTTER_CLASS,
 } from '../lib/layout/storefront-layout.constants';
 import { isProductsListingPage, isStorefrontPage } from '../lib/nav/is-storefront-page';
-
-const HEADER_ACTION_BUTTON_SIZE_PX = 36;
-const HEADER_ACTION_ICON_SIZE_PX = 20;
-const HEADER_ACTION_GAP_PX = 16;
-const HEADER_CART_BADGE_COLOR = '#0499c3';
-
-const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
-const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
 
 const HEADER_BRAND_TOP_PX = 53;
 /** Bar height for logo (top + height) and action cluster in flow/embedded shells. */
@@ -32,77 +20,6 @@ type HeaderProps = {
   /** When true, only the overlay bar (parent supplies positioning shell). */
   embedded?: boolean;
 };
-
-function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      width={HEADER_ACTION_ICON_SIZE_PX}
-      height={HEADER_ACTION_ICON_SIZE_PX}
-      className="h-5 w-5"
-    />
-  );
-}
-
-function HeaderActions() {
-  const wishlistCount = useWishlistItemCount();
-  const wishlistBadgeLabel = formatWishlistBadgeCount(wishlistCount);
-  const cartCount = useCartItemCount();
-  const cartBadgeLabel = formatCartBadgeCount(cartCount);
-
-  return (
-    <div className="flex shrink-0 items-center overflow-visible rounded-7xl bg-white px-[22px] py-[10px] shadow-soft">
-      <div className="flex items-center" style={{ gap: HEADER_ACTION_GAP_PX }}>
-        <Link
-          href="/wishlist"
-          aria-label={
-            wishlistCount === 0
-              ? 'Wishlist'
-              : `Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`
-          }
-          className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
-          style={{
-            width: HEADER_ACTION_BUTTON_SIZE_PX,
-            height: HEADER_ACTION_BUTTON_SIZE_PX,
-          }}
-        >
-          <HeaderActionIcon src={HEADER_HEART_ICON} alt="" />
-          <span
-            className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
-            style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
-            aria-hidden
-          >
-            {wishlistBadgeLabel}
-          </span>
-        </Link>
-        <HeaderAccountMenu />
-        <button
-          type="button"
-          data-cart-fly-target
-          onClick={() => openCartDrawer()}
-          aria-label={
-            cartCount === 0 ? 'Cart' : `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`
-          }
-          className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
-          style={{
-            width: HEADER_ACTION_BUTTON_SIZE_PX,
-            height: HEADER_ACTION_BUTTON_SIZE_PX,
-          }}
-        >
-          <HeaderActionIcon src={HEADER_CART_ICON} alt="" />
-          <span
-            className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
-            style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
-            aria-hidden
-          >
-            {cartBadgeLabel}
-          </span>
-        </button>
-      </div>
-    </div>
-  );
-}
 
 function HeaderOverlayBar({
   pathname,
@@ -121,7 +38,7 @@ function HeaderOverlayBar({
         }}
       >
         <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
-        <HeaderActions />
+        <HeaderStorefrontActions />
       </div>
     </header>
   );
@@ -132,7 +49,7 @@ function HeaderShell({
   storefrontTone,
   plainWhite,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   storefrontTone: boolean;
   plainWhite: boolean;
 }) {
@@ -170,7 +87,7 @@ export function Header({ embedded = false }: HeaderProps) {
   return (
     <HeaderShell storefrontTone={storefrontTone} plainWhite={plainWhite}>
       <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
-      <HeaderActions />
+      <HeaderStorefrontActions />
     </HeaderShell>
   );
 }

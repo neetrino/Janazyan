@@ -3,15 +3,8 @@ export type FooterLink = {
   href: string;
 };
 
-/** Footer column titles (rendered uppercase via CSS) — Figma node 136:402. */
-export const FOOTER_COLUMN_TITLES = {
-  company: 'Ընկերություն',
-  contact: 'Կապ մեզ հետ',
-  support: 'Աջակցություն',
-} as const;
-
-/** Column 1 "Ընկերություն" — Figma node 136:403. */
-export const FOOTER_COMPANY_LINKS: ReadonlyArray<FooterLink> = [
+/** "Ընկերություն" column (Figma node 136:403). */
+export const FOOTER_COMPANY: ReadonlyArray<FooterLink> = [
   { label: 'Խանութ', href: '/products' },
   { label: 'Մեր մասին', href: '/about' },
   { label: 'Մեր խանութները', href: '/stores' },
@@ -20,31 +13,91 @@ export const FOOTER_COMPANY_LINKS: ReadonlyArray<FooterLink> = [
   { label: 'Բլոգ', href: '/blog' },
 ];
 
-/** Column 3 "Աջակցություն" — Figma node 136:419. */
-export const FOOTER_SUPPORT_LINKS: ReadonlyArray<FooterLink> = [
+/** "Աջակցություն" column (Figma node 136:419). */
+export const FOOTER_SUPPORT: ReadonlyArray<FooterLink> = [
   { label: 'Առաքում', href: '/delivery' },
   { label: 'Վերադարձ', href: '/returns' },
   { label: 'Գաղտնիություն', href: '/privacy' },
   { label: 'Պայմաններ և դրույթներ', href: '/terms' },
 ];
 
-export type FooterContactType = 'email' | 'address' | 'phone';
-
 export type FooterContactItem = {
-  type: FooterContactType;
   label: string;
-  href?: string;
+  href: string;
+  icon: string;
+  /** Intrinsic icon size in px (Figma). */
+  iconSize: number;
 };
 
-/** Contact block "Կապ մեզ հետ" — Figma node 136:413. */
+/** "Կապ մեզ հետ" column with leading icons (Figma node 136:413). */
 export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
   {
-    type: 'email',
     label: 'infojanazyan@mail.com',
     href: 'mailto:infojanazyan@mail.com',
+    icon: '/figma/footer-contact-mail.svg',
+    iconSize: 24,
   },
-  { type: 'address', label: 'Megamall, 2-րդ հարկ' },
-  { type: 'phone', label: '+374 11 234 567', href: 'tel:+37411234567' },
+  {
+    label: 'Megamall, 2-րդ հարկ',
+    href: '/stores',
+    icon: '/figma/footer-contact-location.svg',
+    iconSize: 22,
+  },
+  {
+    label: '+374 11 234 567',
+    href: 'tel:+37411234567',
+    icon: '/figma/footer-contact-phone.svg',
+    iconSize: 23,
+  },
+];
+
+/** White badge shell shared by all footer payment logos (Figma node 363:588). */
+export const FOOTER_PAYMENT_BADGE_HEIGHT_PX = 30;
+export const FOOTER_PAYMENT_BADGE_RADIUS_PX = 8;
+export const FOOTER_PAYMENTS_GAP_PX = 11;
+
+export type FooterPaymentIconPosition =
+  | { type: 'center' }
+  | { type: 'offset'; left: number; top: number };
+
+export type FooterPayment = {
+  label: string;
+  icon: string;
+  containerWidth: number;
+  iconWidth: number;
+  iconHeight: number;
+  iconPosition: FooterPaymentIconPosition;
+  imageClassName?: string;
+};
+
+/** Accepted payment methods (Figma node 363:588). */
+export const FOOTER_PAYMENTS: ReadonlyArray<FooterPayment> = [
+  {
+    label: 'Mastercard',
+    icon: '/figma/footer-pay-mastercard.png',
+    containerWidth: 73,
+    iconWidth: 35,
+    iconHeight: 28,
+    iconPosition: { type: 'offset', left: 19, top: 0.5 },
+  },
+  {
+    label: 'Arca',
+    icon: '/figma/footer-pay-arca.png',
+    containerWidth: 74,
+    iconWidth: 50,
+    iconHeight: 13,
+    iconPosition: { type: 'center' },
+    imageClassName: 'size-full object-cover',
+  },
+  {
+    label: 'Visa',
+    icon: '/figma/footer-pay-visa.png',
+    containerWidth: 73,
+    iconWidth: 40,
+    iconHeight: 14,
+    iconPosition: { type: 'center' },
+    imageClassName: 'size-full object-contain',
+  },
 ];
 
 export type FooterSocialLink = {

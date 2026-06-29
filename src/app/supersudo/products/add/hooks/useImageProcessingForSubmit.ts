@@ -6,11 +6,7 @@ interface ProcessImagesForSubmitProps {
 }
 
 function isStoredImageUrl(url: string): boolean {
-  return (
-    url.startsWith('http://') ||
-    url.startsWith('https://') ||
-    url.startsWith('/')
-  );
+  return url.startsWith('http://') || url.startsWith('https://');
 }
 
 function buildFinalMedia(imageUrls: string[], featuredImageIndex: number): string[] {

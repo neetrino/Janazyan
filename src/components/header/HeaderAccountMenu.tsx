@@ -1,16 +1,16 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { User } from 'lucide-react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-hooks';
 
-const HEADER_USER_ICON = '/figma/header-user-icon.svg';
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
-const HEADER_ACTION_ICON_SIZE_PX = 20;
+/** Figma node I45:562;42:243 — filled cyan profile button. */
+const HEADER_PROFILE_BG = '#0499c3';
 const DROPDOWN_GAP_PX = 8;
 const DROPDOWN_Z_INDEX = 100;
 
@@ -215,15 +215,10 @@ export function HeaderAccountMenu() {
         style={{
           width: HEADER_ACTION_BUTTON_SIZE_PX,
           height: HEADER_ACTION_BUTTON_SIZE_PX,
+          backgroundColor: HEADER_PROFILE_BG,
         }}
       >
-        <Image
-          src={HEADER_USER_ICON}
-          alt=""
-          width={HEADER_ACTION_ICON_SIZE_PX}
-          height={HEADER_ACTION_ICON_SIZE_PX}
-          className="h-5 w-5 pointer-events-none"
-        />
+        <User className="h-5 w-5 pointer-events-none text-white" strokeWidth={2} />
       </button>
 
       {isMounted && dropdownPanel ? createPortal(dropdownPanel, document.body) : null}

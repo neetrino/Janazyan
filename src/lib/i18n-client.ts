@@ -34,16 +34,15 @@ const translations: Partial<Record<LanguageCode, any>> = {
  * ```
  */
 export function useTranslation() {
-  // Always start with 'en' to prevent hydration mismatch
-  // The language will be updated after mount in useEffect
-  const [lang, setLang] = useState<LanguageCode>('en');
+  // Default hy — matches <html lang="hy"> and Figma copy; updated after mount from storage.
+  const [lang, setLang] = useState<LanguageCode>('hy');
 
   // Listen to language changes and update state reactively
   useEffect(() => {
     // Update language on mount to ensure we have the latest from localStorage
     const updateLanguage = () => {
       const storedLang = getStoredLanguage();
-      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : 'en';
+      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : 'hy';
       setLang((currentLang) => {
         if (newLang !== currentLang) {
           // Clear translation cache when language changes

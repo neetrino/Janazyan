@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FeaturedProductCardActions } from './FeaturedProductCardActions.client';
-import { FeaturedProductCardPrice } from './FeaturedProductCardPrice.client';
+import { FeaturedProductCardImage } from './FeaturedProductCardImage.client';
 import { ProductLabels } from '../ProductLabels';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 
@@ -45,14 +45,10 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
           height: PRODUCT_IMAGE_HEIGHT_PX,
         }}
       >
-        <Image
+        <FeaturedProductCardImage
           src={product.image}
           alt={product.title}
-          fill
-          sizes="112px"
-          className="object-contain object-bottom"
           priority={priority}
-          loading={priority ? undefined : 'lazy'}
         />
       </Link>
 
@@ -79,7 +75,7 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
       />
 
       <div
-        className="absolute inset-x-0 bottom-0"
+        className="absolute inset-x-0 bottom-0 overflow-hidden rounded-[26px] bg-cream"
         style={{ top: CARD_BODY_TOP_PX }}
       >
         <div className="absolute inset-0 rotate-180 overflow-visible">
@@ -121,7 +117,15 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
         </div>
       ) : null}
 
-      <FeaturedProductCardPrice price={product.price} comparePrice={product.comparePriceUsd} />
+      <p className="absolute left-[15px] top-[307px] z-10 text-[23px] font-black leading-7 tracking-[-0.45px] text-ink-800">
+        {product.priceLabel}
+      </p>
+
+      {product.comparePriceLabel ? (
+        <p className="absolute left-[120px] top-[309px] z-10 text-[16px] leading-7 text-ink-800/70 line-through">
+          {product.comparePriceLabel}
+        </p>
+      ) : null}
 
     </article>
   );

@@ -4,7 +4,7 @@ import { persistPartnerStoreLogoFromDataUrl } from '@/lib/partner-stores/persist
 
 /**
  * POST /api/v1/admin/partner-stores/upload-logo
- * Upload partner store logo to R2 (or public/partner-stores in local dev).
+ * Upload partner store logo to R2.
  */
 export async function POST(req: NextRequest) {
   try {

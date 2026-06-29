@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 
 export const HOME_NAV_LINK_HREFS: ReadonlyArray<{
-  labelKey: 'home' | 'shop' | 'about' | 'ourStores' | 'contact' | 'faq' | 'blog';
+  labelKey: 'home' | 'shop' | 'about' | 'ourStores' | 'contact' | 'blog';
   href: string;
 }> = [
   { labelKey: 'home', href: '/' },

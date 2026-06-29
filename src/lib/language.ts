@@ -18,12 +18,12 @@ function parseLanguageCode(value: string | null | undefined): LanguageCode | nul
 }
 
 export function getStoredLanguage(): LanguageCode {
-  if (typeof window === 'undefined') return 'en';
+  if (typeof window === 'undefined') return 'hy';
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return parseLanguageCode(stored) ?? 'en';
+    return parseLanguageCode(stored) ?? 'hy';
   } catch {
-    return 'en';
+    return 'hy';
   }
 }
 

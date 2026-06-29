@@ -8,6 +8,8 @@ import {
   ADMIN_LIST_CACHE_KEYS,
   invalidateAdminListCache,
 } from '@/lib/admin/admin-list-client-cache';
+import { R2_IMAGE_FOLDERS } from '@/lib/r2/r2-image-folders';
+import { uploadAdminImagesToR2 } from '@/lib/r2/upload-admin-images-client';
 
 interface UseCategoryActionsReturn {
   showAddModal: boolean;
@@ -54,14 +56,6 @@ export function useCategoryActions(): UseCategoryActionsReturn {
   const [saving, setSaving] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
-
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
 
   const resetForm = () => {
     setFormData(initialFormData);
@@ -187,8 +181,12 @@ export function useCategoryActions(): UseCategoryActionsReturn {
 
     try {
       setImageUploading(true);
-      const base64 = await fileToBase64(imageFile);
-      setFormData((current) => ({ ...current, imageUrl: base64 }));
+      const uploadedUrls = await uploadAdminImagesToR2([imageFile], R2_IMAGE_FOLDERS.categories);
+      if (uploadedUrls.length === 0) {
+        showToast(t('admin.attributes.valueModal.failedToProcessImage'), 'error');
+        return;
+      }
+      setFormData((current) => ({ ...current, imageUrl: uploadedUrls[0] }));
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : t('admin.attributes.valueModal.failedToProcessImage');

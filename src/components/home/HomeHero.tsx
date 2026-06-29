@@ -81,7 +81,7 @@ function HeroProductImages({
             ? 'animate-hero-body-wash-showcase'
             : ''
         }
-        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[51.3%] lg:right-auto lg:z-20 ${
+        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[48.34%] lg:right-auto lg:top-[-40px] lg:z-20 lg:aspect-auto lg:h-[950px] lg:w-[51.44%] ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
         dragHandlers={getDragHandlers(bodyWashSlide.id)}
@@ -266,7 +266,7 @@ export function HomeHero() {
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
-          <div className="pointer-events-auto absolute left-[43px] top-[255px] max-w-[min(760px,52%)]">
+          <div className="pointer-events-auto absolute left-[43px] top-[285px] max-w-[min(760px,52%)]">
             <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
               {heroTitle}
             </h1>

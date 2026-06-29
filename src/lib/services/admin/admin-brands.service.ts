@@ -1,6 +1,8 @@
 import { db } from "@white-shop/db";
 import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
+import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
+import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
 
 class AdminBrandsService {
   /**
@@ -76,10 +78,12 @@ class AdminBrandsService {
       }
     }
 
+    const logoUrl = await resolveAdminImageReference(data.logoUrl, R2_IMAGE_FOLDERS.brands);
+
     const brand = await db.brand.create({
       data: {
         slug,
-        logoUrl: data.logoUrl || undefined,
+        logoUrl: logoUrl || undefined,
         published: data.published ?? true,
         translations: {
           create: {
@@ -143,7 +147,7 @@ class AdminBrandsService {
 
     // Update logo URL if provided
     if (data.logoUrl !== undefined) {
-      updateData.logoUrl = data.logoUrl || null;
+      updateData.logoUrl = await resolveAdminImageReference(data.logoUrl, R2_IMAGE_FOLDERS.brands);
     }
 
     if (data.published !== undefined) {
