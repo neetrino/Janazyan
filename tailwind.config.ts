@@ -37,6 +37,8 @@ const config: Config = {
         purple: { DEFAULT: '#b09fc8' },
         coral: { DEFAULT: '#f49395' },
         plum: { DEFAULT: '#b49cc4' },
+        sale: { DEFAULT: '#e05d5d' },
+        accent: { DEFAULT: '#0499c3' },
       },
       fontFamily: {
         sans: ['var(--font-montserrat)', 'system-ui', 'sans-serif'],

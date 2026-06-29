@@ -5,15 +5,22 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  FOOTER_BRAND,
+  FOOTER_COLUMN_TITLES,
+  FOOTER_COMPANY_LINKS,
+  FOOTER_CONTACT,
   FOOTER_COPYRIGHT_COMPANY,
-  FOOTER_PURCHASES,
   FOOTER_SOCIAL,
-  FOOTER_SUPPORT,
+  FOOTER_SUPPORT_LINKS,
+  type FooterContactItem,
+  type FooterLink as FooterLinkType,
 } from './footer/constants';
+import { FooterContactIcon } from './footer/FooterContactIcons';
+import { FooterPaymentMethods } from './footer/FooterPaymentMethods';
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_TEXT = 'text-black/65';
+const FOOTER_TITLE_CLASS =
+  'text-[16px] font-bold uppercase leading-[16.5px] text-black/65';
 const FOOTER_LINK =
   'text-[14px] leading-[21px] text-black/65 transition-colors hover:text-black/80';
 
@@ -123,82 +130,35 @@ export function Footer() {
               </div>
             </div>
 
-            <div
-              className={`absolute left-[77px] top-[53px] ${FOOTER_Z_CONTENT} h-[238px] w-[284px]`}
-            >
-              <Link
-                href="/"
-                className="absolute left-[-4px] top-[6px] block h-[66px] w-[79px] overflow-hidden"
-              >
-                <img
-                  src={FOOTER_LOGO}
-                  alt="Janazyan"
-                  className="absolute left-[-30.76%] top-[-49.34%] h-[198.69%] w-[167.29%] max-w-none"
-                />
-              </Link>
-              <p
-                className={`absolute left-0 top-[82px] w-[284px] text-[16px] leading-[24px] tracking-[-0.31px] ${FOOTER_TEXT}`}
-              >
-                Նուրբ խնամք Ձեր փոքրիկի համար՝ ստեղծված սիրով և ուշադրությամբ
-                յուրաքանչյուր մանրուքի նկատմամբ։
-              </p>
-              <div className="absolute left-0 top-[198px] flex gap-3">
-                {FOOTER_SOCIAL.map((social) => (
-                  <SocialLink key={social.label} {...social} />
-                ))}
-              </div>
-            </div>
+            <FooterBrand />
 
-            <FooterColumn
-              title="ԳՆՈՒՄՆԵՐ"
-              className={`absolute left-[25.92%] right-[57.63%] top-[75px] ${FOOTER_Z_CONTENT}`}
-            >
-              {FOOTER_PURCHASES.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={FOOTER_LINK}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </FooterColumn>
+            <FooterLinkColumn
+              title={FOOTER_COLUMN_TITLES.company}
+              links={FOOTER_COMPANY_LINKS}
+              linkGapClass="gap-[13px]"
+              className={`absolute left-[26.46%] top-[65px] w-[180px] ${FOOTER_Z_CONTENT}`}
+            />
 
-            <FooterColumn
-              title="ԱՋԱԿՑՈՒԹՅՈՒՆ"
-              className={`absolute left-[66.19%] right-[17.36%] top-[75px] ${FOOTER_Z_CONTENT}`}
-            >
-              {FOOTER_SUPPORT.map((link) => (
-                <li key={link.label}>
-                  <Link href={link.href} className={FOOTER_LINK}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </FooterColumn>
+            <FooterContact />
 
-            <FooterColumn
-              title="ԲՐԵՆԴ"
-              className={`absolute left-[82.65%] right-[0.9%] top-[75px] ${FOOTER_Z_CONTENT}`}
-            >
-              {FOOTER_BRAND.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={FOOTER_LINK}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </FooterColumn>
+            <FooterLinkColumn
+              title={FOOTER_COLUMN_TITLES.support}
+              links={FOOTER_SUPPORT_LINKS}
+              linkGapClass="gap-[9px]"
+              className={`absolute left-[79.25%] top-[65px] w-[190px] ${FOOTER_Z_CONTENT}`}
+            />
 
-            <div
-              className={`absolute bottom-[24px] left-1/2 flex h-[53px] w-[1280px] max-w-[calc(100%-154px)] -translate-x-1/2 flex-col justify-end border-t border-white/[0.13] pt-[33px] ${FOOTER_Z_CONTENT}`}
+            <FooterPaymentMethods
+              className={`absolute left-[75.65%] top-[334px] ${FOOTER_Z_CONTENT}`}
+            />
+
+            <p
+              className={`absolute left-[73px] top-[348px] whitespace-nowrap text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT} ${FOOTER_Z_CONTENT}`}
             >
-              <p
-                className={`whitespace-nowrap text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT}`}
-              >
-                © 2026{' '}
-                <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>։
-                Բոլոր իրավունքները պաշտպանված են։
-              </p>
-            </div>
+              © 2026{' '}
+              <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>։ Բոլոր
+              իրավունքները պաշտպանված են։
+            </p>
           </div>
         </div>
       </footer>
@@ -206,23 +166,94 @@ export function Footer() {
   );
 }
 
-function FooterColumn({
+function FooterBrand() {
+  return (
+    <div
+      className={`absolute left-[77px] top-[53px] h-[238px] w-[300px] ${FOOTER_Z_CONTENT}`}
+    >
+      <Link
+        href="/"
+        className="absolute left-[-4px] top-[6px] block h-[66px] w-[79px] overflow-hidden"
+      >
+        <img
+          src={FOOTER_LOGO}
+          alt="Janazyan"
+          className="absolute left-[-30.76%] top-[-49.34%] h-[198.69%] w-[167.29%] max-w-none"
+        />
+      </Link>
+      <p
+        className={`absolute left-0 top-[82px] w-[280px] text-[16px] leading-[24px] tracking-[-0.31px] ${FOOTER_TEXT}`}
+      >
+        Նուրբ խնամք Ձեր փոքրիկի համար՝ ստեղծված սիրով և ուշադրությամբ
+        յուրաքանչյուր մանրուքի նկատմամբ։
+      </p>
+      <div className="absolute left-0 top-[232px] flex gap-3">
+        {FOOTER_SOCIAL.map((social) => (
+          <SocialLink key={social.label} {...social} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function FooterLinkColumn({
   title,
-  children,
+  links,
+  linkGapClass,
   className = '',
 }: {
   title: string;
-  children: ReactNode;
+  links: ReadonlyArray<FooterLinkType>;
+  linkGapClass: string;
   className?: string;
 }) {
   return (
     <div className={`whitespace-nowrap ${className}`}>
-      <h3 className="text-[16px] font-bold uppercase leading-[16.5px] text-black/65">
-        {title}
-      </h3>
-      <ul className="mt-[18px] space-y-[13px]">{children}</ul>
+      <h3 className={FOOTER_TITLE_CLASS}>{title}</h3>
+      <ul className={`mt-[18px] flex flex-col ${linkGapClass}`}>
+        {links.map((link) => (
+          <li key={`${link.href}-${link.label}`}>
+            <Link href={link.href} className={FOOTER_LINK}>
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
     </div>
   );
+}
+
+function FooterContact() {
+  return (
+    <div
+      className={`absolute left-[63.4%] top-[65px] flex w-[200px] flex-col gap-[15px] ${FOOTER_Z_CONTENT}`}
+    >
+      <h3 className={FOOTER_TITLE_CLASS}>{FOOTER_COLUMN_TITLES.contact}</h3>
+      {FOOTER_CONTACT.map((item) => (
+        <ContactRow key={item.label} item={item} />
+      ))}
+    </div>
+  );
+}
+
+function ContactRow({ item }: { item: FooterContactItem }) {
+  const content = (
+    <>
+      <FooterContactIcon type={item.type} className="shrink-0" />
+      <span className="text-[14px] leading-[21px]">{item.label}</span>
+    </>
+  );
+  const rowClass = `flex items-center gap-[6px] ${FOOTER_TEXT}`;
+
+  if (item.href) {
+    return (
+      <a href={item.href} className={`${rowClass} transition-colors hover:text-black/80`}>
+        {content}
+      </a>
+    );
+  }
+
+  return <div className={rowClass}>{content}</div>;
 }
 
 function SocialLink({

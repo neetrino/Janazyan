@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
 import { CATEGORY_FIGMA_GRID_IDS } from './constants';
 import { MIRAGE_CATEGORY_TITLE_CLASS } from './mirage-heading-styles';
 import { useHomeCategoryPosters } from './use-home-i18n';
@@ -28,6 +27,37 @@ const CATEGORY_BG_CLASS = {
 } as const;
 
 const CARD_HEIGHT_CLASS = 'h-[434px] min-h-[434px]';
+
+const CATEGORY_POSTER_CIRCLE = '/figma/category-poster-circle.svg';
+const CATEGORY_POSTER_ARROW = '/figma/category-poster-arrow.svg';
+
+function CategoryPosterArrow() {
+  return (
+    <span
+      aria-hidden
+      className="absolute bottom-[43px] right-[38px] flex size-[85px] items-center justify-center transition-transform duration-300 group-hover:scale-105"
+    >
+      <span className="relative flex size-16 rotate-[155deg] items-center justify-center">
+        <Image
+          src={CATEGORY_POSTER_CIRCLE}
+          alt=""
+          width={64}
+          height={64}
+          className="absolute inset-0 size-full"
+        />
+        <span className="relative flex h-[8px] w-[18px] -rotate-[25deg] items-center justify-center">
+          <Image
+            src={CATEGORY_POSTER_ARROW}
+            alt=""
+            width={18}
+            height={8}
+            className="block h-full w-full max-w-none"
+          />
+        </span>
+      </span>
+    </span>
+  );
+}
 
 export function CategoryPosters() {
   const { t } = useTranslation();
@@ -95,12 +125,7 @@ function CategoryCard({
         <span className="block">{poster.title[1]}</span>
       </div>
 
-      <span
-        aria-hidden
-        className="absolute bottom-[43px] right-[38px] grid h-16 w-16 place-items-center rounded-full bg-white text-ink-800 shadow-soft transition-transform duration-300 group-hover:rotate-[15deg] group-hover:scale-105"
-      >
-        <ArrowUpRight className="h-5 w-5" strokeWidth={2.4} />
-      </span>
+      <CategoryPosterArrow />
     </Link>
   );
 }

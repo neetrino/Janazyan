@@ -31,7 +31,7 @@ export function WhyChooseUs() {
         </h2>
 
         <div
-          className={`mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:inset-x-0 lg:top-[124px] lg:mt-0 lg:grid-cols-4 lg:gap-5 ${SECTION_CARD_ROW_INSET_CLASS}`}
+          className={`mt-12 grid gap-5 sm:grid-cols-2 lg:absolute lg:inset-x-0 lg:top-[124px] lg:mt-0 lg:grid-cols-4 lg:justify-center lg:gap-5 ${SECTION_CARD_ROW_INSET_CLASS}`}
         >
           {cards.map((card) => (
             <Card key={card.cardKey} card={card} />
@@ -47,7 +47,7 @@ function Card({ card }: { card: WhyCardView }) {
     NUMBER_POSITION[card.index] ?? 'left-[20%] right-[-10%]';
 
   return (
-    <article className="relative h-[320px] w-full min-w-0 overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card">
+    <article className="relative h-[320px] w-full min-w-0 max-w-[328px] overflow-hidden rounded-[24px] bg-white shadow-soft transition-shadow duration-300 hover:shadow-card lg:justify-self-center">
       <span
         aria-hidden
         className={[
@@ -59,7 +59,7 @@ function Card({ card }: { card: WhyCardView }) {
         {card.number}
       </span>
 
-      <p className="absolute left-[8.7%] top-[28px] font-mono text-[11px] font-medium uppercase leading-[16.5px] tracking-[0.2em] text-ink-900">
+      <p className="absolute left-[8.7%] top-[28px] font-grotesk text-[11px] font-medium uppercase leading-[16.5px] tracking-[0.2em] text-ink-900">
         {card.index}
       </p>
 
