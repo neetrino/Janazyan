@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@white-shop/db";
 import { logger } from "@/lib/utils/logger";
+import { createSyntheticCartItemId } from "@/lib/cart/cart-item-id";
 
 interface GuestCartItemInput {
   productId: string;
@@ -171,7 +172,7 @@ export async function POST(req: NextRequest) {
       });
 
       cartItems.push({
-        id: `${item.productId}-${selectedVariant.id}-${index}`,
+        id: createSyntheticCartItemId(item.productId, selectedVariant.id, index),
         variant: {
           id: selectedVariant.id,
           sku: selectedVariant.sku,

@@ -1,25 +1,16 @@
 'use client';
 
 import { useTranslation } from '../../lib/i18n-client';
-import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
-import { formatPriceInCurrency } from '../../lib/currency';
+import {
+  STOREFRONT_GLASS_ACTION_BUTTON_CLASS,
+  STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS,
+} from '../products/[slug]/product-action-bar.constants';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { CheckoutOrderSummaryBreakdown } from './components/CheckoutOrderSummaryBreakdown';
 import { CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS } from './checkout-layout.constants';
 import { CHECKOUT_GLASS_ERROR_CLASS } from './checkout-glass-styles';
-
-interface Cart {
-  id: string;
-  items: any[];
-  totals: {
-    subtotal: number;
-    discount: number;
-    shipping: number;
-    tax: number;
-    total: number;
-    currency: string;
-  };
-  itemsCount: number;
-}
+import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
+import type { Cart } from './types';
 
 interface OrderSummaryProps {
   cart: Cart | null;
@@ -27,15 +18,24 @@ interface OrderSummaryProps {
     subtotalDisplay: number;
     taxDisplay: number;
     shippingDisplay: number;
+    discountDisplay: number;
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   shippingMethod: 'pickup' | 'delivery';
-  shippingCity: string | undefined;
+  shippingCountry?: string;
+  shippingCity?: string;
+  deliveryOptions: DeliveryOptionsPublic | null;
   loadingDeliveryPrice: boolean;
   deliveryPrice: number | null;
   error: string | null;
   isSubmitting: boolean;
+  promoCode: string;
+  promoError: string | null;
+  promoApplying: boolean;
+  appliedPromoCode: string | null;
+  onPromoCodeChange: (value: string) => void;
+  onApplyPromo: () => void;
 }
 
 export function OrderSummary({
@@ -43,54 +43,76 @@ export function OrderSummary({
   orderSummary,
   currency,
   shippingMethod,
+  shippingCountry,
   shippingCity,
+  deliveryOptions,
   loadingDeliveryPrice,
   deliveryPrice,
   error,
   isSubmitting,
+  promoCode,
+  promoError,
+  promoApplying,
+  appliedPromoCode,
+  onPromoCodeChange,
+  onApplyPromo,
 }: OrderSummaryProps) {
   const { t } = useTranslation();
+
+  if (!cart) {
+    return null;
+  }
 
   return (
     <div className={CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS}>
       <CheckoutGlassCard>
         <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.orderSummary')}</h2>
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between text-gray-600">
-            <span>{t('checkout.summary.subtotal')}</span>
-            <span>{formatPriceInCurrency(orderSummary.subtotalDisplay, currency)}</span>
+
+        <CheckoutOrderSummaryBreakdown
+          cart={cart}
+          orderSummary={orderSummary}
+          currency={currency}
+          shippingMethod={shippingMethod}
+          shippingCountry={shippingCountry}
+          shippingCity={shippingCity}
+          deliveryOptions={deliveryOptions}
+          loadingDeliveryPrice={loadingDeliveryPrice}
+          deliveryPrice={deliveryPrice}
+        />
+
+        <div className="mb-6 rounded-3xl border border-white/50 bg-white/60 p-4 backdrop-blur-sm">
+          <p className="text-base font-semibold text-gray-800">{t('checkout.promo.title')}</p>
+          <div className="mt-3 flex gap-3">
+            <input
+              type="text"
+              value={promoCode}
+              onChange={(event) => onPromoCodeChange(event.target.value)}
+              placeholder={t('checkout.promo.placeholder')}
+              disabled={promoApplying || isSubmitting}
+              className="h-11 w-full rounded-full border border-white/60 bg-white px-5 text-sm text-gray-700 placeholder:text-sm placeholder:text-gray-400 focus:border-white/80 focus:outline-none focus:ring-2 focus:ring-sky-deep/15 disabled:cursor-not-allowed disabled:opacity-60"
+            />
+            <button
+              type="button"
+              onClick={onApplyPromo}
+              disabled={promoApplying || isSubmitting}
+              className={`${STOREFRONT_GLASS_ACTION_BUTTON_CLASS} h-11 min-w-[104px] px-4 text-sm uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60`}
+            >
+              {promoApplying ? t('checkout.promo.applying') : t('checkout.promo.apply')}
+            </button>
           </div>
-          <div className="flex justify-between text-gray-600">
-            <span>{t('checkout.summary.shipping')}</span>
-            <span>
-              {shippingMethod === 'pickup'
-                ? t('checkout.shipping.freePickup')
-                : loadingDeliveryPrice
-                  ? t('checkout.shipping.loading')
-                  : deliveryPrice !== null
-                    ? formatPriceInCurrency(orderSummary.shippingDisplay, currency) + (shippingCity ? ` (${shippingCity})` : ` (${t('checkout.shipping.delivery')})`)
-                    : t('checkout.shipping.enterCity')}
-            </span>
-          </div>
-          <div className="flex justify-between text-gray-600">
-            <span>{t('checkout.summary.tax')}</span>
-            <span>{formatPriceInCurrency(orderSummary.taxDisplay, currency)}</span>
-          </div>
-          <div className="border-t border-white/40 pt-4">
-            <div className="flex justify-between text-lg font-bold text-gray-900">
-              <span>{t('checkout.summary.total')}</span>
-              <span>
-                {formatPriceInCurrency(orderSummary.totalDisplay, currency)}
-              </span>
-            </div>
-          </div>
+          {appliedPromoCode ? (
+            <p className="mt-2 text-sm font-medium text-emerald-700">
+              {t('checkout.promo.applied').replace('{code}', appliedPromoCode)}
+            </p>
+          ) : null}
+          {promoError ? <p className="mt-2 text-sm text-red-600">{promoError}</p> : null}
         </div>
 
-        {error && (
+        {error ? (
           <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
             <p className="text-sm text-red-600">{error}</p>
           </div>
-        )}
+        ) : null}
 
         <button
           type="submit"
@@ -103,4 +125,3 @@ export function OrderSummary({
     </div>
   );
 }
-

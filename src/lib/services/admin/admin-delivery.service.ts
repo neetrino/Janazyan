@@ -1,124 +1,134 @@
 import { db } from "@white-shop/db";
-import { logger } from "@/lib/utils/logger";
+import { calculateZoneDeliveryPrice } from "@/lib/delivery/calculate-delivery-price";
+import { DELIVERY_SETTINGS_DB_KEY } from "@/lib/delivery/delivery-settings.constants";
+import { DEFAULT_DELIVERY_SETTINGS } from "@/lib/delivery/delivery-settings.defaults";
+import {
+  normalizeDeliverySettings,
+  toPublicDeliverySettings,
+} from "@/lib/delivery/normalize-delivery-settings";
+import {
+  findDeliveryCountry,
+  findDeliveryZone,
+} from "@/lib/delivery/find-delivery-zone";
+import type { DeliverySettings } from "@/lib/delivery/delivery-settings.types";
 
 class AdminDeliveryService {
-  /**
-   * Get delivery settings
-   */
-  async getDeliverySettings() {
+  private async readSettings(): Promise<DeliverySettings> {
     const setting = await db.settings.findUnique({
-      where: { key: 'delivery-locations' },
+      where: { key: DELIVERY_SETTINGS_DB_KEY },
     });
 
     if (!setting) {
-      return {
-        locations: [],
-      };
+      return DEFAULT_DELIVERY_SETTINGS;
     }
 
-    const value = setting.value as { locations?: Array<{ id?: string; country: string; city: string; price: number }> };
-    return {
-      locations: value.locations || [],
-    };
+    return normalizeDeliverySettings(setting.value);
   }
 
-  /**
-   * Get delivery price for a specific city
-   * Returns the configured price if city has shipping, otherwise returns 0
-   */
-  async getDeliveryPrice(city: string, country: string = 'Armenia') {
-    const setting = await db.settings.findUnique({
-      where: { key: 'delivery-locations' },
-    });
+  async getDeliverySettings(): Promise<DeliverySettings> {
+    return this.readSettings();
+  }
 
-    if (!setting) {
+  async getDeliveryOptions() {
+    const settings = await this.readSettings();
+    return toPublicDeliverySettings(settings);
+  }
+
+  async getDeliveryPrice(
+    zoneSlugOrName: string,
+    country: string = 'Armenia',
+    orderSubtotalAmd = 0,
+  ): Promise<number> {
+    const settings = await this.readSettings();
+    const deliveryCountry = findDeliveryCountry(settings, country);
+
+    if (!deliveryCountry) {
       return 0;
     }
 
-    const value = setting.value as { locations?: Array<{ country: string; city: string; price: number }> };
-    const locations = value.locations || [];
-
-    // Find matching location (case-insensitive)
-    const location = locations.find(
-      (loc) => 
-        loc.city.toLowerCase().trim() === city.toLowerCase().trim() &&
-        loc.country.toLowerCase().trim() === country.toLowerCase().trim()
-    );
-
-    if (location) {
-      return location.price;
+    const zone = findDeliveryZone(deliveryCountry, zoneSlugOrName);
+    if (!zone) {
+      return 0;
     }
 
-    const cityMatch = locations.find(
-      (loc) => loc.city.toLowerCase().trim() === city.toLowerCase().trim()
-    );
-
-    if (cityMatch) {
-      return cityMatch.price;
-    }
-
-    return 0;
+    return calculateZoneDeliveryPrice(zone, orderSubtotalAmd);
   }
 
-  /**
-   * Update delivery settings
-   */
-  async updateDeliverySettings(data: { locations: Array<{ id?: string; country: string; city: string; price: number }> }) {
-    if (!Array.isArray(data.locations)) {
+  async updateDeliverySettings(data: DeliverySettings) {
+    const normalized = normalizeDeliverySettings(data);
+
+    if (!Array.isArray(normalized.countries)) {
       throw {
         status: 400,
         type: "https://api.shop.am/problems/validation-error",
         title: "Validation Error",
-        detail: "Locations must be an array",
+        detail: "Countries must be an array",
       };
     }
 
-    // Validate each location
-    for (const location of data.locations) {
-      if (!location.country || !location.city) {
+    if (normalized.countries.length === 0) {
+      await db.settings.upsert({
+        where: { key: DELIVERY_SETTINGS_DB_KEY },
+        update: {
+          value: normalized,
+          updatedAt: new Date(),
+        },
+        create: {
+          key: DELIVERY_SETTINGS_DB_KEY,
+          value: normalized,
+          description: 'Delivery countries, zones, pricing rules and extra fields',
+        },
+      });
+
+      return normalized;
+    }
+
+    for (const country of normalized.countries) {
+      if (!country.name.trim()) {
         throw {
           status: 400,
           type: "https://api.shop.am/problems/validation-error",
           title: "Validation Error",
-          detail: "Each location must have country and city",
+          detail: "Each country must have a name",
         };
       }
-      if (typeof location.price !== 'number' || location.price < 0) {
+
+      if (!country.zones.length) {
         throw {
           status: 400,
           type: "https://api.shop.am/problems/validation-error",
           title: "Validation Error",
-          detail: "Price must be a non-negative number",
+          detail: `Country "${country.name}" must have at least one zone`,
         };
+      }
+
+      for (const zone of country.zones) {
+        if (!zone.name.trim()) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/validation-error",
+            title: "Validation Error",
+            detail: `Each zone in "${country.name}" must have a name`,
+          };
+        }
       }
     }
 
-    // Generate IDs for new locations
-    const locationsWithIds = data.locations.map((location, index) => ({
-      ...location,
-      id: location.id || `location-${Date.now()}-${index}`,
-    }));
-
-    const setting = await db.settings.upsert({
-      where: { key: 'delivery-locations' },
+    await db.settings.upsert({
+      where: { key: DELIVERY_SETTINGS_DB_KEY },
       update: {
-        value: { locations: locationsWithIds },
+        value: normalized,
         updatedAt: new Date(),
       },
       create: {
-        key: 'delivery-locations',
-        value: { locations: locationsWithIds },
-        description: 'Delivery prices by country and city',
+        key: DELIVERY_SETTINGS_DB_KEY,
+        value: normalized,
+        description: 'Delivery countries, zones, pricing rules and extra fields',
       },
     });
 
-    return {
-      locations: locationsWithIds,
-    };
+    return normalized;
   }
 }
 
 export const adminDeliveryService = new AdminDeliveryService();
-
-
-

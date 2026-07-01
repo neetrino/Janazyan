@@ -25,7 +25,7 @@ import { formatWishlistBadgeCount, useWishlistItemCount } from '../hooks/useWish
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 40;
 const HEADER_ACTION_ICON_SIZE_PX = 22;
-const HEADER_CART_BADGE_COLOR = '#0499c3';
+const HEADER_CART_BADGE_COLOR = '#93B6E3';
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
@@ -95,9 +95,7 @@ function HeaderLanguageControl() {
       </button>
       {menuOpen ? (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl bg-white shadow-card">
-          {Object.values(LANGUAGES)
-            .filter((lang) => lang.code !== 'ka')
-            .map((lang) => {
+          {Object.values(LANGUAGES).map((lang) => {
               const isActive = currentLang === lang.code;
               return (
                 <button

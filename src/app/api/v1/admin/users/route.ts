@@ -18,7 +18,11 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const filters = {};
+    const { searchParams } = new URL(req.url);
+    const filters = {
+      role: searchParams.get("role") ?? "",
+      search: searchParams.get("search") ?? "",
+    };
     const result = await adminService.getUsers(filters);
     return NextResponse.json(result);
   } catch (error: any) {

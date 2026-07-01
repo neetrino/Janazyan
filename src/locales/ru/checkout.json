@@ -17,17 +17,29 @@
     "cardNumber": "Номер карты",
     "expiryDate": "Срок действия",
     "cvv": "CVV",
-    "cardHolderName": "Имя держателя карты"
+    "cardHolderName": "Имя держателя карты",
+    "country": "Страна",
+    "deliveryZone": "Зона доставки",
+    "recipientFullName": "ФИО получателя",
+    "postalIndex": "Почтовый индекс",
+    "additionalNotes": "Другая необходимая информация",
+    "region": "Регион",
+    "room": "Комната",
+    "office": "Офис"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
-    "address": "Улица, квартира, офис и т.д.",
+    "address": "Улица, дом и т.д.",
     "city": "Город",
     "postalCode": "Почтовый индекс",
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "ММ/ГГ",
     "cvv": "123",
-    "cardHolderName": "Иван Иванов"
+    "cardHolderName": "Иван Иванов",
+    "selectCountry": "Выберите страну",
+    "selectRegion": "Выберите регион",
+    "room": "Квартира, комната",
+    "office": "Номер офиса"
   },
   "shipping": {
     "storePickup": "Самовывоз",
@@ -36,7 +48,9 @@
     "deliveryDescription": "Мы доставим ваш заказ по вашему адресу",
     "freePickup": "Бесплатно (Самовывоз)",
     "loading": "Загрузка...",
-    "enterCity": "Введите город"
+    "enterCity": "Введите город",
+    "selectRegion": "Выберите регион",
+    "freeDelivery": "Бесплатно"
   },
   "payment": {
     "cashOnDelivery": "Наложенный платеж",
@@ -53,7 +67,15 @@
     "subtotal": "Промежуточный итог",
     "shipping": "Доставка",
     "tax": "Налог",
+    "discount": "Скидка",
     "total": "Итого"
+  },
+  "promo": {
+    "title": "Есть купон?",
+    "placeholder": "Введите код купона",
+    "apply": "Применить",
+    "applying": "Применение...",
+    "applied": "Промокод \"{code}\" применен"
   },
   "buttons": {
     "placeOrder": "Оформить заказ",
@@ -94,12 +116,13 @@
     "fillShippingAddress": "Пожалуйста, заполните все поля адреса доставки",
     "cartEmpty": "Корзина пуста",
     "failedToLoadCart": "Не удалось загрузить корзину",
-    "failedToCreateOrder": "Не удалось создать заказ. Пожалуйста, попробуйте снова."
+    "failedToCreateOrder": "Не удалось создать заказ. Пожалуйста, попробуйте снова.",
+    "promoCodeRequired": "Промокод обязателен",
+    "invalidPromoCode": "Неверный промокод",
+    "countryRequired": "Страна обязательна для доставки",
+    "zoneRequired": "Регион обязателен для доставки",
+    "recipientRequired": "ФИО получателя обязательно",
+    "postalIndexRequired": "Почтовый индекс обязателен",
+    "additionalNotesRequired": "Это поле обязательно"
   }
 }
-
-
-
-
-
-

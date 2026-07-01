@@ -1,4 +1,6 @@
 import type { Cart } from '../../app/cart/types';
+import { createEmptyCart, isCartEmpty } from './cart-empty';
+import { markCartMutation } from './cart-mutation';
 
 /** Isolates cached cart UI per guest session or authenticated user. */
 export type CartCacheScope = 'guest' | `user:${string}`;
@@ -17,6 +19,8 @@ interface CartSnapshotPayload {
 }
 
 let memorySnapshot: { scope: CartCacheScope; cart: Cart } | null = null;
+
+export type CartSnapshotSource = 'client' | 'network';
 
 function storageKeyForScope(scope: CartCacheScope): string {
   return `${STORAGE_KEY_PREFIX}${scope}`;
@@ -53,6 +57,13 @@ function isValidCart(cart: unknown): cart is Cart {
   );
 }
 
+function normalizeSnapshotCart(scope: CartCacheScope, cart: Cart | null): Cart {
+  if (cart && !isCartEmpty(cart)) {
+    return cart;
+  }
+  return createEmptyCart(scope, cart?.id);
+}
+
 /** Unix ms when the snapshot was written, or null if missing. */
 export function readCartSnapshotCachedAt(scope: CartCacheScope): number | null {
   if (typeof window === 'undefined') {
@@ -87,6 +98,7 @@ export function isCartSnapshotFresh(
 
 /**
  * Reads a cached full cart for the given scope only (guest vs specific user).
+ * Returns null only when no snapshot exists — empty carts are valid tombstones.
  */
 export function readCartSnapshot(scope: CartCacheScope): Cart | null {
   if (memorySnapshot?.scope === scope) {
@@ -122,23 +134,29 @@ export function readCartSnapshot(scope: CartCacheScope): Cart | null {
 
 /**
  * Persists a full cart snapshot for instant drawer / badge display.
+ * Client writes bump the mutation epoch; network writes do not.
  */
-export function writeCartSnapshot(scope: CartCacheScope, cart: Cart | null): void {
+export function writeCartSnapshot(
+  scope: CartCacheScope,
+  cart: Cart | null,
+  options?: { source?: CartSnapshotSource },
+): void {
   if (typeof window === 'undefined') {
     return;
   }
 
-  if (!cart || cart.items.length === 0) {
-    clearCartSnapshot(scope);
-    return;
+  const source = options?.source ?? 'client';
+  if (source === 'client') {
+    markCartMutation();
   }
 
-  memorySnapshot = { scope, cart };
+  const normalized = normalizeSnapshotCart(scope, cart);
+  memorySnapshot = { scope, cart: normalized };
 
   const payload: CartSnapshotPayload = {
     version: SNAPSHOT_VERSION,
     scope,
-    cart,
+    cart: normalized,
     cachedAt: Date.now(),
   };
 
@@ -149,7 +167,7 @@ export function writeCartSnapshot(scope: CartCacheScope, cart: Cart | null): voi
   }
 }
 
-/** Removes persisted snapshot for one scope (empty cart). */
+/** Removes persisted snapshot for one scope. Prefer empty tombstone via `writeCartSnapshot`. */
 export function clearCartSnapshot(scope: CartCacheScope): void {
   if (memorySnapshot?.scope === scope) {
     memorySnapshot = null;
@@ -175,7 +193,7 @@ export function patchCartLineIdInSnapshot(
   realItemId: string,
 ): void {
   const cart = readCartSnapshot(scope);
-  if (!cart) {
+  if (!cart || isCartEmpty(cart)) {
     return;
   }
 

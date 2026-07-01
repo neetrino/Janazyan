@@ -13,4 +13,5 @@ export type PromoCodeAdminRow = {
   active: boolean;
   validFrom: string | null;
   validUntil: string | null;
+  allowedUserIds: string[];
 };

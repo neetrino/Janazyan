@@ -17,17 +17,29 @@
     "cardNumber": "Card Number",
     "expiryDate": "Expiry Date",
     "cvv": "CVV",
-    "cardHolderName": "Card Holder Name"
+    "cardHolderName": "Card Holder Name",
+    "country": "Country",
+    "deliveryZone": "Delivery zone",
+    "recipientFullName": "Recipient full name",
+    "postalIndex": "Postal index",
+    "additionalNotes": "Other required information",
+    "region": "Region",
+    "room": "Room",
+    "office": "Office"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
-    "address": "Street, apartment, office, etc.",
+    "address": "Street, building, etc.",
     "city": "City",
     "postalCode": "Postal Code",
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "MM/YY",
     "cvv": "123",
-    "cardHolderName": "John Doe"
+    "cardHolderName": "John Doe",
+    "selectCountry": "Select country",
+    "selectRegion": "Select region",
+    "room": "Apartment, room",
+    "office": "Office number"
   },
   "shipping": {
     "storePickup": "Store Pickup",
@@ -36,7 +48,9 @@
     "deliveryDescription": "We will deliver your order to your address",
     "freePickup": "Free (Store Pickup)",
     "loading": "Loading...",
-    "enterCity": "Enter City"
+    "enterCity": "Enter City",
+    "selectRegion": "Select region",
+    "freeDelivery": "Free"
   },
   "payment": {
     "cashOnDelivery": "Cash on Delivery",
@@ -53,7 +67,15 @@
     "subtotal": "Subtotal",
     "shipping": "Shipping",
     "tax": "Tax",
+    "discount": "Discount",
     "total": "Total"
+  },
+  "promo": {
+    "title": "Have a coupon?",
+    "placeholder": "Enter your coupon code",
+    "apply": "Apply",
+    "applying": "Applying...",
+    "applied": "Promo \"{code}\" applied"
   },
   "buttons": {
     "placeOrder": "Place Order",
@@ -94,12 +116,13 @@
     "fillShippingAddress": "Please fill in all shipping address fields",
     "cartEmpty": "Cart is empty",
     "failedToLoadCart": "Failed to load cart",
-    "failedToCreateOrder": "Failed to create order. Please try again."
+    "failedToCreateOrder": "Failed to create order. Please try again.",
+    "promoCodeRequired": "Promo code is required",
+    "invalidPromoCode": "Invalid promo code",
+    "countryRequired": "Country is required for delivery",
+    "zoneRequired": "Region is required for delivery",
+    "recipientRequired": "Recipient full name is required",
+    "postalIndexRequired": "Postal index is required",
+    "additionalNotesRequired": "This field is required"
   }
 }
-
-
-
-
-
-

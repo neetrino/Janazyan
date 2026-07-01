@@ -1,7 +1,7 @@
-import { LANGUAGES } from '../../lib/language';
+import type { LanguageCode } from '../../lib/language';
 
 /** Locales supported for blog post translations in admin. */
-export const BLOG_LOCALES = Object.keys(LANGUAGES) as Array<keyof typeof LANGUAGES>;
+export const BLOG_LOCALES = ['hy', 'ru', 'en'] as const satisfies readonly LanguageCode[];
 
 export type BlogLocale = (typeof BLOG_LOCALES)[number];
 

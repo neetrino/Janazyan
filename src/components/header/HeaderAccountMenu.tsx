@@ -10,7 +10,7 @@ import { useTranslation } from '../../lib/i18n-hooks';
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 40;
 /** Figma node I45:562;42:243 — filled cyan profile button. */
-const HEADER_PROFILE_BG = '#0499c3';
+const HEADER_PROFILE_BG = '#93B6E3';
 const DROPDOWN_GAP_PX = 8;
 const DROPDOWN_Z_INDEX = 100;
 

@@ -45,6 +45,7 @@ class AdminService {
 
   // Delivery methods
   getDeliverySettings = adminDeliveryService.getDeliverySettings.bind(adminDeliveryService);
+  getDeliveryOptions = adminDeliveryService.getDeliveryOptions.bind(adminDeliveryService);
   getDeliveryPrice = adminDeliveryService.getDeliveryPrice.bind(adminDeliveryService);
   updateDeliverySettings = adminDeliveryService.updateDeliverySettings.bind(adminDeliveryService);
 

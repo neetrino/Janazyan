@@ -144,12 +144,10 @@ function MobileLanguageButton({ label }: { label: string }) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedLang = getStoredLanguage();
-    setCurrentLang(storedLang === 'ka' ? 'en' : storedLang);
+    setCurrentLang(getStoredLanguage());
 
     const handleLanguageUpdate = () => {
-      const newLang = getStoredLanguage();
-      setCurrentLang(newLang === 'ka' ? 'en' : newLang);
+      setCurrentLang(getStoredLanguage());
     };
 
     window.addEventListener('language-updated', handleLanguageUpdate);
@@ -174,7 +172,7 @@ function MobileLanguageButton({ label }: { label: string }) {
     }
 
     setShowMenu(false);
-    setCurrentLang(langCode === 'ka' ? 'en' : langCode);
+    setCurrentLang(langCode);
     setStoredLanguage(langCode);
   };
 
@@ -195,9 +193,7 @@ function MobileLanguageButton({ label }: { label: string }) {
           className="absolute right-0 top-full z-[50] mt-2 w-44 overflow-hidden rounded-2xl border border-white/80 bg-white shadow-[0_8px_24px_rgba(30,41,57,0.12)]"
           style={{ zIndex: LANGUAGE_MENU_Z_INDEX }}
         >
-          {Object.values(LANGUAGES)
-            .filter((language) => language.code !== 'ka')
-            .map((language) => {
+          {Object.values(LANGUAGES).map((language) => {
               const isActive = currentLang === language.code;
 
               return (

@@ -1,11 +1,25 @@
 import { apiClient } from '../../lib/api-client';
 import { logger } from '../../lib/utils/logger';
 import { getStoredLanguage } from '../../lib/language';
+import { isCartEmpty } from '../../lib/cart/cart-empty';
 import {
-  clearCartSnapshot,
+  getCartMutationEpoch,
+  isCartMutationEpochCurrent,
+} from '../../lib/cart/cart-mutation';
+import {
+  bumpLoggedInCartFetchGenerationForForce,
+  claimLoggedInCartInflight,
+  getLoggedInCartFetchGeneration,
+  getLoggedInCartInflight,
+  releaseLoggedInCartInflight,
+} from '../../lib/cart/cart-inflight';
+import {
+  readCartSnapshot,
+  readCartSnapshotCachedAt,
   resolveCartCacheScope,
   writeCartSnapshot,
 } from '../../lib/cart/cart-snapshot-cache';
+import { createSyntheticCartItemId } from '../../lib/cart/cart-item-id';
 import type { Cart, CartItem } from './types';
 import { CART_KEY } from './constants';
 
@@ -80,7 +94,7 @@ async function fetchGuestCartItems(
 
         return {
           item: {
-            id: `${item.productId}-${item.variantId}-${index}`,
+            id: createSyntheticCartItemId(item.productId, item.variantId, index),
             variant: {
               id: variant._id?.toString() || variant.id,
               sku: variant.sku || '',
@@ -204,42 +218,76 @@ export async function fetchGuestCart(
 /**
  * Fetch logged-in user cart
  */
-let loggedInCartInflight: Promise<Cart | null> | null = null;
+export async function fetchLoggedInCart(forceFresh = false): Promise<Cart | null> {
+  const generation = forceFresh
+    ? bumpLoggedInCartFetchGenerationForForce()
+    : getLoggedInCartFetchGeneration();
 
-export async function fetchLoggedInCart(): Promise<Cart | null> {
-  if (loggedInCartInflight) {
-    return loggedInCartInflight;
+  const existingInflight = getLoggedInCartInflight();
+  if (existingInflight && !forceFresh) {
+    return existingInflight as Promise<Cart | null>;
   }
 
-  loggedInCartInflight = (async () => {
+  const promise = (async () => {
     try {
       const response = await apiClient.get<{ cart: Cart }>('/api/v1/cart');
+      if (generation !== getLoggedInCartFetchGeneration()) {
+        return null;
+      }
       return response.cart;
     } catch (error: unknown) {
       logger.error('Error fetching cart', { error });
       return null;
-    } finally {
-      loggedInCartInflight = null;
     }
   })();
 
-  return loggedInCartInflight;
+  claimLoggedInCartInflight(generation, promise);
+  void promise.finally(() => {
+    releaseLoggedInCartInflight(generation);
+  });
+
+  return promise;
+}
+
+function shouldApplyNetworkCart(
+  scope: ReturnType<typeof resolveCartCacheScope>,
+  fetchStartedAt: number,
+  mutationEpochAtStart: number,
+): boolean {
+  if (!scope) {
+    return false;
+  }
+  if (!isCartMutationEpochCurrent(mutationEpochAtStart)) {
+    return false;
+  }
+  const snapshotCachedAt = readCartSnapshotCachedAt(scope);
+  return snapshotCachedAt === null || snapshotCachedAt <= fetchStartedAt;
 }
 
 function persistFetchedCart(
   isLoggedIn: boolean,
   userId: string | null | undefined,
   cart: Cart | null,
+  fetchStartedAt: number,
+  mutationEpochAtStart: number,
+  confirmMutation: boolean,
 ): void {
   const scope = resolveCartCacheScope(isLoggedIn, userId);
   if (!scope) {
     return;
   }
-  if (cart) {
-    writeCartSnapshot(scope, cart);
-  } else {
-    clearCartSnapshot(scope);
+
+  if (!shouldApplyNetworkCart(scope, fetchStartedAt, mutationEpochAtStart)) {
+    return;
   }
+
+  writeCartSnapshot(scope, cart, { source: 'network' });
+}
+
+export interface FetchCartOptions {
+  forceFresh?: boolean;
+  confirmMutation?: boolean;
+  mutationEpochAtStart?: number;
 }
 
 /**
@@ -249,16 +297,39 @@ export async function fetchCart(
   isLoggedIn: boolean,
   t: (key: string) => string,
   userId?: string | null,
+  options?: FetchCartOptions,
 ): Promise<Cart | null> {
+  const scope = resolveCartCacheScope(isLoggedIn, userId ?? null);
+  const fetchStartedAt = Date.now();
+  const mutationEpochAtStart = options?.mutationEpochAtStart ?? getCartMutationEpoch();
+  const confirmMutation = options?.confirmMutation ?? false;
+
   const cart = !isLoggedIn
     ? await fetchGuestCart(t)
-    : await fetchLoggedInCart();
+    : await fetchLoggedInCart(options?.forceFresh ?? false);
 
-  persistFetchedCart(isLoggedIn, userId ?? null, cart);
+  if (confirmMutation) {
+    return cart;
+  }
+
+  if (!shouldApplyNetworkCart(scope, fetchStartedAt, mutationEpochAtStart)) {
+    return scope ? readCartSnapshot(scope) : cart;
+  }
+
+  persistFetchedCart(
+    isLoggedIn,
+    userId ?? null,
+    cart,
+    fetchStartedAt,
+    mutationEpochAtStart,
+    confirmMutation,
+  );
+
+  if (cart === null || isCartEmpty(cart)) {
+    return scope ? readCartSnapshot(scope) : cart;
+  }
+
   return cart;
 }
-
-
-
 
 

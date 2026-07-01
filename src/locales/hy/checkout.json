@@ -17,17 +17,29 @@
     "cardNumber": "Քարտի համար",
     "expiryDate": "Վավերականության ժամկետ",
     "cvv": "CVV",
-    "cardHolderName": "Քարտի տիրոջ անուն"
+    "cardHolderName": "Քարտի տիրոջ անուն",
+    "country": "Երկիր",
+    "deliveryZone": "Առաքման գոտի",
+    "recipientFullName": "Ստացողի անուն, ազգանուն",
+    "postalIndex": "Ինդեքս",
+    "additionalNotes": "Այլ անհրաժեշտ տեղեկություն",
+    "region": "Մարզ",
+    "room": "Սենյակ",
+    "office": "Գրասենյակ"
   },
   "placeholders": {
     "phone": "+374XXXXXXXX",
-    "address": "Փողոց, բնակարան, սենյակ և այլն",
+    "address": "Փողոց, շենք և այլն",
     "city": "Քաղաք",
     "postalCode": "Փոստային կոդ",
     "cardNumber": "1234 5678 9012 3456",
     "expiryDate": "ԱԱ/ՏՏ",
     "cvv": "123",
-    "cardHolderName": "Արամ Պետրոսյան"
+    "cardHolderName": "Արամ Պետրոսյան",
+    "selectCountry": "Ընտրեք երկիրը",
+    "selectRegion": "Ընտրեք մարզը",
+    "room": "Բնակարան, սենյակ",
+    "office": "Գրասենյակի համար"
   },
   "shipping": {
     "storePickup": "Խանութից վերցնել",
@@ -36,7 +48,9 @@
     "deliveryDescription": "Մենք կառաքենք ձեր պատվերը ձեր հասցեին",
     "freePickup": "Անվճար (Խանութից)",
     "loading": "Բեռնվում է...",
-    "enterCity": "Մուտքագրել քաղաք"
+    "enterCity": "Մուտքագրել քաղաք",
+    "selectRegion": "Ընտրեք մարզը",
+    "freeDelivery": "Անվճար"
   },
   "payment": {
     "cashOnDelivery": "Կանխիկ առաքման ժամանակ",
@@ -53,7 +67,15 @@
     "subtotal": "Ենթագումար",
     "shipping": "Առաքում",
     "tax": "Հարկ",
+    "discount": "Զեղչ",
     "total": "Ընդամենը"
+  },
+  "promo": {
+    "title": "Ունե՞ք կուպոն",
+    "placeholder": "Մուտքագրել կոդը",
+    "apply": "Կիրառել",
+    "applying": "Կիրառվում է...",
+    "applied": "«{code}» պրոմո կոդը կիրառված է"
   },
   "buttons": {
     "placeOrder": "Պատվիրել",
@@ -94,7 +116,13 @@
     "fillShippingAddress": "Խնդրում ենք լրացնել բոլոր առաքման հասցեի դաշտերը",
     "cartEmpty": "Զամբյուղը դատարկ է",
     "failedToLoadCart": "Չհաջողվեց բեռնել զամբյուղը",
-    "failedToCreateOrder": "Չհաջողվեց ստեղծել պատվերը: Խնդրում ենք կրկին փորձել:"
+    "failedToCreateOrder": "Չհաջողվեց ստեղծել պատվերը: Խնդրում ենք կրկին փորձել:",
+    "promoCodeRequired": "Պրոմո կոդը պարտադիր է",
+    "invalidPromoCode": "Անվավեր պրոմո կոդ",
+    "countryRequired": "Երկիրը պարտադիր է առաքման համար",
+    "zoneRequired": "Մարզը պարտադիր է առաքման համար",
+    "recipientRequired": "Ստացողի անուն, ազգանունը պարտադիր է",
+    "postalIndexRequired": "Ինդեքսը պարտադիր է",
+    "additionalNotesRequired": "Այս դաշտը պարտադիր է"
   }
 }
-

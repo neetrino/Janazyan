@@ -1,15 +1,33 @@
 import { fetchCart } from '../../app/cart/cart-fetcher';
 import type { Cart } from '../../app/cart/types';
 import {
+  bustCartInflight,
+  bumpRevalidateGenerationForForce,
+  claimRevalidateInflight,
+  getRevalidateGeneration,
+  getRevalidateInflight,
+  releaseRevalidateInflight,
+} from './cart-inflight';
+import { dispatchCartUpdated } from './cart-events';
+import {
+  getCartMutationEpoch,
+  isCartMutationEpochCurrent,
+} from './cart-mutation';
+import {
   isCartSnapshotFresh,
   readCartSnapshot,
   resolveCartCacheScope,
+  writeCartSnapshot,
 } from './cart-snapshot-cache';
 
 const REVALIDATE_DEBOUNCE_MS = 400;
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
-let inflight: Promise<Cart | null> | null = null;
+
+/** Bust coalesced revalidate so the next fetch reflects recent cart mutations. */
+export function invalidateCartRevalidateInflight(): void {
+  bustCartInflight();
+}
 
 function dispatchCartSynced(cart: Cart | null): void {
   const itemsCount =
@@ -17,38 +35,89 @@ function dispatchCartSynced(cart: Cart | null): void {
     cart?.items.reduce((sum, item) => sum + item.quantity, 0) ??
     0;
 
-  window.dispatchEvent(
-    new CustomEvent('cart-updated', {
-      detail: { itemsCount, skipRevalidate: true, fromSync: true },
-    }),
-  );
+  dispatchCartUpdated({
+    itemsCount,
+    skipRevalidate: true,
+    fromSync: true,
+  });
+}
+
+export interface CartRevalidateOptions {
+  force?: boolean;
+  /** Apply server response even if a mutation epoch bump occurred mid-flight. */
+  confirmMutation?: boolean;
+}
+
+function buildCartLineSignature(cart: Cart | null): string {
+  if (!cart?.items?.length) {
+    return '';
+  }
+
+  return cart.items
+    .map((item) => {
+      const productId = item.variant.product.id;
+      const variantId = item.variant.id;
+      return `${productId}:${variantId}:${item.quantity}`;
+    })
+    .sort()
+    .join('|');
 }
 
 async function runRevalidate(
   isLoggedIn: boolean,
   userId: string | null | undefined,
   t: (key: string) => string,
-  force: boolean,
+  options: CartRevalidateOptions,
 ): Promise<Cart | null> {
+  const force = options.force ?? false;
+  const confirmMutation = options.confirmMutation ?? false;
   const scope = resolveCartCacheScope(isLoggedIn, userId);
+
   if (scope && !force && isCartSnapshotFresh(scope)) {
     return readCartSnapshot(scope);
   }
 
-  if (inflight) {
-    return inflight;
+  const existingInflight = getRevalidateInflight();
+  if (existingInflight && !force) {
+    return existingInflight as Promise<Cart | null>;
   }
 
-  inflight = fetchCart(isLoggedIn, t, userId)
-    .then((cart) => {
-      dispatchCartSynced(cart);
-      return cart;
-    })
-    .finally(() => {
-      inflight = null;
-    });
+  const mutationEpochAtStart = getCartMutationEpoch();
+  const generation = force
+    ? bumpRevalidateGenerationForForce()
+    : getRevalidateGeneration();
 
-  return inflight;
+  const promise = fetchCart(isLoggedIn, t, userId, {
+    forceFresh: force,
+    confirmMutation,
+    mutationEpochAtStart: mutationEpochAtStart,
+  }).then((cart) => {
+    const epochStillCurrent = isCartMutationEpochCurrent(mutationEpochAtStart);
+    const snapshot = scope ? readCartSnapshot(scope) : null;
+    if (generation !== getRevalidateGeneration()) {
+      return scope ? readCartSnapshot(scope) : cart;
+    }
+    if (!confirmMutation && !epochStillCurrent) {
+      return scope ? readCartSnapshot(scope) : cart;
+    }
+    if (confirmMutation && scope && snapshot) {
+      const snapshotSignature = buildCartLineSignature(snapshot);
+      const serverSignature = buildCartLineSignature(cart);
+      if (snapshotSignature !== serverSignature) {
+        return snapshot;
+      }
+      writeCartSnapshot(scope, cart, { source: 'network' });
+    }
+    dispatchCartSynced(cart);
+    return cart;
+  });
+
+  claimRevalidateInflight(generation, promise);
+  void promise.finally(() => {
+    releaseRevalidateInflight(generation);
+  });
+
+  return promise;
 }
 
 /**
@@ -58,7 +127,7 @@ export function scheduleCartRevalidate(
   isLoggedIn: boolean,
   userId: string | null | undefined,
   t: (key: string) => string,
-  options?: { force?: boolean },
+  options?: CartRevalidateOptions,
 ): void {
   if (debounceTimer) {
     clearTimeout(debounceTimer);
@@ -66,7 +135,7 @@ export function scheduleCartRevalidate(
 
   debounceTimer = setTimeout(() => {
     debounceTimer = null;
-    void runRevalidate(isLoggedIn, userId, t, options?.force ?? false);
+    void runRevalidate(isLoggedIn, userId, t, options ?? {});
   }, REVALIDATE_DEBOUNCE_MS);
 }
 
@@ -82,7 +151,21 @@ export function revalidateCartIfStale(
   if (scope && isCartSnapshotFresh(scope)) {
     return;
   }
-  void runRevalidate(isLoggedIn, userId, t, false);
+  void runRevalidate(isLoggedIn, userId, t, {});
+}
+
+/**
+ * Confirms server state after a successful cart mutation API call.
+ */
+export function confirmCartMutation(
+  isLoggedIn: boolean,
+  userId: string | null | undefined,
+  t: (key: string) => string,
+): void {
+  scheduleCartRevalidate(isLoggedIn, userId, t, {
+    force: true,
+    confirmMutation: true,
+  });
 }
 
 /**
@@ -97,5 +180,5 @@ export function prefetchCartSnapshot(
   if (!scope || readCartSnapshot(scope)) {
     return;
   }
-  void runRevalidate(isLoggedIn, userId, t, false);
+  void runRevalidate(isLoggedIn, userId, t, {});
 }

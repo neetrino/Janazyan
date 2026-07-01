@@ -1,4 +1,5 @@
 import { buildGuestCartFromStorage } from './cart-optimistic';
+import { isCartEmpty } from './cart-empty';
 import {
   readCartSnapshot,
   resolveCartCacheScope,
@@ -19,6 +20,9 @@ export function hydrateCartFromLocal(
 
   const snapshot = readCartSnapshot(scope);
   if (snapshot) {
+    if (!isLoggedIn && isCartEmpty(snapshot)) {
+      return buildGuestCartFromStorage() ?? snapshot;
+    }
     return snapshot;
   }
 

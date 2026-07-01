@@ -3,19 +3,28 @@ import { fetchDeliveryPriceCached } from '@/lib/delivery/fetch-delivery-price-ca
 
 export function useDeliveryPrice(
   shippingMethod: 'pickup' | 'delivery',
-  shippingCity: string | undefined
+  shippingZone: string | undefined,
+  shippingCountry: string | undefined,
+  orderSubtotalAmd: number,
 ) {
   const [deliveryPrice, setDeliveryPrice] = useState<number | null>(null);
   const [loadingDeliveryPrice, setLoadingDeliveryPrice] = useState(false);
 
   useEffect(() => {
     const fetchDeliveryPrice = async () => {
-      if (shippingMethod === 'delivery' && shippingCity && shippingCity.trim().length > 0) {
+      if (
+        shippingMethod === 'delivery' &&
+        shippingZone &&
+        shippingZone.trim().length > 0 &&
+        shippingCountry &&
+        shippingCountry.trim().length > 0
+      ) {
         setLoadingDeliveryPrice(true);
         try {
           const price = await fetchDeliveryPriceCached({
-            city: shippingCity.trim(),
-            country: 'Armenia',
+            zone: shippingZone.trim(),
+            country: shippingCountry.trim(),
+            subtotalAmd: orderSubtotalAmd,
           });
           setDeliveryPrice(price);
         } catch {
@@ -29,15 +38,11 @@ export function useDeliveryPrice(
     };
 
     const timeoutId = setTimeout(() => {
-      fetchDeliveryPrice();
-    }, 500);
+      void fetchDeliveryPrice();
+    }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [shippingCity, shippingMethod]);
+  }, [shippingZone, shippingCountry, shippingMethod, orderSubtotalAmd]);
 
   return { deliveryPrice, loadingDeliveryPrice };
 }
-
-
-
-

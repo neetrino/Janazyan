@@ -5,8 +5,12 @@ export type CheckoutFormData = {
   phone: string;
   shippingMethod: 'pickup' | 'delivery';
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
-  shippingAddress?: string;
+  shippingCountry?: string;
   shippingCity?: string;
+  shippingAddress?: string;
+  shippingRecipientName?: string;
+  shippingPostalIndex?: string;
+  shippingAdditionalNotes?: string;
   cardNumber?: string;
   cardExpiry?: string;
   cardCvv?: string;
@@ -44,3 +48,7 @@ export interface Cart {
   itemsCount: number;
 }
 
+export interface AppliedPromo {
+  code: string;
+  discountAmountAmd: number;
+}

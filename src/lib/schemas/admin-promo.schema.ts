@@ -18,6 +18,7 @@ export const adminPromoWriteSchema = z
     active: z.boolean().optional(),
     validFrom: optionalNullableIso,
     validUntil: optionalNullableIso,
+    allowedUserIds: z.array(z.string().min(1)).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.discountType === "percent") {

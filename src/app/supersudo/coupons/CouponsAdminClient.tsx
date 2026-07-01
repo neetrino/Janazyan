@@ -19,7 +19,7 @@ import {
   parseDatetimeLocalToIso,
 } from '@/lib/promo-codes/datetime-local';
 import type { PromoFormFields } from './coupons-admin-types';
-import { PromoCodesAdminFormCard } from './PromoCodesAdminFormCard';
+import { PromoCodesAdminDrawer } from './PromoCodesAdminDrawer';
 import { PromoCodesAdminTable } from './PromoCodesAdminTable';
 
 type PromoListResponse = { data: PromoCodeAdminRow[] };
@@ -32,10 +32,11 @@ function emptyForm(): PromoFormFields {
     discountValue: '10',
     minSubtotal: '',
     maxDiscountAmount: '',
-    usageLimit: '',
+    usageLimit: '1',
     active: true,
     validFrom: '',
     validUntil: '',
+    allowedUserIds: [],
   };
 }
 
@@ -51,6 +52,7 @@ function rowToForm(row: PromoCodeAdminRow): PromoFormFields {
     active: row.active,
     validFrom: formatIsoForDatetimeLocal(row.validFrom),
     validUntil: formatIsoForDatetimeLocal(row.validUntil),
+    allowedUserIds: row.allowedUserIds,
   };
 }
 
@@ -78,20 +80,27 @@ export function CouponsAdminClient() {
 
   const formCardLabels = useMemo(
     () => ({
+      formName: t('admin.coupons.formName'),
       formCode: t('admin.coupons.formCode'),
-      formCodeHint: t('admin.coupons.formCodeHint'),
-      formDescription: t('admin.coupons.formDescription'),
       formDiscountType: t('admin.coupons.formDiscountType'),
       formDiscountValue: t('admin.coupons.formDiscountValue'),
-      formMinSubtotal: t('admin.coupons.formMinSubtotal'),
-      formMaxCap: t('admin.coupons.formMaxCap'),
-      formUsageLimit: t('admin.coupons.formUsageLimit'),
-      formActive: t('admin.coupons.formActive'),
-      formValidFrom: t('admin.coupons.formValidFrom'),
-      formValidUntil: t('admin.coupons.formValidUntil'),
+      formQuantity: t('admin.coupons.formQuantity'),
+      formExpires: t('admin.coupons.formExpires'),
+      formSelectUsers: t('admin.coupons.formSelectUsers'),
+      formAllUsers: t('admin.coupons.formAllUsers'),
+      formSelectedCount: t('admin.coupons.formSelectedCount'),
+      formSearchUsers: t('admin.coupons.formSearchUsers'),
+      roleAll: t('admin.coupons.roleAll'),
+      roleAdmin: t('admin.coupons.roleAdmin'),
+      roleCustomer: t('admin.coupons.roleCustomer'),
+      usersLoading: t('admin.coupons.usersLoading'),
+      usersEmpty: t('admin.coupons.usersEmpty'),
+      usersLoadError: t('admin.coupons.usersLoadError'),
       typePercent: t('admin.coupons.typePercent'),
       typeFixed: t('admin.coupons.typeFixed'),
+      create: t('admin.coupons.create'),
       save: t('admin.coupons.save'),
+      saving: t('admin.coupons.saving'),
       cancel: t('admin.coupons.cancel'),
     }),
     [t]
@@ -205,6 +214,7 @@ export function CouponsAdminClient() {
       active: form.active,
       validFrom: validFromIso,
       validUntil: validUntilIso,
+      allowedUserIds: form.allowedUserIds,
     };
   };
 
@@ -297,19 +307,18 @@ export function CouponsAdminClient() {
         </p>
       ) : null}
 
-      {showForm ? (
-        <PromoCodesAdminFormCard
-          editingId={editingId}
-          form={form}
-          setForm={setForm}
-          saving={saving}
-          onSave={() => void handleSave()}
-          onCancel={closeForm}
-          titleCreate={t('admin.coupons.formCreateTitle')}
-          titleEdit={t('admin.coupons.formEditTitle')}
-          labels={formCardLabels}
-        />
-      ) : null}
+      <PromoCodesAdminDrawer
+        open={showForm}
+        editingId={editingId}
+        form={form}
+        setForm={setForm}
+        saving={saving}
+        onSave={() => void handleSave()}
+        onClose={closeForm}
+        titleCreate={t('admin.coupons.formCreateTitle')}
+        titleEdit={t('admin.coupons.formEditTitle')}
+        labels={formCardLabels}
+      />
 
       <PromoCodesAdminTable
         rows={rows}

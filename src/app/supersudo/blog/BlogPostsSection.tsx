@@ -12,7 +12,6 @@ import { Button, Input } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { ApiError } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
-import { BLOG_LOCALES } from '../../../features/blog/blog-locales';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import {
@@ -20,6 +19,7 @@ import {
   fetchAdminListCached,
   invalidateAdminListCache,
 } from '@/lib/admin/admin-list-client-cache';
+import { BlogPostDrawer } from './BlogPostDrawer';
 import { createEmptyFormData, formDataFromPost, parseFormPayload } from './form-utils';
 import type { AdminBlogPost, BlogPostFormData } from './types';
 
@@ -37,15 +37,14 @@ export function BlogPostsSection() {
   const { confirm: confirmDialog } = useAdminDialogs();
   const [posts, setPosts] = useState<AdminBlogPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<AdminBlogPost | null>(null);
   const [formData, setFormData] = useState<BlogPostFormData>(createEmptyFormData);
-  const [activeLocale, setActiveLocale] = useState(BLOG_LOCALES[0]);
   const [submitting, setSubmitting] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useBodyScrollLock(showModal);
+  useBodyScrollLock(drawerOpen);
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -79,38 +78,14 @@ export function BlogPostsSection() {
     );
   }, [posts, searchQuery]);
 
-  const activeTranslationIndex = formData.translations.findIndex(
-    (tr) => tr.locale === activeLocale,
-  );
-
-  const updateActiveTranslation = (
-    field: 'title' | 'contentHtml' | 'excerpt',
-    value: string,
-  ) => {
-    setFormData((current) => ({
-      ...current,
-      translations: current.translations.map((tr, index) =>
-        index === activeTranslationIndex ? { ...tr, [field]: value } : tr,
-      ),
-    }));
-  };
-
-  const handleOpenAdd = () => {
-    setEditingPost(null);
-    setFormData(createEmptyFormData());
-    setActiveLocale('en');
-    setShowModal(true);
-  };
-
-  const handleOpenEdit = (post: AdminBlogPost) => {
+  const openDrawer = (post: AdminBlogPost | null) => {
     setEditingPost(post);
-    setFormData(formDataFromPost(post));
-    setActiveLocale('en');
-    setShowModal(true);
+    setFormData(post ? formDataFromPost(post) : createEmptyFormData());
+    setDrawerOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const closeDrawer = () => {
+    setDrawerOpen(false);
     setEditingPost(null);
     setFormData(createEmptyFormData());
   };
@@ -198,7 +173,7 @@ export function BlogPostsSection() {
       }
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.blogPosts);
       await fetchPosts();
-      handleCloseModal();
+      closeDrawer();
     } catch {
       alert(t('admin.blog.errorSaving'));
     } finally {
@@ -219,7 +194,7 @@ export function BlogPostsSection() {
     <>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold text-gray-900">{t('admin.blog.title')}</h2>
-        <Button variant="primary" size="sm" onClick={handleOpenAdd}>
+        <Button variant="primary" size="sm" onClick={() => openDrawer(null)}>
           {t('admin.blog.addNew')}
         </Button>
       </div>
@@ -274,7 +249,7 @@ export function BlogPostsSection() {
                 >
                   {post.published ? t('admin.blog.published') : t('admin.blog.draft')}
                 </span>
-                <Button variant="outline" size="sm" onClick={() => handleOpenEdit(post)}>
+                <Button variant="outline" size="sm" onClick={() => openDrawer(post)}>
                   {t('admin.blog.edit')}
                 </Button>
                 <Button variant="outline" size="sm" onClick={() => void handleDelete(post)}>
@@ -286,153 +261,18 @@ export function BlogPostsSection() {
         </div>
       )}
 
-      {showModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900">
-              {editingPost ? t('admin.blog.editPost') : t('admin.blog.addNewPost')}
-            </h3>
-            <form className="mt-4 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
-              <div className="flex flex-wrap gap-2">
-                {BLOG_LOCALES.map((locale) => (
-                  <button
-                    key={locale}
-                    type="button"
-                    className={`rounded-lg px-3 py-1 text-sm ${
-                      activeLocale === locale
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}
-                    onClick={() => setActiveLocale(locale)}
-                  >
-                    {locale.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-
-              {activeTranslationIndex >= 0 ? (
-                <>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.blog.postTitle')}
-                      {activeLocale === 'en' ? ' *' : ''}
-                    </label>
-                    <Input
-                      value={formData.translations[activeTranslationIndex].title}
-                      onChange={(e) => updateActiveTranslation('title', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.blog.excerpt')}
-                    </label>
-                    <Input
-                      value={formData.translations[activeTranslationIndex].excerpt}
-                      onChange={(e) => updateActiveTranslation('excerpt', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.blog.content')}
-                      {activeLocale === 'en' ? ' *' : ''}
-                    </label>
-                    <textarea
-                      value={formData.translations[activeTranslationIndex].contentHtml}
-                      onChange={(e) => updateActiveTranslation('contentHtml', e.target.value)}
-                      rows={8}
-                      className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
-                    />
-                    <p className="mt-1 text-xs text-gray-500">{t('admin.blog.contentHint')}</p>
-                  </div>
-                </>
-              ) : null}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.blog.publishedAt')}
-                  </label>
-                  <Input
-                    type="date"
-                    value={formData.publishedAt}
-                    onChange={(e) => setFormData((c) => ({ ...c, publishedAt: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.blog.status')}
-                  </label>
-                  <select
-                    value={formData.published}
-                    onChange={(e) =>
-                      setFormData((c) => ({
-                        ...c,
-                        published: e.target.value as BlogPostFormData['published'],
-                      }))
-                    }
-                    className="w-full rounded-xl border border-gray-300 px-3 py-2"
-                  >
-                    <option value="published">{t('admin.blog.published')}</option>
-                    <option value="draft">{t('admin.blog.draft')}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  {t('admin.blog.images')}
-                </label>
-                {formData.images.length > 0 ? (
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    {formData.images.map((url, index) => (
-                      <div key={`${url}-${index}`} className="relative">
-                        <img
-                          src={url}
-                          alt=""
-                          className="h-16 w-24 rounded-lg object-cover"
-                        />
-                        <button
-                          type="button"
-                          className="absolute -right-2 -top-2 rounded-full bg-red-600 px-1.5 text-xs text-white"
-                          onClick={() => removeImage(index)}
-                        >
-                          ×
-                        </button>
-                        {index === 0 ? (
-                          <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1 text-[10px] text-white">
-                            {t('admin.blog.cover')}
-                          </span>
-                        ) : null}
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm">
-                  {imageUploading ? t('admin.blog.uploadingImages') : t('admin.blog.uploadImages')}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    disabled={imageUploading}
-                    onChange={(e) => void handleImageUpload(e)}
-                  />
-                </label>
-                <p className="mt-2 text-xs text-gray-500">{t('admin.blog.imagesHint')}</p>
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={handleCloseModal}>
-                  {t('admin.blog.cancel')}
-                </Button>
-                <Button type="submit" variant="primary" disabled={submitting || imageUploading}>
-                  {submitting ? t('admin.blog.saving') : t('admin.blog.save')}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+      <BlogPostDrawer
+        open={drawerOpen}
+        editingPost={editingPost}
+        formData={formData}
+        submitting={submitting}
+        imageUploading={imageUploading}
+        onClose={closeDrawer}
+        onSubmit={(e) => void handleSubmit(e)}
+        onFormChange={setFormData}
+        onImageUpload={(e) => void handleImageUpload(e)}
+        onRemoveImage={removeImage}
+      />
     </>
   );
 }

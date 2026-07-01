@@ -1,6 +1,8 @@
 import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
+import { fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
+import { isOptimisticUserCartId } from '../../../lib/cart/cart-item-id';
 import { clearGuestCart } from '../checkoutUtils';
 import { saveGuestOrderAccess } from '../utils/guest-order-access';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
@@ -12,6 +14,10 @@ interface UseOrderSubmissionProps {
   setError: (error: string | null) => void;
 }
 
+type SubmitOrderOptions = {
+  promoCode?: string | null;
+};
+
 export function useOrderSubmission({
   cart,
   isLoggedIn,
@@ -21,7 +27,7 @@ export function useOrderSubmission({
   const router = useRouter();
   const { t } = useTranslation();
 
-  const submitOrder = async (data: CheckoutFormData) => {
+  const submitOrder = async (data: CheckoutFormData, options?: SubmitOrderOptions) => {
     setError(null);
 
     try {
@@ -29,11 +35,21 @@ export function useOrderSubmission({
         throw new Error(t('checkout.errors.cartEmpty'));
       }
 
-      let cartId = cart.id;
+      let checkoutCart = cart;
+
+      if (isLoggedIn && isOptimisticUserCartId(cart.id)) {
+        const freshCart = await fetchLoggedInCart();
+        if (!freshCart || freshCart.items.length === 0) {
+          throw new Error(t('checkout.errors.cartEmpty'));
+        }
+        checkoutCart = freshCart;
+      }
+
+      let cartId = checkoutCart.id;
       let items = undefined;
 
-      if (!isLoggedIn && cart.id === 'guest-cart') {
-        items = cart.items.map((item: CartItem) => ({
+      if (!isLoggedIn && checkoutCart.id === 'guest-cart') {
+        items = checkoutCart.items.map((item: CartItem) => ({
           productId: item.variant.product.id,
           variantId: item.variant.id,
           quantity: item.quantity,
@@ -43,13 +59,24 @@ export function useOrderSubmission({
 
       const shippingAddress = data.shippingMethod === 'delivery' &&
         data.shippingAddress &&
-        data.shippingCity
+        data.shippingCity &&
+        data.shippingCountry
         ? {
             firstName: data.firstName,
             lastName: data.lastName,
             addressLine1: data.shippingAddress,
             city: data.shippingCity,
+            countryCode: data.shippingCountry,
             phone: data.phone,
+            ...(data.shippingRecipientName?.trim()
+              ? { recipientFullName: data.shippingRecipientName.trim() }
+              : {}),
+            ...(data.shippingPostalIndex?.trim()
+              ? { postalCode: data.shippingPostalIndex.trim() }
+              : {}),
+            ...(data.shippingAdditionalNotes?.trim()
+              ? { additionalNotes: data.shippingAdditionalNotes.trim() }
+              : {}),
           }
         : undefined;
 
@@ -81,6 +108,7 @@ export function useOrderSubmission({
         ...(shippingAddress ? { shippingAddress } : {}),
         shippingAmount: shippingAmount,
         paymentMethod: data.paymentMethod,
+        ...(options?.promoCode ? { promoCode: options.promoCode } : {}),
       });
 
       if (!isLoggedIn) {

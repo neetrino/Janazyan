@@ -24,6 +24,16 @@ export function ShippingAddress({ shippingAddress }: ShippingAddressProps) {
           <p>{shippingAddress.firstName} {shippingAddress.lastName}</p>
         )}
         {shippingAddress.addressLine1 && <p>{shippingAddress.addressLine1}</p>}
+        {shippingAddress.room && (
+          <p>
+            {t('checkout.form.room')}: {shippingAddress.room}
+          </p>
+        )}
+        {shippingAddress.office && (
+          <p>
+            {t('checkout.form.office')}: {shippingAddress.office}
+          </p>
+        )}
         {shippingAddress.addressLine2 && <p>{shippingAddress.addressLine2}</p>}
         {shippingAddress.city && (
           <p>

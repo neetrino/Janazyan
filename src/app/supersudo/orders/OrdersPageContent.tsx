@@ -24,6 +24,7 @@ export function OrdersPageContent() {
     selectedIds,
     bulkDeleting,
     selectedOrderId,
+    selectedOrderPreview,
     orderDetails,
     loadingOrderDetails,
     setPage,
@@ -79,15 +80,15 @@ export function OrdersPageContent() {
         formatCurrency={formatCurrency}
       />
 
-      {selectedOrderId && (
-        <OrderDetailsModal
-          orderDetails={orderDetails}
-          loading={loadingOrderDetails}
-          currency={currency}
-          onClose={handleCloseModal}
-          formatCurrency={formatCurrency}
-        />
-      )}
+      <OrderDetailsModal
+        open={Boolean(selectedOrderId)}
+        orderPreview={selectedOrderPreview}
+        orderDetails={orderDetails}
+        loading={loadingOrderDetails}
+        currency={currency}
+        onClose={handleCloseModal}
+        formatCurrency={formatCurrency}
+      />
     </>
   );
 }

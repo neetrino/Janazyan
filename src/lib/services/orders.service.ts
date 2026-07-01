@@ -9,6 +9,7 @@ import { logger } from "../utils/logger";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
+import { resolveCheckoutPromo } from "@/lib/promo-codes/resolve-checkout-promo";
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -104,6 +105,7 @@ class OrdersService {
         shippingMethod = 'pickup',
         shippingAddress,
         paymentMethod = 'idram',
+        promoCode,
       } = data;
       // shippingAmount is ignored — computed server-side from shippingMethod and address
 
@@ -129,10 +131,12 @@ class OrdersService {
         imageUrl?: string;
       }> = [];
 
+      let resolvedUserCartId: string | null = null;
+
       if (userId && cartId && cartId !== 'guest-cart') {
-        // Get items from user's cart
+        // Resolve by userId — client may send optimistic `user-cart-{userId}` before revalidation.
         const cart = await db.cart.findFirst({
-          where: { id: cartId, userId },
+          where: { userId },
           include: {
             items: {
               include: {
@@ -164,6 +168,8 @@ class OrdersService {
             detail: "Cannot checkout with an empty cart",
           };
         }
+
+        resolvedUserCartId = cart.id;
 
         // Format cart items
         logger.debug('Processing cart items', { count: cart.items.length });
@@ -321,14 +327,32 @@ class OrdersService {
 
       // Calculate totals
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-      const discountAmount = 0; // TODO: Implement discount/coupon logic
+      const resolvedPromo = promoCode
+        ? await resolveCheckoutPromo({
+            code: promoCode,
+            subtotal,
+            userId: userId ?? null,
+          })
+        : null;
+
+      if (resolvedPromo && !resolvedPromo.ok) {
+        throw {
+          status: 400,
+          type: "https://api.shop.am/problems/validation-error",
+          title: "Validation Error",
+          detail: resolvedPromo.detail,
+        };
+      }
+
+      const discountAmount = resolvedPromo?.ok ? resolvedPromo.promo.discountAmount : 0;
       // Shipping: computed server-side only (never trust client-provided amount)
       let shippingAmount = 0;
       if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
         const country = (shippingAddress.countryCode ?? 'Armenia').toString();
         shippingAmount = await adminDeliveryService.getDeliveryPrice(
           shippingAddress.city.trim(),
-          country
+          country,
+          subtotal,
         );
         if (shippingAmount < 0) shippingAmount = 0;
       }
@@ -338,6 +362,33 @@ class OrdersService {
       // Create order with items in a transaction (timeout to avoid hung connections)
       const order = await db.$transaction(
         async (tx: Prisma.TransactionClient) => {
+        if (resolvedPromo?.ok) {
+          const updateResult = await tx.promoCode.updateMany({
+            where: {
+              id: resolvedPromo.promo.id,
+              deletedAt: null,
+              active: true,
+              ...(resolvedPromo.promo.usageLimit !== null
+                ? { usedCount: { lt: resolvedPromo.promo.usageLimit } }
+                : {}),
+            },
+            data: {
+              usedCount: {
+                increment: 1,
+              },
+            },
+          });
+
+          if (updateResult.count === 0) {
+            throw {
+              status: 400,
+              type: "https://api.shop.am/problems/validation-error",
+              title: "Validation Error",
+              detail: "Promo code usage limit reached",
+            };
+          }
+        }
+
         const orderNumber = await allocateNextOrderNumber(tx);
         // Create order
         const newOrder = await tx.order.create({
@@ -378,6 +429,7 @@ class OrdersService {
                   source: userId ? 'user' : 'guest',
                   paymentMethod,
                   shippingMethod,
+                  ...(resolvedPromo?.ok ? { promoCode: resolvedPromo.promo.code } : {}),
                 },
               },
             },
@@ -448,9 +500,9 @@ class OrdersService {
         });
 
         // If user cart, delete cart after successful checkout
-        if (userId && cartId && cartId !== 'guest-cart') {
+        if (userId && resolvedUserCartId) {
           await tx.cart.delete({
-            where: { id: cartId },
+            where: { id: resolvedUserCartId },
           });
         }
 

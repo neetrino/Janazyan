@@ -7,6 +7,7 @@ interface UseOrderSummaryProps {
   shippingMethod: 'pickup' | 'delivery';
   deliveryPrice: number | null;
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
+  appliedDiscountAmd?: number;
 }
 
 export function useOrderSummary({
@@ -14,6 +15,7 @@ export function useOrderSummary({
   shippingMethod,
   deliveryPrice,
   currency,
+  appliedDiscountAmd = 0,
 }: UseOrderSummaryProps) {
   const orderSummary = useMemo(() => {
     if (!cart || cart.items.length === 0) {
@@ -21,10 +23,12 @@ export function useOrderSummary({
         subtotalAMD: 0,
         taxAMD: 0,
         shippingAMD: 0,
+        discountAMD: 0,
         totalAMD: 0,
         subtotalDisplay: 0,
         taxDisplay: 0,
         shippingDisplay: 0,
+        discountDisplay: 0,
         totalDisplay: 0,
       };
     }
@@ -32,24 +36,28 @@ export function useOrderSummary({
     const subtotalAMD = convertPrice(cart.totals.subtotal, 'USD', 'AMD');
     const taxAMD = convertPrice(cart.totals.tax, 'USD', 'AMD');
     const shippingAMD = shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
-    const totalAMD = subtotalAMD + taxAMD + shippingAMD;
+    const discountAMD = Math.max(0, Math.min(appliedDiscountAmd, subtotalAMD));
+    const totalAMD = subtotalAMD + taxAMD + shippingAMD - discountAMD;
     
     const subtotalDisplay = currency === 'AMD' ? subtotalAMD : convertPrice(subtotalAMD, 'AMD', currency);
     const taxDisplay = currency === 'AMD' ? taxAMD : convertPrice(taxAMD, 'AMD', currency);
     const shippingDisplay = currency === 'AMD' ? shippingAMD : convertPrice(shippingAMD, 'AMD', currency);
+    const discountDisplay = currency === 'AMD' ? discountAMD : convertPrice(discountAMD, 'AMD', currency);
     const totalDisplay = currency === 'AMD' ? totalAMD : convertPrice(totalAMD, 'AMD', currency);
     
     return {
       subtotalAMD,
       taxAMD,
       shippingAMD,
+      discountAMD,
       totalAMD,
       subtotalDisplay,
       taxDisplay,
       shippingDisplay,
+      discountDisplay,
       totalDisplay,
     };
-  }, [cart, shippingMethod, deliveryPrice, currency]);
+  }, [appliedDiscountAmd, cart, shippingMethod, deliveryPrice, currency]);
 
   return { orderSummary };
 }

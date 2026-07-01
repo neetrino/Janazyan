@@ -10,6 +10,7 @@ import { PaymentMethodLogo } from './PaymentMethodLogo';
 import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
 import { CheckoutFormData, Cart } from '../types';
+import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 import { scrollToFirstCheckoutError } from '../utils/scroll-to-checkout-error';
 
 interface CardDetailsModalProps {
@@ -22,12 +23,15 @@ interface CardDetailsModalProps {
   isSubmitting: boolean;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingMethod: 'pickup' | 'delivery';
+  shippingCountry?: string;
   shippingCity?: string;
+  deliveryOptions: DeliveryOptionsPublic | null;
   cart: Cart | null;
   orderSummary: {
     subtotalDisplay: number;
     taxDisplay: number;
     shippingDisplay: number;
+    discountDisplay: number;
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
@@ -48,7 +52,9 @@ export function CardDetailsModal({
   isSubmitting,
   paymentMethod,
   shippingMethod,
+  shippingCountry,
   shippingCity,
+  deliveryOptions,
   cart,
   orderSummary,
   currency,
@@ -142,7 +148,9 @@ export function CardDetailsModal({
             orderSummary={orderSummary}
             currency={currency}
             shippingMethod={shippingMethod}
+            shippingCountry={shippingCountry}
             shippingCity={shippingCity}
+            deliveryOptions={deliveryOptions}
             loadingDeliveryPrice={loadingDeliveryPrice}
             deliveryPrice={deliveryPrice}
           />
