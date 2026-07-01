@@ -17,10 +17,6 @@ interface ProductFiltersProps {
   setCategoriesExpanded: (expanded: boolean) => void;
   stockFilter: 'all' | 'inStock' | 'outOfStock';
   setStockFilter: (filter: 'all' | 'inStock' | 'outOfStock') => void;
-  minPrice: string;
-  setMinPrice: (price: string) => void;
-  maxPrice: string;
-  setMaxPrice: (price: string) => void;
   handleSearch: (e: FormEvent) => void;
   setPage: (page: number | ((prev: number) => number)) => void;
 }
@@ -38,10 +34,6 @@ export function ProductFilters({
   setCategoriesExpanded,
   stockFilter,
   setStockFilter,
-  minPrice,
-  setMinPrice,
-  maxPrice,
-  setMaxPrice,
   handleSearch,
   setPage,
 }: ProductFiltersProps) {

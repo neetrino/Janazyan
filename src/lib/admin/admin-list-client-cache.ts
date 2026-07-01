@@ -79,7 +79,6 @@ export const ADMIN_LIST_CACHE_KEYS = {
   faqCategories: 'admin:faq:categories',
   faqItems: 'admin:faq:items',
   settings: 'admin:settings:main',
-  priceFilter: 'admin:settings:price-filter',
   stats: 'admin:stats:v1',
   coupons: 'admin:list:coupons',
   delivery: 'admin:settings:delivery',

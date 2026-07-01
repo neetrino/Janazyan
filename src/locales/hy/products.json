@@ -1,9 +1,5 @@
 {
   "filters": {
-    "price": {
-      "title": "Զտել ըստ գնի",
-      "priceLabel": "Գին:"
-    },
     "color": {
       "title": "Զտել ըստ գույնի",
       "noColors": "Գույներ չկան",

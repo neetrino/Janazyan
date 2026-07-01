@@ -42,8 +42,6 @@ class AdminService {
   // Settings methods
   getSettings = adminSettingsService.getSettings.bind(adminSettingsService);
   updateSettings = adminSettingsService.updateSettings.bind(adminSettingsService);
-  getPriceFilterSettings = adminSettingsService.getPriceFilterSettings.bind(adminSettingsService);
-  updatePriceFilterSettings = adminSettingsService.updatePriceFilterSettings.bind(adminSettingsService);
 
   // Delivery methods
   getDeliverySettings = adminDeliveryService.getDeliverySettings.bind(adminDeliveryService);

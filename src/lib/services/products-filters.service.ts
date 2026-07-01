@@ -1,7 +1,6 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
 import { findCategoryIdsBySlug } from "./products-find-query/category-utils";
-import { adminSettingsService } from "./admin/admin-settings.service";
 import { ProductWithRelations } from "./products-find-query.service";
 
 class ProductsFiltersService {
@@ -35,8 +34,6 @@ class ProductsFiltersService {
   async getFilters(filters: {
     category?: string;
     search?: string;
-    minPrice?: number;
-    maxPrice?: number;
     lang?: string;
   }) {
     try {
@@ -168,22 +165,6 @@ class ProductsFiltersService {
         products = [];
       }
 
-    // Filter by price in memory
-    if (filters.minPrice || filters.maxPrice) {
-      const min = filters.minPrice || 0;
-      const max = filters.maxPrice || Infinity;
-      products = products.filter((product: ProductWithRelations) => {
-        if (!product || !product.variants || !Array.isArray(product.variants)) {
-          return false;
-        }
-        const prices = product.variants.map((v: { price?: number }) => v?.price).filter((p: number | undefined): p is number => p !== undefined);
-        if (prices.length === 0) return false;
-        const minPrice = Math.min(...prices);
-        return minPrice >= min && minPrice <= max;
-      });
-    }
-
-    // Collect colors and sizes from variants
     // Use Map with lowercase key to merge colors with different cases
     // Store both count, canonical label, imageUrl and colors hex
     const lang = filters.lang || 'en';
@@ -195,8 +176,6 @@ class ProductsFiltersService {
     }>();
     const sizeMap = new Map<string, number>();
     const brandMap = new Map<string, { id: string; name: string; count: number }>();
-    let rangeMin = Infinity;
-    let rangeMax = 0;
 
     products.forEach((product: ProductWithRelations & { brand?: { id: string; translations?: Array<{ locale: string; name?: string }>; name?: string } | null }) => {
       if (!product || !product.variants || !Array.isArray(product.variants)) {
@@ -209,12 +188,6 @@ class ProductsFiltersService {
           brandMap.set(product.brand.id, { id: product.brand.id, name, count: (existing?.count || 0) + 1 });
         }
       }
-      product.variants.forEach((v: { price?: number }) => {
-        if (typeof v?.price === 'number') {
-          if (v.price < rangeMin) rangeMin = v.price;
-          if (v.price > rangeMax) rangeMax = v.price;
-        }
-      });
       product.variants.forEach((variant: any) => {
         if (!variant || !variant.options || !Array.isArray(variant.options)) {
           return;
@@ -358,30 +331,11 @@ class ProductsFiltersService {
       colors.sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
 
       const brands = Array.from(brandMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-      const priceMin = rangeMin === Infinity ? 0 : Math.floor(rangeMin / 1000) * 1000;
-      const priceMax = rangeMax === 0 ? 100000 : Math.ceil(rangeMax / 1000) * 1000;
-      let stepSize: number | null = null;
-      let stepSizePerCurrency: Record<string, number> | null = null;
-      try {
-        const settings = await adminSettingsService.getPriceFilterSettings();
-        stepSize = settings.stepSize ?? null;
-        if (settings.stepSizePerCurrency) {
-          stepSizePerCurrency = {
-            USD: settings.stepSizePerCurrency.USD ?? undefined,
-            AMD: settings.stepSizePerCurrency.AMD ?? undefined,
-            RUB: settings.stepSizePerCurrency.RUB ?? undefined,
-            GEL: settings.stepSizePerCurrency.GEL ?? undefined,
-          } as Record<string, number>;
-        }
-      } catch {
-        // use defaults
-      }
 
       return {
         colors,
         sizes,
         brands,
-        priceRange: { min: priceMin, max: priceMax, stepSize, stepSizePerCurrency },
       };
     } catch (error) {
       console.error('❌ [PRODUCTS FILTERS SERVICE] Error in getFilters:', error);
@@ -389,95 +343,8 @@ class ProductsFiltersService {
         colors: [],
         sizes: [],
         brands: [],
-        priceRange: { min: 0, max: 100000, stepSize: null, stepSizePerCurrency: null },
       };
     }
-  }
-
-  /**
-   * Get price range
-   */
-  async getPriceRange(filters: { category?: string; lang?: string }) {
-    const where: Prisma.ProductWhereInput = {
-      published: true,
-      deletedAt: null,
-    };
-
-    if (filters.category) {
-      const allCategoryIds = await findCategoryIdsBySlug(
-        filters.category,
-        filters.lang || "en",
-      );
-
-      if (allCategoryIds.length > 0) {
-        where.OR = allCategoryIds.flatMap((categoryId) => [
-          { primaryCategoryId: categoryId },
-          { categoryIds: { has: categoryId } },
-        ]);
-      }
-    }
-
-    const products = await db.product.findMany({
-      where,
-      include: {
-        variants: {
-          where: {
-            published: true,
-          },
-        },
-      },
-    });
-
-    let minPrice = Infinity;
-    let maxPrice = 0;
-
-    products.forEach((product: { variants: Array<{ price: number }> }) => {
-      if (product.variants.length > 0) {
-        const prices = product.variants.map((v: { price: number }) => v.price);
-        const productMin = Math.min(...prices);
-        const productMax = Math.max(...prices);
-        if (productMin < minPrice) minPrice = productMin;
-        if (productMax > maxPrice) maxPrice = productMax;
-      }
-    });
-
-    minPrice = minPrice === Infinity ? 0 : Math.floor(minPrice / 1000) * 1000;
-    maxPrice = maxPrice === 0 ? 100000 : Math.ceil(maxPrice / 1000) * 1000;
-
-    // Load price filter settings to provide optional step sizes per currency
-    let stepSize: number | null = null;
-    let stepSizePerCurrency: {
-      USD?: number;
-      AMD?: number;
-      RUB?: number;
-      GEL?: number;
-    } | null = null;
-
-    try {
-      const settings = await adminSettingsService.getPriceFilterSettings();
-      stepSize = settings.stepSize ?? null;
-
-      if (settings.stepSizePerCurrency) {
-        // stepSizePerCurrency in settings is stored in display currency units.
-        // Here we pass them through to the frontend as-is; the slider logic
-        // will choose the appropriate value for the active currency.
-        stepSizePerCurrency = {
-          USD: settings.stepSizePerCurrency.USD ?? undefined,
-          AMD: settings.stepSizePerCurrency.AMD ?? undefined,
-          RUB: settings.stepSizePerCurrency.RUB ?? undefined,
-          GEL: settings.stepSizePerCurrency.GEL ?? undefined,
-        };
-      }
-    } catch (error) {
-      console.error('❌ [PRODUCTS FILTERS SERVICE] Error loading price filter settings for price range:', error);
-    }
-
-    return {
-      min: minPrice,
-      max: maxPrice,
-      stepSize,
-      stepSizePerCurrency,
-    };
   }
 }
 

@@ -8,8 +8,6 @@ export interface ProductFilters {
   search?: string;
   ids?: string[];
   filter?: string;
-  minPrice?: number;
-  maxPrice?: number;
   colors?: string;
   sizes?: string;
   brand?: string;
