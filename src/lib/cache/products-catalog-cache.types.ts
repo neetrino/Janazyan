@@ -41,5 +41,5 @@ export function buildProductsCatalogCacheKey(
 ): string {
   const search = filters.search?.trim() || '-';
   const category = filters.category?.trim() || '-';
-  return `v1:${filters.lang}:${filters.page}:${filters.limit}:${category}:${search}`;
+  return `v3:${filters.lang}:${filters.page}:${filters.limit}:${category}:${search}`;
 }

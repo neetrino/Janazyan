@@ -9,7 +9,7 @@ export {
   HEADER_NAV_ACTIVE_PILL_DRAGGING_CLASS,
 } from './header-glass-styles';
 
-export const HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS = 'text-ink-800';
+export const HEADER_NAV_ACTIVE_PILL_HIGHLIGHTED_TEXT_CLASS = 'text-white';
 
 export type HeaderNavPillPosition = {
   left: number;

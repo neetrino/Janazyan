@@ -3,6 +3,7 @@ import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
 import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
 import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
+import { pickAdminCategoryTitle } from "./admin-category-title";
 
 class AdminCategoriesService {
   private extractImageUrl(media: unknown): string | null {
@@ -75,10 +76,7 @@ class AdminCategoriesService {
         deletedAt: null,
       },
       include: {
-        translations: {
-          where: { locale: "en" },
-          take: 1,
-        },
+        translations: true,
       },
       orderBy: {
         position: "asc",
@@ -86,12 +84,15 @@ class AdminCategoriesService {
     });
 
     return {
-      data: categories.map((category: { id: string; parentId: string | null; requiresSizes: boolean | null; published: boolean | null; media: unknown[]; translations?: Array<{ title: string; slug: string }> }) => {
+      data: categories.map((category: { id: string; parentId: string | null; requiresSizes: boolean | null; published: boolean | null; media: unknown[]; translations?: Array<{ locale: string; title: string; slug: string }> }) => {
         const translations = Array.isArray(category.translations) ? category.translations : [];
-        const translation = translations[0] || null;
+        const translation =
+          translations.find((row) => row.locale === "en") ??
+          translations[0] ??
+          null;
         return {
           id: category.id,
-          title: translation?.title || "",
+          title: pickAdminCategoryTitle(translations),
           slug: translation?.slug || "",
           parentId: category.parentId,
           requiresSizes: category.requiresSizes || false,

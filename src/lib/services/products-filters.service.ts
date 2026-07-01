@@ -1,5 +1,6 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
+import { findCategoryIdsBySlug } from "./products-find-query/category-utils";
 import { adminSettingsService } from "./admin/admin-settings.service";
 import { ProductWithRelations } from "./products-find-query.service";
 
@@ -83,25 +84,12 @@ class ProductsFiltersService {
       // Add category filter
       if (filters.category) {
         try {
-          const categoryDoc = await db.category.findFirst({
-            where: {
-              translations: {
-                some: {
-                  slug: filters.category,
-                  locale: filters.lang || "en",
-                },
-              },
-              published: true,
-              deletedAt: null,
-            },
-          });
+          const allCategoryIds = await findCategoryIdsBySlug(
+            filters.category,
+            filters.lang || "en",
+          );
 
-          if (categoryDoc && categoryDoc.id) {
-            // Get all child categories (subcategories) recursively
-            const childCategoryIds = await this.getAllChildCategoryIds(categoryDoc.id);
-            const allCategoryIds = [categoryDoc.id, ...childCategoryIds];
-
-            // Build OR conditions
+          if (allCategoryIds.length > 0) {
             const categoryConditions = allCategoryIds.flatMap((catId: string) => [
               { primaryCategoryId: catId },
               { categoryIds: { has: catId } },
@@ -416,22 +404,16 @@ class ProductsFiltersService {
     };
 
     if (filters.category) {
-      const categoryDoc = await db.category.findFirst({
-        where: {
-          translations: {
-            some: {
-              slug: filters.category,
-              locale: filters.lang || "en",
-            },
-          },
-        },
-      });
+      const allCategoryIds = await findCategoryIdsBySlug(
+        filters.category,
+        filters.lang || "en",
+      );
 
-      if (categoryDoc) {
-        where.OR = [
-          { primaryCategoryId: categoryDoc.id },
-          { categoryIds: { has: categoryDoc.id } },
-        ];
+      if (allCategoryIds.length > 0) {
+        where.OR = allCategoryIds.flatMap((categoryId) => [
+          { primaryCategoryId: categoryId },
+          { categoryIds: { has: categoryId } },
+        ]);
       }
     }
 

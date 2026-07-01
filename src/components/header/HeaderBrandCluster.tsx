@@ -15,6 +15,15 @@ import {
   getHeaderNavLinkRowClass,
   getHeaderNavLinkTextClass,
 } from './header-nav-typography.constants';
+import {
+  HEADER_LOGO_HEIGHT_PX,
+  HEADER_LOGO_NAV_GAP_PX,
+  HEADER_LOGO_WIDTH_PX,
+  HEADER_NAV_PILL_PADDING_LEFT_PX,
+  HEADER_NAV_PILL_PADDING_RIGHT_PX,
+  HEADER_PILL_BORDER_RADIUS_PX,
+  HEADER_PILL_HEIGHT_PX,
+} from './header-shell-shape.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
 function useHeaderNavLinks() {
@@ -28,9 +37,6 @@ function useHeaderNavLinks() {
   }));
 }
 
-const HEADER_LOGO_WIDTH_PX = 110;
-const HEADER_LOGO_HEIGHT_PX = 92;
-const HEADER_LOGO_NAV_GAP_PX = 37;
 const HEADER_NAV_LINK_GAP_PX = 24;
 
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
@@ -52,7 +58,7 @@ function HeaderLogo() {
           alt="Janazyan"
           fill
           priority
-          sizes="110px"
+          sizes="64px"
           className="object-contain object-left"
         />
       </span>
@@ -139,7 +145,16 @@ function HeaderNav({
 
 export function HeaderBrandCluster({ pathname, searchParams }: HeaderBrandClusterProps) {
   return (
-    <div className="flex min-w-0 items-center" style={{ gap: HEADER_LOGO_NAV_GAP_PX }}>
+    <div
+      className="flex min-w-0 items-center bg-white shadow-soft"
+      style={{
+        gap: HEADER_LOGO_NAV_GAP_PX,
+        height: HEADER_PILL_HEIGHT_PX,
+        borderRadius: HEADER_PILL_BORDER_RADIUS_PX,
+        paddingLeft: HEADER_NAV_PILL_PADDING_LEFT_PX,
+        paddingRight: HEADER_NAV_PILL_PADDING_RIGHT_PX,
+      }}
+    >
       <HeaderLogo />
       <HeaderNav pathname={pathname} searchParams={searchParams} />
     </div>

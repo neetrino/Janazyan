@@ -18,8 +18,6 @@ import { FeaturedProductCardSlot } from './home/FeaturedProductCardSlot';
 
 import { mapToHomeFeaturedProduct } from '../lib/home/map-to-home-featured-product';
 
-import { CarouselNavigation } from './RelatedProducts/CarouselNavigation';
-
 import { CarouselDots } from './RelatedProducts/CarouselDots';
 
 import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
@@ -100,10 +98,6 @@ export function RelatedProducts({
 
     carouselRef,
 
-    goToPrevious,
-
-    goToNext,
-
     goToIndex,
 
     handleMouseDown,
@@ -164,7 +158,7 @@ export function RelatedProducts({
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        <h2 className="mb-10 text-3xl font-bold text-gray-900">
+        <h2 className="mb-10 whitespace-nowrap text-2xl font-bold text-gray-900 sm:text-3xl">
 
           {t(language, 'product.related_products_title')}
 
@@ -175,13 +169,13 @@ export function RelatedProducts({
 
 
       {loading ? (
-        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
+        <div className="grid w-full grid-cols-2 justify-items-center gap-x-1 gap-y-10 px-4 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
           {[1, 2, 3, 4].map((i) => (
             <div
 
               key={i}
 
-              className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
+              className="h-[238px] w-[164px] max-w-full animate-pulse rounded-lg bg-gray-200 sm:h-[347px] sm:w-[283px]"
 
             />
 
@@ -302,14 +296,6 @@ export function RelatedProducts({
             </div>
 
           </div>
-
-
-
-          {products.length > visibleCards && (
-
-            <CarouselNavigation onPrevious={goToPrevious} onNext={goToNext} />
-
-          )}
 
 
 

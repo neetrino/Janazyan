@@ -33,7 +33,7 @@ const ACTIVE_GRID_ICON: CategoryPillIcon = CATEGORY_PILL_ICONS.all;
 
 const FACE_KEYWORDS = ['face', 'դեմք', 'лицо', 'դիմ'];
 const HAIR_KEYWORDS = ['hair', 'մազ', 'волос'];
-const BODY_KEYWORDS = ['body', 'մարմին', 'тело', 'adult'];
+const BODY_KEYWORDS = ['body', 'body care', 'մարմին', 'մարմն', 'тело', 'adult'];
 const KIDS_KEYWORDS = ['kids', 'kid', 'baby', 'child', 'մանկ', 'дет', 'երեխ'];
 const SUN_KEYWORDS = ['sun', 'spf', 'արև', 'солн'];
 const WOMEN_KEYWORDS = ['women', 'woman', 'female', 'կանայ', 'жен'];

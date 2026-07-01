@@ -89,7 +89,7 @@ function handleProductRowClick(
   openProductEditor: (id: string) => void,
 ) {
   const clickedElement = event.target;
-  if (clickedElement instanceof HTMLElement && clickedElement.closest(INTERACTIVE_CELL_SELECTOR)) {
+  if (clickedElement instanceof Element && clickedElement.closest(INTERACTIVE_CELL_SELECTOR)) {
     return;
   }
   openProductEditor(productId);
@@ -381,7 +381,11 @@ function ProductsTableLoadedView({
                 </td>
                 <td className={`${ADMIN_TABLE_TD} whitespace-nowrap text-center`}>
                   <button
-                    onClick={() => handleToggleFeatured(product.id, product.featured || false, product.title)}
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleToggleFeatured(product.id, product.featured || false, product.title);
+                    }}
                     className="inline-flex items-center justify-center w-8 h-8 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
                     title={product.featured ? t('admin.products.clickToRemoveFeatured') : t('admin.products.clickToMarkFeatured')}
                   >

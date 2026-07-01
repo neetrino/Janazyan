@@ -41,9 +41,12 @@ class ProductsFindQueryService {
 
     if (filters.catalog && filters.fastCatalog) {
       const products = await runQuery(where, limit + 1, (page - 1) * limit);
+      const needsExactTotal = Boolean(filters.category?.trim() || filters.search?.trim());
+      const total = needsExactTotal ? await db.product.count({ where }) : undefined;
       return {
         products,
         bestsellerProductIds,
+        total,
       };
     }
 

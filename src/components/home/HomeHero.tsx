@@ -3,7 +3,6 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Header } from '../Header';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
@@ -200,7 +199,7 @@ export function HomeHero() {
       aria-label={t('home.hero.ariaSection')}
       className="relative w-full pt-3 md:pt-5"
     >
-      <div className="relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative w-full overflow-x-clip rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:overflow-visible lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (
           <HeroRectangleBackground
             key={slide.id}
@@ -208,8 +207,6 @@ export function HomeHero() {
             className={index === slideIndex ? 'opacity-100' : 'opacity-0'}
           />
         ))}
-
-        <Header embedded />
 
         <HeroProductImages
           activeSlideIndex={slideIndex}

@@ -135,6 +135,7 @@ export default function RegisterPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Register"
+      compactHero
       mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
       mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalog={

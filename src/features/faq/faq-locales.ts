@@ -1,7 +1,7 @@
-import { LANGUAGES } from '../../lib/language';
+import type { LanguageCode } from '../../lib/language';
 
-/** Locales supported for FAQ translations in admin. */
-export const FAQ_LOCALES = Object.keys(LANGUAGES) as Array<keyof typeof LANGUAGES>;
+/** Locales supported for FAQ translations in admin (hy, ru, en). */
+export const FAQ_LOCALES = ['hy', 'ru', 'en'] as const satisfies readonly LanguageCode[];
 
 export type FaqLocale = (typeof FAQ_LOCALES)[number];
 

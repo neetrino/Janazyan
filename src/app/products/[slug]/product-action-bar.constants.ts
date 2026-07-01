@@ -49,6 +49,9 @@ export const PDP_REVIEWS_BUTTON_CLASS = `inline-flex h-9 items-center rounded-fu
 /** Write review CTA — glass pill, dark text. */
 export const PDP_WRITE_REVIEW_BUTTON_CLASS = `inline-flex h-10 items-center rounded-full px-5 text-sm font-semibold ${PDP_GLASS_PILL_TEXT_CLASS} ${PDP_GLASS_SURFACE_CLASS} ${PDP_GLASS_SURFACE_HOVER_CLASS}`;
 
+/** Review form submit — black pill, compact height. */
+export const PDP_REVIEW_SUBMIT_BUTTON_CLASS = `inline-flex h-10 items-center justify-center rounded-full px-5 text-sm font-semibold disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:hover:bg-neutral-300 disabled:hover:shadow-none disabled:active:scale-100 ${PDP_BLACK_PILL_BUTTON_CLASS}`;
+
 /** Inline glass pill — cart empty state, secondary CTAs. */
 export const STOREFRONT_GLASS_PILL_BUTTON_CLASS = `inline-flex h-11 items-center justify-center rounded-full px-6 text-sm font-semibold uppercase tracking-wide ${PDP_GLASS_PILL_TEXT_CLASS} ${PDP_GLASS_SURFACE_CLASS} ${PDP_GLASS_SURFACE_HOVER_CLASS}`;
 

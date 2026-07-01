@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
 import { Menu } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { MobileBackdrop } from '../storefront/MobileBackdrop';
@@ -112,11 +113,11 @@ function MobileFilterTabs() {
   return (
     <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
       {MOBILE_FILTER_KEYS.map((filter, index) => (
-        <button
+        <Link
           key={filter.key}
-          type="button"
+          href={getCategoryProductsHref(filter.key)}
           className={[
-            'shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-3 text-[12px] font-medium leading-none',
+            'shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-3 text-[12px] font-medium leading-none transition-opacity hover:opacity-90',
             index === 0 ? 'bg-ink-500 text-white' : 'bg-sky text-white',
           ].join(' ')}
         >
@@ -132,7 +133,7 @@ function MobileFilterTabs() {
             </span>
           ) : null}
           {t(`home.mobile.filters.${filter.key}`)}
-        </button>
+        </Link>
       ))}
     </div>
   );

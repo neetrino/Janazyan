@@ -15,6 +15,7 @@ import {
   type FooterContactItem,
 } from './footer/constants';
 import { FooterPaymentBadge } from './footer/FooterPaymentBadge';
+import { shouldShowStorefrontFooter } from '../lib/layout/storefront-footer-layout';
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_TEXT = 'text-black/65';
@@ -61,8 +62,6 @@ function getFooterGradientStyle(): CSSProperties {
 const FOOTER_Z_DECORATION = 'z-0';
 const FOOTER_Z_CONTENT = 'z-10';
 
-const HIDDEN_FOOTER_PREFIXES = ['/supersudo', '/admin', '/login', '/register'] as const;
-
 function getFooterShellStyle(): CSSProperties {
   return {
     height: FOOTER_SHELL_HEIGHT_PX,
@@ -77,16 +76,10 @@ function getFooterDecorationPositionStyle(): CSSProperties {
   };
 }
 
-function shouldHideFooter(pathname: string): boolean {
-  return HIDDEN_FOOTER_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
-  );
-}
-
 export function Footer() {
   const pathname = usePathname();
 
-  if (shouldHideFooter(pathname)) {
+  if (!shouldShowStorefrontFooter(pathname)) {
     return null;
   }
 

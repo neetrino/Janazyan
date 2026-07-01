@@ -18,10 +18,7 @@ const getProductListInclude = () => ({
   },
   categories: {
     include: {
-      translations: {
-        where: { locale: "en" },
-        take: 1,
-      },
+      translations: true,
     },
   },
 });

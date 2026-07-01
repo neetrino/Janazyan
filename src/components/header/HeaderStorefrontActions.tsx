@@ -5,6 +5,13 @@ import Link from 'next/link';
 import { ChevronDown, Globe } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
+import {
+  HEADER_ACTION_PROFILE_GAP_PX,
+  HEADER_ACTIONS_PILL_PADDING_X_PX,
+  HEADER_ACTIONS_PILL_PADDING_Y_PX,
+  HEADER_PILL_BORDER_RADIUS_PX,
+  HEADER_PILL_HEIGHT_PX,
+} from './header-shell-shape.constants';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { getStoredCurrency, type CurrencyCode } from '../../lib/currency';
 import {
@@ -18,7 +25,6 @@ import { formatWishlistBadgeCount, useWishlistItemCount } from '../hooks/useWish
 
 const HEADER_ACTION_BUTTON_SIZE_PX = 36;
 const HEADER_ACTION_ICON_SIZE_PX = 20;
-const HEADER_ACTION_GAP_PX = 21;
 const HEADER_CART_BADGE_COLOR = '#0499c3';
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
@@ -141,8 +147,19 @@ export function HeaderStorefrontActions() {
   const cartBadgeLabel = formatCartBadgeCount(cartCount);
 
   return (
-    <div className="flex shrink-0 items-center overflow-visible rounded-7xl bg-white px-[22px] py-[10px] shadow-soft">
-      <div className="flex items-center" style={{ gap: HEADER_ACTION_GAP_PX }}>
+    <div
+      className="flex shrink-0 items-center bg-white shadow-soft"
+      style={{
+        gap: HEADER_ACTION_PROFILE_GAP_PX,
+        height: HEADER_PILL_HEIGHT_PX,
+        borderRadius: HEADER_PILL_BORDER_RADIUS_PX,
+        paddingLeft: HEADER_ACTIONS_PILL_PADDING_X_PX,
+        paddingRight: HEADER_ACTIONS_PILL_PADDING_X_PX,
+        paddingTop: HEADER_ACTIONS_PILL_PADDING_Y_PX,
+        paddingBottom: HEADER_ACTIONS_PILL_PADDING_Y_PX,
+      }}
+    >
+      <div className="flex items-center">
         <Link
           href="/wishlist"
           aria-label={
@@ -195,9 +212,7 @@ export function HeaderStorefrontActions() {
         <HeaderCurrencyLabel />
       </div>
 
-      <div className="ml-[21px]">
-        <HeaderAccountMenu />
-      </div>
+      <HeaderAccountMenu />
     </div>
   );
 }
