@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react';
 import {
   AboutSection,
   CategoryPosters,
@@ -35,7 +36,7 @@ export default async function HomePage() {
         <Header embedded />
         <div
           className="-mt-[var(--header-sticky-overlap)]"
-          style={{ '--header-sticky-overlap': `${HEADER_SHELL_STICKY_OVERLAP_PX}px` }}
+          style={{ '--header-sticky-overlap': `${HEADER_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
         >
           <div className={STOREFRONT_CONTENT_SHELL_CLASS}>
             <div className={HOME_HERO_BLEED_CLASS}>

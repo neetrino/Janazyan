@@ -77,6 +77,12 @@ export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
 export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
   `relative z-10 mt-6 w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
+/** Legacy mobile reset hook for single-mount catalog slots; intentionally a no-op. */
+export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';
+
+/** Legacy desktop shell continuation hook for single-mount catalog slots; intentionally a no-op. */
+export const PRODUCTS_PAGE_CATALOG_DESKTOP_SHELL_CONTINUATION_CLASS = '';
+
 /** Space between toolbar and first product row. */
 export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 lg:pt-8';
 
