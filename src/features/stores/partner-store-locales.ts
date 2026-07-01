@@ -1,7 +1,7 @@
-import { LANGUAGES } from '../../lib/language';
+import type { LanguageCode } from '../../lib/language';
 
-/** Locales supported for partner store translations in admin. */
-export const PARTNER_STORE_LOCALES = Object.keys(LANGUAGES) as Array<keyof typeof LANGUAGES>;
+/** Locales supported for partner store translations in admin (en, hy, ru). */
+export const PARTNER_STORE_LOCALES = ['en', 'hy', 'ru'] as const satisfies readonly LanguageCode[];
 
 export type PartnerStoreLocale = (typeof PARTNER_STORE_LOCALES)[number];
 

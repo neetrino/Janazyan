@@ -8,7 +8,7 @@ import { createPortal } from 'react-dom';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-hooks';
 
-const HEADER_ACTION_BUTTON_SIZE_PX = 36;
+const HEADER_ACTION_BUTTON_SIZE_PX = 40;
 /** Figma node I45:562;42:243 — filled cyan profile button. */
 const HEADER_PROFILE_BG = '#0499c3';
 const DROPDOWN_GAP_PX = 8;
@@ -218,7 +218,7 @@ export function HeaderAccountMenu() {
           backgroundColor: HEADER_PROFILE_BG,
         }}
       >
-        <User className="h-5 w-5 pointer-events-none text-white" strokeWidth={2} />
+        <User className="pointer-events-none h-[22px] w-[22px] text-white" strokeWidth={2} />
       </button>
 
       {isMounted && dropdownPanel ? createPortal(dropdownPanel, document.body) : null}

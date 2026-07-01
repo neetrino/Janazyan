@@ -19,6 +19,11 @@ export function isProductDetailPage(pathname: string): boolean {
   return /^\/products\/[^/]+$/.test(pathname);
 }
 
+/** Mobile catalog gradient surface — shop listing and PDP. */
+export function usesCatalogMobileSurface(pathname: string): boolean {
+  return isProductsListingPage(pathname) || isProductDetailPage(pathname);
+}
+
 /** Order confirmation / detail — `/orders/[number]`. */
 export function isOrderDetailPage(pathname: string): boolean {
   return /^\/orders\/[^/]+$/.test(pathname);

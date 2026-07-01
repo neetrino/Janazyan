@@ -13,6 +13,7 @@ import {
 } from './hero-typography.constants';
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS } from '../../lib/layout/hero-frame.constants';
 
 type HeroDraggableShellProps = {
   slideId: string;
@@ -263,7 +264,7 @@ export function HomeHero() {
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
-          <div className="pointer-events-auto absolute left-[43px] top-[285px] max-w-[min(760px,52%)]">
+          <div className={`pointer-events-auto absolute top-[285px] max-w-[min(760px,52%)] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS}`}>
             <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
               {heroTitle}
             </h1>

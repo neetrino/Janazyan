@@ -8,6 +8,7 @@ import { fetchPartnerStores } from '../fetch-partner-stores';
 import { MAP_HEIGHT_PX } from '../constants';
 import { scrollPartnerMapIntoView } from '../scroll-to-map';
 import { PartnerStoresCarousel } from './PartnerStoresCarousel';
+import { PartnerStoresMapModal } from './PartnerStoresMapModal';
 import type { PartnerStore, StoreSelectHandler, StoresTranslation } from '../types';
 
 const PartnerStoresMap = dynamic(
@@ -54,14 +55,29 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
   const stores = usePartnerStoresOnLanguageChange(initialStores);
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [mapFocusRequest, setMapFocusRequest] = useState(0);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
   const mapSectionRef = useRef<HTMLDivElement>(null);
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
+    if (options?.openMapModal) {
+      setMapModalOpen(true);
+      setMapFocusRequest((count) => count + 1);
+      return;
+    }
     if (options?.scrollToMap) {
       scrollPartnerMapIntoView(mapSectionRef.current);
       setMapFocusRequest((count) => count + 1);
     }
+  }, []);
+
+  const handleMapModalStoreSelect = useCallback((storeId: string) => {
+    setSelectedStoreId(storeId);
+    setMapFocusRequest((count) => count + 1);
+  }, []);
+
+  const closeMapModal = useCallback(() => {
+    setMapModalOpen(false);
   }, []);
 
   const resolvedSelectedStoreId =
@@ -81,7 +97,6 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                 <PartnerStoresCarousel
                   stores={stores}
                   selectedStoreId={resolvedSelectedStoreId}
-                  getDirectionsLabel={copy.getDirections}
                   viewOnMapLabel={copy.viewOnMap}
                   onSelect={handleStoreSelect}
                   ariaLabel={copy.listTitle}
@@ -92,8 +107,11 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
           <div ref={mapSectionRef} className="scroll-mt-28 lg:col-span-3">
             <div className="partner-stores-map-section lg:sticky lg:top-28">
-              <h2 className="mb-4 text-2xl font-bold text-gray-900">{copy.map.title}</h2>
-              <div className="overflow-hidden rounded-2xl border border-gray-200 shadow-lg">
+              <div className="partner-stores-map-section__header">
+                <h2 className="partner-stores-map-section__title">{copy.map.title}</h2>
+                <p className="partner-stores-map-section__subtitle lg:hidden">{copy.map.hint}</p>
+              </div>
+              <div className="partner-stores-map-shell">
                 <PartnerStoresMap
                   stores={stores}
                   selectedStoreId={resolvedSelectedStoreId}
@@ -107,6 +125,19 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
           </div>
         </div>
       </div>
+
+      <PartnerStoresMapModal
+        isOpen={mapModalOpen}
+        stores={stores}
+        selectedStoreId={resolvedSelectedStoreId}
+        mapFocusRequest={mapFocusRequest}
+        mapTitle={copy.map.title}
+        mapAriaLabel={copy.map.ariaLabel}
+        getDirectionsLabel={copy.getDirections}
+        closeLabel={copy.closeLabel}
+        onClose={closeMapModal}
+        onStoreSelect={handleMapModalStoreSelect}
+      />
     </section>
   );
 }

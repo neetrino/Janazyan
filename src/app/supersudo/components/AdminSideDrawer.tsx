@@ -9,6 +9,7 @@ const ADMIN_SIDE_DRAWER_WIDTH_CLASS = {
   md: 'max-w-lg',
   lg: 'max-w-2xl',
   xl: 'max-w-4xl',
+  panel: 'w-[60%] max-w-none',
 } as const;
 
 interface AdminSideDrawerProps {

@@ -20,8 +20,12 @@ export const CAROUSEL_RADIUS_MOBILE_PX = 64;
 export const CAROUSEL_RADIUS_MOBILE_MAX_PX = 76;
 export const CAROUSEL_RADIUS_DESKTOP_PX = 176;
 /** Uniform card width for every store on the ring. */
-export const CAROUSEL_CARD_WIDTH_PX = 194;
-export const CAROUSEL_CARD_WIDTH_MOBILE_PX = 116;
+export const CAROUSEL_CARD_WIDTH_PX = 168;
+export const CAROUSEL_CARD_WIDTH_MOBILE_PX = 100;
+/** Wider active card on mobile — clears the center globe. */
+export const CAROUSEL_FRONT_CARD_WIDTH_MOBILE_PX = 128;
+/** Lifts the center globe on mobile so the front card clears it. */
+export const CAROUSEL_GLOBE_CENTER_SHIFT_UP_MOBILE_PX = 10;
 export const CAROUSEL_ROTATION_MS = 650;
 export const CAROUSEL_AUTO_ROTATE_MS = 7000;
 export const CAROUSEL_SCENE_MIN_HEIGHT_PX = 328;
@@ -29,8 +33,12 @@ export const CAROUSEL_SCENE_MIN_HEIGHT_MOBILE_PX = 184;
 /** Lifts the 3D stack so dots/nav stay visible below the cards. */
 export const CAROUSEL_SCENE_SHIFT_UP_PX = 72;
 export const CAROUSEL_SCENE_SHIFT_UP_MOBILE_PX = 44;
-/** Drops only the active card on mobile — side stack stays in place. */
-export const CAROUSEL_FRONT_DROP_MOBILE_PX = 22;
+/** Drops only the active card — side stack stays in place. */
+export const CAROUSEL_FRONT_DROP_DESKTOP_PX = 28;
+export const CAROUSEL_FRONT_DROP_MOBILE_PX = 42;
+/** Gap between the active card and the “View on map” control below. */
+export const CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_REM = 0.25;
+export const CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_MOBILE_REM = 0.25;
 /** Pulls the active card toward the viewer so actions are not covered by the stack. */
 export const CAROUSEL_FRONT_FACE_Z_OFFSET_PX = 46;
 export const CAROUSEL_FRONT_FACE_Z_OFFSET_MOBILE_PX = 16;

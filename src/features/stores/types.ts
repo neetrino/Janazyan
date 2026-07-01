@@ -14,6 +14,8 @@ export type PartnerStore = PartnerStoreTranslation & {
 export type StoreSelectOptions = {
   /** Scroll the map section into view (mobile stacked layout). */
   scrollToMap?: boolean;
+  /** Open the fullscreen map overlay focused on the selected store. */
+  openMapModal?: boolean;
 };
 
 export type StoreSelectHandler = (
@@ -34,10 +36,11 @@ export type StoresTranslation = {
   listTitle: string;
   getDirections: string;
   viewOnMap: string;
+  closeLabel: string;
   cantFind: {
     title: string;
     description: string;
     contactUs: string;
   };
 };
-
+

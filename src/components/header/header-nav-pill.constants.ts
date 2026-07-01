@@ -1,5 +1,5 @@
-export const HEADER_ACTIVE_PILL_HEIGHT_PX = 36;
-export const HEADER_ACTIVE_PILL_RADIUS_PX = 20;
+export const HEADER_ACTIVE_PILL_HEIGHT_PX = 40;
+export const HEADER_ACTIVE_PILL_RADIUS_PX = 22;
 /** Horizontal inset applied on each side so the pill wraps the link label. */
 export const HEADER_ACTIVE_PILL_OFFSET_X_PX = -7;
 export const HEADER_ACTIVE_PILL_OFFSET_Y_PX = -6;

@@ -23,8 +23,8 @@ import {
 import { formatCartBadgeCount, useCartItemCount } from '../hooks/useCartItemCount';
 import { formatWishlistBadgeCount, useWishlistItemCount } from '../hooks/useWishlistItemCount';
 
-const HEADER_ACTION_BUTTON_SIZE_PX = 36;
-const HEADER_ACTION_ICON_SIZE_PX = 20;
+const HEADER_ACTION_BUTTON_SIZE_PX = 40;
+const HEADER_ACTION_ICON_SIZE_PX = 22;
 const HEADER_CART_BADGE_COLOR = '#0499c3';
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
@@ -37,7 +37,7 @@ function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
       alt={alt}
       width={HEADER_ACTION_ICON_SIZE_PX}
       height={HEADER_ACTION_ICON_SIZE_PX}
-      className="h-5 w-5"
+      className="h-[22px] w-[22px]"
     />
   );
 }
@@ -91,7 +91,7 @@ function HeaderLanguageControl() {
           height: HEADER_ACTION_BUTTON_SIZE_PX,
         }}
       >
-        <Globe className="h-5 w-5 text-ink-800" strokeWidth={2.2} />
+        <Globe className="h-[22px] w-[22px] text-ink-800" strokeWidth={2.2} />
       </button>
       {menuOpen ? (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl bg-white shadow-card">
@@ -133,7 +133,7 @@ function HeaderCurrencyLabel() {
   }, []);
 
   return (
-    <span className="inline-flex items-center gap-1 text-[16px] font-medium leading-6 tracking-[-0.31px] text-ink-500">
+    <span className="inline-flex items-center gap-1 text-[17px] font-medium leading-[26px] tracking-[-0.31px] text-ink-500">
       {currency}
       <ChevronDown className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
     </span>

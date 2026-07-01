@@ -37,7 +37,7 @@ function useHeaderNavLinks() {
   }));
 }
 
-const HEADER_NAV_LINK_GAP_PX = 24;
+const HEADER_NAV_LINK_GAP_PX = 28;
 
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
@@ -58,7 +58,7 @@ function HeaderLogo() {
           alt="Janazyan"
           fill
           priority
-          sizes="64px"
+          sizes="72px"
           className="object-contain object-left"
         />
       </span>
