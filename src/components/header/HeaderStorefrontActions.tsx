@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronDown, Globe } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
+import { HeaderProductSearch } from './HeaderProductSearch';
 import {
   HEADER_ACTION_PROFILE_GAP_PX,
   HEADER_ACTIONS_PILL_PADDING_X_PX,
@@ -158,6 +159,8 @@ export function HeaderStorefrontActions() {
       }}
     >
       <div className="flex items-center">
+        <HeaderProductSearch />
+
         <Link
           href="/wishlist"
           aria-label={
