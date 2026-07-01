@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { Button } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { WishlistProductGrid } from './WishlistProductGrid';
 import { useWishlistProducts } from './useWishlistProducts';
 
@@ -60,10 +60,8 @@ export default function WishlistPage() {
             <p className="text-gray-600 mb-6">
               {t('common.wishlist.emptyDescription')}
             </p>
-            <Link href="/products">
-              <Button variant="primary" size="lg">
-                {t('common.buttons.browseProducts')}
-              </Button>
+            <Link href="/products" className={STOREFRONT_GLASS_PILL_BUTTON_CLASS}>
+              {t('common.buttons.browseProducts')}
             </Link>
           </div>
         </div>

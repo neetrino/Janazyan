@@ -1,7 +1,8 @@
 import type { CSSProperties } from 'react';
+import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
 
 export const HOME_NAV_LINK_HREFS: ReadonlyArray<{
-  labelKey: 'home' | 'shop' | 'about' | 'ourStores' | 'contact' | 'faq' | 'blog';
+  labelKey: 'home' | 'shop' | 'about' | 'ourStores' | 'contact' | 'blog';
   href: string;
 }> = [
   { labelKey: 'home', href: '/' },
@@ -50,36 +51,41 @@ export const CATEGORY_POSTER_CONFIG: ReadonlyArray<CategoryPosterConfig> = [
     id: 'body',
     color: 'butter',
     bottle: '/figma/category-body.webp',
-    href: '/products?category=body',
+    href: getCategoryProductsHref('body'),
   },
   {
     id: 'kids',
     color: 'pink',
     bottle: '/figma/category-kids.webp',
-    href: '/products?category=kids',
+    href: getCategoryProductsHref('kids'),
   },
   {
     id: 'hair',
     color: 'sky',
     bottle: '/figma/category-hair.webp',
-    href: '/products?category=hair',
+    href: getCategoryProductsHref('hair'),
   },
   {
     id: 'face',
     color: 'lavender',
     bottle: '/figma/category-face.webp',
-    href: '/products?category=face',
+    href: getCategoryProductsHref('face'),
   },
   {
     id: 'adult',
     color: 'sage',
     bottle: '/figma/category-body.webp',
-    href: '/products?category=adult',
+    href: getCategoryProductsHref('adult'),
   },
 ];
 
 /** @deprecated Use CATEGORY_POSTER_CONFIG + useHomeCategoryPosters */
 export const CATEGORY_POSTERS = CATEGORY_POSTER_CONFIG;
+
+/** Desktop category poster CTA — white circle + arrow (Figma). */
+export const CATEGORY_POSTER_CIRCLE_SIZE_PX = 64;
+export const CATEGORY_POSTER_ARROW_WIDTH_PX = 30;
+export const CATEGORY_POSTER_ARROW_HEIGHT_PX = 14;
 
 export type WhyCardConfig = {
   cardKey: '01' | '02' | '03' | '04';

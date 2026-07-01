@@ -3,6 +3,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { CATEGORY_FIGMA_GRID_IDS } from './constants';
+import {
+  CATEGORY_POSTER_ARROW_HEIGHT_PX,
+  CATEGORY_POSTER_ARROW_WIDTH_PX,
+  CATEGORY_POSTER_CIRCLE_SIZE_PX,
+} from './constants';
 import { MIRAGE_CATEGORY_TITLE_CLASS } from './mirage-heading-styles';
 import { useHomeCategoryPosters } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
@@ -31,31 +36,32 @@ const CARD_HEIGHT_CLASS = 'h-[434px] min-h-[434px]';
 const CATEGORY_POSTER_CIRCLE = '/figma/category-poster-circle.svg';
 const CATEGORY_POSTER_ARROW = '/figma/category-poster-arrow.svg';
 
-function CategoryPosterArrow() {
+function CategoryPosterArrow({ href, label }: { href: string; label: string }) {
   return (
-    <span
-      aria-hidden
-      className="absolute bottom-[43px] right-[38px] flex size-[85px] items-center justify-center transition-transform duration-300 group-hover:scale-105"
+    <Link
+      href={href}
+      aria-label={label}
+      className="absolute bottom-[43px] right-[38px] z-10 flex size-[85px] items-center justify-center transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
     >
       <span className="relative flex size-16 rotate-[155deg] items-center justify-center">
         <Image
           src={CATEGORY_POSTER_CIRCLE}
           alt=""
-          width={64}
-          height={64}
+          width={CATEGORY_POSTER_CIRCLE_SIZE_PX}
+          height={CATEGORY_POSTER_CIRCLE_SIZE_PX}
           className="absolute inset-0 size-full"
         />
-        <span className="relative flex h-[8px] w-[18px] -rotate-[25deg] items-center justify-center">
+        <span className="relative flex h-[14px] w-[30px] rotate-[155deg] items-center justify-center">
           <Image
             src={CATEGORY_POSTER_ARROW}
             alt=""
-            width={18}
-            height={8}
+            width={CATEGORY_POSTER_ARROW_WIDTH_PX}
+            height={CATEGORY_POSTER_ARROW_HEIGHT_PX}
             className="block h-full w-full max-w-none"
           />
         </span>
       </span>
-    </span>
+    </Link>
   );
 }
 
@@ -86,14 +92,15 @@ function CategoryCard({
 }: {
   poster: ReturnType<typeof useHomeCategoryPosters>[number];
 }) {
+  const { t } = useTranslation();
   const imageClass =
     CATEGORY_IMAGE_CLASS[
       poster.id as (typeof CATEGORY_FIGMA_GRID_IDS)[number]
     ] ?? 'left-[20%] top-[-12%] h-[140%] w-[75%]';
+  const categoryLabel = `${poster.title[0]} ${poster.title[1]}`.trim();
 
   return (
-    <Link
-      href={poster.href}
+    <article
       className={[
         'group relative block overflow-hidden rounded-[24px]',
         CARD_HEIGHT_CLASS,
@@ -125,7 +132,10 @@ function CategoryCard({
         <span className="block">{poster.title[1]}</span>
       </div>
 
-      <CategoryPosterArrow />
-    </Link>
+      <CategoryPosterArrow
+        href={poster.href}
+        label={`${categoryLabel} — ${t('common.footer.shop')}`}
+      />
+    </article>
   );
 }

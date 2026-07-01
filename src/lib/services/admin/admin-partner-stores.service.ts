@@ -1,6 +1,7 @@
 import { db } from '@white-shop/db';
 import { toSlug } from '@/lib/utils/slug';
 import { resolvePartnerStoreLogoUrl } from '@/lib/partner-stores/resolve-logo-url';
+import { resolvePartnerStoreCoordinatesFromAddress } from '@/lib/partner-stores/geocode-partner-store-address';
 import type { PartnerStoreTranslationInput } from '@/features/stores/partner-store-locales';
 import { logger } from '@/lib/utils/logger';
 
@@ -111,6 +112,19 @@ function validateCoordinates(lat: number, lng: number): void {
   }
 }
 
+function getEnglishAddress(translations: PartnerStoreTranslationInput[]): string {
+  return translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
+}
+
+async function resolveNextPartnerStorePosition(): Promise<number> {
+  const aggregate = await db.partnerStore.aggregate({
+    where: { deletedAt: null },
+    _max: { position: true },
+  });
+
+  return (aggregate._max.position ?? -1) + 1;
+}
+
 class AdminPartnerStoresService {
   async getPartnerStores() {
     const stores = await db.partnerStore.findMany({
@@ -127,25 +141,33 @@ class AdminPartnerStoresService {
   async createPartnerStore(data: {
     translations: PartnerStoreTranslationInput[];
     logoUrl?: string;
-    lat: number;
-    lng: number;
+    lat?: number;
+    lng?: number;
     position?: number;
     published?: boolean;
   }) {
     validateTranslations(data.translations);
-    validateCoordinates(data.lat, data.lng);
+
+    const enAddress = getEnglishAddress(data.translations);
+    const coordinates =
+      data.lat !== undefined && data.lng !== undefined
+        ? { lat: data.lat, lng: data.lng }
+        : await resolvePartnerStoreCoordinatesFromAddress(enAddress);
+    validateCoordinates(coordinates.lat, coordinates.lng);
 
     const enName = data.translations.find((t) => t.locale === 'en')!.name.trim();
     const slug = await generateUniqueSlug(enName);
     const logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl);
+    const position =
+      data.position !== undefined ? data.position : await resolveNextPartnerStorePosition();
 
     const store = await db.partnerStore.create({
       data: {
         slug,
         logoUrl: logoUrl ?? undefined,
-        lat: data.lat,
-        lng: data.lng,
-        position: data.position ?? 0,
+        lat: coordinates.lat,
+        lng: coordinates.lng,
+        position,
         published: data.published ?? true,
         translations: {
           create: data.translations
@@ -193,9 +215,12 @@ class AdminPartnerStoresService {
     if (data.translations) {
       validateTranslations(data.translations);
     }
-    if (data.lat !== undefined || data.lng !== undefined) {
-      validateCoordinates(data.lat ?? store.lat, data.lng ?? store.lng);
-    }
+
+    const enAddress = data.translations ? getEnglishAddress(data.translations) : '';
+    const existingEnAddress =
+      store.translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
+    const shouldRefreshCoordinates =
+      Boolean(data.translations) && enAddress !== existingEnAddress;
 
     const updateData: {
       logoUrl?: string | null;
@@ -208,11 +233,19 @@ class AdminPartnerStoresService {
     if (data.logoUrl !== undefined) {
       updateData.logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl ?? undefined);
     }
-    if (data.lat !== undefined) {
-      updateData.lat = data.lat;
-    }
-    if (data.lng !== undefined) {
-      updateData.lng = data.lng;
+    if (shouldRefreshCoordinates) {
+      const coordinates = await resolvePartnerStoreCoordinatesFromAddress(enAddress);
+      validateCoordinates(coordinates.lat, coordinates.lng);
+      updateData.lat = coordinates.lat;
+      updateData.lng = coordinates.lng;
+    } else if (data.lat !== undefined || data.lng !== undefined) {
+      validateCoordinates(data.lat ?? store.lat, data.lng ?? store.lng);
+      if (data.lat !== undefined) {
+        updateData.lat = data.lat;
+      }
+      if (data.lng !== undefined) {
+        updateData.lng = data.lng;
+      }
     }
     if (data.position !== undefined) {
       updateData.position = data.position;

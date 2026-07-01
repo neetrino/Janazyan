@@ -1,15 +1,21 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  assertR2Configured,
+  getR2PublicUrl,
+  isR2Configured,
+} from '@/lib/r2/r2-config';
 
-const accountId = process.env.R2_ACCOUNT_ID;
-const accessKeyId = process.env.R2_ACCESS_KEY_ID;
-const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY;
-const bucketName = process.env.R2_BUCKET_NAME;
-const publicUrl = process.env.R2_PUBLIC_URL;
+export { isR2Configured } from '@/lib/r2/r2-config';
+
+const accountId = process.env.R2_ACCOUNT_ID?.trim();
+const accessKeyId = process.env.R2_ACCESS_KEY_ID?.trim();
+const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY?.trim();
+const bucketName = process.env.R2_BUCKET_NAME?.trim();
 
 const r2 =
   accountId && accessKeyId && secretAccessKey && bucketName
     ? new S3Client({
-        region: "auto",
+        region: 'auto',
         endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
         credentials: {
           accessKeyId,
@@ -20,29 +26,43 @@ const r2 =
 
 /**
  * Upload a buffer to R2 and return the public URL.
- * Key will be prefixed with "products/" and get a unique suffix.
  */
 export async function uploadToR2(
   key: string,
   body: Buffer | Uint8Array,
-  contentType: string
-): Promise<string | null> {
-  if (!r2 || !bucketName || !publicUrl) {
-    return null;
+  contentType: string,
+): Promise<string> {
+  assertR2Configured();
+
+  if (!r2 || !bucketName) {
+    throw {
+      status: 503,
+      type: 'https://api.shop.am/problems/config-error',
+      title: 'Storage not configured',
+      detail: 'R2 client is not initialized.',
+    };
   }
+
   await r2.send(
     new PutObjectCommand({
       Bucket: bucketName,
       Key: key,
       Body: body,
       ContentType: contentType,
-    })
+    }),
   );
-  const base = publicUrl.replace(/\/$/, "");
-  const path = key.startsWith("/") ? key.slice(1) : key;
-  return `${base}/${path}`;
-}
 
-export function isR2Configured(): boolean {
-  return Boolean(accountId && accessKeyId && secretAccessKey && bucketName && publicUrl);
+  const publicUrl = getR2PublicUrl();
+  if (!publicUrl) {
+    throw {
+      status: 503,
+      type: 'https://api.shop.am/problems/config-error',
+      title: 'Storage not configured',
+      detail: 'R2_PUBLIC_URL is not set.',
+    };
+  }
+
+  const base = publicUrl.replace(/\/$/, '');
+  const path = key.startsWith('/') ? key.slice(1) : key;
+  return `${base}/${path}`;
 }

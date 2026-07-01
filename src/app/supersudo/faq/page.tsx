@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Card } from '@shop/ui';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
-import { FaqAdminPanel } from './FaqAdminPanel';
+import { FaqSection } from './FaqSection';
 
 export default function FaqAdminPage() {
   const { t } = useTranslation();
@@ -32,9 +32,7 @@ export default function FaqAdminPage() {
 
   return (
     <Card className="p-6">
-      <h1 className="mb-2 text-2xl font-bold text-gray-900">{t('admin.faq.title')}</h1>
-      <p className="mb-6 text-sm text-gray-600">{t('admin.faq.subtitle')}</p>
-      <FaqAdminPanel />
+      <FaqSection />
     </Card>
   );
 }

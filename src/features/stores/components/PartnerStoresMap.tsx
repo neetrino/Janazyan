@@ -13,9 +13,12 @@ import {
   MAP_DEFAULT_CENTER,
   MAP_DEFAULT_ZOOM,
   MAP_DEFAULT_ZOOM_MOBILE,
+  MAP_HEIGHT_MOBILE_PX,
   MAP_HEIGHT_PX,
   MAP_SELECTED_ZOOM,
   MAP_SELECTED_ZOOM_MOBILE,
+  MAP_TILE_MAX_ZOOM,
+  MAP_TILE_URL,
 } from '../constants';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import type { PartnerStore, StoreSelectHandler } from '../types';
@@ -30,6 +33,7 @@ type PartnerStoresMapProps = {
   onStoreSelect: StoreSelectHandler;
   ariaLabel: string;
   getDirectionsLabel: string;
+  minHeightPx?: number;
 };
 
 type LeafletModule = typeof import('leaflet');
@@ -81,6 +85,7 @@ export function PartnerStoresMap({
   onStoreSelect,
   ariaLabel,
   getDirectionsLabel,
+  minHeightPx = MAP_HEIGHT_PX,
 }: PartnerStoresMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -89,6 +94,11 @@ export function PartnerStoresMap({
   const [mapReady, setMapReady] = useState(false);
   const isMobile = useStoresMobileViewport();
   const selectedZoom = isMobile ? MAP_SELECTED_ZOOM_MOBILE : MAP_SELECTED_ZOOM;
+  const resolvedMinHeightPx =
+    minHeightPx === MAP_HEIGHT_PX && isMobile ? MAP_HEIGHT_MOBILE_PX : minHeightPx;
+  const mapClassName = isMobile
+    ? 'partner-stores-map partner-stores-map--mobile h-full w-full'
+    : 'partner-stores-map h-full w-full min-h-[320px] rounded-2xl';
 
   const onStoreSelectRef = useRef(onStoreSelect);
   onStoreSelectRef.current = onStoreSelect;
@@ -143,11 +153,12 @@ export function PartnerStoresMap({
         center: [MAP_DEFAULT_CENTER.lat, MAP_DEFAULT_CENTER.lng],
         zoom: initialZoom,
         scrollWheelZoom: true,
+        attributionControl: false,
       });
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19,
+      L.tileLayer(MAP_TILE_URL, {
+        attribution: '',
+        maxZoom: MAP_TILE_MAX_ZOOM,
       }).addTo(map);
 
       mapRef.current = map;
@@ -223,8 +234,8 @@ export function PartnerStoresMap({
   return (
     <div
       ref={containerRef}
-      className="partner-stores-map h-full w-full min-h-[320px] rounded-2xl"
-      style={{ minHeight: MAP_HEIGHT_PX }}
+      className={mapClassName}
+      style={{ minHeight: resolvedMinHeightPx }}
       role="region"
       aria-label={ariaLabel}
     />

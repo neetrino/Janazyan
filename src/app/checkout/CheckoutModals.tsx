@@ -4,6 +4,7 @@ import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } fr
 import { ShippingAddressModal } from './components/ShippingAddressModal';
 import { CardDetailsModal } from './components/CardDetailsModal';
 import { CheckoutFormData, Cart } from './types';
+import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 
 interface CheckoutModalsProps {
   showShippingModal: boolean;
@@ -17,12 +18,16 @@ interface CheckoutModalsProps {
   isSubmitting: boolean;
   shippingMethod: 'pickup' | 'delivery';
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
-  shippingCity: string | undefined;
+  shippingCountry?: string;
+  shippingCity?: string;
+  deliveryOptions: DeliveryOptionsPublic | null;
+  deliveryOptionsLoading: boolean;
   cart: Cart | null;
   orderSummary: {
     subtotalDisplay: number;
     taxDisplay: number;
     shippingDisplay: number;
+    discountDisplay: number;
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
@@ -45,7 +50,10 @@ export function CheckoutModals({
   isSubmitting,
   shippingMethod,
   paymentMethod,
+  shippingCountry,
   shippingCity,
+  deliveryOptions,
+  deliveryOptionsLoading,
   cart,
   orderSummary,
   currency,
@@ -70,7 +78,10 @@ export function CheckoutModals({
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}
+        shippingCountry={shippingCountry}
         shippingCity={shippingCity}
+        deliveryOptions={deliveryOptions}
+        deliveryOptionsLoading={deliveryOptionsLoading}
         loadingDeliveryPrice={loadingDeliveryPrice}
         deliveryPrice={deliveryPrice}
         onSubmit={onSubmit}
@@ -86,7 +97,9 @@ export function CheckoutModals({
         isSubmitting={isSubmitting}
         paymentMethod={paymentMethod}
         shippingMethod={shippingMethod}
+        shippingCountry={shippingCountry}
         shippingCity={shippingCity}
+        deliveryOptions={deliveryOptions}
         cart={cart}
         orderSummary={orderSummary}
         currency={currency}

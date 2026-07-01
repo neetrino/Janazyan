@@ -72,16 +72,17 @@ function DesktopAbout() {
           />
         </div>
 
-        <p
-          className={`absolute right-[411px] top-[48px] z-[2] whitespace-nowrap text-right ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}
-        >
-          {t('home.about.headingBorn')}
-        </p>
-        <p
-          className={`absolute left-[316px] top-[118px] z-[2] whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}
-        >
-          {t('home.about.headingCare')}
-        </p>
+        <div className="absolute left-[316px] top-[118px] z-[2]">
+          <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_SKY_CLASS}`}>
+            {t('home.about.headingCare')}
+          </p>
+        </div>
+
+        <div className="absolute left-[1059px] top-[48px] z-[2] -translate-x-full text-right">
+          <p className={`whitespace-nowrap ${MIRAGE_ABOUT_HEADING_INK_CLASS}`}>
+            {t('home.about.headingBorn')}
+          </p>
+        </div>
 
         <p className="absolute left-[950px] top-[323px] z-[2] w-[433px] text-[18px] leading-[29.25px] tracking-[-0.4395px] text-ink-500">
           {t('home.about.paragraphRight')}

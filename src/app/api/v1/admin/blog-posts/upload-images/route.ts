@@ -4,7 +4,7 @@ import { persistBlogImageFromDataUrl } from '@/lib/blog/persist-blog-image';
 
 /**
  * POST /api/v1/admin/blog-posts/upload-images
- * Upload blog images to R2 (or public/blog in local dev).
+ * Upload blog images to R2.
  */
 export async function POST(req: NextRequest) {
   try {

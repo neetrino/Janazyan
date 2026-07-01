@@ -1,16 +1,4 @@
-import type {
-  FaqCategoryTranslationInput,
-  FaqItemTranslationInput,
-} from '../../../features/faq/faq-locales';
-
-export type AdminFaqCategory = {
-  id: string;
-  slug: string;
-  title: string;
-  position: number;
-  published: boolean;
-  translations: FaqCategoryTranslationInput[];
-};
+import type { FaqItemTranslationInput } from '../../../features/faq/faq-locales';
 
 export type AdminFaqItem = {
   id: string;
@@ -22,14 +10,8 @@ export type AdminFaqItem = {
   translations: FaqItemTranslationInput[];
 };
 
-export type FaqCategoryFormData = {
-  translations: FaqCategoryTranslationInput[];
-  position: string;
-  published: 'published' | 'draft';
-};
-
 export type FaqItemFormData = {
-  categoryId: string;
+  categoryId?: string;
   translations: FaqItemTranslationInput[];
   position: string;
   published: 'published' | 'draft';

@@ -4,41 +4,25 @@ import { useCallback, useEffect, useState } from 'react';
 import type { Cart } from '../../app/cart/types';
 import { useAuth } from '../../lib/auth/AuthContext';
 import {
-  clearCartSnapshot,
   readCartSnapshot,
   resolveCartCacheScope,
-  writeCartSnapshot,
 } from '../../lib/cart/cart-snapshot-cache';
 import { isCartSnapshotFresh } from '../../lib/cart/cart-snapshot-cache';
+import { parseCartUpdatedDetail } from '../../lib/cart/cart-events';
 import { getGuestCartItemCount } from '../../lib/storageCounts';
 import { fetchLoggedInCart } from '../../app/cart/cart-fetcher';
 
 const CART_COUNT_CAP = 99;
 
-type CartUpdatedDetail = {
-  itemsCount?: number;
-  total?: number;
-  optimisticAdd?: { quantity: number; price: number };
-  skipRevalidate?: boolean;
-};
-
-function parseCartUpdatedDetail(event: Event): CartUpdatedDetail | null {
-  if (!(event instanceof CustomEvent)) {
-    return null;
-  }
-  const detail = event.detail;
-  if (!detail || typeof detail !== 'object') {
-    return null;
-  }
-  return detail as CartUpdatedDetail;
-}
-
 function resolveItemsCount(cart: Cart | null | undefined): number {
-  if (!cart?.items?.length) {
+  if (!cart) {
     return 0;
   }
   if (typeof cart.itemsCount === 'number' && cart.itemsCount >= 0) {
     return cart.itemsCount;
+  }
+  if (!cart.items?.length) {
+    return 0;
   }
   return cart.items.reduce((sum, item) => sum + item.quantity, 0);
 }
@@ -58,7 +42,9 @@ export function useCartItemCount(): number {
     const cached = readCartSnapshot(scope);
     if (cached) {
       setCount(resolveItemsCount(cached));
+      return;
     }
+    setCount(0);
   }, [isLoggedIn, user?.id]);
 
   const refreshGuest = useCallback(() => {
@@ -80,14 +66,12 @@ export function useCartItemCount(): number {
 
     try {
       const cart = await fetchLoggedInCart();
-      setCount(resolveItemsCount(cart));
-      if (scope) {
-        if (cart) {
-          writeCartSnapshot(scope, cart);
-        } else {
-          clearCartSnapshot(scope);
-        }
+      const snapshot = scope ? readCartSnapshot(scope) : null;
+      if (snapshot) {
+        setCount(resolveItemsCount(snapshot));
+        return;
       }
+      setCount(resolveItemsCount(cart));
     } catch {
       if (!scope || !readCartSnapshot(scope)) {
         setCount(0);
@@ -116,12 +100,12 @@ export function useCartItemCount(): number {
         setCount(detail.itemsCount);
         return;
       }
-      if (detail?.optimisticAdd && detail.optimisticAdd.quantity > 0) {
-        setCount((prev) => prev + detail.optimisticAdd!.quantity);
-        return;
-      }
-      if (detail?.skipRevalidate) {
-        applyCachedCount();
+      if (detail?.fromMutation || detail?.fromSync || detail?.skipRevalidate) {
+        if (typeof detail.itemsCount === 'number') {
+          setCount(detail.itemsCount);
+        } else {
+          applyCachedCount();
+        }
         return;
       }
       refresh();

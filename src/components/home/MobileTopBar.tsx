@@ -1,6 +1,8 @@
 'use client';
 
 import { Globe, Phone, Search } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getSupportPhoneTelHref } from '../../app/orders/[number]/constants/support-phone';
@@ -18,6 +20,7 @@ import {
 } from '../hooks/useInstantSearch';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
+const MOBILE_TOP_BAR_LOGO_SRC = '/figma/header-logo.webp';
 
 export function MobileTopBar() {
   const { t } = useTranslation();
@@ -89,6 +92,21 @@ export function MobileTopBar() {
 
   return (
     <div className="flex items-center gap-2">
+      <Link
+        href="/"
+        aria-label={t('common.navigation.home')}
+        className="flex h-12 w-[5.25rem] shrink-0 items-center justify-center"
+      >
+        <Image
+          src={MOBILE_TOP_BAR_LOGO_SRC}
+          alt="Janazyan"
+          width={84}
+          height={48}
+          className="h-12 w-auto object-contain"
+          priority
+        />
+      </Link>
+
       <div ref={searchContainerRef} className="relative flex h-12 flex-1 items-center">
         <label htmlFor="mobile-home-search" className="sr-only">
           {t('home.mobile.aria.search')}
@@ -144,12 +162,10 @@ function MobileLanguageButton({ label }: { label: string }) {
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const storedLang = getStoredLanguage();
-    setCurrentLang(storedLang === 'ka' ? 'en' : storedLang);
+    setCurrentLang(getStoredLanguage());
 
     const handleLanguageUpdate = () => {
-      const newLang = getStoredLanguage();
-      setCurrentLang(newLang === 'ka' ? 'en' : newLang);
+      setCurrentLang(getStoredLanguage());
     };
 
     window.addEventListener('language-updated', handleLanguageUpdate);
@@ -174,7 +190,7 @@ function MobileLanguageButton({ label }: { label: string }) {
     }
 
     setShowMenu(false);
-    setCurrentLang(langCode === 'ka' ? 'en' : langCode);
+    setCurrentLang(langCode);
     setStoredLanguage(langCode);
   };
 
@@ -195,9 +211,7 @@ function MobileLanguageButton({ label }: { label: string }) {
           className="absolute right-0 top-full z-[50] mt-2 w-44 overflow-hidden rounded-2xl border border-white/80 bg-white shadow-[0_8px_24px_rgba(30,41,57,0.12)]"
           style={{ zIndex: LANGUAGE_MENU_Z_INDEX }}
         >
-          {Object.values(LANGUAGES)
-            .filter((language) => language.code !== 'ka')
-            .map((language) => {
+          {Object.values(LANGUAGES).map((language) => {
               const isActive = currentLang === language.code;
 
               return (

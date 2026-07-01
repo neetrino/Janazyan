@@ -1,9 +1,5 @@
 {
   "filters": {
-    "price": {
-      "title": "Filter by Price",
-      "priceLabel": "Price:"
-    },
     "color": {
       "title": "Filter by Color",
       "noColors": "No colors available",

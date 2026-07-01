@@ -9,4 +9,5 @@ export type PromoFormFields = {
   active: boolean;
   validFrom: string;
   validUntil: string;
+  allowedUserIds: string[];
 };

@@ -18,7 +18,6 @@ class ProductsService {
 
   // Filters methods
   getFilters = productsFiltersService.getFilters.bind(productsFiltersService);
-  getPriceRange = productsFiltersService.getPriceRange.bind(productsFiltersService);
 
   // Slug methods
   findBySlug = productsSlugService.findBySlug.bind(productsSlugService);

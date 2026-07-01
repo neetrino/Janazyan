@@ -16,8 +16,6 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
     search?: string;
     categories?: string[];
     sku?: string;
-    minPrice?: number;
-    maxPrice?: number;
     sort?: string;
   };
   error?: {
@@ -55,52 +53,6 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
     };
   }
 
-  // Валидация minPrice
-  const minPriceParam = searchParams.get("minPrice");
-  let minPrice: number | undefined;
-  if (minPriceParam) {
-    minPrice = parseFloat(minPriceParam);
-    if (isNaN(minPrice) || minPrice < 0) {
-      return {
-        error: {
-          type: "https://api.shop.am/problems/validation-error",
-          title: "Validation Error",
-          status: 400,
-          detail: "Parameter 'minPrice' must be a non-negative number",
-        },
-      };
-    }
-  }
-
-  // Валидация maxPrice
-  const maxPriceParam = searchParams.get("maxPrice");
-  let maxPrice: number | undefined;
-  if (maxPriceParam) {
-    maxPrice = parseFloat(maxPriceParam);
-    if (isNaN(maxPrice) || maxPrice < 0) {
-      return {
-        error: {
-          type: "https://api.shop.am/problems/validation-error",
-          title: "Validation Error",
-          status: 400,
-          detail: "Parameter 'maxPrice' must be a non-negative number",
-        },
-      };
-    }
-  }
-
-  // Проверка логики: minPrice не должен быть больше maxPrice
-  if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) {
-    return {
-      error: {
-        type: "https://api.shop.am/problems/validation-error",
-        title: "Validation Error",
-        status: 400,
-        detail: "Parameter 'minPrice' cannot be greater than 'maxPrice'",
-      },
-    };
-  }
-
   // Обработка categories
   const categoryParam = searchParams.get("category");
   const categories = categoryParam ? categoryParam.split(',').filter(Boolean) : undefined;
@@ -112,8 +64,6 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
       search: searchParams.get("search")?.trim() || undefined,
       categories,
       sku: searchParams.get("sku")?.trim() || undefined,
-      minPrice,
-      maxPrice,
       sort: searchParams.get("sort")?.trim() || undefined,
     },
   };
@@ -129,8 +79,6 @@ function validateAndNormalizeFilters(searchParams: URLSearchParams): {
  * - search: string (optional)
  * - category: string (comma-separated, optional)
  * - sku: string (optional)
- * - minPrice: number (optional, non-negative)
- * - maxPrice: number (optional, non-negative)
  * - sort: string (optional)
  */
 export async function GET(req: NextRequest) {

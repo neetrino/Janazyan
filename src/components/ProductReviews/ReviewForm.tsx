@@ -1,7 +1,10 @@
 'use client';
 
 import type { FormEvent } from 'react';
-import { Button } from '@shop/ui';
+import {
+  PDP_REVIEW_SUBMIT_BUTTON_CLASS,
+  PDP_WRITE_REVIEW_BUTTON_CLASS,
+} from '../../app/products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { ReviewRating } from './ReviewRating';
 
@@ -72,25 +75,25 @@ export function ReviewForm({
       </div>
 
       {/* Form Actions */}
-      <div className="flex gap-4">
-        <Button
+      <div className="flex flex-wrap gap-3">
+        <button
           type="submit"
-          variant="primary"
           disabled={submitting}
+          className={PDP_REVIEW_SUBMIT_BUTTON_CLASS}
         >
           {submitting
             ? t('common.reviews.submitting')
             : editingReviewId
               ? 'Update Review'
               : t('common.reviews.submitReview')}
-        </Button>
-        <Button
+        </button>
+        <button
           type="button"
-          variant="outline"
           onClick={onCancel}
+          className={PDP_WRITE_REVIEW_BUTTON_CLASS}
         >
           {t('common.buttons.cancel')}
-        </Button>
+        </button>
       </div>
     </form>
   );

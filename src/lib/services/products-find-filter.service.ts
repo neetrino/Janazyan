@@ -31,21 +31,7 @@ class ProductsFindFilterService {
     filters: ProductFilters,
     bestsellerProductIds: string[]
   ): ProductWithRelations[] {
-    const { minPrice, maxPrice, colors, sizes, brand } = filters;
-
-    // Filter by price
-    if (minPrice || maxPrice) {
-      const min = minPrice || 0;
-      const max = maxPrice || Infinity;
-      products = products.filter((product: ProductWithRelations) => {
-        const variants = Array.isArray(product.variants) ? product.variants : [];
-        if (variants.length === 0) return false;
-        const prices = variants.map((v: { price: number }) => v.price).filter((p: number | undefined) => p !== undefined);
-        if (prices.length === 0) return false;
-        const minPrice = Math.min(...prices);
-        return minPrice >= min && minPrice <= max;
-      });
-    }
+    const { colors, sizes, brand } = filters;
 
     // Filter by brand(s) - support multiple brands (comma-separated)
     const brandList = normalizeFilterList(brand);

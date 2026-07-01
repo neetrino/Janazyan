@@ -1,6 +1,7 @@
 import type { LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
+import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
 
 /**
  * Display label for a category nav pill (server + client).
@@ -25,8 +26,5 @@ export function getCategoryNavLabel(
 }
 
 export function getCategoryNavHref(slug: string): string {
-  if (slug === 'all') {
-    return '/products';
-  }
-  return `/products?category=${encodeURIComponent(slug)}`;
+  return getCategoryProductsHref(slug);
 }

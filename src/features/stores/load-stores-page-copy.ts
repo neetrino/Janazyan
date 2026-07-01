@@ -7,6 +7,9 @@ export function loadStoresPageCopy(lang: LanguageCode): StoresTranslation {
   const raw = loadTranslation(lang, 'stores') as StoresTranslation & {
     partnerStores?: unknown;
   };
+  const common = loadTranslation(lang, 'common') as {
+    buttons: { close: string };
+  };
   return {
     subtitle: raw.subtitle,
     title: raw.title,
@@ -15,6 +18,7 @@ export function loadStoresPageCopy(lang: LanguageCode): StoresTranslation {
     listTitle: raw.listTitle,
     getDirections: raw.getDirections,
     viewOnMap: raw.viewOnMap,
+    closeLabel: common.buttons.close,
     cantFind: raw.cantFind,
   };
 }

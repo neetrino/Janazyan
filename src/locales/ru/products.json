@@ -1,9 +1,5 @@
 {
   "filters": {
-    "price": {
-      "title": "Фильтр по цене",
-      "priceLabel": "Цена:"
-    },
     "color": {
       "title": "Фильтр по цвету",
       "noColors": "Цвета недоступны",

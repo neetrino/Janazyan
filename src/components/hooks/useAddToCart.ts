@@ -14,7 +14,12 @@ import {
   patchCartLineIdInSnapshot,
   resolveCartCacheScope,
 } from '../../lib/cart/cart-snapshot-cache';
-import { scheduleCartRevalidate } from '../../lib/cart/cart-revalidate';
+import { dispatchCartUpdated } from '../../lib/cart/cart-events';
+import {
+  confirmCartMutation,
+  scheduleCartRevalidate,
+} from '../../lib/cart/cart-revalidate';
+import { registerPendingCartAdd } from '../../lib/cart/cart-pending-add';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
 
@@ -46,14 +51,6 @@ interface UseAddToCartProps {
   price?: number;
 }
 
-function dispatchCartUpdated(itemsCount: number): void {
-  window.dispatchEvent(
-    new CustomEvent('cart-updated', {
-      detail: { itemsCount, skipRevalidate: true },
-    }),
-  );
-}
-
 function pushOptimisticSnapshot(
   scope: ReturnType<typeof resolveCartCacheScope>,
   input: Parameters<typeof applyOptimisticAddToSnapshot>[1],
@@ -63,7 +60,7 @@ function pushOptimisticSnapshot(
     return;
   }
   const cart = applyOptimisticAddToSnapshot(scope, input, cartId);
-  dispatchCartUpdated(cart.itemsCount);
+  dispatchCartUpdated({ itemsCount: cart.itemsCount, fromMutation: true });
 }
 
 /**
@@ -234,7 +231,7 @@ export function useAddToCart({
         openCartDrawer();
       }
 
-      const response = await apiClient.post<{
+      const addRequest = apiClient.post<{
         item: { id: string; quantity: number; price: number };
         cartSummary?: { itemsCount: number; total: number };
       }>('/api/v1/cart/items', {
@@ -243,16 +240,23 @@ export function useAddToCart({
         quantity: 1,
       });
 
+      registerPendingCartAdd(
+        { productId, variantId },
+        addRequest.then(() => undefined),
+      );
+
+      const response = await addRequest;
+
       if (scope && response.item?.id) {
         patchCartLineIdInSnapshot(scope, productId, variantId, response.item.id);
       }
 
       const itemsCount = response.cartSummary?.itemsCount;
       if (typeof itemsCount === 'number') {
-        dispatchCartUpdated(itemsCount);
+        dispatchCartUpdated({ itemsCount, fromMutation: true });
       }
 
-      scheduleCartRevalidate(true, user?.id ?? null, t, { force: true });
+      confirmCartMutation(true, user?.id ?? null, t);
     } catch (error: unknown) {
       const err = error as {
         message?: string;

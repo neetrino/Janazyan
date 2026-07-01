@@ -35,8 +35,6 @@ export default function ProductsPage() {
   const [stockFilter, setStockFilter] = useState<'all' | 'inStock' | 'outOfStock'>('all');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<ProductsResponse['meta'] | null>(null);
-  const [minPrice, setMinPrice] = useState<string>('');
-  const [maxPrice, setMaxPrice] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('createdAt-desc');
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
@@ -141,8 +139,6 @@ export default function ProductsPage() {
     appliedSku,
     stockFilter,
     sortParamForApi,
-    minPrice,
-    maxPrice,
   ]);
 
   const fetchProducts = async () => {
@@ -163,14 +159,6 @@ export default function ProductsPage() {
 
       if (appliedSku.trim()) {
         params.sku = appliedSku.trim();
-      }
-
-      if (minPrice.trim()) {
-        params.minPrice = minPrice.trim();
-      }
-
-      if (maxPrice.trim()) {
-        params.maxPrice = maxPrice.trim();
       }
 
       if (sortBy && sortBy.startsWith('createdAt')) {
@@ -382,10 +370,6 @@ export default function ProductsPage() {
               setCategoriesExpanded={setCategoriesExpanded}
               stockFilter={stockFilter}
               setStockFilter={setStockFilter}
-              minPrice={minPrice}
-              setMinPrice={setMinPrice}
-              maxPrice={maxPrice}
-              setMaxPrice={setMaxPrice}
               handleSearch={handleSearch}
               setPage={setPage}
             />

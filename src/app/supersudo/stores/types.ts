@@ -21,8 +21,5 @@ export type AdminPartnerStore = {
 export type PartnerStoreFormData = {
   translations: PartnerStoreTranslationInput[];
   logoUrl: string;
-  lat: string;
-  lng: string;
-  position: string;
   published: 'published' | 'draft';
 };

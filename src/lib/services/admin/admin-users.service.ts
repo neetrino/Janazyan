@@ -1,15 +1,35 @@
-import { db } from "@white-shop/db";
+import { db, Prisma } from "@white-shop/db";
 import type { AdminUserUpdateInput } from "@/lib/schemas/admin.schema";
+import { parseAdminUsersListFilters } from "./admin-users-filters";
 
 class AdminUsersService {
   /**
    * Get users
    */
-  async getUsers(_filters: unknown) {
+  async getUsers(filtersInput: unknown) {
+    const filters = parseAdminUsersListFilters(filtersInput);
+    const where: Prisma.UserWhereInput = {
+      deletedAt: null,
+      blocked: false,
+    };
+
+    if (filters.role === "admin") {
+      where.roles = { has: "admin" };
+    } else if (filters.role === "customer") {
+      where.roles = { has: "customer" };
+    }
+
+    if (filters.search) {
+      where.OR = [
+        { email: { contains: filters.search, mode: "insensitive" } },
+        { phone: { contains: filters.search, mode: "insensitive" } },
+        { firstName: { contains: filters.search, mode: "insensitive" } },
+        { lastName: { contains: filters.search, mode: "insensitive" } },
+      ];
+    }
+
     const users = await db.user.findMany({
-      where: {
-        deletedAt: null,
-      },
+      where,
       take: 100,
       orderBy: { createdAt: "desc" },
       select: {

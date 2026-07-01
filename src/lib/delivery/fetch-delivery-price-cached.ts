@@ -6,12 +6,13 @@ let deliveryPriceInflight: Promise<number> | null = null;
 let deliveryPriceInflightKey: string | null = null;
 
 type DeliveryPriceParams = {
-  city: string;
+  zone: string;
   country: string;
+  subtotalAmd: number;
 };
 
 function buildDeliveryPriceKey(params: DeliveryPriceParams): string {
-  return `${DELIVERY_PRICE_CACHE_PREFIX}${params.city}:${params.country}`;
+  return `${DELIVERY_PRICE_CACHE_PREFIX}${params.zone}:${params.country}:${params.subtotalAmd}`;
 }
 
 /**
@@ -26,7 +27,13 @@ export async function fetchDeliveryPriceCached(params: DeliveryPriceParams): Pro
 
   deliveryPriceInflightKey = key;
   deliveryPriceInflight = apiClient
-    .get<{ price: number }>('/api/v1/delivery/price', { params })
+    .get<{ price: number }>('/api/v1/delivery/price', {
+      params: {
+        zone: params.zone,
+        country: params.country,
+        subtotal: String(params.subtotalAmd),
+      },
+    })
     .then((response) => response.price)
     .finally(() => {
       deliveryPriceInflight = null;

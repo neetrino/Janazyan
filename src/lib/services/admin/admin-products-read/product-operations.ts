@@ -3,7 +3,8 @@ import { logger } from "../../../utils/logger";
 import type { ProductFilters } from "./types";
 import { buildProductWhereClause, buildProductOrderByClause } from "./query-builder";
 import { executeProductListQuery, executeProductDetailQuery } from "./query-executor";
-import { formatProductForList } from "./product-formatter";
+import { loadAdminCategoryTitleMap } from "../admin-category-title";
+import { collectProductCategoryIds, formatProductForList } from "./product-formatter";
 import { formatVariantForAdmin } from "./variant-formatter";
 
 /**
@@ -24,7 +25,10 @@ export async function getProducts(filters: ProductFilters) {
 
   const { products, total } = await executeProductListQuery(where, orderBy, skip, limit);
 
-  const data = products.map(formatProductForList);
+  const allCategoryIds = products.flatMap((product) => collectProductCategoryIds(product));
+  const categoryTitleById = await loadAdminCategoryTitleMap(allCategoryIds);
+
+  const data = products.map((product) => formatProductForList(product, categoryTitleById));
 
   const totalTime = Date.now() - startTime;
   logger.debug(`getProducts completed in ${totalTime}ms. Returning ${data.length} products`);

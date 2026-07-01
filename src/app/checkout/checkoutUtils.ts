@@ -1,4 +1,5 @@
 import { apiClient } from '../../lib/api-client';
+import { createSyntheticCartItemId } from '../../lib/cart/cart-item-id';
 import type { Cart, CartItem } from './types';
 
 const CART_KEY = 'shop_cart_guest';
@@ -52,7 +53,7 @@ export async function fetchCartForGuest(): Promise<Cart | null> {
 
         return {
           item: {
-            id: `${item.productId}-${item.variantId}-${index}`,
+            id: createSyntheticCartItemId(item.productId, item.variantId, index),
             variant: {
               id: variant._id?.toString() || variant.id,
               sku: variant.sku || '',

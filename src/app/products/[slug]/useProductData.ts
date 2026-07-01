@@ -5,7 +5,8 @@ import { use } from 'react';
 import type { LanguageCode } from '../../../lib/language';
 import { getStoredLanguage } from '../../../lib/language';
 import { apiClient } from '../../../lib/api-client';
-import { getStoredCurrency, type CurrencyCode } from '../../../lib/currency';
+import type { CurrencyCode } from '../../../lib/currency';
+import { useCurrency } from '../../../components/hooks/useCurrency';
 import type { Product } from './types';
 import { RESERVED_ROUTES, WISHLIST_KEY, COMPARE_KEY } from './constants';
 import {
@@ -34,7 +35,6 @@ interface UseProductDataReturn {
   setProduct: (product: Product | null) => void;
   setCurrentImageIndex: (index: number) => void;
   setThumbnailStartIndex: (index: number) => void;
-  setCurrency: Dispatch<SetStateAction<CurrencyCode>>;
   setLanguage: Dispatch<SetStateAction<LanguageCode>>;
   setIsInWishlist: (value: boolean) => void;
   setIsInCompare: (value: boolean) => void;
@@ -47,7 +47,7 @@ export function useProductData({
   const router = useRouter();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
-  const [currency, setCurrency] = useState(getStoredCurrency());
+  const currency = useCurrency();
   const [language, setLanguage] = useState<LanguageCode>('en');
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [isInCompare, setIsInCompare] = useState(false);
@@ -194,27 +194,14 @@ export function useProductData({
 
     fetchProduct();
 
-    const handleCurrencyUpdate = () => setCurrency(getStoredCurrency());
     const handleLanguageUpdate = () => {
       setLanguage(getStoredLanguage());
       // Refetch product when language changes to update labels
       fetchProduct();
     };
-    // Listen for currency rates updates to force re-render
-    const handleCurrencyRatesUpdate = () => {
-      // Force re-render by updating currency state
-      setCurrency(getStoredCurrency());
-    };
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
     window.addEventListener('language-updated', handleLanguageUpdate);
-    window.addEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
     return () => {
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
       window.removeEventListener('language-updated', handleLanguageUpdate);
-      window.removeEventListener(
-        'currency-rates-updated',
-        handleCurrencyRatesUpdate
-      );
     };
   }, [slug, router, fetchProduct]);
 
@@ -304,7 +291,6 @@ export function useProductData({
     setProduct,
     setCurrentImageIndex,
     setThumbnailStartIndex,
-    setCurrency,
     setLanguage,
     setIsInWishlist,
     setIsInCompare,

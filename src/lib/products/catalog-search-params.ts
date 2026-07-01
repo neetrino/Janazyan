@@ -12,8 +12,6 @@ export type ParsedCatalogParams = {
   sort: CatalogSort;
   search?: string;
   category?: string;
-  minPrice?: string;
-  maxPrice?: string;
   colors?: string;
   sizes?: string;
   brand?: string;
@@ -21,14 +19,6 @@ export type ParsedCatalogParams = {
   selectedSizes: string[];
   selectedBrands: string[];
 };
-
-export function parseOptionalPrice(value?: string): number | undefined {
-  if (!value?.trim()) {
-    return undefined;
-  }
-  const parsed = Number.parseFloat(value.trim());
-  return Number.isFinite(parsed) ? parsed : undefined;
-}
 
 export async function resolveSearchParams(
   searchParams: Promise<SearchParamsInput> | SearchParamsInput
@@ -58,8 +48,6 @@ export function parseCatalogSearchParams(params: SearchParamsInput): ParsedCatal
     sort,
     search: typeof params.search === 'string' ? params.search : undefined,
     category: typeof params.category === 'string' ? params.category : undefined,
-    minPrice: typeof params.minPrice === 'string' ? params.minPrice : undefined,
-    maxPrice: typeof params.maxPrice === 'string' ? params.maxPrice : undefined,
     colors,
     sizes,
     brand: brands,

@@ -6,10 +6,13 @@ import {
   PromoPoster,
   WhyChooseUs,
 } from '../components/home';
+import { Header } from '../components/Header';
 import {
   DesktopFeaturedAsync,
   HomeMobileFeaturedAsync,
 } from '../components/home/HomeFeaturedAsync';
+import { HEADER_SHELL_STICKY_OVERLAP_PX } from '../components/header/header-shell-shape.constants';
+import { HOME_HERO_BLEED_CLASS } from '../lib/layout/hero-frame.constants';
 import {
   STOREFRONT_ARC_SHELL_CLASS,
   STOREFRONT_CONTENT_SHELL_CLASS,
@@ -25,27 +28,35 @@ export default async function HomePage() {
   });
 
   return (
-    <div className="relative isolate overflow-hidden lg:bg-white">
+    <div className="relative isolate overflow-x-clip lg:bg-white">
       <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
 
       <div className="hidden lg:block">
-        <div className={STOREFRONT_CONTENT_SHELL_CLASS}>
-          <HomeHero />
-          <div className="relative lg:-mt-[30px]">
-            <CategoryPosters />
+        <Header embedded />
+        <div
+          className="-mt-[var(--header-sticky-overlap)]"
+          style={{ '--header-sticky-overlap': `${HEADER_SHELL_STICKY_OVERLAP_PX}px` }}
+        >
+          <div className={STOREFRONT_CONTENT_SHELL_CLASS}>
+            <div className={HOME_HERO_BLEED_CLASS}>
+              <HomeHero />
+            </div>
+            <div className="relative lg:-mt-[30px]">
+              <CategoryPosters />
+            </div>
           </div>
-        </div>
 
-        <div className="relative w-full overflow-x-hidden rounded-[70px]">
-          <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
-          <div className={STOREFRONT_ARC_SHELL_CLASS}>
-            <DesktopFeaturedAsync />
-            <PromoPoster />
-            <WhyChooseUs />
+          <div className="relative w-full overflow-x-clip rounded-[70px]">
+            <div className="absolute inset-0 -z-10 rounded-[70px] bg-pastel-arc" />
+            <div className={STOREFRONT_ARC_SHELL_CLASS}>
+              <DesktopFeaturedAsync />
+              <PromoPoster />
+              <WhyChooseUs />
+            </div>
           </div>
-        </div>
 
-        <AboutSection />
+          <AboutSection />
+        </div>
       </div>
     </div>
   );

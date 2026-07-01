@@ -125,6 +125,7 @@ export function useOrders() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [selectedOrderPreview, setSelectedOrderPreview] = useState<Order | null>(null);
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [loadingOrderDetails, setLoadingOrderDetails] = useState(false);
 
@@ -225,15 +226,19 @@ export function useOrders() {
 
 
   const handleViewOrderDetails = async (orderId: string) => {
+    setSelectedOrderPreview(orders.find((order) => order.id === orderId) ?? null);
     setSelectedOrderId(orderId);
+    setOrderDetails(null);
     setLoadingOrderDetails(true);
     try {
       const response = await apiClient.get<OrderDetails>(`/api/v1/admin/orders/${orderId}`);
       setOrderDetails(response);
-    } catch (err: any) {
-      console.error('❌ [ADMIN] Failed to load order details:', err);
-      alert(err?.message || t('admin.orders.orderDetails.failedToLoad'));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : t('admin.orders.orderDetails.failedToLoad');
+      logger.error('[ADMIN] Failed to load order details', { error: err, orderId });
+      alert(message);
       setSelectedOrderId(null);
+      setSelectedOrderPreview(null);
     } finally {
       setLoadingOrderDetails(false);
     }
@@ -241,6 +246,7 @@ export function useOrders() {
 
   const handleCloseModal = () => {
     setSelectedOrderId(null);
+    setSelectedOrderPreview(null);
     setOrderDetails(null);
   };
 
@@ -436,6 +442,7 @@ export function useOrders() {
     selectedIds,
     bulkDeleting,
     selectedOrderId,
+    selectedOrderPreview,
     orderDetails,
     loadingOrderDetails,
     // Actions

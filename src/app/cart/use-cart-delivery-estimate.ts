@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { CART_DELIVERY_ESTIMATE_CITY } from './constants';
+import { CART_DELIVERY_ESTIMATE_ZONE } from './constants';
 import { fetchDeliveryPriceCached } from '@/lib/delivery/fetch-delivery-price-cached';
 
 const DELIVERY_ESTIMATE_CACHE_KEY = 'shop_cart_delivery_estimate_amd_v1';
@@ -46,8 +46,9 @@ export function useCartDeliveryEstimate(): UseCartDeliveryEstimateResult {
       }
       try {
         const price = await fetchDeliveryPriceCached({
-          city: CART_DELIVERY_ESTIMATE_CITY,
+          zone: CART_DELIVERY_ESTIMATE_ZONE,
           country: 'Armenia',
+          subtotalAmd: 0,
         });
         if (!cancelled) {
           setDeliveryPriceAMD(price);

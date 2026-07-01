@@ -3,7 +3,6 @@ export const LANGUAGES = {
   en: { code: 'en', name: 'English', nativeName: 'English' },
   hy: { code: 'hy', name: 'Armenian', nativeName: 'Հայերեն' },
   ru: { code: 'ru', name: 'Russian', nativeName: 'Русский' },
-  ka: { code: 'ka', name: 'Georgian', nativeName: 'ქართული' },
 } as const;
 
 export type LanguageCode = keyof typeof LANGUAGES;
@@ -18,12 +17,12 @@ function parseLanguageCode(value: string | null | undefined): LanguageCode | nul
 }
 
 export function getStoredLanguage(): LanguageCode {
-  if (typeof window === 'undefined') return 'en';
+  if (typeof window === 'undefined') return 'hy';
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return parseLanguageCode(stored) ?? 'en';
+    return parseLanguageCode(stored) ?? 'hy';
   } catch {
-    return 'en';
+    return 'hy';
   }
 }
 

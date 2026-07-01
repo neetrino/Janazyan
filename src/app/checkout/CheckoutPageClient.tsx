@@ -27,6 +27,12 @@ export function CheckoutPageClient() {
     loading,
     error,
     setError,
+    promoCode,
+    onPromoCodeChange,
+    promoError,
+    promoApplying,
+    appliedPromoCode,
+    applyPromoCode,
     currency,
     logoErrors,
     setLogoErrors,
@@ -43,7 +49,10 @@ export function CheckoutPageClient() {
     setValue,
     paymentMethod,
     shippingMethod,
+    shippingCountry,
     shippingCity,
+    deliveryOptions,
+    deliveryOptionsLoading,
     paymentMethods,
     orderSummary,
     onCheckoutSubmit,
@@ -106,6 +115,10 @@ export function CheckoutPageClient() {
                 isSubmitting={isSubmitting}
                 shippingMethod={shippingMethod}
                 paymentMethod={paymentMethod}
+                shippingCountry={shippingCountry}
+                shippingCity={shippingCity}
+                deliveryOptions={deliveryOptions}
+                deliveryOptionsLoading={deliveryOptionsLoading}
                 paymentMethods={paymentMethods}
                 logoErrors={logoErrors}
                 setLogoErrors={setLogoErrors}
@@ -118,11 +131,19 @@ export function CheckoutPageClient() {
                 orderSummary={orderSummary}
                 currency={currency}
                 shippingMethod={shippingMethod}
+                shippingCountry={shippingCountry}
                 shippingCity={shippingCity}
+                deliveryOptions={deliveryOptions}
                 loadingDeliveryPrice={loadingDeliveryPrice}
                 deliveryPrice={deliveryPrice}
                 error={error}
                 isSubmitting={isSubmitting}
+                promoCode={promoCode}
+                promoError={promoError}
+                promoApplying={promoApplying}
+                appliedPromoCode={appliedPromoCode}
+                onPromoCodeChange={onPromoCodeChange}
+                onApplyPromo={applyPromoCode}
               />
             </div>
           </form>
@@ -140,7 +161,10 @@ export function CheckoutPageClient() {
               isSubmitting={isSubmitting}
               shippingMethod={shippingMethod}
               paymentMethod={paymentMethod}
+              shippingCountry={shippingCountry}
               shippingCity={shippingCity}
+              deliveryOptions={deliveryOptions}
+              deliveryOptionsLoading={deliveryOptionsLoading}
               cart={cart}
               orderSummary={orderSummary}
               currency={currency}

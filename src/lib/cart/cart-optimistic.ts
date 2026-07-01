@@ -2,6 +2,7 @@ import { CART_KEY } from '../../app/cart/constants';
 import type { Cart, CartItem } from '../../app/cart/types';
 import type { CartCacheScope } from './cart-snapshot-cache';
 import { readCartSnapshot, writeCartSnapshot } from './cart-snapshot-cache';
+import { createSyntheticCartItemId } from './cart-item-id';
 
 export interface OptimisticCartLineInput {
   productId: string;
@@ -69,7 +70,7 @@ export function applyOptimisticAddToSnapshot(
     const index = items.length;
     const unitPrice = input.price > 0 ? input.price : 0;
     items.push({
-      id: `${input.productId}-${input.variantId}-${index}`,
+      id: createSyntheticCartItemId(input.productId, input.variantId, index),
       variant: {
         id: input.variantId,
         sku: '',
@@ -121,7 +122,11 @@ export function buildGuestCartFromStorage(): Cart | null {
         const unitPrice = Number(line.price) || 0;
         const slug = line.productSlug ?? '';
         return {
-          id: `${line.productId}-${line.variantId}-${index}`,
+          id: createSyntheticCartItemId(
+            line.productId,
+            line.variantId as string,
+            index,
+          ),
           variant: {
             id: line.variantId as string,
             sku: '',

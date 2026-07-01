@@ -4,6 +4,8 @@ import { useState, useRef, ChangeEvent, useEffect } from 'react';
 import { useTranslation } from '../lib/i18n-client';
 import { ColorPaletteSelector } from './ColorPaletteSelector';
 import { logger } from "@/lib/utils/logger";
+import { R2_IMAGE_FOLDERS } from '@/lib/r2/r2-image-folders';
+import { uploadAdminImagesToR2 } from '@/lib/r2/upload-admin-images-client';
 
 interface AttributeValueEditModalProps {
   isOpen: boolean;
@@ -46,15 +48,6 @@ export function AttributeValueEditModal({
     }
   }, [value, isOpen]);
 
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise<string>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-
-
   const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
@@ -70,11 +63,17 @@ export function AttributeValueEditModal({
 
     try {
       setImageUploading(true);
-      const base64 = await fileToBase64(imageFile);
-      setImageUrl(base64);
-    } catch (error: any) {
+      const uploadedUrls = await uploadAdminImagesToR2([imageFile], R2_IMAGE_FOLDERS.attributes);
+      if (uploadedUrls.length === 0) {
+        alert(t('admin.attributes.valueModal.failedToProcessImage'));
+        return;
+      }
+      setImageUrl(uploadedUrls[0]);
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : t('admin.attributes.valueModal.failedToProcessImage');
       console.error('❌ [ADMIN] Error uploading image:', error);
-      alert(error?.message || t('admin.attributes.valueModal.failedToProcessImage'));
+      alert(message);
     } finally {
       setImageUploading(false);
       if (event.target) {

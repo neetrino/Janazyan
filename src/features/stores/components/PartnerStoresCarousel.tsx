@@ -10,7 +10,16 @@ import {
   type KeyboardEvent,
   type MouseEvent,
 } from 'react';
-import { CAROUSEL_AUTO_ROTATE_MS, CAROUSEL_FRONT_DROP_MOBILE_PX, CAROUSEL_ROTATION_MS } from '../carousel-constants';
+import {
+  CAROUSEL_AUTO_ROTATE_MS,
+  CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_MOBILE_REM,
+  CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_REM,
+  CAROUSEL_FRONT_CARD_WIDTH_MOBILE_PX,
+  CAROUSEL_FRONT_DROP_DESKTOP_PX,
+  CAROUSEL_FRONT_DROP_MOBILE_PX,
+  CAROUSEL_GLOBE_CENTER_SHIFT_UP_MOBILE_PX,
+  CAROUSEL_ROTATION_MS,
+} from '../carousel-constants';
 import {
   getCarouselItemGlobePresentation,
   getCarouselSlotAngleDeg,
@@ -18,12 +27,17 @@ import {
 } from '../carousel-layout';
 import { useCarouselLayout } from '../use-carousel-layout';
 import type { PartnerStore, StoreSelectHandler } from '../types';
+import { Globe } from '@/components/ui/globe';
+import {
+  GLOBE_CAROUSEL_SIZE_DESKTOP_PX,
+  GLOBE_CAROUSEL_SIZE_MOBILE_PX,
+  GLOBE_ROTATE_DURATION_S,
+} from '@/components/ui/globe.constants';
 import { PartnerStoreCard, PartnerStoreCardActions } from './PartnerStoreCard';
 
 type PartnerStoresCarouselProps = {
   stores: PartnerStore[];
   selectedStoreId: string | null;
-  getDirectionsLabel: string;
   viewOnMapLabel: string;
   onSelect: StoreSelectHandler;
   ariaLabel: string;
@@ -54,12 +68,16 @@ type CarouselItemStyle = CSSProperties & {
 type CarouselRootStyle = CSSProperties & {
   '--carousel-radius': string;
   '--carousel-card-width': string;
+  '--carousel-front-card-width': string;
+  '--carousel-globe-center-shift-y': string;
   '--carousel-ring-width': string;
   '--carousel-perspective': string;
   '--globe-tilt': string;
   '--carousel-scene-offset-y': string;
   '--carousel-front-z-offset': string;
   '--carousel-front-drop-y': string;
+  '--carousel-front-actions-margin-top': string;
+  '--stores-globe-rotate-duration': string;
 };
 
 /**
@@ -68,7 +86,6 @@ type CarouselRootStyle = CSSProperties & {
 export function PartnerStoresCarousel({
   stores,
   selectedStoreId,
-  getDirectionsLabel,
   viewOnMapLabel,
   onSelect,
   ariaLabel,
@@ -90,12 +107,24 @@ export function PartnerStoresCarousel({
   const carouselStyle: CarouselRootStyle = {
     '--carousel-radius': `${layout.radiusPx}px`,
     '--carousel-card-width': `${layout.cardWidthPx}px`,
+    '--carousel-front-card-width': isMobile
+      ? `${CAROUSEL_FRONT_CARD_WIDTH_MOBILE_PX}px`
+      : `${layout.cardWidthPx}px`,
+    '--carousel-globe-center-shift-y': isMobile
+      ? `-${CAROUSEL_GLOBE_CENTER_SHIFT_UP_MOBILE_PX}px`
+      : '0px',
     '--carousel-ring-width': `${layout.ringWidthPx}px`,
     '--carousel-perspective': `${layout.perspectivePx}px`,
     '--globe-tilt': `${layout.globeTiltDeg}deg`,
     '--carousel-scene-offset-y': `-${layout.sceneShiftUpPx}px`,
     '--carousel-front-z-offset': `${layout.frontFaceZOffsetPx}px`,
-    '--carousel-front-drop-y': isMobile ? `${CAROUSEL_FRONT_DROP_MOBILE_PX}px` : '0px',
+    '--carousel-front-drop-y': `${
+      isMobile ? CAROUSEL_FRONT_DROP_MOBILE_PX : CAROUSEL_FRONT_DROP_DESKTOP_PX
+    }px`,
+    '--carousel-front-actions-margin-top': `${
+      isMobile ? CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_MOBILE_REM : CAROUSEL_FRONT_ACTIONS_MARGIN_TOP_REM
+    }rem`,
+    '--stores-globe-rotate-duration': `${GLOBE_ROTATE_DURATION_S}s`,
   };
 
   useEffect(() => {
@@ -143,7 +172,7 @@ export function PartnerStoresCarousel({
 
   const selectFromCarouselCard = useCallback<StoreSelectHandler>(
     (storeId, options) => {
-      onSelect(storeId, { ...options, scrollToMap: true });
+      onSelect(storeId, options);
     },
     [onSelect],
   );
@@ -261,6 +290,11 @@ export function PartnerStoresCarousel({
     return null;
   }
 
+  const activeStore = stores[activeIndex];
+  const globeSizePx = isMobile
+    ? GLOBE_CAROUSEL_SIZE_MOBILE_PX
+    : GLOBE_CAROUSEL_SIZE_DESKTOP_PX;
+
   return (
     <div
       ref={carouselRef}
@@ -292,6 +326,9 @@ export function PartnerStoresCarousel({
                 } as CSSProperties
               }
             >
+              <div className="partner-stores-carousel-globe-center">
+                <Globe sizePx={globeSizePx} />
+              </div>
               {stores.map((store, index) => {
                 const isFrontCard = index === activeIndex;
                 const globePresentation = getCarouselItemGlobePresentation(
@@ -311,12 +348,11 @@ export function PartnerStoresCarousel({
                   <PartnerStoreCard
                     store={store}
                     isSelected={selectedStoreId === store.id}
-                    getDirectionsLabel={getDirectionsLabel}
                     viewOnMapLabel={viewOnMapLabel}
                     onSelect={selectFromCarouselCard}
                     compact
                     previewOnly={!isFrontCard}
-                    hideActions={isFrontCard}
+                    hideActions
                   />
                 );
 
@@ -334,57 +370,21 @@ export function PartnerStoresCarousel({
                     aria-hidden={!isFrontCard}
                   >
                     <div className="partner-stores-carousel-item-face">
-                      {isFrontCard ? (
-                        <div
-                          className={`partner-stores-carousel-card-stack${
-                            selectedStoreId === store.id
-                              ? ' partner-stores-carousel-card-stack--selected'
-                              : ''
-                          }`}
-                        >
-                          <div
-                            role="button"
-                            className={hitClassName}
-                            tabIndex={0}
-                            aria-label={store.name}
-                            onClick={(event) => handleCardHitClick(index, event)}
-                            onKeyDown={(event) => {
-                              if (event.key === 'Enter' || event.key === ' ') {
-                                event.preventDefault();
-                                focusStoreAtIndex(index);
-                              }
-                            }}
-                          >
-                            {card}
-                          </div>
-                          <PartnerStoreCardActions
-                            store={store}
-                            compact
-                            isSelected={selectedStoreId === store.id}
-                            viewOnMapLabel={viewOnMapLabel}
-                            getDirectionsLabel={getDirectionsLabel}
-                            onSelect={selectFromCarouselCard}
-                            previewOnly={false}
-                            className="partner-stores-carousel-card-actions"
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          role="button"
-                          className={hitClassName}
-                          tabIndex={-1}
-                          aria-label={store.name}
-                          onClick={(event) => handleCardHitClick(index, event)}
-                          onKeyDown={(event) => {
-                            if (event.key === 'Enter' || event.key === ' ') {
-                              event.preventDefault();
-                              focusStoreAtIndex(index);
-                            }
-                          }}
-                        >
-                          {card}
-                        </div>
-                      )}
+                      <div
+                        role="button"
+                        className={hitClassName}
+                        tabIndex={isFrontCard ? 0 : -1}
+                        aria-label={store.name}
+                        onClick={(event) => handleCardHitClick(index, event)}
+                        onKeyDown={(event) => {
+                          if (event.key === 'Enter' || event.key === ' ') {
+                            event.preventDefault();
+                            focusStoreAtIndex(index);
+                          }
+                        }}
+                      >
+                        {card}
+                      </div>
                     </div>
                   </div>
                 );
@@ -392,6 +392,17 @@ export function PartnerStoresCarousel({
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="partner-stores-carousel-front-actions">
+        <PartnerStoreCardActions
+          store={activeStore}
+          compact
+          isSelected={selectedStoreId === activeStore.id}
+          viewOnMapLabel={viewOnMapLabel}
+          onSelect={selectFromCarouselCard}
+          previewOnly={false}
+        />
       </div>
 
       {count > 1 ? (

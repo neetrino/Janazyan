@@ -3,9 +3,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
-import { getStoredCurrency } from '../../../lib/currency';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
+import { useCurrency } from '../../../components/hooks/useCurrency';
 import { readGuestOrderAccess } from '../../checkout/utils/guest-order-access';
 import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS } from '../../../lib/layout/account-pages-layout.constants';
@@ -26,7 +26,7 @@ export default function OrderPage() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currency, setCurrency] = useState(getStoredCurrency());
+  const currency = useCurrency();
   const orderNumber = String(params.number);
 
   const fetchOrder = useCallback(async () => {
@@ -63,16 +63,6 @@ export default function OrderPage() {
 
   useEffect(() => {
     void fetchOrder();
-
-    const handleCurrencyUpdate = () => {
-      setCurrency(getStoredCurrency());
-    };
-
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
-
-    return () => {
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
-    };
   }, [fetchOrder]);
 
   if (loading) {

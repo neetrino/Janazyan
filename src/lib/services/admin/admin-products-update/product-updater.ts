@@ -48,6 +48,7 @@ export function buildProductUpdateData(
   brandId?: string | null;
   primaryCategoryId?: string | null;
   categoryIds?: string[];
+  categories?: Prisma.ProductUpdateInput["categories"];
   media?: string[];
   published?: boolean;
   publishedAt?: Date;
@@ -57,6 +58,7 @@ export function buildProductUpdateData(
     brandId?: string | null;
     primaryCategoryId?: string | null;
     categoryIds?: string[];
+    categories?: Prisma.ProductUpdateInput["categories"];
     media?: string[];
     published?: boolean;
     publishedAt?: Date;
@@ -65,7 +67,13 @@ export function buildProductUpdateData(
   
   if (data.brandId !== undefined) updateData.brandId = data.brandId || null;
   if (data.primaryCategoryId !== undefined) updateData.primaryCategoryId = data.primaryCategoryId || null;
-  if (data.categoryIds !== undefined) updateData.categoryIds = data.categoryIds || [];
+  if (data.categoryIds !== undefined) {
+    const nextCategoryIds = data.categoryIds || [];
+    updateData.categoryIds = nextCategoryIds;
+    updateData.categories = {
+      set: nextCategoryIds.map((id) => ({ id })),
+    };
+  }
   
   if (data.media !== undefined) {
     // Separate main images from variant images and clean them

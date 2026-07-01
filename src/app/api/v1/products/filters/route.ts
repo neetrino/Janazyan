@@ -32,12 +32,6 @@ export async function GET(req: NextRequest) {
     const filters = {
       category: searchParams.get("category") || undefined,
       search: searchParams.get("search") || undefined,
-      minPrice: searchParams.get("minPrice")
-        ? parseFloat(searchParams.get("minPrice")!)
-        : undefined,
-      maxPrice: searchParams.get("maxPrice")
-        ? parseFloat(searchParams.get("maxPrice")!)
-        : undefined,
       lang: searchParams.get("lang") || "en",
     };
 

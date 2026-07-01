@@ -357,6 +357,13 @@ class AdminProductsCreateService {
             brandId: data.brandId || undefined,
             primaryCategoryId: data.primaryCategoryId || undefined,
             categoryIds: data.categoryIds || [],
+            ...(data.categoryIds && data.categoryIds.length > 0
+              ? {
+                  categories: {
+                    connect: data.categoryIds.map((id) => ({ id })),
+                  },
+                }
+              : {}),
             media: finalMedia,
             published: data.published,
             featured: data.featured ?? false,

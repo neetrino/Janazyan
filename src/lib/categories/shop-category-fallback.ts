@@ -1,6 +1,7 @@
 import type { LanguageCode } from '../language';
 import { t } from '../i18n';
 import type { CategoryTreeNode } from './category-tree';
+import { getCategoryProductsHref } from './category-products-href';
 
 type ShopFilterFallbackKey = 'face' | 'hair' | 'body' | 'kids' | 'sun';
 
@@ -27,7 +28,7 @@ export function getShopCategoryFallbackStrip(language: LanguageCode): CategoryTr
     id: def.id,
     slug: def.slug,
     title: t(language, def.labelKey),
-    fullPath: `/products?category=${def.slug}`,
+    fullPath: getCategoryProductsHref(def.slug),
     children: [],
   }));
 }

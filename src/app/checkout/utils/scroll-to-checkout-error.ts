@@ -7,6 +7,8 @@ const MOBILE_VIEWPORT_MAX_WIDTH_PX = 1023;
 
 /** Delay before focus after scroll (error message paint). */
 const CHECKOUT_ERROR_FOCUS_DELAY_MS = 80;
+/** Second pass after validation UI paints (stabilizes mobile behavior). */
+const CHECKOUT_ERROR_SCROLL_SECOND_PASS_DELAY_MS = 120;
 
 /** Clearance below mobile top bar when scrolling to a field. */
 const MOBILE_CHECKOUT_SCROLL_TOP_OFFSET_PX = 96;
@@ -137,6 +139,11 @@ export function scrollToFirstCheckoutError(
 
   if (immediate) {
     performCheckoutErrorScroll(validationErrors, true);
+    window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        performCheckoutErrorScroll(validationErrors, false);
+      });
+    }, CHECKOUT_ERROR_SCROLL_SECOND_PASS_DELAY_MS);
     return;
   }
 

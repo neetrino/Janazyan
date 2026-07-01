@@ -34,12 +34,6 @@ export async function GET(req: NextRequest) {
       search: searchParams.get("search") || undefined,
       ids,
       filter: searchParams.get("filter") || searchParams.get("filters") || undefined,
-      minPrice: searchParams.get("minPrice")
-        ? parseFloat(searchParams.get("minPrice")!)
-        : undefined,
-      maxPrice: searchParams.get("maxPrice")
-        ? parseFloat(searchParams.get("maxPrice")!)
-        : undefined,
       colors: searchParams.get("colors") || undefined,
       sizes: searchParams.get("sizes") || undefined,
       brand: searchParams.get("brand") || undefined,

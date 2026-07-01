@@ -24,11 +24,11 @@ const RelatedProducts = dynamic(
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-10 h-9 w-64 animate-pulse rounded-lg bg-gray-200" />
         </div>
-        <div className="grid w-full grid-cols-1 justify-items-center gap-10 px-4 sm:grid-cols-2 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
+        <div className="grid w-full grid-cols-2 justify-items-center gap-x-1 gap-y-10 px-4 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-[347px] w-[283px] max-w-full animate-pulse rounded-lg bg-gray-200"
+              className="h-[238px] w-[164px] max-w-full animate-pulse rounded-lg bg-gray-200 sm:h-[347px] sm:w-[283px]"
             />
           ))}
         </div>

@@ -31,6 +31,46 @@ function validateItemTranslations(translations: FaqItemTranslationInput[]): void
   }
 }
 
+const DEFAULT_FAQ_CATEGORY_SLUG = 'general';
+
+async function getOrCreateDefaultFaqCategory(): Promise<{ id: string }> {
+  const existing = await db.faqCategory.findFirst({
+    where: { slug: DEFAULT_FAQ_CATEGORY_SLUG, deletedAt: null },
+    select: { id: true },
+  });
+  if (existing) {
+    return existing;
+  }
+
+  const softDeleted = await db.faqCategory.findFirst({
+    where: { slug: DEFAULT_FAQ_CATEGORY_SLUG, deletedAt: { not: null } },
+    select: { id: true },
+  });
+  if (softDeleted) {
+    await db.faqCategory.update({
+      where: { id: softDeleted.id },
+      data: { deletedAt: null, published: true },
+    });
+    return softDeleted;
+  }
+
+  return db.faqCategory.create({
+    data: {
+      slug: DEFAULT_FAQ_CATEGORY_SLUG,
+      position: 0,
+      published: true,
+      translations: {
+        create: [
+          { locale: 'en', title: 'FAQ' },
+          { locale: 'hy', title: 'Հաճախ տրվող հարցեր' },
+          { locale: 'ru', title: 'Часто задаваемые вопросы' },
+        ],
+      },
+    },
+    select: { id: true },
+  });
+}
+
 async function generateUniqueCategorySlug(baseName: string, excludeId?: string): Promise<string> {
   const baseSlug = toSlug(baseName) || 'faq-category';
   let slug = baseSlug;
@@ -246,28 +286,34 @@ class AdminFaqService {
   }
 
   async createFaqItem(data: {
-    categoryId: string;
+    categoryId?: string;
     translations: FaqItemTranslationInput[];
     position?: number;
     published?: boolean;
   }) {
     validateItemTranslations(data.translations);
 
-    const category = await db.faqCategory.findFirst({
-      where: { id: data.categoryId, deletedAt: null },
-    });
-    if (!category) {
-      throw {
-        status: 400,
-        type: 'https://api.shop.am/problems/validation-error',
-        title: 'Validation Error',
-        detail: 'FAQ category not found',
-      };
+    let categoryId = data.categoryId;
+    if (categoryId) {
+      const category = await db.faqCategory.findFirst({
+        where: { id: categoryId, deletedAt: null },
+      });
+      if (!category) {
+        throw {
+          status: 400,
+          type: 'https://api.shop.am/problems/validation-error',
+          title: 'Validation Error',
+          detail: 'FAQ category not found',
+        };
+      }
+    } else {
+      const defaultCategory = await getOrCreateDefaultFaqCategory();
+      categoryId = defaultCategory.id;
     }
 
     const item = await db.faqItem.create({
       data: {
-        categoryId: data.categoryId,
+        categoryId,
         position: data.position ?? 0,
         published: data.published ?? false,
         translations: {

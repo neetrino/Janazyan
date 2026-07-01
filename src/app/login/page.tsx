@@ -83,6 +83,7 @@ function LoginPageContent() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Login"
+      compactHero
       mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
       mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalog={
@@ -188,6 +189,7 @@ export default function LoginPage() {
       fallback={
         <ProductsHeroShell
           sectionAriaLabel="Login"
+          compactHero
           mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
           mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
           catalog={

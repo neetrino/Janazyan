@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import {
   PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
   PRODUCTS_PAGE_CATALOG_SURFACE_CLASS,
@@ -15,6 +15,7 @@ import {
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
+import { HEADER_SHELL_STICKY_OVERLAP_PX } from '../header/header-shell-shape.constants';
 import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
 import { STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
@@ -54,13 +55,16 @@ function ProductsHeroShellInner({
 
   return (
     <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
-      <div className="relative shrink-0 overflow-hidden">
+      <Header embedded />
+      <div
+        className="relative shrink-0 overflow-hidden lg:-mt-[var(--header-sticky-overlap)]"
+        style={{ '--header-sticky-overlap': `${HEADER_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
+      >
         <div
           className={`absolute inset-x-0 w-full ${PRODUCTS_PAGE_HERO_ASPECT_CLASS} ${PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS}`}
         >
           <HeroRectangleBackground variant="blue" fill solidColor="#C9DDF0" />
         </div>
-        <Header embedded />
         <div
           className={`relative z-20 pb-2 lg:pb-4 ${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${heroToolbarOffsetClass}`}
         >

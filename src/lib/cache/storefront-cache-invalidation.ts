@@ -28,12 +28,9 @@ export async function invalidateStorefrontCategoryCaches(): Promise<void> {
   ]);
 }
 
-/** Filters / price aggregates derived from product rows. */
+/** Filters derived from product rows. */
 export async function invalidateStorefrontProductFilterCaches(): Promise<void> {
-  await Promise.all([
-    cacheService.deletePattern('products:filters:*'),
-    cacheService.deletePattern('products:price-range:*'),
-  ]);
+  await cacheService.deletePattern('products:filters:*');
 }
 
 export async function invalidateCurrencyRatesCache(): Promise<void> {

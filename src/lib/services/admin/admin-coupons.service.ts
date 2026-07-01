@@ -11,6 +11,22 @@ type AdminHttpError = {
   detail: string;
 };
 
+type PromoRowWithUsers = {
+  id: string;
+  code: string;
+  description: string | null;
+  discountType: string;
+  discountValue: number;
+  minSubtotal: number | null;
+  maxDiscountAmount: number | null;
+  usageLimit: number | null;
+  usedCount: number;
+  active: boolean;
+  validFrom: Date | null;
+  validUntil: Date | null;
+  allowedUsers: { userId: string }[];
+};
+
 function badRequest(detail: string): AdminHttpError {
   return {
     status: 400,
@@ -24,20 +40,7 @@ function normalizeCode(raw: string): string {
   return raw.trim().toUpperCase();
 }
 
-function mapRow(r: {
-  id: string;
-  code: string;
-  description: string | null;
-  discountType: string;
-  discountValue: number;
-  minSubtotal: number | null;
-  maxDiscountAmount: number | null;
-  usageLimit: number | null;
-  usedCount: number;
-  active: boolean;
-  validFrom: Date | null;
-  validUntil: Date | null;
-}): PromoCodeAdminRow {
+function mapRow(r: PromoRowWithUsers): PromoCodeAdminRow {
   const discountType: PromoDiscountType = isPromoDiscountType(r.discountType)
     ? r.discountType
     : "fixed";
@@ -54,6 +57,7 @@ function mapRow(r: {
     active: r.active,
     validFrom: r.validFrom ? r.validFrom.toISOString() : null,
     validUntil: r.validUntil ? r.validUntil.toISOString() : null,
+    allowedUserIds: r.allowedUsers.map((entry) => entry.userId),
   };
 }
 
@@ -68,11 +72,47 @@ function parseOptionalDate(value: string | null | undefined): Date | null {
   return d;
 }
 
+async function validateAllowedUserIds(userIds: string[]): Promise<string[]> {
+  const uniqueIds = [...new Set(userIds.filter(Boolean))];
+  if (uniqueIds.length === 0) {
+    return [];
+  }
+
+  const existing = await db.user.findMany({
+    where: { id: { in: uniqueIds }, deletedAt: null },
+    select: { id: true },
+  });
+  const existingIds = new Set(existing.map((user) => user.id));
+  const invalid = uniqueIds.find((id) => !existingIds.has(id));
+  if (invalid) {
+    throw badRequest(`Unknown user id: ${invalid}`);
+  }
+  return uniqueIds;
+}
+
+async function syncAllowedUsers(
+  tx: Prisma.TransactionClient,
+  promoCodeId: string,
+  userIds: string[],
+): Promise<void> {
+  await tx.promoCodeUser.deleteMany({ where: { promoCodeId } });
+  if (userIds.length === 0) {
+    return;
+  }
+  await tx.promoCodeUser.createMany({
+    data: userIds.map((userId) => ({ promoCodeId, userId })),
+    skipDuplicates: true,
+  });
+}
+
 class AdminCouponsService {
   async getPromoCodes(): Promise<{ data: PromoCodeAdminRow[] }> {
     const rows = await db.promoCode.findMany({
       where: { deletedAt: null },
       orderBy: { createdAt: "desc" },
+      include: {
+        allowedUsers: { select: { userId: true } },
+      },
     });
     return { data: rows.map(mapRow) };
   }
@@ -94,20 +134,29 @@ class AdminCouponsService {
       throw badRequest("End date must be on or after start date");
     }
 
+    const allowedUserIds = await validateAllowedUserIds(d.allowedUserIds ?? []);
+
     try {
-      const row = await db.promoCode.create({
-        data: {
-          code,
-          description: d.description ?? null,
-          discountType: d.discountType,
-          discountValue: d.discountValue,
-          minSubtotal: d.minSubtotal ?? null,
-          maxDiscountAmount: d.maxDiscountAmount ?? null,
-          usageLimit: d.usageLimit ?? null,
-          active: d.active ?? true,
-          validFrom,
-          validUntil,
-        },
+      const row = await db.$transaction(async (tx) => {
+        const created = await tx.promoCode.create({
+          data: {
+            code,
+            description: d.description ?? null,
+            discountType: d.discountType,
+            discountValue: d.discountValue,
+            minSubtotal: d.minSubtotal ?? null,
+            maxDiscountAmount: d.maxDiscountAmount ?? null,
+            usageLimit: d.usageLimit ?? null,
+            active: d.active ?? true,
+            validFrom,
+            validUntil,
+          },
+        });
+        await syncAllowedUsers(tx, created.id, allowedUserIds);
+        return tx.promoCode.findUniqueOrThrow({
+          where: { id: created.id },
+          include: { allowedUsers: { select: { userId: true } } },
+        });
       });
       return { data: mapRow(row) };
     } catch (e) {
@@ -158,21 +207,30 @@ class AdminCouponsService {
       throw badRequest("Usage limit cannot be less than times already used");
     }
 
+    const allowedUserIds = await validateAllowedUserIds(d.allowedUserIds ?? []);
+
     try {
-      const row = await db.promoCode.update({
-        where: { id },
-        data: {
-          code,
-          description: d.description ?? null,
-          discountType: d.discountType,
-          discountValue: d.discountValue,
-          minSubtotal: d.minSubtotal ?? null,
-          maxDiscountAmount: d.maxDiscountAmount ?? null,
-          usageLimit: nextLimit,
-          active: d.active ?? true,
-          validFrom,
-          validUntil,
-        },
+      const row = await db.$transaction(async (tx) => {
+        await tx.promoCode.update({
+          where: { id },
+          data: {
+            code,
+            description: d.description ?? null,
+            discountType: d.discountType,
+            discountValue: d.discountValue,
+            minSubtotal: d.minSubtotal ?? null,
+            maxDiscountAmount: d.maxDiscountAmount ?? null,
+            usageLimit: nextLimit,
+            active: d.active ?? true,
+            validFrom,
+            validUntil,
+          },
+        });
+        await syncAllowedUsers(tx, id, allowedUserIds);
+        return tx.promoCode.findUniqueOrThrow({
+          where: { id },
+          include: { allowedUsers: { select: { userId: true } } },
+        });
       });
       return { data: mapRow(row) };
     } catch (e) {

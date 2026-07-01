@@ -3,7 +3,6 @@
 import { useCallback, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Header } from '../Header';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
@@ -14,6 +13,7 @@ import {
 } from './hero-typography.constants';
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS } from '../../lib/layout/hero-frame.constants';
 
 type HeroDraggableShellProps = {
   slideId: string;
@@ -81,7 +81,7 @@ function HeroProductImages({
             ? 'animate-hero-body-wash-showcase'
             : ''
         }
-        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[51.3%] lg:right-auto lg:z-20 ${
+        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[48.34%] lg:right-auto lg:top-[-40px] lg:z-20 lg:aspect-auto lg:h-[950px] lg:w-[51.44%] ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
         dragHandlers={getDragHandlers(bodyWashSlide.id)}
@@ -200,7 +200,7 @@ export function HomeHero() {
       aria-label={t('home.hero.ariaSection')}
       className="relative w-full pt-3 md:pt-5"
     >
-      <div className="relative w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative w-full overflow-x-clip rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:overflow-visible lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (
           <HeroRectangleBackground
             key={slide.id}
@@ -208,8 +208,6 @@ export function HomeHero() {
             className={index === slideIndex ? 'opacity-100' : 'opacity-0'}
           />
         ))}
-
-        <Header embedded />
 
         <HeroProductImages
           activeSlideIndex={slideIndex}
@@ -266,7 +264,7 @@ export function HomeHero() {
         </div>
 
         <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
-          <div className="pointer-events-auto absolute left-[43px] top-[255px] max-w-[min(760px,52%)]">
+          <div className={`pointer-events-auto absolute top-[285px] max-w-[min(760px,52%)] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS}`}>
             <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
               {heroTitle}
             </h1>

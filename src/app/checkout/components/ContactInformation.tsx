@@ -25,6 +25,7 @@ export function ContactInformation({
         <Input
           label={t('checkout.form.email')}
           type="email"
+          className="rounded-xl"
           {...register('email')}
           error={errors.email?.message}
           disabled={isSubmitting}
@@ -35,6 +36,7 @@ export function ContactInformation({
           label={t('checkout.form.phone')}
           type="tel"
           placeholder={t('checkout.placeholders.phone')}
+          className="rounded-xl"
           {...register('phone')}
           error={errors.phone?.message}
           disabled={isSubmitting}

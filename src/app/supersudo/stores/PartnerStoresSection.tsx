@@ -12,7 +12,6 @@ import { Button, Input } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { ApiError } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
-import { PARTNER_STORE_LOCALES } from '../../../features/stores/partner-store-locales';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import {
@@ -21,6 +20,7 @@ import {
   invalidateAdminListCache,
 } from '@/lib/admin/admin-list-client-cache';
 import { createEmptyFormData, formDataFromStore, parseFormPayload } from './form-utils';
+import { PartnerStoreDrawer } from './PartnerStoreDrawer';
 import type { AdminPartnerStore, PartnerStoreFormData } from './types';
 
 function fileToBase64(file: File): Promise<string> {
@@ -37,15 +37,14 @@ export function PartnerStoresSection() {
   const { confirm: confirmDialog } = useAdminDialogs();
   const [stores, setStores] = useState<AdminPartnerStore[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
+  const [showDrawer, setShowDrawer] = useState(false);
   const [editingStore, setEditingStore] = useState<AdminPartnerStore | null>(null);
   const [formData, setFormData] = useState<PartnerStoreFormData>(createEmptyFormData);
-  const [activeLocale, setActiveLocale] = useState(PARTNER_STORE_LOCALES[0]);
   const [submitting, setSubmitting] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  useBodyScrollLock(showModal);
+  useBodyScrollLock(showDrawer);
 
   const fetchStores = useCallback(async () => {
     try {
@@ -81,35 +80,20 @@ export function PartnerStoresSection() {
     );
   }, [stores, searchQuery]);
 
-  const activeTranslationIndex = formData.translations.findIndex(
-    (tr) => tr.locale === activeLocale,
-  );
-
-  const updateActiveTranslation = (field: 'name' | 'address' | 'logoAlt', value: string) => {
-    setFormData((current) => ({
-      ...current,
-      translations: current.translations.map((tr, index) =>
-        index === activeTranslationIndex ? { ...tr, [field]: value } : tr,
-      ),
-    }));
-  };
-
   const handleOpenAdd = () => {
     setEditingStore(null);
     setFormData(createEmptyFormData());
-    setActiveLocale('en');
-    setShowModal(true);
+    setShowDrawer(true);
   };
 
   const handleOpenEdit = (store: AdminPartnerStore) => {
     setEditingStore(store);
     setFormData(formDataFromStore(store));
-    setActiveLocale('en');
-    setShowModal(true);
+    setShowDrawer(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseDrawer = () => {
+    setShowDrawer(false);
     setEditingStore(null);
     setFormData(createEmptyFormData());
   };
@@ -187,7 +171,7 @@ export function PartnerStoresSection() {
       }
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
       await fetchStores();
-      handleCloseModal();
+      handleCloseDrawer();
     } catch (err: unknown) {
       console.error('Error saving partner store:', err);
       alert(t('admin.partnerStores.errorSaving'));
@@ -248,9 +232,7 @@ export function PartnerStoresSection() {
                 <div className="min-w-0">
                   <p className="font-medium text-gray-900">{store.name}</p>
                   <p className="text-sm text-gray-600">{store.address}</p>
-                  <p className="text-xs text-gray-400">
-                    {store.lat.toFixed(4)}, {store.lng.toFixed(4)} · #{store.position}
-                  </p>
+                  <p className="text-xs text-gray-400">#{store.position}</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -275,176 +257,18 @@ export function PartnerStoresSection() {
         </div>
       )}
 
-      {showModal ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-900">
-              {editingStore
-                ? t('admin.partnerStores.editStore')
-                : t('admin.partnerStores.addNewStore')}
-            </h3>
-            <form className="mt-4 space-y-4" onSubmit={(e) => void handleSubmit(e)}>
-              <div className="flex flex-wrap gap-2">
-                {PARTNER_STORE_LOCALES.map((locale) => (
-                  <button
-                    key={locale}
-                    type="button"
-                    className={`rounded-lg px-3 py-1 text-sm ${
-                      activeLocale === locale
-                        ? 'bg-gray-900 text-white'
-                        : 'bg-gray-100 text-gray-700'
-                    }`}
-                    onClick={() => setActiveLocale(locale)}
-                  >
-                    {locale.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-
-              {activeTranslationIndex >= 0 ? (
-                <>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.partnerStores.name')}
-                      {activeLocale === 'en' ? ' *' : ''}
-                    </label>
-                    <Input
-                      value={formData.translations[activeTranslationIndex].name}
-                      onChange={(e) => updateActiveTranslation('name', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.partnerStores.address')}
-                      {activeLocale === 'en' ? ' *' : ''}
-                    </label>
-                    <Input
-                      value={formData.translations[activeTranslationIndex].address}
-                      onChange={(e) => updateActiveTranslation('address', e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium text-gray-700">
-                      {t('admin.partnerStores.logoAlt')}
-                    </label>
-                    <Input
-                      value={formData.translations[activeTranslationIndex].logoAlt ?? ''}
-                      onChange={(e) => updateActiveTranslation('logoAlt', e.target.value)}
-                    />
-                  </div>
-                </>
-              ) : null}
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.partnerStores.latitude')}
-                  </label>
-                  <Input
-                    type="number"
-                    step="any"
-                    value={formData.lat}
-                    onChange={(e) => setFormData((c) => ({ ...c, lat: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.partnerStores.longitude')}
-                  </label>
-                  <Input
-                    type="number"
-                    step="any"
-                    value={formData.lng}
-                    onChange={(e) => setFormData((c) => ({ ...c, lng: e.target.value }))}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.partnerStores.position')}
-                  </label>
-                  <Input
-                    type="number"
-                    value={formData.position}
-                    onChange={(e) => setFormData((c) => ({ ...c, position: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    {t('admin.partnerStores.status')}
-                  </label>
-                  <select
-                    value={formData.published}
-                    onChange={(e) =>
-                      setFormData((c) => ({
-                        ...c,
-                        published: e.target.value as PartnerStoreFormData['published'],
-                      }))
-                    }
-                    className="w-full rounded-xl border border-gray-300 px-3 py-2"
-                  >
-                    <option value="published">{t('admin.partnerStores.published')}</option>
-                    <option value="draft">{t('admin.partnerStores.draft')}</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-sm font-medium text-gray-700">
-                  {t('admin.partnerStores.logo')}
-                </label>
-                {formData.logoUrl ? (
-                  <div className="relative mb-2 inline-block">
-                    <img
-                      src={formData.logoUrl}
-                      alt=""
-                      className="h-12 w-28 object-contain"
-                    />
-                    <button
-                      type="button"
-                      className="absolute -right-2 -top-2 rounded-full bg-red-600 px-1.5 text-xs text-white"
-                      onClick={() => setFormData((c) => ({ ...c, logoUrl: '' }))}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ) : null}
-                <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm">
-                  {imageUploading
-                    ? t('admin.partnerStores.uploadingLogo')
-                    : t('admin.partnerStores.uploadLogo')}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    disabled={imageUploading}
-                    onChange={(e) => void handleLogoUpload(e)}
-                  />
-                </label>
-                <p className="mt-2 text-xs text-gray-500">{t('admin.partnerStores.logoUrlHint')}</p>
-                <Input
-                  type="text"
-                  value={formData.logoUrl}
-                  onChange={(e) => setFormData((c) => ({ ...c, logoUrl: e.target.value }))}
-                  placeholder="/stores/logos/sas.svg"
-                  className="mt-1"
-                />
-              </div>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <Button type="button" variant="outline" onClick={handleCloseModal}>
-                  {t('admin.partnerStores.cancel')}
-                </Button>
-                <Button type="submit" variant="primary" disabled={submitting || imageUploading}>
-                  {submitting ? t('admin.partnerStores.saving') : t('admin.partnerStores.save')}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+      <PartnerStoreDrawer
+        open={showDrawer}
+        editingStore={editingStore}
+        formData={formData}
+        submitting={submitting}
+        imageUploading={imageUploading}
+        onClose={handleCloseDrawer}
+        onSubmit={(event) => void handleSubmit(event)}
+        onFormChange={setFormData}
+        onLogoUpload={(event) => void handleLogoUpload(event)}
+        onRemoveLogo={() => setFormData((current) => ({ ...current, logoUrl: '' }))}
+      />
     </>
   );
 }

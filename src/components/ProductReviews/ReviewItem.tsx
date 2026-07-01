@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@shop/ui';
+import { STOREFRONT_GLASS_ACTION_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import { formatDate, type Review } from './utils';
 
 interface ReviewItemProps {
@@ -45,15 +45,13 @@ export function ReviewItem({ review, currentUserId, onEdit }: ReviewItemProps) {
           </div>
         </div>
         {isOwnReview && (
-          <Button
+          <button
             type="button"
-            variant="outline"
-            size="sm"
             onClick={() => onEdit(review)}
-            className="ml-4"
+            className={`ml-4 shrink-0 ${STOREFRONT_GLASS_ACTION_BUTTON_CLASS}`}
           >
             Edit
-          </Button>
+          </button>
         )}
       </div>
       <p className="text-gray-700 whitespace-pre-wrap">{review.comment}</p>

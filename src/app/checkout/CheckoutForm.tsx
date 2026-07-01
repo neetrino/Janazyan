@@ -4,6 +4,7 @@ import { Input } from '@shop/ui';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { DeliveryAddressFields } from './components/DeliveryAddressFields';
 import {
   CHECKOUT_GLASS_ERROR_CLASS,
   CHECKOUT_GLASS_INNER_CLASS,
@@ -13,6 +14,7 @@ import {
 } from './checkout-glass-styles';
 import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from './checkout-layout.constants';
 import { CheckoutFormData } from './types';
+import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 
 const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
@@ -23,6 +25,10 @@ interface CheckoutFormProps {
   isSubmitting: boolean;
   shippingMethod: 'pickup' | 'delivery';
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
+  shippingCountry?: string;
+  shippingCity?: string;
+  deliveryOptions: DeliveryOptionsPublic | null;
+  deliveryOptionsLoading: boolean;
   paymentMethods: Array<{
     id: 'idram' | 'arca' | 'cash_on_delivery';
     name: string;
@@ -48,6 +54,10 @@ export function CheckoutForm({
   isSubmitting,
   shippingMethod,
   paymentMethod,
+  shippingCountry,
+  shippingCity,
+  deliveryOptions,
+  deliveryOptionsLoading,
   paymentMethods,
   logoErrors,
   setLogoErrors,
@@ -69,6 +79,7 @@ export function CheckoutForm({
               <Input
                 label={t('checkout.form.firstName')}
                 type="text"
+                className="rounded-xl"
                 {...register('firstName')}
                 error={errors.firstName?.message}
                 disabled={isSubmitting}
@@ -78,6 +89,7 @@ export function CheckoutForm({
               <Input
                 label={t('checkout.form.lastName')}
                 type="text"
+                className="rounded-xl"
                 {...register('lastName')}
                 error={errors.lastName?.message}
                 disabled={isSubmitting}
@@ -89,6 +101,7 @@ export function CheckoutForm({
               <Input
                 label={t('checkout.form.email')}
                 type="email"
+                className="rounded-xl"
                 {...register('email')}
                 error={errors.email?.message}
                 disabled={isSubmitting}
@@ -99,6 +112,7 @@ export function CheckoutForm({
                 label={t('checkout.form.phone')}
                 type="tel"
                 placeholder={t('checkout.placeholders.phone')}
+                className="rounded-xl"
                 {...register('phone')}
                 error={errors.phone?.message}
                 disabled={isSubmitting}
@@ -159,49 +173,43 @@ export function CheckoutForm({
           data-shipping-section
         >
           <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
-          {(error && error.includes('shipping address')) || (errors.shippingAddress || errors.shippingCity) ? (
+          {(error && error.includes('shipping address')) ||
+          errors.shippingAddress ||
+          errors.shippingCountry ||
+          errors.shippingCity ||
+          errors.shippingRecipientName ||
+          errors.shippingPostalIndex ||
+          errors.shippingAdditionalNotes ? (
             <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
               <p className="text-sm text-red-600">
                 {error && error.includes('shipping address')
                   ? error
-                  : (errors.shippingAddress?.message || errors.shippingCity?.message)}
+                  : (
+                    errors.shippingAddress?.message ||
+                    errors.shippingCountry?.message ||
+                    errors.shippingCity?.message ||
+                    errors.shippingRecipientName?.message ||
+                    errors.shippingPostalIndex?.message ||
+                    errors.shippingAdditionalNotes?.message
+                  )}
               </p>
             </div>
           ) : null}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingCity">
-              <Input
-                label={t('checkout.form.city')}
-                type="text"
-                placeholder={t('checkout.placeholders.city')}
-                {...register('shippingCity', {
-                  onChange: () => {
-                    if (error && error.includes('shipping address')) {
-                      setError(null);
-                    }
-                  },
-                })}
-                error={errors.shippingCity?.message}
-                disabled={isSubmitting}
-              />
-            </div>
-            <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingAddress">
-              <Input
-                label={t('checkout.form.address')}
-                type="text"
-                placeholder={t('checkout.placeholders.address')}
-                {...register('shippingAddress', {
-                  onChange: () => {
-                    if (error && error.includes('shipping address')) {
-                      setError(null);
-                    }
-                  },
-                })}
-                error={errors.shippingAddress?.message}
-                disabled={isSubmitting}
-              />
-            </div>
-          </div>
+          <DeliveryAddressFields
+            register={register}
+            setValue={setValue}
+            errors={errors}
+            isSubmitting={isSubmitting}
+            shippingCountry={shippingCountry}
+            shippingCity={shippingCity}
+            options={deliveryOptions}
+            optionsLoading={deliveryOptionsLoading}
+            onClearError={() => {
+              if (error && error.includes('shipping address')) {
+                setError(null);
+              }
+            }}
+          />
         </CheckoutGlassCard>
       )}
 

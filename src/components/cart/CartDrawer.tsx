@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { handleRemoveItem, handleUpdateQuantity } from '../../app/cart/cart-handlers';
 import type { Cart } from '../../app/cart/types';
+import { parseCartUpdatedDetail } from '../../lib/cart/cart-events';
 import { hydrateCartFromLocal } from '../../lib/cart/cart-hydrate';
 import {
   clearCartSnapshotMemory,
@@ -12,8 +13,6 @@ import {
   resolveCartCacheScope,
 } from '../../lib/cart/cart-snapshot-cache';
 import { revalidateCartIfStale } from '../../lib/cart/cart-revalidate';
-import { getStoredCurrency } from '../../lib/currency';
-import type { CurrencyCode } from '../../lib/currency';
 import {
   CART_DRAWER_CLOSE_EVENT,
   CART_DRAWER_OPEN_EVENT,
@@ -22,23 +21,12 @@ import {
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
+import { useCurrency } from '../hooks/useCurrency';
 import { CartDrawerItemRow } from './CartDrawerItemRow';
 import { CartDrawerFooter } from './CartDrawerFooter';
 
 const CART_DRAWER_MAX_WIDTH_PX = 420;
 const CART_DRAWER_Z_INDEX = 80;
-
-type CartUpdatedDetail = {
-  skipRevalidate?: boolean;
-  fromSync?: boolean;
-};
-
-function parseCartUpdatedDetail(event: Event): CartUpdatedDetail | null {
-  if (!(event instanceof CustomEvent) || !event.detail) {
-    return null;
-  }
-  return event.detail as CartUpdatedDetail;
-}
 
 /**
  * Right-side cart drawer — stays mounted; opens from cache without blocking on API.
@@ -49,9 +37,8 @@ export function CartDrawer() {
   const [open, setOpen] = useState(false);
   const [slideIn, setSlideIn] = useState(false);
   const [cart, setCart] = useState<Cart | null>(null);
-  const [currency, setCurrency] = useState<CurrencyCode>(getStoredCurrency());
+  const currency = useCurrency();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
-  const isLocalUpdateRef = useRef(false);
   const hasLoadedOnceRef = useRef(false);
 
   const syncFromLocal = useCallback(() => {
@@ -137,14 +124,16 @@ export function CartDrawer() {
 
   useEffect(() => {
     const handleCartUpdate = (event: Event) => {
-      if (isLocalUpdateRef.current) {
-        isLocalUpdateRef.current = false;
-        return;
-      }
-
       const detail = parseCartUpdatedDetail(event);
       const scope = resolveCartCacheScope(isLoggedIn, user?.id);
       const snapshot = scope ? readCartSnapshot(scope) : null;
+
+      if (detail?.fromMutation) {
+        if (snapshot) {
+          setCart(snapshot);
+        }
+        return;
+      }
 
       if (snapshot) {
         setCart(snapshot);
@@ -154,17 +143,13 @@ export function CartDrawer() {
         setCart(null);
       }
 
-      if (detail?.skipRevalidate) {
+      if (detail?.skipRevalidate || detail?.fromSync || detail?.fromMutation) {
         return;
       }
 
       if (open) {
         revalidateCartIfStale(isLoggedIn, user?.id ?? null, t);
       }
-    };
-
-    const handleCurrencyUpdate = () => {
-      setCurrency(getStoredCurrency());
     };
 
     const handleAuthUpdate = () => {
@@ -175,12 +160,10 @@ export function CartDrawer() {
     };
 
     window.addEventListener('cart-updated', handleCartUpdate);
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
     window.addEventListener('auth-updated', handleAuthUpdate);
 
     return () => {
       window.removeEventListener('cart-updated', handleCartUpdate);
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
       window.removeEventListener('auth-updated', handleAuthUpdate);
     };
   }, [open, isLoggedIn, user?.id, syncFromLocal, backgroundSync, t]);
@@ -218,7 +201,6 @@ export function CartDrawer() {
     if (!cart) {
       return;
     }
-    isLocalUpdateRef.current = true;
     await handleRemoveItem(
       itemId,
       cart,
@@ -226,11 +208,11 @@ export function CartDrawer() {
       setCart,
       reloadAfterError,
       user?.id,
+      t,
     );
   };
 
   const onUpdateQuantity = async (itemId: string, quantity: number) => {
-    isLocalUpdateRef.current = true;
     await handleUpdateQuantity(
       itemId,
       quantity,
