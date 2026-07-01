@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from '../lib/i18n-client';
-import { formatPrice, getStoredCurrency } from '../lib/currency';
+import { formatPrice } from '../lib/currency';
 import type { InstantSearchResultItem } from './hooks/useInstantSearch';
+import { useCurrency } from './hooks/useCurrency';
 
 export interface SearchDropdownProps {
   results: InstantSearchResultItem[];
@@ -32,7 +33,7 @@ export function SearchDropdown({
   className = '',
 }: SearchDropdownProps) {
   const { t } = useTranslation();
-  const currency = getStoredCurrency();
+  const currency = useCurrency();
 
   if (!isOpen) {
     return null;

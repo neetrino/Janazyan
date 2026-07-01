@@ -6,10 +6,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Button } from '@shop/ui';
 import { apiClient } from '../../lib/api-client';
-import { getStoredCurrency } from '../../lib/currency';
 import { getStoredLanguage } from '../../lib/language';
 import { useTranslation } from '../../lib/i18n-client';
 import { useAuth } from '../../lib/auth/AuthContext';
+import { useCurrency } from '../../components/hooks/useCurrency';
 import { CompareProductsTable, type CompareProduct } from './CompareProductsTable';
 
 interface CompareSection {
@@ -71,7 +71,7 @@ export default function ComparePage() {
   const [products, setProducts] = useState<CompareProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [compareIds, setCompareIds] = useState<string[]>([]);
-  const [currency, setCurrency] = useState(getStoredCurrency());
+  const currency = useCurrency();
   const [addingToCart, setAddingToCart] = useState<Set<string>>(new Set());
   // Track if we updated locally to prevent unnecessary re-fetch
   const isLocalUpdateRef = useRef(false);
@@ -153,12 +153,8 @@ export default function ComparePage() {
     };
   }, [fetchCompareProducts]);
 
-  // Listen for currency and language updates
+  // Listen for language updates
   useEffect(() => {
-    const handleCurrencyUpdate = () => {
-      setCurrency(getStoredCurrency());
-    };
-
     const handleLanguageUpdate = () => {
       // Reload products with new language preference
       // Get current IDs from localStorage to avoid dependency on state
@@ -166,10 +162,8 @@ export default function ComparePage() {
       fetchCompareProducts(currentIds);
     };
 
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
     window.addEventListener('language-updated', handleLanguageUpdate);
     return () => {
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
       window.removeEventListener('language-updated', handleLanguageUpdate);
     };
   }, [fetchCompareProducts]);

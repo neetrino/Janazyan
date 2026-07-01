@@ -13,8 +13,6 @@ import {
   resolveCartCacheScope,
 } from '../../lib/cart/cart-snapshot-cache';
 import { revalidateCartIfStale } from '../../lib/cart/cart-revalidate';
-import { getStoredCurrency } from '../../lib/currency';
-import type { CurrencyCode } from '../../lib/currency';
 import {
   CART_DRAWER_CLOSE_EVENT,
   CART_DRAWER_OPEN_EVENT,
@@ -23,6 +21,7 @@ import {
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
+import { useCurrency } from '../hooks/useCurrency';
 import { CartDrawerItemRow } from './CartDrawerItemRow';
 import { CartDrawerFooter } from './CartDrawerFooter';
 
@@ -38,7 +37,7 @@ export function CartDrawer() {
   const [open, setOpen] = useState(false);
   const [slideIn, setSlideIn] = useState(false);
   const [cart, setCart] = useState<Cart | null>(null);
-  const [currency, setCurrency] = useState<CurrencyCode>(getStoredCurrency());
+  const currency = useCurrency();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const hasLoadedOnceRef = useRef(false);
 
@@ -153,10 +152,6 @@ export function CartDrawer() {
       }
     };
 
-    const handleCurrencyUpdate = () => {
-      setCurrency(getStoredCurrency());
-    };
-
     const handleAuthUpdate = () => {
       syncFromLocal();
       if (open) {
@@ -165,12 +160,10 @@ export function CartDrawer() {
     };
 
     window.addEventListener('cart-updated', handleCartUpdate);
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
     window.addEventListener('auth-updated', handleAuthUpdate);
 
     return () => {
       window.removeEventListener('cart-updated', handleCartUpdate);
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
       window.removeEventListener('auth-updated', handleAuthUpdate);
     };
   }, [open, isLoggedIn, user?.id, syncFromLocal, backgroundSync, t]);

@@ -1,6 +1,8 @@
 'use client';
 
 import { Globe, Phone, Search } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getSupportPhoneTelHref } from '../../app/orders/[number]/constants/support-phone';
@@ -18,6 +20,7 @@ import {
 } from '../hooks/useInstantSearch';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
+const MOBILE_TOP_BAR_LOGO_SRC = '/figma/header-logo.webp';
 
 export function MobileTopBar() {
   const { t } = useTranslation();
@@ -89,6 +92,21 @@ export function MobileTopBar() {
 
   return (
     <div className="flex items-center gap-2">
+      <Link
+        href="/"
+        aria-label={t('common.navigation.home')}
+        className="flex h-12 w-[5.25rem] shrink-0 items-center justify-center"
+      >
+        <Image
+          src={MOBILE_TOP_BAR_LOGO_SRC}
+          alt="Janazyan"
+          width={84}
+          height={48}
+          className="h-12 w-auto object-contain"
+          priority
+        />
+      </Link>
+
       <div ref={searchContainerRef} className="relative flex h-12 flex-1 items-center">
         <label htmlFor="mobile-home-search" className="sr-only">
           {t('home.mobile.aria.search')}

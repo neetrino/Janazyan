@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiClient } from '../../lib/api-client';
-import { convertPrice, getStoredCurrency } from '../../lib/currency';
+import { convertPrice } from '../../lib/currency';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { usePaymentMethods } from './utils/payment-methods';
@@ -17,6 +17,7 @@ import { useCart } from './hooks/useCart';
 import { useUserProfile } from './hooks/useUserProfile';
 import { useOrderSubmission } from './hooks/useOrderSubmission';
 import { useOrderSummary } from './hooks/useOrderSummary';
+import { useCurrency } from '../../components/hooks/useCurrency';
 import type { CheckoutFormData } from './types';
 import {
   scrollToFirstCheckoutError,
@@ -27,7 +28,7 @@ export function useCheckout() {
   const { isLoggedIn, isLoading } = useAuth();
   const { t } = useTranslation();
   const [error, setCheckoutError] = useState<string | null>(null);
-  const [currency, setCurrency] = useState(getStoredCurrency());
+  const currency = useCurrency();
   const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
@@ -156,24 +157,6 @@ export function useCheckout() {
     currency,
     appliedDiscountAmd: appliedPromo?.discountAmountAmd ?? 0,
   });
-
-  useEffect(() => {
-    const handleCurrencyUpdate = () => {
-      setCurrency(getStoredCurrency());
-    };
-
-    const handleCurrencyRatesUpdate = () => {
-      setCurrency(getStoredCurrency());
-    };
-
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
-    window.addEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
-
-    return () => {
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
-      window.removeEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
-    };
-  }, []);
 
   useEffect(() => {
     if (!deliveryOptions?.countries.length) {

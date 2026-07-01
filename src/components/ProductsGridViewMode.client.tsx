@@ -13,7 +13,7 @@ const VIEW_MODE_STORAGE_KEY = 'products-view-mode';
 const VALID_VIEW_MODES = new Set<ViewMode>(['list', 'grid-2', 'grid-3']);
 
 function getGridClasses(viewMode: ViewMode): string {
-  const mobileGridGap = 'gap-x-1 gap-y-0 lg:gap-x-6 lg:gap-y-10';
+  const mobileGridGap = 'gap-x-1 gap-y-4 lg:gap-x-6 lg:gap-y-10';
 
   switch (viewMode) {
     case 'list':

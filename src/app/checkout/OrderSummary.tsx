@@ -89,7 +89,7 @@ export function OrderSummary({
               onChange={(event) => onPromoCodeChange(event.target.value)}
               placeholder={t('checkout.promo.placeholder')}
               disabled={promoApplying || isSubmitting}
-              className="h-11 w-full rounded-full border border-white/60 bg-white px-5 text-sm text-gray-700 placeholder:text-sm placeholder:text-gray-400 focus:border-white/80 focus:outline-none focus:ring-2 focus:ring-sky-deep/15 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-11 w-full rounded-full border border-gray-300 bg-white px-5 text-sm text-gray-700 placeholder:text-sm placeholder:text-gray-400 focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-sky-deep/15 disabled:cursor-not-allowed disabled:opacity-60"
             />
             <button
               type="button"

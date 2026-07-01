@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getStoredCurrency } from '../../../lib/currency';
 import { getStoredLanguage, type LanguageCode } from '../../../lib/language';
 import { t } from '../../../lib/i18n';
+import { useCurrency } from '../../../components/hooks/useCurrency';
 import { snapshotFromProductPage } from '../../../lib/wishlist/wishlist-snapshot-builders';
 import { calculateAverageRating } from '../../../components/ProductReviews/utils';
 import type { Review } from '../../../components/ProductReviews/utils';
@@ -38,7 +38,7 @@ export function useProductPage({
   reviews,
 }: UseProductPageOptions) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currency, setCurrency] = useState(getStoredCurrency());
+  const currency = useCurrency();
   const [language, setLanguage] = useState<LanguageCode>(serverLanguage);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
   const [showMessage, setShowMessage] = useState<string | null>(null);
@@ -145,19 +145,6 @@ export function useProductPage({
 
   useEffect(() => {
     setLanguage(getStoredLanguage());
-  }, []);
-
-  useEffect(() => {
-    const handleCurrencyUpdate = () => setCurrency(getStoredCurrency());
-    const handleCurrencyRatesUpdate = () => setCurrency(getStoredCurrency());
-
-    window.addEventListener('currency-updated', handleCurrencyUpdate);
-    window.addEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
-
-    return () => {
-      window.removeEventListener('currency-updated', handleCurrencyUpdate);
-      window.removeEventListener('currency-rates-updated', handleCurrencyRatesUpdate);
-    };
   }, []);
 
   useEffect(() => {

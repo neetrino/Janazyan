@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { FeaturedProductCardActions } from './FeaturedProductCardActions.client';
 import { FeaturedProductCardImage } from './FeaturedProductCardImage.client';
+import { FeaturedProductCardPrice } from './FeaturedProductCardPrice.client';
 import { ProductLabels } from '../ProductLabels';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 
@@ -117,15 +118,10 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
         </div>
       ) : null}
 
-      <p className="absolute left-[15px] top-[307px] z-10 text-[23px] font-black leading-7 tracking-[-0.45px] text-ink-800">
-        {product.priceLabel}
-      </p>
-
-      {product.comparePriceLabel ? (
-        <p className="absolute left-[120px] top-[309px] z-10 text-[16px] leading-7 text-ink-800/70 line-through">
-          {product.comparePriceLabel}
-        </p>
-      ) : null}
+      <FeaturedProductCardPrice
+        price={product.price}
+        comparePrice={product.comparePriceUsd}
+      />
 
     </article>
   );

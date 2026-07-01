@@ -14,7 +14,7 @@ import {
   HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
-import { getStoredCurrency, type CurrencyCode } from '../../lib/currency';
+import { CURRENCIES, getStoredCurrency, setStoredCurrency, type CurrencyCode } from '../../lib/currency';
 import {
   LANGUAGES,
   getStoredLanguage,
@@ -27,6 +27,7 @@ import { formatWishlistBadgeCount, useWishlistItemCount } from '../hooks/useWish
 const HEADER_ACTION_BUTTON_SIZE_PX = 40;
 const HEADER_ACTION_ICON_SIZE_PX = 22;
 const HEADER_CART_BADGE_COLOR = '#93B6E3';
+const HEADER_SELECTABLE_CURRENCIES: readonly CurrencyCode[] = ['AMD', 'USD', 'RUB'];
 
 const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
 const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
@@ -121,21 +122,85 @@ function HeaderLanguageControl() {
   );
 }
 
-function HeaderCurrencyLabel() {
+function HeaderCurrencyControl() {
   const [currency, setCurrency] = useState<CurrencyCode>('AMD');
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const syncCurrency = useCallback(() => {
+    const storedCurrency = getStoredCurrency();
+    if (HEADER_SELECTABLE_CURRENCIES.includes(storedCurrency)) {
+      setCurrency(storedCurrency);
+      return;
+    }
+
+    setStoredCurrency('AMD');
+    setCurrency('AMD');
+  }, []);
 
   useEffect(() => {
-    const syncCurrency = () => setCurrency(getStoredCurrency());
     syncCurrency();
     window.addEventListener('currency-updated', syncCurrency);
     return () => window.removeEventListener('currency-updated', syncCurrency);
+  }, [syncCurrency]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleCurrencySelect = (nextCurrency: CurrencyCode) => {
+    setMenuOpen(false);
+    if (nextCurrency === currency) {
+      return;
+    }
+
+    setStoredCurrency(nextCurrency);
+    setCurrency(nextCurrency);
+  };
+
   return (
-    <span className="inline-flex items-center gap-1 text-[17px] font-medium leading-[26px] tracking-[-0.31px] text-ink-500">
-      {currency}
-      <ChevronDown className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
-    </span>
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        aria-label="Currency"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen((open) => !open)}
+        className="inline-flex items-center gap-1 text-[17px] font-medium leading-[26px] tracking-[-0.31px] text-ink-500 transition-opacity hover:opacity-80"
+      >
+        {currency}
+        <ChevronDown className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
+      </button>
+      {menuOpen ? (
+        <div className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl bg-white shadow-card">
+          {HEADER_SELECTABLE_CURRENCIES.map((currencyCode) => {
+            const isActive = currencyCode === currency;
+            return (
+              <button
+                key={currencyCode}
+                type="button"
+                disabled={isActive}
+                onClick={() => handleCurrencySelect(currencyCode)}
+                className={`flex w-full items-center justify-between px-4 py-2.5 text-left text-sm ${
+                  isActive
+                    ? 'cursor-default bg-sky/20 font-semibold text-ink-800'
+                    : 'text-ink-600 hover:bg-gray-50'
+                }`}
+              >
+                <span>{currencyCode}</span>
+                <span className="text-xs text-ink-400">{CURRENCIES[currencyCode].symbol}</span>
+              </button>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
   );
 }
 
@@ -210,7 +275,7 @@ export function HeaderStorefrontActions() {
         </button>
 
         <HeaderLanguageControl />
-        <HeaderCurrencyLabel />
+        <HeaderCurrencyControl />
       </div>
 
       <HeaderAccountMenu />
