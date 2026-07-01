@@ -39,6 +39,8 @@ export interface Order {
     firstName?: string;
     lastName?: string;
     addressLine1?: string;
+    room?: string;
+    office?: string;
     addressLine2?: string;
     city?: string;
     postalCode?: string;
