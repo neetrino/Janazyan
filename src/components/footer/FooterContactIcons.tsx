@@ -1,4 +1,4 @@
-import type { FooterContactType } from './constants';
+type FooterContactType = 'email' | 'address' | 'phone';
 
 type IconProps = {
   className?: string;
