@@ -16,6 +16,12 @@ import { playCartFlyAnimation } from '../../../lib/cart-fly-animation';
 import type { Product } from './types';
 import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
 import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
+import { CART_KEY } from '../../cart/constants';
+import { openCartDrawer } from '../../../lib/cart-drawer-events';
+import { applyOptimisticAddToSnapshot } from '../../../lib/cart/cart-optimistic';
+import { resolveCartCacheScope } from '../../../lib/cart/cart-snapshot-cache';
+import { dispatchCartUpdated } from '../../../lib/cart/cart-events';
+import { confirmCartMutation, scheduleCartRevalidate } from '../../../lib/cart/cart-revalidate';
 
 const RelatedProducts = dynamic(
   () => import('../../../components/RelatedProducts').then((m) => ({ default: m.RelatedProducts })),
@@ -71,7 +77,7 @@ export function ProductPageClient({
   galleryHydrationRequired,
   initialRelated = [],
 }: ProductPageClientProps) {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>(initialReviews);
 
   useEffect(() => {
@@ -173,7 +179,7 @@ export function ProductPageClient({
     setIsAddingToCart(true);
     try {
       if (!isLoggedIn) {
-        const stored = localStorage.getItem('shop_cart_guest');
+        const stored = localStorage.getItem(CART_KEY);
         const cart = stored ? JSON.parse(stored) : [];
         const existing = cart.find(
           (i: unknown): i is { variantId: string; quantity: number; productId?: string; productSlug?: string } =>
@@ -181,12 +187,39 @@ export function ProductPageClient({
         );
         if (existing) existing.quantity += quantity;
         else cart.push({ productId: product.id, productSlug: product.slug, variantId: currentVariant.id, quantity });
-        localStorage.setItem('shop_cart_guest', JSON.stringify(cart));
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
       } else {
         await apiClient.post('/api/v1/cart/items', { productId: product.id, variantId: currentVariant.id, quantity });
       }
+
+      const scope = resolveCartCacheScope(isLoggedIn, user?.id ?? null);
+      if (scope) {
+        const imageForLine = images[currentImageIndex] ?? images[0] ?? null;
+        const optimisticCart = applyOptimisticAddToSnapshot(
+          scope,
+          {
+            productId: product.id,
+            productSlug: product.slug,
+            variantId: currentVariant.id,
+            quantityToAdd: quantity,
+            price: currentVariant.price,
+            productTitle: product.title,
+            productImage: imageForLine,
+          },
+          isLoggedIn ? `user-cart-${user?.id ?? 'pending'}` : 'guest-cart',
+        );
+        dispatchCartUpdated({ itemsCount: optimisticCart.itemsCount, fromMutation: true });
+      }
+
+      const revalidateT = (key: string) => t(language, key);
+      if (isLoggedIn) {
+        confirmCartMutation(true, user?.id ?? null, revalidateT);
+      } else {
+        scheduleCartRevalidate(false, null, revalidateT, { force: true });
+      }
+
       setShowMessage(`${t(language, 'product.addedToCart')} ${quantity} ${t(language, 'product.pcs')}`);
-      window.dispatchEvent(new Event('cart-updated'));
+      openCartDrawer();
     } catch {
       setShowMessage(t(language, 'product.errorAddingToCart'));
     } finally {
