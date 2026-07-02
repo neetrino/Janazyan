@@ -36,6 +36,16 @@ function orderRowTotal(order: OrderListItem, currency: CurrencyCode): string {
   return formatPriceInCurrency(totalDisplay, currency);
 }
 
+function orderRowDiscount(order: OrderListItem, currency: CurrencyCode): string | null {
+  if (!order.discountAmount || order.discountAmount <= 0) {
+    return null;
+  }
+
+  const discountAMD = convertPrice(order.discountAmount, 'USD', 'AMD');
+  const discountDisplay = currency === 'AMD' ? discountAMD : convertPrice(discountAMD, 'AMD', currency);
+  return formatPriceInCurrency(discountDisplay, currency);
+}
+
 export function ProfileOrders({
   orders,
   ordersLoading,
@@ -79,52 +89,61 @@ export function ProfileOrders({
     <Card className="rounded-2xl border border-gray-200/80 p-5 shadow-none sm:p-7 lg:p-8">
       <h2 className={`${titleClass} mb-6 sm:mb-8`}>{t('profile.orders.title')}</h2>
       <ul className="space-y-3 sm:space-y-4">
-        {orders.map((order) => (
-          <li key={order.id}>
-            <Link
-              href={`/orders/${order.number}`}
-              onClick={(e) => onOrderClick(order.number, e)}
-              className="block rounded-2xl border border-gray-200 bg-gray-50/40 p-4 transition hover:border-gray-300 hover:bg-white sm:p-5"
-            >
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
-                <div className="min-w-0 flex-1 space-y-3">
-                  <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
-                    {t('profile.orders.orderNumber')}
-                    {order.number}
-                  </h3>
-                  <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-2">
-                    <div>
-                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                        {t('profile.dashboard.orderStatus')}
-                      </p>
-                      <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
-                        {order.status}
-                      </span>
+        {orders.map((order) => {
+          const discountDisplay = orderRowDiscount(order, currency);
+
+          return (
+            <li key={order.id}>
+              <Link
+                href={`/orders/${order.number}`}
+                onClick={(e) => onOrderClick(order.number, e)}
+                className="block rounded-2xl border border-gray-200 bg-gray-50/40 p-4 transition hover:border-gray-300 hover:bg-white sm:p-5"
+              >
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between lg:gap-6">
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">
+                      {t('profile.orders.orderNumber')}
+                      {order.number}
+                    </h3>
+                    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8 sm:gap-y-2">
+                      <div>
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                          {t('profile.dashboard.orderStatus')}
+                        </p>
+                        <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium capitalize ${getStatusColor(order.status)}`}>
+                          {order.status}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                          {t('profile.dashboard.paymentStatus')}
+                        </p>
+                        <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium capitalize ${getPaymentStatusColor(order.paymentStatus)}`}>
+                          {order.paymentStatus}
+                        </span>
+                      </div>
                     </div>
-                    <div>
-                      <p className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
-                        {t('profile.dashboard.paymentStatus')}
-                      </p>
-                      <span className={`inline-block rounded-md px-2 py-1 text-xs font-medium capitalize ${getPaymentStatusColor(order.paymentStatus)}`}>
-                        {order.paymentStatus}
-                      </span>
+                    <p className="text-xs text-gray-600 sm:text-sm">
+                      {order.itemsCount} {order.itemsCount !== 1 ? t('profile.orders.items') : t('profile.orders.item')} • {t('profile.dashboard.placedOn')}{' '}
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-row items-end justify-between gap-3 border-t border-gray-200/80 pt-3 sm:items-center lg:flex-col lg:items-end lg:border-0 lg:pt-0">
+                    <div className="text-left lg:text-right">
+                      <p className="text-lg font-bold text-gray-900 sm:text-xl">{orderRowTotal(order, currency)}</p>
+                      {discountDisplay && (
+                        <p className="mt-0.5 text-xs font-medium text-emerald-600">
+                          {t('profile.orderDetails.discount')}: -{discountDisplay}
+                        </p>
+                      )}
+                      <p className="mt-0.5 text-xs text-gray-500">{t('profile.dashboard.viewDetails')}</p>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-600 sm:text-sm">
-                    {order.itemsCount} {order.itemsCount !== 1 ? t('profile.orders.items') : t('profile.orders.item')} • {t('profile.dashboard.placedOn')}{' '}
-                    {new Date(order.createdAt).toLocaleDateString()}
-                  </p>
                 </div>
-                <div className="flex flex-row items-end justify-between gap-3 border-t border-gray-200/80 pt-3 sm:items-center lg:flex-col lg:items-end lg:border-0 lg:pt-0">
-                  <div className="text-left lg:text-right">
-                    <p className="text-lg font-bold text-gray-900 sm:text-xl">{orderRowTotal(order, currency)}</p>
-                    <p className="mt-0.5 text-xs text-gray-500">{t('profile.dashboard.viewDetails')}</p>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </li>
-        ))}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
 
       {ordersMeta && ordersMeta.totalPages > 1 && (

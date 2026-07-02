@@ -263,7 +263,7 @@ export function ProductsToolbarControls() {
             alt=""
             width={8}
             height={15}
-            className={`h-[15px] w-2 shrink-0 transition-transform ${showSortDropdown ? 'rotate-180' : ''}`}
+            className={`h-[15px] w-2 shrink-0 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
             aria-hidden
           />
         </button>

@@ -111,14 +111,17 @@ export function useOrderSubmission({
         ...(options?.promoCode ? { promoCode: options.promoCode } : {}),
       });
 
+      if (response.payment?.paymentUrl) {
+        if (!isLoggedIn) {
+          saveGuestOrderAccess(response.order.number, data.email, data.phone);
+        }
+        window.location.href = response.payment.paymentUrl;
+        return;
+      }
+
       if (!isLoggedIn) {
         clearGuestCart();
         saveGuestOrderAccess(response.order.number, data.email, data.phone);
-      }
-
-      if (response.payment?.paymentUrl) {
-        window.location.href = response.payment.paymentUrl;
-        return;
       }
 
       router.push(`/orders/${response.order.number}`);

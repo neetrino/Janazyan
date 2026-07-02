@@ -47,6 +47,7 @@ const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 type HeaderBrandClusterProps = {
   pathname: string;
   searchParams: URLSearchParams;
+  isHomePage: boolean;
 };
 
 /**
@@ -194,10 +195,14 @@ function HeaderNav({
   );
 }
 
-export function HeaderBrandCluster({ pathname, searchParams }: HeaderBrandClusterProps) {
+export function HeaderBrandCluster({ pathname, searchParams, isHomePage }: HeaderBrandClusterProps) {
+  const shadowClassName = isHomePage
+    ? 'shadow-soft'
+    : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
+
   return (
     <div
-      className="flex min-w-0 items-center bg-white shadow-soft"
+      className={`flex min-w-0 items-center bg-white ${shadowClassName}`}
       style={{
         gap: HEADER_LOGO_NAV_GAP_PX,
         height: HEADER_PILL_HEIGHT_PX,

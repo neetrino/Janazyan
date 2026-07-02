@@ -10,6 +10,9 @@ import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
 import { resolveCheckoutPromo } from "@/lib/promo-codes/resolve-checkout-promo";
+import { arcaClient, toArcaAmountMinorUnits } from "@/lib/payments/arca/client";
+import { buildArcaReturnUrl, getArcaConfig } from "@/lib/payments/arca/config";
+import { convertPrice } from "@/lib/currency";
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -327,10 +330,11 @@ class OrdersService {
 
       // Calculate totals
       const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const subtotalAmd = convertPrice(subtotal, 'USD', 'AMD');
       const resolvedPromo = promoCode
         ? await resolveCheckoutPromo({
             code: promoCode,
-            subtotal,
+            subtotal: subtotalAmd,
             userId: userId ?? null,
           })
         : null;
@@ -344,7 +348,8 @@ class OrdersService {
         };
       }
 
-      const discountAmount = resolvedPromo?.ok ? resolvedPromo.promo.discountAmount : 0;
+      const discountAmountAmd = resolvedPromo?.ok ? resolvedPromo.promo.discountAmount : 0;
+      const discountAmount = convertPrice(discountAmountAmd, 'AMD', 'USD');
       // Shipping: computed server-side only (never trust client-provided amount)
       let shippingAmount = 0;
       if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
@@ -352,12 +357,13 @@ class OrdersService {
         shippingAmount = await adminDeliveryService.getDeliveryPrice(
           shippingAddress.city.trim(),
           country,
-          subtotal,
+          subtotalAmd,
         );
         if (shippingAmount < 0) shippingAmount = 0;
       }
       const taxAmount = 0; // TODO: Calculate tax if needed
-      const total = subtotal - discountAmount + shippingAmount + taxAmount;
+      const taxAmountAmd = convertPrice(taxAmount, 'USD', 'AMD');
+      const total = subtotalAmd - discountAmountAmd + shippingAmount + taxAmountAmd;
 
       // Create order with items in a transaction (timeout to avoid hung connections)
       const order = await db.$transaction(
@@ -499,8 +505,8 @@ class OrdersService {
           },
         });
 
-        // If user cart, delete cart after successful checkout
-        if (userId && resolvedUserCartId) {
+        // For online payments we keep server cart until callback confirms success.
+        if (userId && resolvedUserCartId && paymentMethod === 'cash_on_delivery') {
           await tx.cart.delete({
             where: { id: resolvedUserCartId },
           });
@@ -510,6 +516,79 @@ class OrdersService {
       },
         { timeout: 10000, maxWait: 5000 }
       );
+
+      let paymentUrl: string | null = null;
+
+      if (paymentMethod === 'arca') {
+        try {
+          const arcaConfig = getArcaConfig();
+          const amountInArcaCurrency = arcaConfig.currency === '051'
+            ? convertPrice(order.order.total, 'USD', 'AMD')
+            : order.order.total;
+          const returnUrl = buildArcaReturnUrl(order.order.number);
+          const registration = await arcaClient.registerOrder({
+            orderNumber: order.order.number,
+            amountMinorUnits: toArcaAmountMinorUnits(amountInArcaCurrency, arcaConfig.currency),
+            returnUrl,
+            description: `Order #${order.order.number}`,
+            language: order.order.customerLocale || 'en',
+          });
+
+          await db.payment.update({
+            where: { id: order.payment.id },
+            data: {
+              providerTransactionId: registration.orderId,
+              providerResponse: registration.rawResponse as Prisma.InputJsonValue,
+            },
+          });
+
+          paymentUrl = registration.formUrl;
+        } catch (error: unknown) {
+          logger.error('ArCa register failed during checkout', {
+            orderId: order.order.id,
+            paymentId: order.payment.id,
+            error,
+          });
+
+          const paymentErrorMessage = error instanceof Error
+            ? error.message
+            : 'Failed to initialize ArCa payment';
+
+          await db.$transaction([
+            db.payment.update({
+              where: { id: order.payment.id },
+              data: {
+                status: 'failed',
+                errorMessage: paymentErrorMessage,
+                failedAt: new Date(),
+              },
+            }),
+            db.order.update({
+              where: { id: order.order.id },
+              data: {
+                paymentStatus: 'failed',
+              },
+            }),
+            db.orderEvent.create({
+              data: {
+                orderId: order.order.id,
+                type: 'payment_init_failed',
+                data: {
+                  provider: 'arca',
+                  message: paymentErrorMessage,
+                },
+              },
+            }),
+          ]);
+
+          throw {
+            status: 502,
+            type: "https://api.shop.am/problems/payment-provider-error",
+            title: "ArCa unavailable",
+            detail: "Failed to initialize ArCa payment. Please try again.",
+          };
+        }
+      }
 
       void invalidateAdminDashboardCache().catch((error: unknown) => {
         logger.warn('Failed to invalidate admin dashboard cache after order create', { error });
@@ -527,10 +606,10 @@ class OrdersService {
         },
         payment: {
           provider: order.payment.provider,
-          paymentUrl: null, // TODO: Generate payment URL for Idram/ArCa
+          paymentUrl,
           expiresAt: null, // TODO: Set expiration if needed
         },
-        nextAction: paymentMethod === 'idram' || paymentMethod === 'arca' 
+        nextAction: paymentMethod === 'idram' || paymentMethod === 'arca'
           ? 'redirect_to_payment' 
           : 'view_order',
       };

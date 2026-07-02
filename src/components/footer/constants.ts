@@ -35,8 +35,8 @@ export type FooterContactItem =
 /** "Կապ մեզ հետ" column with leading icons (Figma node 136:413). */
 export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
   {
-    label: 'infojanazyan@mail.com',
-    href: 'mailto:infojanazyan@mail.com',
+    label: 'Janazyan@janazyanprojects.com',
+    href: 'mailto:Janazyan@janazyanprojects.com',
     icon: '/figma/footer-contact-mail.svg',
     iconSize: 24,
   },
@@ -47,8 +47,8 @@ export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
     iconSize: 22,
   },
   {
-    label: '+374 11 234 567',
-    href: 'tel:+37411234567',
+    label: '+374 41 402080',
+    href: 'tel:+37441402080',
     icon: '/figma/footer-contact-phone.svg',
     iconSize: 23,
   },
@@ -113,19 +113,19 @@ export type FooterSocialLink = {
 export const FOOTER_SOCIAL: ReadonlyArray<FooterSocialLink> = [
   {
     label: 'Facebook',
-    href: '#',
+    href: 'https://www.facebook.com/share/1F624VRkD3/',
     icon: '/figma/footer-social-facebook.svg',
     variant: 'plum',
   },
   {
     label: 'Instagram',
-    href: '#',
+    href: 'https://www.instagram.com/janazyan_projects?igsh=bzBlajlueTBzN2tz',
     icon: '/figma/footer-social-instagram.svg',
     variant: 'plum',
   },
   {
-    label: 'Telegram',
-    href: '#',
+    label: 'TikTok',
+    href: 'https://www.tiktok.com/@janazyan_projects?_r=1&_t=ZS-9684npAG3CT',
     icon: '/figma/footer-social-telegram.svg',
     variant: 'plain',
   },

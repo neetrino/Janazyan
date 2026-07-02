@@ -54,7 +54,7 @@ export function OrderDetailsModal({
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+        <div className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
           <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
             <div>
@@ -123,11 +123,11 @@ export function OrderDetailsModal({
                         return (
                           <div key={index} className="flex gap-4 pb-4 border-b border-gray-200 last:border-0">
                             {item.imageUrl && (
-                              <div className="w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                              <div className="h-24 w-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 p-1 sm:h-28 sm:w-28">
                                 <img 
                                   src={item.imageUrl} 
                                   alt={item.productTitle}
-                                  className="w-full h-full object-cover"
+                                  className="h-full w-full object-contain"
                                 />
                               </div>
                             )}
