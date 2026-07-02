@@ -218,7 +218,7 @@ function getFooterContactLabel(
   item: FooterContactItem,
   t: (path: string) => string,
 ): string {
-  if ('label' in item) {
+  if (item.label !== undefined) {
     return item.label;
   }
   return t('common.footer.' + item.labelKey);
