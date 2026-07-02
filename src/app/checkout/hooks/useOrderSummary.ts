@@ -21,12 +21,10 @@ export function useOrderSummary({
     if (!cart || cart.items.length === 0) {
       return {
         subtotalAMD: 0,
-        taxAMD: 0,
         shippingAMD: 0,
         discountAMD: 0,
         totalAMD: 0,
         subtotalDisplay: 0,
-        taxDisplay: 0,
         shippingDisplay: 0,
         discountDisplay: 0,
         totalDisplay: 0,
@@ -34,25 +32,21 @@ export function useOrderSummary({
     }
 
     const subtotalAMD = convertPrice(cart.totals.subtotal, 'USD', 'AMD');
-    const taxAMD = convertPrice(cart.totals.tax, 'USD', 'AMD');
     const shippingAMD = shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
     const discountAMD = Math.max(0, Math.min(appliedDiscountAmd, subtotalAMD));
-    const totalAMD = subtotalAMD + taxAMD + shippingAMD - discountAMD;
+    const totalAMD = subtotalAMD + shippingAMD - discountAMD;
     
     const subtotalDisplay = currency === 'AMD' ? subtotalAMD : convertPrice(subtotalAMD, 'AMD', currency);
-    const taxDisplay = currency === 'AMD' ? taxAMD : convertPrice(taxAMD, 'AMD', currency);
     const shippingDisplay = currency === 'AMD' ? shippingAMD : convertPrice(shippingAMD, 'AMD', currency);
     const discountDisplay = currency === 'AMD' ? discountAMD : convertPrice(discountAMD, 'AMD', currency);
     const totalDisplay = currency === 'AMD' ? totalAMD : convertPrice(totalAMD, 'AMD', currency);
     
     return {
       subtotalAMD,
-      taxAMD,
       shippingAMD,
       discountAMD,
       totalAMD,
       subtotalDisplay,
-      taxDisplay,
       shippingDisplay,
       discountDisplay,
       totalDisplay,

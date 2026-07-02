@@ -27,7 +27,6 @@ interface ShippingAddressModalProps {
   cart: Cart | null;
   orderSummary: {
     subtotalDisplay: number;
-    taxDisplay: number;
     shippingDisplay: number;
     discountDisplay: number;
     totalDisplay: number;

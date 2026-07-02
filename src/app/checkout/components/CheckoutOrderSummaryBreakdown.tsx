@@ -12,7 +12,6 @@ type CheckoutOrderSummaryBreakdownProps = {
   cart: Cart;
   orderSummary: {
     subtotalDisplay: number;
-    taxDisplay: number;
     shippingDisplay: number;
     discountDisplay: number;
     totalDisplay: number;
@@ -81,12 +80,6 @@ export function CheckoutOrderSummaryBreakdown({
       <div className={rowClass}>
         <span className="text-gray-600">{t('checkout.summary.shipping')}</span>
         <span className={valueClass}>{shippingLine}</span>
-      </div>
-      <div className={rowClass}>
-        <span className="text-gray-600">{t('checkout.summary.tax')}</span>
-        <span className={valueClass}>
-          {formatPriceInCurrency(orderSummary.taxDisplay, currency)}
-        </span>
       </div>
       {orderSummary.discountDisplay > 0 ? (
         <div className={rowClass}>

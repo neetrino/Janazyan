@@ -30,8 +30,6 @@ function emptyForm(): PromoFormFields {
     description: '',
     discountType: 'percent',
     discountValue: '10',
-    minSubtotal: '',
-    maxDiscountAmount: '',
     usageLimit: '1',
     active: true,
     validFrom: '',
@@ -46,8 +44,6 @@ function rowToForm(row: PromoCodeAdminRow): PromoFormFields {
     description: row.description ?? '',
     discountType: row.discountType,
     discountValue: String(row.discountValue),
-    minSubtotal: row.minSubtotal != null ? String(row.minSubtotal) : '',
-    maxDiscountAmount: row.maxDiscountAmount != null ? String(row.maxDiscountAmount) : '',
     usageLimit: row.usageLimit != null ? String(row.usageLimit) : '',
     active: row.active,
     validFrom: formatIsoForDatetimeLocal(row.validFrom),
@@ -111,8 +107,6 @@ export function CouponsAdminClient() {
       tableCode: t('admin.coupons.tableCode'),
       tableType: t('admin.coupons.tableType'),
       tableValue: t('admin.coupons.tableValue'),
-      tableMinSubtotal: t('admin.coupons.tableMinSubtotal'),
-      tableCap: t('admin.coupons.tableCap'),
       tableUsage: t('admin.coupons.tableUsage'),
       tableUsed: t('admin.coupons.tableUsed'),
       tableActive: t('admin.coupons.tableActive'),
@@ -186,17 +180,7 @@ export function CouponsAdminClient() {
       alert(t('admin.coupons.saveError').replace('{message}', 'Invalid discount value'));
       return null;
     }
-    const minSubtotal = parseNumField(form.minSubtotal);
-    const maxDiscountAmount = parseNumField(form.maxDiscountAmount);
     const usageLimitRaw = parseNumField(form.usageLimit);
-    if (form.minSubtotal.trim() !== '' && Number.isNaN(minSubtotal!)) {
-      alert(t('admin.coupons.saveError').replace('{message}', 'Invalid minimum subtotal'));
-      return null;
-    }
-    if (form.maxDiscountAmount.trim() !== '' && Number.isNaN(maxDiscountAmount!)) {
-      alert(t('admin.coupons.saveError').replace('{message}', 'Invalid max discount'));
-      return null;
-    }
     if (form.usageLimit.trim() !== '' && (usageLimitRaw == null || Number.isNaN(usageLimitRaw))) {
       alert(t('admin.coupons.saveError').replace('{message}', 'Invalid usage limit'));
       return null;
@@ -208,8 +192,8 @@ export function CouponsAdminClient() {
       description: form.description.trim() || null,
       discountType: form.discountType,
       discountValue,
-      minSubtotal: minSubtotal ?? null,
-      maxDiscountAmount: maxDiscountAmount ?? null,
+      minSubtotal: null,
+      maxDiscountAmount: null,
       usageLimit: usageLimitRaw == null ? null : Math.floor(usageLimitRaw),
       active: form.active,
       validFrom: validFromIso,

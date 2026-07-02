@@ -5,6 +5,11 @@
   "shippingAddress": "Адрес доставки",
   "paymentMethod": "Способ оплаты",
   "orderSummary": "Итоги заказа",
+  "productsInOrder": {
+    "title": "Товары в вашем заказе",
+    "itemCountOne": "{count} товар",
+    "itemCountMany": "{count} товаров"
+  },
   "form": {
     "firstName": "Имя",
     "lastName": "Фамилия",
@@ -66,7 +71,6 @@
     "items": "Товары",
     "subtotal": "Промежуточный итог",
     "shipping": "Доставка",
-    "tax": "Налог",
     "discount": "Скидка",
     "total": "Итого"
   },

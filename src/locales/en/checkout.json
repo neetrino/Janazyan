@@ -5,6 +5,11 @@
   "shippingAddress": "Shipping Address",
   "paymentMethod": "Payment Method",
   "orderSummary": "Order Summary",
+  "productsInOrder": {
+    "title": "Products in your order",
+    "itemCountOne": "{count} item",
+    "itemCountMany": "{count} items"
+  },
   "form": {
     "firstName": "First Name",
     "lastName": "Last Name",
@@ -66,7 +71,6 @@
     "items": "Items",
     "subtotal": "Subtotal",
     "shipping": "Shipping",
-    "tax": "Tax",
     "discount": "Discount",
     "total": "Total"
   },
