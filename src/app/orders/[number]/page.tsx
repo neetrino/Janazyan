@@ -1,11 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { apiClient } from '../../../lib/api-client';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useCurrency } from '../../../components/hooks/useCurrency';
+import {
+  clearCartAfterOrderSuccess,
+  shouldClearCartOnOrderPage,
+} from '../../../lib/cart/order-success-cart-clear';
 import { readGuestOrderAccess } from '../../checkout/utils/guest-order-access';
 import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS } from '../../../lib/layout/account-pages-layout.constants';
@@ -21,13 +25,15 @@ import { ORDER_DETAIL_INNER_CLASS } from './constants/order-detail-ui';
 
 export default function OrderPage() {
   const params = useParams();
-  const { isLoggedIn } = useAuth();
+  const searchParams = useSearchParams();
+  const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const currency = useCurrency();
   const orderNumber = String(params.number);
+  const paymentStatus = searchParams.get('payment');
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -64,6 +70,13 @@ export default function OrderPage() {
   useEffect(() => {
     void fetchOrder();
   }, [fetchOrder]);
+
+  useEffect(() => {
+    if (!shouldClearCartOnOrderPage(orderNumber, paymentStatus)) {
+      return;
+    }
+    clearCartAfterOrderSuccess(isLoggedIn, user?.id);
+  }, [isLoggedIn, orderNumber, paymentStatus, user?.id]);
 
   if (loading) {
     return (

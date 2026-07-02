@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { useLayoutEffect, useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { t } from '../../../lib/i18n';
 import { useAuth } from '../../../lib/auth/AuthContext';
@@ -97,7 +97,6 @@ export function ProductPageClient({
     showMessage,
     setShowMessage,
     isInWishlist,
-    isInCompare,
     quantity,
     averageRating,
     attributeGroups,
@@ -121,7 +120,6 @@ export function ProductPageClient({
     handleSizeSelect,
     handleAttributeValueSelect,
     handleAddToWishlist,
-    handleCompareToggle,
     getRequiredAttributesMessage,
   } = useProductPage({
     slug,
@@ -132,11 +130,6 @@ export function ProductPageClient({
     galleryHydrationRequired,
     reviews,
   });
-
-  useLayoutEffect(() => {
-    if (!product) return;
-    window.scrollTo(0, 0);
-  }, [product?.id]);
 
   useEffect(() => {
     if (!product) return;
@@ -263,7 +256,6 @@ export function ProductPageClient({
             canAddToCart={canAddToCart}
             isAddingToCart={isAddingToCart}
             isInWishlist={isInWishlist}
-            isInCompare={isInCompare}
             showMessage={showMessage}
             isLoggedIn={isLoggedIn}
             currentVariant={currentVariant}
@@ -276,7 +268,6 @@ export function ProductPageClient({
             onQuantityAdjust={adjustQuantity}
             onAddToCart={handleAddToCart}
             onAddToWishlist={handleAddToWishlist}
-            onCompareToggle={handleCompareToggle}
             onScrollToReviews={scrollToReviews}
             onColorSelect={handleColorSelect}
             onSizeSelect={handleSizeSelect}

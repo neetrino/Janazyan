@@ -30,7 +30,6 @@ interface ProductInfoAndActionsProps {
   canAddToCart: boolean;
   isAddingToCart: boolean;
   isInWishlist: boolean;
-  isInCompare: boolean;
   showMessage: string | null;
   isLoggedIn: boolean;
   currentVariant: ProductVariant | null;
@@ -43,7 +42,6 @@ interface ProductInfoAndActionsProps {
   onQuantityAdjust: (delta: number) => void;
   onAddToCart: () => Promise<void>;
   onAddToWishlist: (e: MouseEvent) => void;
-  onCompareToggle: (e: MouseEvent) => void;
   onScrollToReviews: () => void;
   onColorSelect: (color: string) => void;
   onSizeSelect: (size: string) => void;
@@ -74,7 +72,6 @@ export function ProductInfoAndActions({
   canAddToCart,
   isAddingToCart,
   isInWishlist,
-  isInCompare,
   showMessage,
   isLoggedIn,
   currentVariant,
@@ -87,7 +84,6 @@ export function ProductInfoAndActions({
   onQuantityAdjust,
   onAddToCart,
   onAddToWishlist,
-  onCompareToggle,
   onScrollToReviews,
   onColorSelect,
   onSizeSelect,
@@ -215,11 +211,9 @@ export function ProductInfoAndActions({
           isVariationRequired={isVariationRequired}
           hasUnavailableAttributes={hasUnavailableAttributes}
           isInWishlist={isInWishlist}
-          isInCompare={isInCompare}
           onQuantityAdjust={onQuantityAdjust}
           onAddToCart={onAddToCart}
           onAddToWishlist={onAddToWishlist}
-          onCompareToggle={onCompareToggle}
           getRequiredAttributesMessage={getRequiredAttributesMessage}
         />
       </div>

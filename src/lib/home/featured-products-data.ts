@@ -86,30 +86,8 @@ async function fetchCatalogProducts(
 }
 
 async function loadFeaturedCatalog(limit: number): Promise<CatalogProduct[]> {
-  const [featured, latest] = await Promise.all([
-    fetchCatalogProducts(limit, 'featured'),
-    fetchCatalogProducts(limit * 2),
-  ]);
-
-  if (featured.length >= limit) {
-    return featured.slice(0, limit);
-  }
-
-  const seen = new Set(featured.map((item) => item.id));
-  const merged = [...featured];
-
-  for (const product of latest) {
-    if (seen.has(product.id)) {
-      continue;
-    }
-    merged.push(product);
-    seen.add(product.id);
-    if (merged.length >= limit) {
-      break;
-    }
-  }
-
-  return merged.slice(0, limit);
+  const featured = await fetchCatalogProducts(limit, 'featured');
+  return featured.slice(0, limit);
 }
 
 async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {

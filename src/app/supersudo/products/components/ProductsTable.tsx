@@ -321,11 +321,13 @@ function ProductsTableLoadedView({
                 <td className={`${ADMIN_TABLE_TD} whitespace-nowrap text-left text-gray-900`}>
                   <div className="flex items-center">
                     {product.image && (
-                      <img
-                        src={processImageUrl(product.image)}
-                        alt={product.title}
-                        className="h-12 w-12 rounded object-cover bg-gray-100 mr-3"
-                      />
+                      <div className="mr-3 flex h-12 w-12 items-center justify-center rounded-md border border-gray-200 bg-gray-50 p-1">
+                        <img
+                          src={processImageUrl(product.image)}
+                          alt={product.title}
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
                     )}
                     <div>
                       <div className="text-sm font-medium text-gray-900">{product.title}</div>
@@ -386,14 +388,19 @@ function ProductsTableLoadedView({
                       event.stopPropagation();
                       handleToggleFeatured(product.id, product.featured || false, product.title);
                     }}
-                    className="inline-flex items-center justify-center w-8 h-8 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                    className={`inline-flex h-8 w-8 items-center justify-center rounded transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      product.featured
+                        ? 'bg-amber-100 ring-1 ring-amber-300'
+                        : 'bg-transparent hover:bg-blue-50'
+                    }`}
                     title={product.featured ? t('admin.products.clickToRemoveFeatured') : t('admin.products.clickToMarkFeatured')}
+                    aria-pressed={Boolean(product.featured)}
                   >
                     <svg
                       className={`w-6 h-6 transition-all duration-200 ${
                         product.featured
-                          ? 'fill-blue-500 text-blue-500 drop-shadow-sm'
-                          : 'fill-none stroke-blue-400 text-blue-400 opacity-50 hover:opacity-75'
+                          ? 'fill-amber-500 stroke-amber-500 drop-shadow-sm'
+                          : 'fill-none stroke-gray-400 text-gray-400'
                       }`}
                       viewBox="0 0 24 24"
                       strokeWidth="1.5"
