@@ -9,6 +9,7 @@ import type { CurrencyCode } from '../../lib/currency';
 import type { LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
 import { logger } from "@/lib/utils/logger";
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 interface RelatedProduct {
   id: string;
@@ -78,6 +79,15 @@ export function RelatedProductCard({
               e.stopPropagation();
               return;
             }
+            primeProductPageSnapshot({
+              slug: product.slug,
+              title: product.title,
+              image: product.image,
+              price: product.price,
+              originalPrice: product.originalPrice ?? null,
+              compareAtPrice: product.compareAtPrice ?? null,
+              discountPercent: product.discountPercent ?? null,
+            });
             logger.debug('[RelatedProducts] Navigating to product:', product.slug);
           }}
         >

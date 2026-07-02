@@ -18,6 +18,7 @@ import {
   useInstantSearch,
   type InstantSearchResultItem,
 } from '../hooks/useInstantSearch';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
 const MOBILE_TOP_BAR_LOGO_SRC = '/figma/header-logo.webp';
@@ -65,6 +66,15 @@ export function MobileTopBar() {
   const handleResultClick = useCallback(
     (result: InstantSearchResultItem) => {
       clearSearch();
+      primeProductPageSnapshot({
+        slug: result.slug,
+        title: result.title,
+        image: result.image,
+        price: result.price,
+        originalPrice: result.compareAtPrice,
+        compareAtPrice: result.compareAtPrice,
+        discountPercent: null,
+      });
       router.push(`/products/${result.slug}`);
     },
     [clearSearch, router],

@@ -15,6 +15,7 @@ import { useProductPage } from './useProductPage';
 import { playCartFlyAnimation } from '../../../lib/cart-fly-animation';
 import type { Product } from './types';
 import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 const RelatedProducts = dynamic(
   () => import('../../../components/RelatedProducts').then((m) => ({ default: m.RelatedProducts })),
@@ -136,6 +137,37 @@ export function ProductPageClient({
     if (!product) return;
     window.scrollTo(0, 0);
   }, [product?.id]);
+
+  useEffect(() => {
+    if (!product) return;
+    primeProductPageSnapshot({
+      slug: product.slug,
+      title: product.title,
+      image: images[0] ?? null,
+      previewImages: images.slice(0, 3),
+      descriptionPreview: product.description ?? null,
+      price,
+      originalPrice,
+      compareAtPrice,
+      discountPercent,
+      averageRating,
+      reviewsCount: reviews.length,
+      hasVariantSelectors:
+        attributeGroups.size > 0 || colorGroups.length > 0 || sizeGroups.length > 0,
+    });
+  }, [
+    product,
+    images,
+    price,
+    originalPrice,
+    compareAtPrice,
+    discountPercent,
+    averageRating,
+    reviews.length,
+    attributeGroups.size,
+    colorGroups.length,
+    sizeGroups.length,
+  ]);
 
   const handleAddToCart = async () => {
     if (!canAddToCart || !product || !currentVariant) return;

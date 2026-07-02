@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { FeaturedProductCardActions } from './FeaturedProductCardActions.client';
@@ -5,6 +7,7 @@ import { FeaturedProductCardImage } from './FeaturedProductCardImage.client';
 import { FeaturedProductCardPrice } from './FeaturedProductCardPrice.client';
 import { ProductLabels } from '../ProductLabels';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 const CARD_WIDTH_PX = 283;
 const CARD_HEIGHT_PX = 347;
@@ -32,6 +35,17 @@ export type FeaturedProductCardProps = {
 
 export function FeaturedProductCard({ product, priority = true }: FeaturedProductCardProps) {
   const productHref = `/products/${product.slug}`;
+  const handleProductNavigate = () => {
+    primeProductPageSnapshot({
+      slug: product.slug,
+      title: product.title,
+      image: product.image,
+      price: product.price,
+      originalPrice: product.comparePriceUsd ?? null,
+      compareAtPrice: product.comparePriceUsd ?? null,
+      discountPercent: null,
+    });
+  };
 
   return (
     <article
@@ -42,12 +56,14 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
         href={productHref}
         aria-label={product.title}
         className="absolute inset-0 z-[15] rounded-[26px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+        onClick={handleProductNavigate}
       />
 
       <Link
         href={productHref}
         data-product-fly-origin
         className="absolute left-1/2 z-30 block -translate-x-1/2 transition-transform duration-300 ease-out group-hover:-translate-y-4 group-hover:scale-110"
+        onClick={handleProductNavigate}
         style={{
           top: PRODUCT_IMAGE_TOP_PX,
           width: PRODUCT_IMAGE_WIDTH_PX,

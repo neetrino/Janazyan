@@ -11,6 +11,7 @@ import { ProductColors } from './ProductColors';
 import type { CurrencyCode } from '../../lib/currency';
 import { ProductLabels } from '../ProductLabels';
 import type { ProductLabel } from '../ProductLabels';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 interface WishlistIconProps {
   filled?: boolean;
@@ -71,6 +72,17 @@ export function ProductCardList({
   onAddToCart,
 }: ProductCardListProps) {
   const { t } = useTranslation();
+  const handleProductNavigate = () => {
+    primeProductPageSnapshot({
+      slug: product.slug,
+      title: product.title,
+      image: product.image,
+      price: product.price,
+      originalPrice: product.originalPrice ?? null,
+      compareAtPrice: product.compareAtPrice ?? null,
+      discountPercent: product.discountPercent ?? null,
+    });
+  };
 
   return (
     <div data-product-card className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors">
@@ -80,6 +92,7 @@ export function ProductCardList({
           href={`/products/${product.slug}`}
           data-product-fly-origin
           className="w-20 h-20 bg-gray-100 rounded-lg flex-shrink-0 relative overflow-hidden self-start sm:self-center"
+          onClick={handleProductNavigate}
         >
           {product.image && !imageError ? (
             <Image
@@ -105,7 +118,7 @@ export function ProductCardList({
 
         {/* Product Info */}
         <div className="flex-1 min-w-0 w-full sm:w-auto">
-          <Link href={`/products/${product.slug}`} className="block">
+          <Link href={`/products/${product.slug}`} className="block" onClick={handleProductNavigate}>
             <h3 className="text-lg sm:text-xl font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
               {product.title}
             </h3>

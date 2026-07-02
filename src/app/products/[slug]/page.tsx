@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { getServerLanguage } from '@/lib/language-server';
 import { parseProductSlugParam } from '@/lib/products/parse-product-slug';
 import { ProductPageServer } from './ProductPageServer';
-import { ProductPageShell } from './ProductPageShell';
+import { ProductPageShellInstant } from './ProductPageShellInstant';
 import { RESERVED_ROUTES } from './types';
 
 export const revalidate = 300;
@@ -22,7 +22,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   return (
-    <Suspense fallback={<ProductPageShell />}>
+    <Suspense fallback={<ProductPageShellInstant />}>
       <ProductPageServer
         slug={slug}
         variantIdFromUrl={variantIdFromUrl}

@@ -52,6 +52,9 @@ interface ProductInfoAndActionsProps {
   getRequiredAttributesMessage: () => string;
 }
 
+const PDP_INFO_COLUMN_CLASS = 'flex h-full flex-col pt-0 lg:min-h-[526px]';
+const PDP_INFO_ACTIONS_WRAPPER_CLASS = 'mt-auto pt-0 lg:-translate-y-[10px]';
+
 export function ProductInfoAndActions({
   product,
   price,
@@ -93,7 +96,7 @@ export function ProductInfoAndActions({
   getRequiredAttributesMessage,
 }: ProductInfoAndActionsProps) {
   return (
-    <div className="flex flex-col h-full">
+    <div className={PDP_INFO_COLUMN_CLASS}>
       <div className="flex-1">
         {product.brand && (
           <div className="mb-2 flex items-center gap-2">
@@ -140,10 +143,15 @@ export function ProductInfoAndActions({
             )}
           </div>
         </div>
-        <div className="text-gray-600 mb-8 prose prose-sm" dangerouslySetInnerHTML={{ __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || '') }} />
+        <div
+          className="mb-8 min-h-[72px] text-gray-600 prose prose-sm lg:line-clamp-3"
+          dangerouslySetInnerHTML={{
+            __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || ''),
+          }}
+        />
 
         {/* Attributes Section */}
-        <div className="mb-8">
+        <div className="mb-8 lg:min-h-[188px] lg:max-h-[188px] lg:overflow-y-auto" data-product-variant-selectors>
           <ProductAttributesSelector
             product={product}
             attributeGroups={attributeGroups}
@@ -174,7 +182,7 @@ export function ProductInfoAndActions({
       </div>
       
       {/* Action Buttons - Aligned with bottom of image */}
-      <div className="mt-auto pt-6">
+      <div className={PDP_INFO_ACTIONS_WRAPPER_CLASS}>
         {/* Show required attributes message if needed */}
         {isVariationRequired && (
           <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">

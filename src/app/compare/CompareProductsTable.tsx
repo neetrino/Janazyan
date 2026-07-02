@@ -4,6 +4,7 @@ import type { MouseEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { formatPrice, type CurrencyCode } from '../../lib/currency';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 export interface CompareProduct {
   id: string;
@@ -40,6 +41,18 @@ export function CompareProductsTable({
   onRemove,
   onAddToCart,
 }: CompareProductsTableProps) {
+  const handleNavigateToProduct = (product: CompareProduct) => {
+    primeProductPageSnapshot({
+      slug: product.slug,
+      title: product.title,
+      image: product.image,
+      price: product.price,
+      originalPrice: product.originalPrice,
+      compareAtPrice: product.compareAtPrice,
+      discountPercent: product.discountPercent,
+    });
+  };
+
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="overflow-x-auto">
@@ -81,7 +94,11 @@ export function CompareProductsTable({
               </td>
               {products.map((product) => (
                 <td key={product.id} className="px-4 py-4 text-center">
-                  <Link href={`/products/${product.slug}`} className="inline-block">
+                  <Link
+                    href={`/products/${product.slug}`}
+                    className="inline-block"
+                    onClick={() => handleNavigateToProduct(product)}
+                  >
                     <div className="w-32 h-32 mx-auto bg-gray-100 rounded-lg overflow-hidden relative">
                       {product.image ? (
                         <Image
@@ -112,6 +129,7 @@ export function CompareProductsTable({
                   <Link
                     href={`/products/${product.slug}`}
                     className="text-base font-semibold text-gray-900 hover:text-blue-600 transition-colors block text-center"
+                    onClick={() => handleNavigateToProduct(product)}
                   >
                     {product.title}
                   </Link>
@@ -197,6 +215,7 @@ export function CompareProductsTable({
                     <Link
                       href={`/products/${product.slug}`}
                       className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      onClick={() => handleNavigateToProduct(product)}
                     >
                       {t('common.compare.viewDetails')}
                     </Link>
