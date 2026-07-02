@@ -1,7 +1,6 @@
 'use client';
 
 import { Globe, Phone, Search } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -22,6 +21,8 @@ import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
 const MOBILE_TOP_BAR_LOGO_SRC = '/figma/header-logo.webp';
+const MOBILE_TOP_BAR_LOGO_WIDTH_PX = 55;
+const MOBILE_TOP_BAR_LOGO_HEIGHT_PX = 44;
 
 export function MobileTopBar() {
   const { t } = useTranslation();
@@ -105,16 +106,21 @@ export function MobileTopBar() {
       <Link
         href="/"
         aria-label={t('common.navigation.home')}
-        className="flex h-12 w-[5.25rem] shrink-0 items-center justify-center"
+        className="flex h-12 w-[55px] shrink-0 items-center justify-center"
       >
-        <Image
-          src={MOBILE_TOP_BAR_LOGO_SRC}
-          alt="Janazyan"
-          width={84}
-          height={48}
-          className="h-12 w-auto object-contain"
-          priority
-        />
+        <span
+          className="relative block overflow-hidden"
+          style={{
+            width: MOBILE_TOP_BAR_LOGO_WIDTH_PX,
+            height: MOBILE_TOP_BAR_LOGO_HEIGHT_PX,
+          }}
+        >
+          <img
+            src={MOBILE_TOP_BAR_LOGO_SRC}
+            alt="Janazyan"
+            className="absolute h-[213.14%] left-[-31.71%] max-w-none top-[-53.44%] w-[170.73%]"
+          />
+        </span>
       </Link>
 
       <div ref={searchContainerRef} className="relative flex h-12 flex-1 items-center">
