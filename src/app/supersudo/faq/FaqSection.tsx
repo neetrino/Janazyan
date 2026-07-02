@@ -102,11 +102,6 @@ export function FaqSection() {
 
   const handleItemSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    const en = itemFormData.translations.find((tr) => tr.locale === 'en');
-    if (!en?.question.trim() || !en.answer.trim()) {
-      alert(t('admin.faq.itemEnRequired'));
-      return;
-    }
 
     setItemSubmitting(true);
     try {

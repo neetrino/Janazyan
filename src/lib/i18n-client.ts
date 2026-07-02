@@ -21,6 +21,19 @@ const translations: Partial<Record<LanguageCode, any>> = {
   ru: { common: ruCommon },
 };
 
+function resolveHydrationSafeLanguage(): LanguageCode {
+  if (typeof window === 'undefined') {
+    return 'hy';
+  }
+
+  const documentLang = document.documentElement.lang as LanguageCode;
+  if (documentLang && documentLang in translations) {
+    return documentLang;
+  }
+
+  return 'hy';
+}
+
 /**
  * React hook for translations in client components
  * Automatically handles language updates and memoization
@@ -34,8 +47,7 @@ const translations: Partial<Record<LanguageCode, any>> = {
  * ```
  */
 export function useTranslation() {
-  // Default hy — matches <html lang="hy"> and Figma copy; updated after mount from storage.
-  const [lang, setLang] = useState<LanguageCode>('hy');
+  const [lang, setLang] = useState<LanguageCode>(() => resolveHydrationSafeLanguage());
 
   // Listen to language changes and update state reactively
   useEffect(() => {

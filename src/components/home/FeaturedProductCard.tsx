@@ -31,13 +31,21 @@ export type FeaturedProductCardProps = {
 };
 
 export function FeaturedProductCard({ product, priority = true }: FeaturedProductCardProps) {
+  const productHref = `/products/${product.slug}`;
+
   return (
     <article
       className="group relative shrink-0 overflow-visible"
       style={{ width: CARD_WIDTH_PX, height: CARD_HEIGHT_PX }}
     >
       <Link
-        href={`/products/${product.slug}`}
+        href={productHref}
+        aria-label={product.title}
+        className="absolute inset-0 z-[15] rounded-[26px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+      />
+
+      <Link
+        href={productHref}
         data-product-fly-origin
         className="absolute left-1/2 z-30 block -translate-x-1/2 transition-transform duration-300 ease-out group-hover:-translate-y-4 group-hover:scale-110"
         style={{
@@ -96,12 +104,9 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
         </div>
       </div>
 
-      <Link
-        href={`/products/${product.slug}`}
-        className="absolute left-[15px] right-[43px] top-[212px] z-10 line-clamp-2 text-[16px] font-medium leading-[21px] text-ink-800"
-      >
+      <span className="pointer-events-none absolute left-[15px] right-[43px] top-[212px] z-20 line-clamp-2 text-[16px] font-medium leading-[21px] text-ink-800">
         {product.title}
-      </Link>
+      </span>
 
       {product.category ? (
         <p className="absolute left-[15px] top-[259px] z-10 text-[16px] font-medium leading-[21px] text-ink-800/50">

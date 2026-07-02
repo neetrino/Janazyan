@@ -24,7 +24,7 @@ type StorefrontMobileShellProps = {
   sectionAriaLabel?: string;
 };
 
-const STOREFRONT_MOBILE_PLAIN_SHELL_CLASS = 'min-h-[100dvh] bg-white';
+const STOREFRONT_MOBILE_PLAIN_SHELL_CLASS = 'bg-white';
 
 /**
  * Shared mobile chrome for storefront pages — same backdrop and top bar as home.
@@ -38,9 +38,10 @@ export function StorefrontMobileShell({
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   const showHeaderChrome = !hideTopBar || Boolean(toolbar);
+  const storefrontMobileBaseShellClass = `${STOREFRONT_MOBILE_SHELL_CLASS} min-h-[100dvh] flex flex-col`;
   const shellClassName = hideTopBar
-    ? `${STOREFRONT_MOBILE_SHELL_CLASS} ${STOREFRONT_MOBILE_PLAIN_SHELL_CLASS}`
-    : STOREFRONT_MOBILE_SHELL_CLASS;
+    ? `${storefrontMobileBaseShellClass} ${STOREFRONT_MOBILE_PLAIN_SHELL_CLASS}`
+    : storefrontMobileBaseShellClass;
 
   return (
     <section aria-label={sectionAriaLabel} className={shellClassName}>
@@ -55,7 +56,7 @@ export function StorefrontMobileShell({
           ) : null}
         </div>
       ) : null}
-      <div className={`${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
+      <div className={`grow ${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
         {children}
       </div>
     </section>

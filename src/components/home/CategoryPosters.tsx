@@ -36,12 +36,11 @@ const CARD_HEIGHT_CLASS = 'h-[434px] min-h-[434px]';
 
 const CATEGORY_POSTER_CIRCLE = '/figma/category-poster-circle.svg';
 
-function CategoryPosterArrow({ href, label }: { href: string; label: string }) {
+function CategoryPosterArrow() {
   return (
-    <Link
-      href={href}
-      aria-label={label}
-      className="absolute bottom-[43px] right-[38px] z-10 flex size-[85px] items-center justify-center transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+    <span
+      aria-hidden
+      className="absolute bottom-[43px] right-[38px] z-10 flex size-[85px] items-center justify-center transition-transform duration-300 group-hover:scale-105"
     >
       <span className="relative flex size-[85.071px] items-center justify-center">
         <span className="relative flex size-16 rotate-[154.96deg] items-center justify-center">
@@ -64,7 +63,7 @@ function CategoryPosterArrow({ href, label }: { href: string; label: string }) {
           />
         </span>
       </span>
-    </Link>
+    </span>
   );
 }
 
@@ -101,13 +100,17 @@ function CategoryCard({
       poster.id as (typeof CATEGORY_FIGMA_GRID_IDS)[number]
     ] ?? 'left-[20%] top-[-12%] h-[140%] w-[75%]';
   const categoryLabel = `${poster.title[0]} ${poster.title[1]}`.trim();
+  const ariaLabel = `${categoryLabel} — ${t('common.footer.shop')}`;
 
   return (
-    <article
+    <Link
+      href={poster.href}
+      aria-label={ariaLabel}
       className={[
         'group relative block overflow-hidden rounded-[24px]',
         CARD_HEIGHT_CLASS,
         CATEGORY_BG_CLASS[poster.color],
+        'transition-transform duration-200 hover:scale-[1.01] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900',
       ].join(' ')}
     >
       <div
@@ -135,10 +138,7 @@ function CategoryCard({
         <span className="block">{poster.title[1]}</span>
       </div>
 
-      <CategoryPosterArrow
-        href={poster.href}
-        label={`${categoryLabel} — ${t('common.footer.shop')}`}
-      />
-    </article>
+      <CategoryPosterArrow />
+    </Link>
   );
 }

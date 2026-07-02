@@ -19,18 +19,6 @@ function validateCategoryTranslations(translations: FaqCategoryTranslationInput[
   }
 }
 
-function validateItemTranslations(translations: FaqItemTranslationInput[]): void {
-  const en = translations.find((t) => t.locale === 'en');
-  if (!en?.question.trim() || !en.answer.trim()) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'English question and answer are required',
-    };
-  }
-}
-
 const DEFAULT_FAQ_CATEGORY_SLUG = 'general';
 
 async function getOrCreateDefaultFaqCategory(): Promise<{ id: string }> {
@@ -291,8 +279,6 @@ class AdminFaqService {
     position?: number;
     published?: boolean;
   }) {
-    validateItemTranslations(data.translations);
-
     let categoryId = data.categoryId;
     if (categoryId) {
       const category = await db.faqCategory.findFirst({
@@ -354,10 +340,6 @@ class AdminFaqService {
         title: 'Not Found',
         detail: 'FAQ item not found',
       };
-    }
-
-    if (data.translations) {
-      validateItemTranslations(data.translations);
     }
 
     if (data.categoryId) {

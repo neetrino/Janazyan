@@ -134,7 +134,6 @@ export function FaqItemDrawer({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                   {t('admin.faq.question')}
-                  {activeLocale === 'en' ? ' *' : ''}
                 </label>
                 <Input
                   value={formData.translations[activeIndex].question}
@@ -144,7 +143,6 @@ export function FaqItemDrawer({
               <div>
                 <label className="mb-1 block text-sm font-medium text-gray-700">
                   {t('admin.faq.answer')}
-                  {activeLocale === 'en' ? ' *' : ''}
                 </label>
                 <textarea
                   value={formData.translations[activeIndex].answer}

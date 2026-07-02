@@ -28,6 +28,7 @@ type UseHeaderNavActivePillParams = {
   links: ReadonlyArray<NavLink>;
   pathname: string;
   searchParams: URLSearchParams;
+  pendingActiveHref?: string | null;
 };
 
 function getLinksLayoutKey(links: ReadonlyArray<NavLink>): string {
@@ -49,6 +50,7 @@ export function useHeaderNavActivePill({
   links,
   pathname,
   searchParams,
+  pendingActiveHref = null,
 }: UseHeaderNavActivePillParams) {
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
@@ -64,9 +66,15 @@ export function useHeaderNavActivePill({
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const activeIndex = links.findIndex((link) =>
+  const routeActiveIndex = links.findIndex((link) =>
     isNavLinkActive(pathname, link.href, searchParams),
   );
+  const pendingActiveIndex =
+    pendingActiveHref !== null
+      ? links.findIndex((link) => link.href === pendingActiveHref)
+      : -1;
+  const activeIndex =
+    pendingActiveIndex >= 0 ? pendingActiveIndex : routeActiveIndex;
   const linksLayoutKey = getLinksLayoutKey(links);
 
   const syncPillToIndex = useCallback((index: number) => {
