@@ -21,6 +21,19 @@ const translations: Partial<Record<LanguageCode, any>> = {
   ru: { common: ruCommon },
 };
 
+function resolveHydrationSafeLanguage(): LanguageCode {
+  if (typeof window === 'undefined') {
+    return 'hy';
+  }
+
+  const documentLang = document.documentElement.lang as LanguageCode;
+  if (documentLang && documentLang in translations) {
+    return documentLang;
+  }
+
+  return 'hy';
+}
+
 /**
  * React hook for translations in client components
  * Automatically handles language updates and memoization
@@ -34,16 +47,14 @@ const translations: Partial<Record<LanguageCode, any>> = {
  * ```
  */
 export function useTranslation() {
-  // Always start with 'en' to prevent hydration mismatch
-  // The language will be updated after mount in useEffect
-  const [lang, setLang] = useState<LanguageCode>('en');
+  const [lang, setLang] = useState<LanguageCode>(() => resolveHydrationSafeLanguage());
 
   // Listen to language changes and update state reactively
   useEffect(() => {
     // Update language on mount to ensure we have the latest from localStorage
     const updateLanguage = () => {
       const storedLang = getStoredLanguage();
-      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : 'en';
+      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : 'hy';
       setLang((currentLang) => {
         if (newLang !== currentLang) {
           // Clear translation cache when language changes

@@ -9,7 +9,7 @@ import { prefetchDefaultStorefrontCatalog } from '../../lib/products/prefetch-st
 function warmStorefrontCatalog(router: ReturnType<typeof useRouter>): void {
   router.prefetch('/products');
 
-  const lang = (getStoredLanguage() ?? 'en') as LanguageCode;
+  const lang = (getStoredLanguage() ?? 'hy') as LanguageCode;
   void prefetchDefaultStorefrontCatalog(lang);
 }
 
@@ -35,7 +35,7 @@ export function useProductsCatalogPrefetch(): void {
         return;
       }
 
-      const lang = (getStoredLanguage() ?? 'en') as LanguageCode;
+      const lang = (getStoredLanguage() ?? 'hy') as LanguageCode;
       void prefetchDefaultStorefrontCatalog(lang, { force: true });
     };
 

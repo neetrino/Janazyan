@@ -21,8 +21,8 @@ export const PRODUCTS_PAGE_DESKTOP_SHELL_CLASS = `mx-auto w-full ${PRODUCTS_PAGE
 /** Same viewBox proportions as {@link HeroRectangleBackground} — keeps the hero shape unsmeared. */
 export const PRODUCTS_PAGE_HERO_ASPECT_CLASS = 'aspect-[1388/852]';
 
-/** Desktop hero gradient top inset tuned to match home header overlap. */
-export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-[27px]';
+/** Desktop hero gradient top inset tuned to sit closer to the embedded header. */
+export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-[14px]';
 
 /** Breadcrumb baseline from shell top (node 269:900, y=210). */
 export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'lg:pt-[210px]';

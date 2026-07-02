@@ -12,7 +12,7 @@ function parseLang(value: string | null): LanguageCode {
   if (value && value in LANGUAGES) {
     return value as LanguageCode;
   }
-  return 'en';
+  return 'hy';
 }
 
 function parsePositiveInt(value: string | null, fallback: number): number {
