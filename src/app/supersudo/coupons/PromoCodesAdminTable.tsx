@@ -1,6 +1,6 @@
 'use client';
 
-import { Card } from '@shop/ui';
+import { Button, Card } from '@shop/ui';
 import type { PromoCodeAdminRow } from '@/lib/promo-codes/types';
 import {
   ADMIN_TABLE,
@@ -85,28 +85,74 @@ export function PromoCodesAdminTable({
                 <td className={ADMIN_TABLE_TD}>{row.active ? '✓' : '—'}</td>
                 <td className={ADMIN_TABLE_TD}>{formatShortDate(row.validUntil)}</td>
                 <td className={ADMIN_TABLE_TD}>
-                  <div className="flex flex-wrap gap-2">
-                    <button
+                  <div className="flex flex-wrap items-center gap-1">
+                    <Button
                       type="button"
-                      className="text-sm text-blue-600 hover:underline"
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                      aria-label={labels.edit}
+                      title={labels.edit}
                       onClick={() => onEdit(row)}
                     >
-                      {labels.edit}
-                    </button>
-                    <button
+                      <svg
+                        className="h-5 w-5 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        />
+                      </svg>
+                    </Button>
+                    <Button
                       type="button"
-                      className="text-sm text-blue-600 hover:underline"
+                      variant="ghost"
+                      size="sm"
+                      className="text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                      aria-label={labels.copy}
+                      title={labels.copy}
                       onClick={() => onCopy(row.code)}
                     >
-                      {labels.copy}
-                    </button>
-                    <button
+                      <svg
+                        className="h-5 w-5 shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        aria-hidden
+                      >
+                        <rect x="8" y="8" width="10" height="10" rx="2" stroke="currentColor" strokeWidth="2" />
+                        <path d="M6 14V6a2 2 0 0 1 2-2h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                      </svg>
+                    </Button>
+                    <Button
                       type="button"
-                      className="text-sm text-red-600 hover:underline"
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:text-red-800 hover:bg-red-50"
+                      aria-label={labels.delete}
+                      title={labels.delete}
                       onClick={() => onDelete(row)}
                     >
-                      {labels.delete}
-                    </button>
+                      <svg
+                        className="h-5 w-5 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        aria-hidden
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        />
+                      </svg>
+                    </Button>
                   </div>
                 </td>
               </tr>

@@ -5,6 +5,7 @@ import { type ChangeEvent } from 'react';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category, CategoryFormData } from '../types';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { AdminSideDrawer } from '../../components/AdminSideDrawer';
 
 interface EditCategoryModalProps {
   isOpen: boolean;
@@ -39,10 +40,33 @@ export function EditCategoryModal({
   if (!isOpen || !editingCategory) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('admin.categories.editCategory')}</h3>
-        <div className="space-y-4">
+    <AdminSideDrawer
+      open={isOpen && Boolean(editingCategory)}
+      onClose={onClose}
+      title={t('admin.categories.editCategory')}
+      side="right"
+      size="wide"
+      footer={
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            onClick={onSubmit}
+            disabled={saving || imageUploading || !formData.title.trim()}
+            className="flex-1"
+          >
+            {saving ? t('admin.categories.updating') : t('admin.categories.updateCategory')}
+          </Button>
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            disabled={saving}
+          >
+            {t('admin.common.cancel')}
+          </Button>
+        </div>
+      }
+    >
+      <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('admin.categories.categoryTitle')} *
@@ -214,26 +238,8 @@ export function EditCategoryModal({
               )}
             </div>
           </div>
-        </div>
-        <div className="flex gap-3 mt-6">
-          <Button
-            variant="primary"
-            onClick={onSubmit}
-            disabled={saving || imageUploading || !formData.title.trim()}
-            className="flex-1"
-          >
-            {saving ? t('admin.categories.updating') : t('admin.categories.updateCategory')}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            disabled={saving}
-          >
-            {t('admin.common.cancel')}
-          </Button>
-        </div>
       </div>
-    </div>
+    </AdminSideDrawer>
   );
 }
 

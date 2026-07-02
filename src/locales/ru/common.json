@@ -193,15 +193,34 @@
   },
   "footer": {
     "shop": "Магазин",
-    "description": "Профессиональная платформа электронной коммерции для современного опыта покупок.",
+    "description": "Нежная забота о вашем малыше, созданная с любовью и вниманием к каждой детали.",
+    "companyTitle": "Компания",
+    "supportTitle": "Поддержка",
+    "contactTitle": "Связаться с нами",
     "quickLinks": "Быстрые ссылки",
     "legal": "Юридическая информация",
     "contactInfo": "Контактная информация",
+    "links": {
+      "shop": "Магазин",
+      "about": "О нас",
+      "stores": "Наши магазины",
+      "faq": "FAQ",
+      "contact": "Контакты",
+      "blog": "Блог",
+      "delivery": "Доставка",
+      "returns": "Возврат",
+      "privacy": "Конфиденциальность",
+      "terms": "Условия и положения"
+    },
+    "contact": {
+      "storeLocation": "Megamall, 2-й этаж"
+    },
     "privacyPolicy": "Политика конфиденциальности",
     "termsOfService": "Условия использования",
     "refundPolicy": "Политика возврата",
     "deliveryTerms": "Условия доставки",
     "copyright": "© {year} Shop. Все права защищены.",
+    "rightsReserved": ". Права защищены."     ,
     "paymentMethods": "Способы оплаты:"
   },
   "product": {

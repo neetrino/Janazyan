@@ -85,7 +85,7 @@ export const CATEGORY_POSTERS = CATEGORY_POSTER_CONFIG;
 /** Desktop category poster CTA — white circle + arrow (Figma). */
 export const CATEGORY_POSTER_CIRCLE_SIZE_PX = 64;
 export const CATEGORY_POSTER_ARROW_WIDTH_PX = 30;
-export const CATEGORY_POSTER_ARROW_HEIGHT_PX = 14;
+export const CATEGORY_POSTER_ARROW_HEIGHT_PX = 30;
 
 export type WhyCardConfig = {
   cardKey: '01' | '02' | '03' | '04';

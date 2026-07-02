@@ -1,33 +1,36 @@
 export type FooterLink = {
-  label: string;
+  labelKey: string;
   href: string;
 };
 
 /** "Ընկերություն" column (Figma node 136:403). */
 export const FOOTER_COMPANY: ReadonlyArray<FooterLink> = [
-  { label: 'Խանութ', href: '/products' },
-  { label: 'Մեր մասին', href: '/about' },
-  { label: 'Մեր խանութները', href: '/stores' },
-  { label: 'Հարցեր', href: '/faq' },
-  { label: 'Կապ', href: '/contact' },
-  { label: 'Բլոգ', href: '/blog' },
+  { labelKey: 'links.shop', href: '/products' },
+  { labelKey: 'links.about', href: '/about' },
+  { labelKey: 'links.stores', href: '/stores' },
+  { labelKey: 'links.faq', href: '/faq' },
+  { labelKey: 'links.contact', href: '/contact' },
+  { labelKey: 'links.blog', href: '/blog' },
 ];
 
 /** "Աջակցություն" column (Figma node 136:419). */
 export const FOOTER_SUPPORT: ReadonlyArray<FooterLink> = [
-  { label: 'Առաքում', href: '/delivery' },
-  { label: 'Վերադարձ', href: '/returns' },
-  { label: 'Գաղտնիություն', href: '/privacy' },
-  { label: 'Պայմաններ և դրույթներ', href: '/terms' },
+  { labelKey: 'links.delivery', href: '/delivery' },
+  { labelKey: 'links.returns', href: '/returns' },
+  { labelKey: 'links.privacy', href: '/privacy' },
+  { labelKey: 'links.terms', href: '/terms' },
 ];
 
-export type FooterContactItem = {
-  label: string;
+type FooterContactBase = {
   href: string;
   icon: string;
   /** Intrinsic icon size in px (Figma). */
   iconSize: number;
 };
+
+export type FooterContactItem =
+  | (FooterContactBase & { label: string; labelKey?: never })
+  | (FooterContactBase & { labelKey: string; label?: never });
 
 /** "Կապ մեզ հետ" column with leading icons (Figma node 136:413). */
 export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
@@ -38,7 +41,7 @@ export const FOOTER_CONTACT: ReadonlyArray<FooterContactItem> = [
     iconSize: 24,
   },
   {
-    label: 'Megamall, 2-րդ հարկ',
+    labelKey: 'contact.storeLocation',
     href: '/stores',
     icon: '/figma/footer-contact-location.svg',
     iconSize: 22,

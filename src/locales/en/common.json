@@ -196,15 +196,34 @@
   },
   "footer": {
     "shop": "Shop",
-    "description": "Professional e-commerce platform for modern shopping experience.",
+    "description": "Gentle care for your little one, created with love and attention to every detail.",
+    "companyTitle": "Company",
+    "supportTitle": "Support",
+    "contactTitle": "Contact us",
     "quickLinks": "Quick Links",
     "legal": "Legal",
     "contactInfo": "Contact Information",
+    "links": {
+      "shop": "Shop",
+      "about": "About us",
+      "stores": "Our stores",
+      "faq": "FAQ",
+      "contact": "Contact",
+      "blog": "Blog",
+      "delivery": "Delivery",
+      "returns": "Returns",
+      "privacy": "Privacy",
+      "terms": "Terms and conditions"
+    },
+    "contact": {
+      "storeLocation": "Megamall, 2nd floor"
+    },
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "refundPolicy": "Refund Policy",
     "deliveryTerms": "Delivery Terms",
     "copyright": "© {year} Shop. All rights reserved.",
+    "rightsReserved": ". All rights reserved.",
     "paymentMethods": "Payment Methods:"
   },
   "product": {
