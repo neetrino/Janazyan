@@ -1,8 +1,8 @@
 /**
  * Customer support phone for order confirmation (tel: link).
- * Override with NEXT_PUBLIC_SUPPORT_PHONE_E164 (e.g. +37495044888).
+ * Override with NEXT_PUBLIC_SUPPORT_PHONE_E164 (e.g. +37441402080).
  */
-const DEFAULT_E164 = '+37495044888';
+const DEFAULT_E164 = '+37441402080';
 
 function normalizeToTelHref(input: string): string {
   const trimmed = input.trim();
@@ -11,7 +11,7 @@ function normalizeToTelHref(input: string): string {
   }
   const noSpace = trimmed.replace(/\s/g, '');
   if (noSpace.length === 0) {
-    return 'tel:+37495044888';
+    return `tel:${DEFAULT_E164}`;
   }
   const e164 = noSpace.startsWith('+') ? noSpace : `+${noSpace}`;
   return `tel:${e164}`;
