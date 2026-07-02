@@ -34,6 +34,8 @@ const MapPinIcon = () => (
 
 export default function ContactPage() {
   const { t } = useTranslation();
+  const phoneLabel = t('contact.phone');
+  const phoneHref = phoneLabel.replace(/\s+/g, '');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -97,8 +99,8 @@ export default function ContactPage() {
                     <h3 className="text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
                   </div>
                   <p className="mb-2 text-gray-600">{t('contact.callToUs.description')}</p>
-                  <a href={`tel:${t('contact.phone')}`} className="font-medium text-orange-500 hover:text-orange-600">
-                    {t('contact.phone')}
+                  <a href={`tel:${phoneHref}`} className="font-medium text-black/80 hover:text-black">
+                    {phoneLabel}
                   </a>
                 </div>
 
@@ -110,7 +112,7 @@ export default function ContactPage() {
                     <h3 className="text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
                   </div>
                   <p className="mb-2 text-gray-600">{t('contact.writeToUs.description')}</p>
-                  <a href={`mailto:${t('contact.email')}`} className="font-medium text-orange-500 hover:text-orange-600">
+                  <a href={`mailto:${t('contact.email')}`} className="font-medium text-black/80 hover:text-black">
                     {t('contact.writeToUs.emailLabel')} {t('contact.email')}
                   </a>
                 </div>
@@ -126,7 +128,7 @@ export default function ContactPage() {
                     <p>{t('contact.headquarter.hours.weekdays')}</p>
                     <p>{t('contact.headquarter.hours.saturday')}</p>
                   </div>
-                  <p className="font-medium text-orange-500 hover:text-orange-600">
+                  <p className="whitespace-pre-line font-medium text-black/80">
                     {t('contact.address')}
                   </p>
                 </div>
@@ -207,7 +209,7 @@ export default function ContactPage() {
 
           <div className="h-[500px] w-full overflow-hidden bg-gray-100">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3048.1234567890123!2d44.5150!3d40.1812!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x406aa2dab8fc8b5b%3A0x3d1479ab4e9b8c5e!2sAbovyan%20St%2C%20Yerevan%2C%20Armenia!5e0!3m2!1sen!2sam!4v1234567890123!5m2!1sen!2sam"
+              src="https://maps.google.com/maps?q=16%20Gai%20Avenue%20Megamall%20Yerevan&t=&z=16&ie=UTF8&iwloc=&output=embed"
               width="100%"
               height="100%"
               title="Janazyan location map"

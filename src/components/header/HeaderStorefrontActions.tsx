@@ -204,15 +204,18 @@ function HeaderCurrencyControl() {
   );
 }
 
-export function HeaderStorefrontActions() {
+export function HeaderStorefrontActions({ isHomePage }: { isHomePage: boolean }) {
   const wishlistCount = useWishlistItemCount();
   const wishlistBadgeLabel = formatWishlistBadgeCount(wishlistCount);
   const cartCount = useCartItemCount();
   const cartBadgeLabel = formatCartBadgeCount(cartCount);
+  const shadowClassName = isHomePage
+    ? 'shadow-soft'
+    : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
 
   return (
     <div
-      className="flex shrink-0 items-center bg-white shadow-soft"
+      className={`flex shrink-0 items-center bg-white ${shadowClassName}`}
       style={{
         gap: HEADER_ACTION_PROFILE_GAP_PX,
         height: HEADER_PILL_HEIGHT_PX,

@@ -53,6 +53,18 @@ export function OrderRow({
     return formatCurrency(totalWithoutShippingAMD, order.currency, 'AMD');
   };
 
+  const calculateDiscount = () => {
+    if (!order.discountAmount || order.discountAmount <= 0) {
+      return null;
+    }
+
+    const discountAMD = convertPrice(order.discountAmount, 'USD', 'AMD');
+    return formatCurrency(discountAMD, order.currency, 'AMD');
+  };
+
+  const totalWithoutShippingDisplay = calculateTotalWithoutShipping();
+  const discountDisplay = calculateDiscount();
+
   return (
     <tr
       className="cursor-pointer hover:bg-gray-50"
@@ -92,9 +104,16 @@ export function OrderRow({
       </td>
       <td
         className="min-w-0 whitespace-nowrap px-3 py-2.5 text-left align-middle text-sm font-semibold text-gray-900"
-        title={calculateTotalWithoutShipping()}
+        title={totalWithoutShippingDisplay}
       >
-        {calculateTotalWithoutShipping()}
+        <div className="space-y-0.5">
+          <p>{totalWithoutShippingDisplay}</p>
+          {discountDisplay && (
+            <p className="text-xs font-medium text-emerald-600">
+              {t('orders.orderSummary.discount')}: -{discountDisplay}
+            </p>
+          )}
+        </div>
       </td>
       <td className="min-w-0 whitespace-nowrap px-3 py-2.5 text-center align-middle text-sm tabular-nums text-gray-600">
         {order.itemsCount}

@@ -167,7 +167,9 @@ export function Footer() {
               {FOOTER_CONTACT.map((item) => (
                 <FooterContactRow
                   key={item.href}
-                  {...item}
+                  href={item.href}
+                  icon={item.icon}
+                  iconSize={item.iconSize}
                   label={getFooterContactLabel(item, t)}
                 />
               ))}
@@ -246,7 +248,12 @@ function FooterContactRow({
   href,
   icon,
   iconSize,
-}: FooterContactItem & { label: string }) {
+}: {
+  label: string;
+  href: string;
+  icon: string;
+  iconSize: number;
+}) {
   const className = `flex items-center gap-[6px] ${FOOTER_LINK}`;
   const inner = (
     <>
@@ -257,7 +264,7 @@ function FooterContactRow({
         height={iconSize}
         className="shrink-0"
       />
-      <span className="whitespace-nowrap">{label}</span>
+      <span className="whitespace-pre-line">{label}</span>
     </>
   );
 

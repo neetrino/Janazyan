@@ -215,11 +215,6 @@ export function useCheckout() {
       return;
     }
 
-    if (paymentMethod === 'arca' || paymentMethod === 'idram') {
-      setShowCardModal(true);
-      return;
-    }
-
     void submitOrder(parsed.data, {
       promoCode: appliedPromo?.code ?? null,
     });

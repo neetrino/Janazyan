@@ -35,6 +35,7 @@ function HeaderContentRow({
   searchParams: URLSearchParams;
   embedded?: boolean;
 }) {
+  const isHomePage = pathname === '/';
   const minHeightClass = embedded
     ? `min-h-[120px] lg:min-h-[var(--header-shell-height)]`
     : 'min-h-[var(--header-shell-height)]';
@@ -56,8 +57,8 @@ function HeaderContentRow({
         } as CSSProperties
       }
     >
-      <HeaderBrandCluster pathname={pathname} searchParams={searchParams} />
-      <HeaderStorefrontActions />
+      <HeaderBrandCluster pathname={pathname} searchParams={searchParams} isHomePage={isHomePage} />
+      <HeaderStorefrontActions isHomePage={isHomePage} />
     </div>
   );
 }
