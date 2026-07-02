@@ -109,7 +109,7 @@ export function ProductsHeroShell({
       <div className={`hidden lg:block ${PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}`}>
         <section
           aria-label={sectionAriaLabel}
-          className="relative w-full lg:pt-3 lg:md:pt-5"
+          className="relative w-full"
         >
           <ProductsHeroShellInner
             toolbar={toolbar}

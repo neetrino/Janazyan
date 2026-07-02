@@ -18,7 +18,10 @@ import {
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
-import { HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import {
+  HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
+  STOREFRONT_MOBILE_TOP_INSET_CLASS,
+} from '../../lib/layout/storefront-mobile-layout.constants';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -50,7 +53,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   return (
     <section className="relative lg:hidden">
       <MobileBackdrop />
-      <div className={`relative z-10 pt-10 ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+      <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />

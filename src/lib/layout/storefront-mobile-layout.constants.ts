@@ -4,7 +4,7 @@ import {
 } from './storefront-layout.constants';
 
 /** Safe-area + breathing room below status bar. */
-export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-10';
+export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-8';
 
 /**
  * MobileBottomNav outer chrome + icon row + labels (see MobileBottomNav).
