@@ -118,6 +118,45 @@ interface ProductsTableLoadedViewProps {
   visiblePages: number[];
 }
 
+interface SortableHeaderCellProps {
+  label: string;
+  field: 'price' | 'createdAt' | 'title' | 'stock';
+  sortBy: string;
+  onSort: (field: 'price' | 'createdAt' | 'title' | 'stock') => void;
+}
+
+function SortableHeaderCell({ label, field, sortBy, onSort }: SortableHeaderCellProps) {
+  return (
+    <th className="p-0 align-middle">
+      <button
+        type="button"
+        onClick={() => onSort(field)}
+        className={`${ADMIN_TABLE_TH_SORTABLE} inline-flex w-full items-center gap-1`}
+      >
+        <span>{label}</span>
+        <span className="flex flex-col gap-0.5">
+          <svg
+            className={`w-2.5 h-2.5 ${sortBy === `${field}-asc` ? 'text-gray-900' : 'text-gray-400'}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+          </svg>
+          <svg
+            className={`w-2.5 h-2.5 ${sortBy === `${field}-desc` ? 'text-gray-900' : 'text-gray-400'}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </span>
+      </button>
+    </th>
+  );
+}
+
 function ProductsTableLoadedView({
   sortedProducts,
   products,
@@ -155,149 +194,33 @@ function ProductsTableLoadedView({
                   onChange={toggleSelectAll}
                 />
               </th>
-              <th className="p-0 align-middle">
-                <button
-                  type="button"
-                  onClick={() => handleHeaderSort('title')}
-                  className={`${ADMIN_TABLE_TH_SORTABLE} inline-flex w-full items-center gap-1`}
-                >
-                  <span>{t('admin.products.product')}</span>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'title-asc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'title-desc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </button>
-              </th>
-              <th className="p-0 align-middle">
-                <button
-                  type="button"
-                  onClick={() => handleHeaderSort('stock')}
-                  className={`${ADMIN_TABLE_TH_SORTABLE} inline-flex w-full items-center gap-1`}
-                >
-                  <span>{t('admin.products.stock')}</span>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'stock-asc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'stock-desc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </button>
-              </th>
-              <th className="p-0 align-middle">
-                <button
-                  type="button"
-                  onClick={() => handleHeaderSort('price')}
-                  className={`${ADMIN_TABLE_TH_SORTABLE} inline-flex w-full items-center gap-1`}
-                >
-                  <span>{t('admin.products.price')}</span>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'price-asc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'price-desc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </button>
-              </th>
+              <SortableHeaderCell
+                label={t('admin.products.product')}
+                field="title"
+                sortBy={sortBy}
+                onSort={handleHeaderSort}
+              />
+              <SortableHeaderCell
+                label={t('admin.products.stock')}
+                field="stock"
+                sortBy={sortBy}
+                onSort={handleHeaderSort}
+              />
+              <SortableHeaderCell
+                label={t('admin.products.price')}
+                field="price"
+                sortBy={sortBy}
+                onSort={handleHeaderSort}
+              />
               <th className={ADMIN_TABLE_TH}>{t('admin.products.category')}</th>
               <th className={ADMIN_TABLE_TH_CENTER}>{t('admin.products.featured')}</th>
               <th className={ADMIN_TABLE_TH_CENTER}>{t('admin.products.actions')}</th>
-              <th className="p-0 align-middle">
-                <button
-                  type="button"
-                  onClick={() => handleHeaderSort('createdAt')}
-                  className={`${ADMIN_TABLE_TH_SORTABLE} inline-flex w-full items-center gap-1`}
-                >
-                  <span>{t('admin.products.created')}</span>
-                  <span className="flex flex-col gap-0.5">
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'createdAt-asc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                    </svg>
-                    <svg
-                      className={`w-2.5 h-2.5 ${
-                        sortBy === 'createdAt-desc'
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </span>
-                </button>
-              </th>
+              <SortableHeaderCell
+                label={t('admin.products.created')}
+                field="createdAt"
+                sortBy={sortBy}
+                onSort={handleHeaderSort}
+              />
             </tr>
           </thead>
           <tbody className={ADMIN_TABLE_TBODY}>
@@ -321,11 +244,13 @@ function ProductsTableLoadedView({
                 <td className={`${ADMIN_TABLE_TD} whitespace-nowrap text-left text-gray-900`}>
                   <div className="flex items-center">
                     {product.image && (
-                      <img
-                        src={processImageUrl(product.image)}
-                        alt={product.title}
-                        className="h-12 w-12 rounded object-cover bg-gray-100 mr-3"
-                      />
+                      <div className="mr-3 flex h-12 w-12 items-center justify-center rounded-md border border-gray-200 bg-gray-50 p-1">
+                        <img
+                          src={processImageUrl(product.image)}
+                          alt={product.title}
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
                     )}
                     <div>
                       <div className="text-sm font-medium text-gray-900">{product.title}</div>
@@ -386,14 +311,19 @@ function ProductsTableLoadedView({
                       event.stopPropagation();
                       handleToggleFeatured(product.id, product.featured || false, product.title);
                     }}
-                    className="inline-flex items-center justify-center w-8 h-8 transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded"
+                    className={`inline-flex h-8 w-8 items-center justify-center rounded transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      product.featured
+                        ? 'bg-amber-100 ring-1 ring-amber-300'
+                        : 'bg-transparent hover:bg-blue-50'
+                    }`}
                     title={product.featured ? t('admin.products.clickToRemoveFeatured') : t('admin.products.clickToMarkFeatured')}
+                    aria-pressed={Boolean(product.featured)}
                   >
                     <svg
                       className={`w-6 h-6 transition-all duration-200 ${
                         product.featured
-                          ? 'fill-blue-500 text-blue-500 drop-shadow-sm'
-                          : 'fill-none stroke-blue-400 text-blue-400 opacity-50 hover:opacity-75'
+                          ? 'fill-amber-500 stroke-amber-500 drop-shadow-sm'
+                          : 'fill-none stroke-gray-400 text-gray-400'
                       }`}
                       viewBox="0 0 24 24"
                       strokeWidth="1.5"

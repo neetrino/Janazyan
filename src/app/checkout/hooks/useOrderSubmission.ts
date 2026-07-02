@@ -3,6 +3,7 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
 import { isOptimisticUserCartId } from '../../../lib/cart/cart-item-id';
+import { markOrderCartClearOnSuccess } from '../../../lib/cart/order-success-cart-clear';
 import { clearGuestCart } from '../checkoutUtils';
 import { saveGuestOrderAccess } from '../utils/guest-order-access';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
@@ -110,6 +111,8 @@ export function useOrderSubmission({
         paymentMethod: data.paymentMethod,
         ...(options?.promoCode ? { promoCode: options.promoCode } : {}),
       });
+
+      markOrderCartClearOnSuccess(response.order.number);
 
       if (response.payment?.paymentUrl) {
         if (!isLoggedIn) {

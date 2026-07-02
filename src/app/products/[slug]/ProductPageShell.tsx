@@ -10,14 +10,11 @@ import {
 import {
   PDP_ACTION_ROW_CLASS,
   PDP_ADD_TO_CART_CLASS,
-  PDP_DESKTOP_ICON_ACTIONS_CLASS,
   PDP_GLASS_ICON_BUTTON_CLASS,
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
-  PDP_SECONDARY_ACTION_ROW_CLASS,
 } from './product-action-bar.constants';
-import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { Heart } from 'lucide-react';
 import type { ProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 import { formatPrice } from '@/lib/currency';
@@ -158,7 +155,7 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                     <div className="mb-8 min-h-[72px] rounded-lg bg-sky-mist/45" aria-hidden />
                   )}
                   {shouldReserveVariantSpace ? (
-                    <div className="mb-8 min-h-[188px]" aria-hidden />
+                    <div className="mb-8 lg:min-h-[188px]" aria-hidden />
                   ) : null}
                 </div>
                 <div className="pt-0 lg:-translate-y-[6px]">
@@ -180,22 +177,11 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                       >
                         Add To Cart
                       </button>
-                      <div className={PDP_DESKTOP_ICON_ACTIONS_CLASS}>
-                        <button type="button" className={PDP_GLASS_ICON_BUTTON_CLASS} disabled aria-label="Compare">
-                          <CompareIcon isActive={false} />
-                        </button>
+                      <div className="flex shrink-0 items-center">
                         <button type="button" className={PDP_GLASS_ICON_BUTTON_CLASS} disabled aria-label="Wishlist">
                           <Heart />
                         </button>
                       </div>
-                    </div>
-                    <div className={PDP_SECONDARY_ACTION_ROW_CLASS}>
-                      <button type="button" className={PDP_GLASS_ICON_BUTTON_CLASS} disabled aria-label="Compare">
-                        <CompareIcon isActive={false} />
-                      </button>
-                      <button type="button" className={PDP_GLASS_ICON_BUTTON_CLASS} disabled aria-label="Wishlist">
-                        <Heart />
-                      </button>
                     </div>
                   </div>
                 </div>

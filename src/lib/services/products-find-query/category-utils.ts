@@ -6,27 +6,61 @@ import {
 } from "@/lib/categories/shop-category-slug-keywords";
 import { logger } from "../../utils/logger";
 
-/**
- * Get all child category IDs recursively
- */
+type PublishedCategoryNode = {
+  id: string;
+  parentId: string | null;
+};
+
+function buildChildrenMap(rows: readonly PublishedCategoryNode[]): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const row of rows) {
+    if (!row.parentId) {
+      continue;
+    }
+    const siblings = map.get(row.parentId);
+    if (siblings) {
+      siblings.push(row.id);
+      continue;
+    }
+    map.set(row.parentId, [row.id]);
+  }
+  return map;
+}
+
+function collectDescendantCategoryIds(
+  parentId: string,
+  childrenMap: ReadonlyMap<string, readonly string[]>,
+): string[] {
+  const descendants: string[] = [];
+  const queue = [...(childrenMap.get(parentId) ?? [])];
+  let cursor = 0;
+
+  while (cursor < queue.length) {
+    const currentId = queue[cursor];
+    cursor += 1;
+    if (!currentId) {
+      continue;
+    }
+    descendants.push(currentId);
+    const children = childrenMap.get(currentId);
+    if (children) {
+      queue.push(...children);
+    }
+  }
+
+  return descendants;
+}
+
+/** Get all descendant category IDs for a parent category. */
 export async function getAllChildCategoryIds(parentId: string): Promise<string[]> {
-  const children = await db.category.findMany({
+  const rows = await db.category.findMany({
     where: {
-      parentId: parentId,
       published: true,
       deletedAt: null,
     },
-    select: { id: true },
+    select: { id: true, parentId: true },
   });
-
-  let allChildIds = children.map((c: { id: string }) => c.id);
-
-  for (const child of children) {
-    const grandChildren = await getAllChildCategoryIds(child.id);
-    allChildIds = [...allChildIds, ...grandChildren];
-  }
-
-  return allChildIds;
+  return collectDescendantCategoryIds(parentId, buildChildrenMap(rows));
 }
 
 async function findCategoryDocByTranslationSlug(
@@ -76,6 +110,7 @@ async function findAllCategoryIdsByShopSlugTitle(
     },
     select: {
       id: true,
+      parentId: true,
       translations: {
         select: {
           locale: true,
@@ -86,6 +121,7 @@ async function findAllCategoryIdsByShopSlugTitle(
   });
 
   const matchedIds: string[] = [];
+  const childrenMap = buildChildrenMap(rows);
 
   for (const row of rows) {
     const translation =
@@ -98,7 +134,20 @@ async function findAllCategoryIdsByShopSlugTitle(
     }
   }
 
-  return matchedIds;
+  if (matchedIds.length === 0) {
+    return [];
+  }
+
+  const allIds = new Set<string>();
+  for (const categoryId of matchedIds) {
+    allIds.add(categoryId);
+    const descendants = collectDescendantCategoryIds(categoryId, childrenMap);
+    for (const descendantId of descendants) {
+      allIds.add(descendantId);
+    }
+  }
+
+  return [...allIds];
 }
 
 /**
@@ -122,17 +171,7 @@ export async function findCategoryIdsBySlug(
   if (titleMatches.length === 0) {
     return [];
   }
-
-  const allIds = new Set<string>();
-  for (const categoryId of titleMatches) {
-    allIds.add(categoryId);
-    const childCategoryIds = await getAllChildCategoryIds(categoryId);
-    for (const childId of childCategoryIds) {
-      allIds.add(childId);
-    }
-  }
-
-  return [...allIds];
+  return titleMatches;
 }
 
 /**

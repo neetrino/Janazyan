@@ -94,7 +94,272 @@ type OrderItemWithVariant = Prisma.OrderItemGetPayload<{
   };
 }>;
 
+type CheckoutCartItem = {
+  variantId: string;
+  productId: string;
+  quantity: number;
+  price: number;
+  productTitle: string;
+  variantTitle?: string;
+  sku: string;
+  imageUrl?: string;
+};
+
 class OrdersService {
+  private async createOrderAndPayment(params: {
+    userId?: string;
+    resolvedUserCartId: string | null;
+    paymentMethod: string;
+    shippingMethod: string;
+    shippingAddress: CheckoutData['shippingAddress'];
+    email: string;
+    phone: string;
+    subtotal: number;
+    discountAmount: number;
+    shippingAmount: number;
+    taxAmount: number;
+    total: number;
+    cartItems: CheckoutCartItem[];
+    resolvedPromo: Awaited<ReturnType<typeof resolveCheckoutPromo>> | null;
+  }) {
+    const {
+      userId,
+      resolvedUserCartId,
+      paymentMethod,
+      shippingMethod,
+      shippingAddress,
+      email,
+      phone,
+      subtotal,
+      discountAmount,
+      shippingAmount,
+      taxAmount,
+      total,
+      cartItems,
+      resolvedPromo,
+    } = params;
+
+    return db.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        if (resolvedPromo?.ok) {
+          const updateResult = await tx.promoCode.updateMany({
+            where: {
+              id: resolvedPromo.promo.id,
+              deletedAt: null,
+              active: true,
+              ...(resolvedPromo.promo.usageLimit !== null
+                ? { usedCount: { lt: resolvedPromo.promo.usageLimit } }
+                : {}),
+            },
+            data: {
+              usedCount: {
+                increment: 1,
+              },
+            },
+          });
+
+          if (updateResult.count === 0) {
+            throw {
+              status: 400,
+              type: "https://api.shop.am/problems/validation-error",
+              title: "Validation Error",
+              detail: "Promo code usage limit reached",
+            };
+          }
+        }
+
+        const orderNumber = await allocateNextOrderNumber(tx);
+        const newOrder = await tx.order.create({
+          data: {
+            number: orderNumber,
+            userId: userId || null,
+            status: 'pending',
+            paymentStatus: 'pending',
+            fulfillmentStatus: 'unfulfilled',
+            subtotal,
+            discountAmount,
+            shippingAmount,
+            taxAmount,
+            total,
+            currency: 'AMD',
+            customerEmail: email,
+            customerPhone: phone,
+            customerLocale: 'en',
+            shippingMethod,
+            shippingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
+            billingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
+            items: {
+              create: cartItems.map((item) => ({
+                variantId: item.variantId,
+                productTitle: item.productTitle,
+                variantTitle: item.variantTitle,
+                sku: item.sku,
+                quantity: item.quantity,
+                price: item.price,
+                total: item.price * item.quantity,
+                imageUrl: item.imageUrl,
+              })),
+            },
+            events: {
+              create: {
+                type: 'order_created',
+                data: {
+                  source: userId ? 'user' : 'guest',
+                  paymentMethod,
+                  shippingMethod,
+                  ...(resolvedPromo?.ok ? { promoCode: resolvedPromo.promo.code } : {}),
+                },
+              },
+            },
+          },
+          include: {
+            items: true,
+          },
+        });
+
+        logger.debug('Updating stock for variants', { count: cartItems.length });
+        try {
+          for (const item of cartItems) {
+            if (!item.variantId) {
+              logger.error('Missing variantId for item', { item });
+              throw {
+                status: 400,
+                type: "https://api.shop.am/problems/validation-error",
+                title: "Validation Error",
+                detail: `Missing variantId for item with SKU: ${item.sku}`,
+              };
+            }
+
+            const quantity = Number(item.quantity);
+            const variantId = item.variantId;
+            const updated = await tx.$executeRaw(
+              Prisma.sql`UPDATE product_variants SET stock = stock - ${quantity} WHERE id = ${variantId} AND stock >= ${quantity}`
+            );
+            if (updated === 0) {
+              const variant = await tx.productVariant.findUnique({
+                where: { id: variantId },
+                select: { sku: true, stock: true },
+              });
+              logger.error('Insufficient stock on atomic decrement', {
+                variantId,
+                sku: variant?.sku,
+                currentStock: variant?.stock,
+                requested: quantity,
+              });
+              throw {
+                status: 422,
+                type: "https://api.shop.am/problems/validation-error",
+                title: "Insufficient stock",
+                detail: `Insufficient stock for SKU ${variant?.sku ?? variantId}. Available: ${variant?.stock ?? 0}, requested: ${quantity}`,
+              };
+            }
+            logger.debug('Stock decremented', { variantId, quantity });
+          }
+          logger.info('All variant stocks updated successfully');
+        } catch (stockError: unknown) {
+          const err = stockError as { status?: number; type?: string };
+          if (err.status && err.type) throw stockError;
+          logger.error('Error updating stock', { error: stockError });
+          throw stockError;
+        }
+
+        const payment = await tx.payment.create({
+          data: {
+            orderId: newOrder.id,
+            provider: paymentMethod,
+            method: paymentMethod,
+            amount: total,
+            currency: 'AMD',
+            status: 'pending',
+          },
+        });
+
+        if (userId && resolvedUserCartId && paymentMethod === 'cash_on_delivery') {
+          await tx.cart.delete({
+            where: { id: resolvedUserCartId },
+          });
+        }
+
+        return { order: newOrder, payment };
+      },
+      { timeout: 10000, maxWait: 5000 }
+    );
+  }
+
+  private async registerArcaPayment(orderAndPayment: {
+    order: { id: string; number: string; total: number; customerLocale: string | null };
+    payment: { id: string };
+  }): Promise<string> {
+    try {
+      const arcaConfig = getArcaConfig();
+      const amountInArcaCurrency = arcaConfig.currency === '051'
+        ? convertPrice(orderAndPayment.order.total, 'USD', 'AMD')
+        : orderAndPayment.order.total;
+      const returnUrl = buildArcaReturnUrl(orderAndPayment.order.number);
+      const registration = await arcaClient.registerOrder({
+        orderNumber: orderAndPayment.order.number,
+        amountMinorUnits: toArcaAmountMinorUnits(amountInArcaCurrency, arcaConfig.currency),
+        returnUrl,
+        description: `Order #${orderAndPayment.order.number}`,
+        language: orderAndPayment.order.customerLocale || 'en',
+      });
+
+      await db.payment.update({
+        where: { id: orderAndPayment.payment.id },
+        data: {
+          providerTransactionId: registration.orderId,
+          providerResponse: registration.rawResponse as Prisma.InputJsonValue,
+        },
+      });
+
+      return registration.formUrl;
+    } catch (error: unknown) {
+      logger.error('ArCa register failed during checkout', {
+        orderId: orderAndPayment.order.id,
+        paymentId: orderAndPayment.payment.id,
+        error,
+      });
+
+      const paymentErrorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to initialize ArCa payment';
+
+      await db.$transaction([
+        db.payment.update({
+          where: { id: orderAndPayment.payment.id },
+          data: {
+            status: 'failed',
+            errorMessage: paymentErrorMessage,
+            failedAt: new Date(),
+          },
+        }),
+        db.order.update({
+          where: { id: orderAndPayment.order.id },
+          data: {
+            paymentStatus: 'failed',
+          },
+        }),
+        db.orderEvent.create({
+          data: {
+            orderId: orderAndPayment.order.id,
+            type: 'payment_init_failed',
+            data: {
+              provider: 'arca',
+              message: paymentErrorMessage,
+            },
+          },
+        }),
+      ]);
+
+      throw {
+        status: 502,
+        type: "https://api.shop.am/problems/payment-provider-error",
+        title: "ArCa unavailable",
+        detail: "Failed to initialize ArCa payment. Please try again.",
+      };
+    }
+  }
+
   /**
    * Create order (checkout)
    */
@@ -123,16 +388,7 @@ class OrdersService {
       }
 
       // Get cart items - either from user cart or guest items
-      let cartItems: Array<{
-        variantId: string;
-        productId: string;
-        quantity: number;
-        price: number;
-        productTitle: string;
-        variantTitle?: string;
-        sku: string;
-        imageUrl?: string;
-      }> = [];
+      let cartItems: CheckoutCartItem[] = [];
 
       let resolvedUserCartId: string | null = null;
 
@@ -365,229 +621,27 @@ class OrdersService {
       const taxAmountAmd = convertPrice(taxAmount, 'USD', 'AMD');
       const total = subtotalAmd - discountAmountAmd + shippingAmount + taxAmountAmd;
 
-      // Create order with items in a transaction (timeout to avoid hung connections)
-      const order = await db.$transaction(
-        async (tx: Prisma.TransactionClient) => {
-        if (resolvedPromo?.ok) {
-          const updateResult = await tx.promoCode.updateMany({
-            where: {
-              id: resolvedPromo.promo.id,
-              deletedAt: null,
-              active: true,
-              ...(resolvedPromo.promo.usageLimit !== null
-                ? { usedCount: { lt: resolvedPromo.promo.usageLimit } }
-                : {}),
-            },
-            data: {
-              usedCount: {
-                increment: 1,
-              },
-            },
-          });
-
-          if (updateResult.count === 0) {
-            throw {
-              status: 400,
-              type: "https://api.shop.am/problems/validation-error",
-              title: "Validation Error",
-              detail: "Promo code usage limit reached",
-            };
-          }
-        }
-
-        const orderNumber = await allocateNextOrderNumber(tx);
-        // Create order
-        const newOrder = await tx.order.create({
-          data: {
-            number: orderNumber,
-            userId: userId || null,
-            status: 'pending',
-            paymentStatus: 'pending',
-            fulfillmentStatus: 'unfulfilled',
-            subtotal,
-            discountAmount,
-            shippingAmount,
-            taxAmount,
-            total,
-            currency: 'AMD',
-            customerEmail: email,
-            customerPhone: phone,
-            customerLocale: 'en', // TODO: Get from request
-            shippingMethod,
-            shippingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
-            billingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
-            items: {
-              create: cartItems.map((item) => ({
-                variantId: item.variantId,
-                productTitle: item.productTitle,
-                variantTitle: item.variantTitle,
-                sku: item.sku,
-                quantity: item.quantity,
-                price: item.price,
-                total: item.price * item.quantity,
-                imageUrl: item.imageUrl,
-              })),
-            },
-            events: {
-              create: {
-                type: 'order_created',
-                data: {
-                  source: userId ? 'user' : 'guest',
-                  paymentMethod,
-                  shippingMethod,
-                  ...(resolvedPromo?.ok ? { promoCode: resolvedPromo.promo.code } : {}),
-                },
-              },
-            },
-          },
-          include: {
-            items: true,
-          },
-        });
-
-        // Update stock atomically: only decrement if stock >= quantity (avoids race condition)
-        logger.debug('Updating stock for variants', { count: cartItems.length });
-        
-        try {
-          for (const item of cartItems) {
-            if (!item.variantId) {
-              logger.error('Missing variantId for item', { item });
-              throw {
-                status: 400,
-                type: "https://api.shop.am/problems/validation-error",
-                title: "Validation Error",
-                detail: `Missing variantId for item with SKU: ${item.sku}`,
-              };
-            }
-
-            const quantity = Number(item.quantity);
-            const variantId = item.variantId;
-            const updated = await tx.$executeRaw(
-              Prisma.sql`UPDATE product_variants SET stock = stock - ${quantity} WHERE id = ${variantId} AND stock >= ${quantity}`
-            );
-            if (updated === 0) {
-              const variant = await tx.productVariant.findUnique({
-                where: { id: variantId },
-                select: { sku: true, stock: true },
-              });
-              logger.error('Insufficient stock on atomic decrement', {
-                variantId,
-                sku: variant?.sku,
-                currentStock: variant?.stock,
-                requested: quantity,
-              });
-              throw {
-                status: 422,
-                type: "https://api.shop.am/problems/validation-error",
-                title: "Insufficient stock",
-                detail: `Insufficient stock for SKU ${variant?.sku ?? variantId}. Available: ${variant?.stock ?? 0}, requested: ${quantity}`,
-              };
-            }
-            logger.debug('Stock decremented', { variantId, quantity });
-          }
-          logger.info('All variant stocks updated successfully');
-        } catch (stockError: unknown) {
-          const err = stockError as { status?: number; type?: string };
-          if (err.status && err.type) throw stockError;
-          logger.error('Error updating stock', { error: stockError });
-          throw stockError;
-        }
-
-        // Create payment record
-        const payment = await tx.payment.create({
-          data: {
-            orderId: newOrder.id,
-            provider: paymentMethod,
-            method: paymentMethod,
-            amount: total,
-            currency: 'AMD',
-            status: 'pending',
-          },
-        });
-
-        // For online payments we keep server cart until callback confirms success.
-        if (userId && resolvedUserCartId && paymentMethod === 'cash_on_delivery') {
-          await tx.cart.delete({
-            where: { id: resolvedUserCartId },
-          });
-        }
-
-        return { order: newOrder, payment };
-      },
-        { timeout: 10000, maxWait: 5000 }
-      );
+      const order = await this.createOrderAndPayment({
+        userId,
+        resolvedUserCartId,
+        paymentMethod,
+        shippingMethod,
+        shippingAddress,
+        email,
+        phone,
+        subtotal,
+        discountAmount,
+        shippingAmount,
+        taxAmount,
+        total,
+        cartItems,
+        resolvedPromo,
+      });
 
       let paymentUrl: string | null = null;
 
       if (paymentMethod === 'arca') {
-        try {
-          const arcaConfig = getArcaConfig();
-          const amountInArcaCurrency = arcaConfig.currency === '051'
-            ? convertPrice(order.order.total, 'USD', 'AMD')
-            : order.order.total;
-          const returnUrl = buildArcaReturnUrl(order.order.number);
-          const registration = await arcaClient.registerOrder({
-            orderNumber: order.order.number,
-            amountMinorUnits: toArcaAmountMinorUnits(amountInArcaCurrency, arcaConfig.currency),
-            returnUrl,
-            description: `Order #${order.order.number}`,
-            language: order.order.customerLocale || 'en',
-          });
-
-          await db.payment.update({
-            where: { id: order.payment.id },
-            data: {
-              providerTransactionId: registration.orderId,
-              providerResponse: registration.rawResponse as Prisma.InputJsonValue,
-            },
-          });
-
-          paymentUrl = registration.formUrl;
-        } catch (error: unknown) {
-          logger.error('ArCa register failed during checkout', {
-            orderId: order.order.id,
-            paymentId: order.payment.id,
-            error,
-          });
-
-          const paymentErrorMessage = error instanceof Error
-            ? error.message
-            : 'Failed to initialize ArCa payment';
-
-          await db.$transaction([
-            db.payment.update({
-              where: { id: order.payment.id },
-              data: {
-                status: 'failed',
-                errorMessage: paymentErrorMessage,
-                failedAt: new Date(),
-              },
-            }),
-            db.order.update({
-              where: { id: order.order.id },
-              data: {
-                paymentStatus: 'failed',
-              },
-            }),
-            db.orderEvent.create({
-              data: {
-                orderId: order.order.id,
-                type: 'payment_init_failed',
-                data: {
-                  provider: 'arca',
-                  message: paymentErrorMessage,
-                },
-              },
-            }),
-          ]);
-
-          throw {
-            status: 502,
-            type: "https://api.shop.am/problems/payment-provider-error",
-            title: "ArCa unavailable",
-            detail: "Failed to initialize ArCa payment. Please try again.",
-          };
-        }
+        paymentUrl = await this.registerArcaPayment(order);
       }
 
       void invalidateAdminDashboardCache().catch((error: unknown) => {

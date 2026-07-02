@@ -14,7 +14,8 @@ const CARD_HEIGHT_PX = 347;
 const CARD_BODY_TOP_PX = 47;
 const PRODUCT_IMAGE_WIDTH_PX = 62;
 const PRODUCT_IMAGE_HEIGHT_PX = 255;
-const PRODUCT_IMAGE_TOP_PX = -64;
+const PRODUCT_IMAGE_TOP_PX = -42;
+const PRODUCT_TITLE_TOP_PX = 234;
 
 const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
 const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
@@ -120,7 +121,10 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
         </div>
       </div>
 
-      <span className="pointer-events-none absolute left-[15px] right-[43px] top-[212px] z-20 line-clamp-2 text-[16px] font-medium leading-[21px] text-ink-800">
+      <span
+        className="pointer-events-none absolute left-[15px] right-[43px] z-20 line-clamp-2 text-[16px] font-medium leading-[21px] text-ink-800"
+        style={{ top: PRODUCT_TITLE_TOP_PX }}
+      >
         {product.title}
       </span>
 

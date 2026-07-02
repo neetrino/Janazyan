@@ -1,8 +1,8 @@
 import { buildWhereClause } from "./products-find-query/query-builder";
 import { executeCatalogProductQuery } from "./products-find-query/catalog-query-executor";
 import { executeProductQuery } from "./products-find-query/query-executor";
-import { db } from "@white-shop/db";
 import type { ProductFilters, ProductWithRelations } from "./products-find-query/types";
+import { db } from "@white-shop/db";
 
 /**
  * Service for building and executing product find queries
@@ -39,12 +39,12 @@ class ProductsFindQueryService {
 
     if (filters.catalog && filters.fastCatalog) {
       const products = await runQuery(where, limit + 1, (page - 1) * limit);
-      const needsExactTotal = Boolean(filters.category?.trim() || filters.search?.trim());
-      const total = needsExactTotal ? await db.product.count({ where }) : undefined;
       return {
         products,
         bestsellerProductIds,
-        total,
+        // Skip expensive exact count for catalog filters; over-fetch (+1) is enough
+        // to drive previous/next pagination and keeps category pages responsive.
+        total: undefined,
       };
     }
 

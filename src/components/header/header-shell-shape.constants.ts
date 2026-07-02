@@ -1,5 +1,5 @@
-/** Header pill row offset from hero top (Figma HEADER frame y=86). */
-export const HEADER_SHELL_ROW_TOP_PX = 86;
+/** Header pill row offset from hero top. */
+export const HEADER_SHELL_ROW_TOP_PX = 48;
 
 /** Brand row inset — same as pill row for non-embedded shell. */
 export const HEADER_SHELL_BRAND_TOP_PX = HEADER_SHELL_ROW_TOP_PX;

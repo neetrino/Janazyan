@@ -2,7 +2,6 @@
 
 import type { MouseEvent } from 'react';
 import { Heart } from 'lucide-react';
-import { CompareIcon } from '../../../components/icons/CompareIcon';
 import { t } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
 import {
@@ -14,8 +13,6 @@ import {
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
-  PDP_DESKTOP_ICON_ACTIONS_CLASS,
-  PDP_SECONDARY_ACTION_ROW_CLASS,
 } from './product-action-bar.constants';
 
 type ProductActionBarProps = {
@@ -28,45 +25,31 @@ type ProductActionBarProps = {
   isVariationRequired: boolean;
   hasUnavailableAttributes: boolean;
   isInWishlist: boolean;
-  isInCompare: boolean;
   onQuantityAdjust: (delta: number) => void;
   onAddToCart: () => Promise<void>;
   onAddToWishlist: (e: MouseEvent) => void;
-  onCompareToggle: (e: MouseEvent) => void;
   getRequiredAttributesMessage: () => string;
 };
 
-type CompareWishlistButtonsProps = Pick<
+type WishlistButtonProps = Pick<
   ProductActionBarProps,
-  'language' | 'isInCompare' | 'isInWishlist' | 'onCompareToggle' | 'onAddToWishlist'
+  'language' | 'isInWishlist' | 'onAddToWishlist'
 >;
 
-function CompareWishlistButtons({
+function WishlistButton({
   language,
-  isInCompare,
   isInWishlist,
-  onCompareToggle,
   onAddToWishlist,
-}: CompareWishlistButtonsProps) {
+}: WishlistButtonProps) {
   return (
-    <>
-      <button
-        type="button"
-        onClick={onCompareToggle}
-        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInCompare ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-        aria-label={t(language, isInCompare ? 'common.ariaLabels.removeFromCompare' : 'common.ariaLabels.addToCompare')}
-      >
-        <CompareIcon isActive={isInCompare} />
-      </button>
-      <button
-        type="button"
-        onClick={onAddToWishlist}
-        className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
-        aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
-      >
-        <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
-      </button>
-    </>
+    <button
+      type="button"
+      onClick={onAddToWishlist}
+      className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+      aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
+    >
+      <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
+    </button>
   );
 }
 
@@ -106,11 +89,9 @@ export function ProductActionBar({
   isVariationRequired,
   hasUnavailableAttributes,
   isInWishlist,
-  isInCompare,
   onQuantityAdjust,
   onAddToCart,
   onAddToWishlist,
-  onCompareToggle,
   getRequiredAttributesMessage,
 }: ProductActionBarProps) {
   const addToCartLabel = resolveAddToCartLabel({
@@ -154,24 +135,13 @@ export function ProductActionBar({
         >
           {addToCartLabel}
         </button>
-        <div className={PDP_DESKTOP_ICON_ACTIONS_CLASS}>
-          <CompareWishlistButtons
+        <div className="flex shrink-0 items-center">
+          <WishlistButton
             language={language}
-            isInCompare={isInCompare}
             isInWishlist={isInWishlist}
-            onCompareToggle={onCompareToggle}
             onAddToWishlist={onAddToWishlist}
           />
         </div>
-      </div>
-      <div className={PDP_SECONDARY_ACTION_ROW_CLASS}>
-        <CompareWishlistButtons
-          language={language}
-          isInCompare={isInCompare}
-          isInWishlist={isInWishlist}
-          onCompareToggle={onCompareToggle}
-          onAddToWishlist={onAddToWishlist}
-        />
       </div>
     </div>
   );

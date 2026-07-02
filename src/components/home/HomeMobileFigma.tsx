@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
-import { Menu } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { MobileBackdrop } from '../storefront/MobileBackdrop';
 import { MobileTopBar } from './MobileTopBar';
 import {
@@ -18,7 +18,10 @@ import {
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
-import { HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import {
+  HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
+  STOREFRONT_MOBILE_TOP_INSET_CLASS,
+} from '../../lib/layout/storefront-mobile-layout.constants';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -41,6 +44,7 @@ type HomeMobileFigmaProps = {
 };
 
 type WhyCardView = WhyCardConfig & WhyCardText;
+const MOBILE_HERO_CTA_ARROW_SIZE_PX = 12;
 
 export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   const categoryPosters = useHomeCategoryPosters();
@@ -50,7 +54,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   return (
     <section className="relative lg:hidden">
       <MobileBackdrop />
-      <div className={`relative z-10 pt-10 ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+      <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />
@@ -97,18 +101,48 @@ function MobileHeroCard({ heroTitle }: { heroTitle: [string, string] }) {
         </p>
         <Link
           href="/products?category=hair"
-          className="inline-flex h-9 w-[217px] items-center justify-center gap-1 rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-ink-800"
+          className="relative inline-flex h-9 w-[217px] items-center justify-center rounded-full bg-white px-4 text-[11px] font-semibold uppercase tracking-[0.15em] text-ink-800"
         >
-          {t('home.mobile.orderCta')}
-          <Menu className="h-3.5 w-3.5" />
+          <span>{t('home.mobile.orderCta')}</span>
+          <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <MobileHeroCtaArrowIcon />
+          </span>
         </Link>
       </div>
     </div>
   );
 }
 
+function MobileHeroCtaArrowIcon() {
+  return (
+    <svg
+      width={MOBILE_HERO_CTA_ARROW_SIZE_PX}
+      height={MOBILE_HERO_CTA_ARROW_SIZE_PX}
+      viewBox="0 0 12 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
+      <path
+        d="M2.5 6H9.5M6 2.5L9.5 6L6 9.5"
+        stroke="#1E2939"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 function MobileFilterTabs() {
   const { t } = useTranslation();
+  const router = useRouter();
+
+  useEffect(() => {
+    for (const filter of MOBILE_FILTER_KEYS) {
+      router.prefetch(getCategoryProductsHref(filter.key));
+    }
+  }, [router]);
 
   return (
     <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
