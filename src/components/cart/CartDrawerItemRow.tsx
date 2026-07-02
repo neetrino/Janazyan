@@ -40,9 +40,9 @@ export function CartDrawerItemRow({
       slug: item.variant.product.slug,
       title: item.variant.product.title,
       image: item.variant.product.image ?? null,
-      price: item.variant.price,
-      originalPrice: item.variant.compareAtPrice ?? null,
-      compareAtPrice: item.variant.compareAtPrice ?? null,
+      price: item.price,
+      originalPrice: item.originalPrice ?? null,
+      compareAtPrice: item.originalPrice ?? null,
       discountPercent: null,
     });
   };
