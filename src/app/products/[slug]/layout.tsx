@@ -5,7 +5,7 @@ import { fetchProductPageProduct } from '@/lib/products/product-page-cache';
 import { RESERVED_ROUTES } from './types';
 
 const DEFAULT_TITLE = 'Product';
-const SITE_NAME = 'WhiteShop.am';
+const SITE_NAME = 'Janazyan';
 
 type Props = {
   params: Promise<{ slug: string }>;
