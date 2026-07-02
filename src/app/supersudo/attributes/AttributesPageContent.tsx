@@ -3,9 +3,27 @@
 import { useMemo, useState } from 'react';
 import { Input } from '@shop/ui';
 import { useTranslation } from '../../../lib/i18n-client';
-import { useAttributes, type Attribute, type AttributeValue } from './useAttributes';
+import { useAttributes, type Attribute } from './useAttributes';
 import { ValueEditForm } from './ValueEditForm';
 import { AdminSideDrawer } from '../components/AdminSideDrawer';
+
+function filterAttributesBySearch(attributes: Attribute[], normalizedSearch: string): Attribute[] {
+  if (!normalizedSearch) {
+    return attributes;
+  }
+
+  return attributes.filter((attribute) => {
+    const attributeMatches =
+      attribute.name.toLowerCase().includes(normalizedSearch) ||
+      attribute.key.toLowerCase().includes(normalizedSearch);
+
+    if (attributeMatches) {
+      return true;
+    }
+
+    return attribute.values.some((value) => value.label.toLowerCase().includes(normalizedSearch));
+  });
+}
 
 export function AttributesPageContent() {
   const { t } = useTranslation();
@@ -54,25 +72,10 @@ export function AttributesPageContent() {
     toggleExpand,
   } = useAttributes();
   const normalizedSearch = searchQuery.trim().toLowerCase();
-  const filteredAttributes = useMemo(() => {
-    if (!normalizedSearch) {
-      return attributes;
-    }
-
-    return attributes.filter((attribute) => {
-      const attributeMatches =
-        attribute.name.toLowerCase().includes(normalizedSearch) ||
-        attribute.key.toLowerCase().includes(normalizedSearch);
-
-      if (attributeMatches) {
-        return true;
-      }
-
-      return attribute.values.some((value) =>
-        value.label.toLowerCase().includes(normalizedSearch),
-      );
-    });
-  }, [attributes, normalizedSearch]);
+  const filteredAttributes = useMemo(
+    () => filterAttributesBySearch(attributes, normalizedSearch),
+    [attributes, normalizedSearch],
+  );
 
   if (loading) {
     return (
