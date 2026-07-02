@@ -1,7 +1,7 @@
 // Language utilities
 export const LANGUAGES = {
-  en: { code: 'en', name: 'English', nativeName: 'English' },
   hy: { code: 'hy', name: 'Armenian', nativeName: 'Հայերեն' },
+  en: { code: 'en', name: 'English', nativeName: 'English' },
   ru: { code: 'ru', name: 'Russian', nativeName: 'Русский' },
 } as const;
 
@@ -16,13 +16,33 @@ function parseLanguageCode(value: string | null | undefined): LanguageCode | nul
   return null;
 }
 
+function detectPreferredLanguageFromNavigator(): LanguageCode {
+  if (typeof navigator === 'undefined') {
+    return 'hy';
+  }
+
+  const candidates = Array.isArray(navigator.languages) && navigator.languages.length > 0
+    ? navigator.languages
+    : [navigator.language];
+
+  for (const candidate of candidates) {
+    const normalized = candidate.toLowerCase().split('-')[0];
+    const parsed = parseLanguageCode(normalized);
+    if (parsed) {
+      return parsed;
+    }
+  }
+
+  return 'hy';
+}
+
 export function getStoredLanguage(): LanguageCode {
   if (typeof window === 'undefined') return 'hy';
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return parseLanguageCode(stored) ?? 'hy';
+    return parseLanguageCode(stored) ?? detectPreferredLanguageFromNavigator();
   } catch {
-    return 'hy';
+    return detectPreferredLanguageFromNavigator();
   }
 }
 

@@ -28,8 +28,8 @@ const getLanguageColor = (code: LanguageCode, isActive: boolean): string => {
  */
 export function LanguageSwitcherHeader() {
   const [showMenu, setShowMenu] = useState(false);
-  // Start with 'en' to avoid hydration mismatch, then update in useEffect
-  const [currentLang, setCurrentLang] = useState<LanguageCode>('en');
+  // Start with 'hy' to keep Armenian as primary default before hydration sync
+  const [currentLang, setCurrentLang] = useState<LanguageCode>('hy');
   const menuRef = useRef<HTMLDivElement>(null);
 
   // Update current language on mount and when it changes

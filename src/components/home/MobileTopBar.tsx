@@ -28,7 +28,7 @@ export function MobileTopBar() {
   const { t } = useTranslation();
   const router = useRouter();
   const searchContainerRef = useRef<HTMLDivElement>(null);
-  const [lang, setLang] = useState<LanguageCode>('en');
+  const [lang, setLang] = useState<LanguageCode>('hy');
 
   useEffect(() => {
     setLang(getStoredLanguage());
@@ -174,7 +174,7 @@ export function MobileTopBar() {
 
 function MobileLanguageButton({ label }: { label: string }) {
   const [showMenu, setShowMenu] = useState(false);
-  const [currentLang, setCurrentLang] = useState<LanguageCode>('en');
+  const [currentLang, setCurrentLang] = useState<LanguageCode>('hy');
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
