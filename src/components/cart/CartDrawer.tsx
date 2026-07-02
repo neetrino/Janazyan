@@ -41,7 +41,7 @@ export function CartDrawer() {
   const currency = useCurrency();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const hasLoadedOnceRef = useRef(false);
-  const closeTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+  const closeTimerRef = useRef<number | null>(null);
 
   const clearCloseTimer = useCallback(() => {
     if (closeTimerRef.current === null) {
