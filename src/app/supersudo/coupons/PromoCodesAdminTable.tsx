@@ -57,8 +57,6 @@ export function PromoCodesAdminTable({
               <th className={ADMIN_TABLE_TH}>{labels.tableCode}</th>
               <th className={ADMIN_TABLE_TH}>{labels.tableType}</th>
               <th className={ADMIN_TABLE_TH}>{labels.tableValue}</th>
-              <th className={ADMIN_TABLE_TH}>{labels.tableMinSubtotal}</th>
-              <th className={ADMIN_TABLE_TH}>{labels.tableCap}</th>
               <th className={ADMIN_TABLE_TH}>{labels.tableUsage}</th>
               <th className={ADMIN_TABLE_TH}>{labels.tableUsed}</th>
               <th className={ADMIN_TABLE_TH}>{labels.tableActive}</th>
@@ -78,8 +76,6 @@ export function PromoCodesAdminTable({
                 <td className={ADMIN_TABLE_TD}>
                   {row.discountType === 'percent' ? `${row.discountValue}%` : String(row.discountValue)}
                 </td>
-                <td className={ADMIN_TABLE_TD}>{row.minSubtotal ?? '—'}</td>
-                <td className={ADMIN_TABLE_TD}>{row.maxDiscountAmount ?? '—'}</td>
                 <td className={ADMIN_TABLE_TD}>{row.usageLimit ?? '—'}</td>
                 <td className={ADMIN_TABLE_TD}>{row.usedCount}</td>
                 <td className={ADMIN_TABLE_TD}>{row.active ? '✓' : '—'}</td>

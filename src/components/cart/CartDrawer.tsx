@@ -27,6 +27,7 @@ import { CartDrawerFooter } from './CartDrawerFooter';
 
 const CART_DRAWER_MAX_WIDTH_PX = 420;
 const CART_DRAWER_Z_INDEX = 80;
+const CART_DRAWER_TRANSITION_MS = 300;
 
 /**
  * Right-side cart drawer — stays mounted; opens from cache without blocking on API.
@@ -40,6 +41,15 @@ export function CartDrawer() {
   const currency = useCurrency();
   const [updatingItems, setUpdatingItems] = useState<Set<string>>(new Set());
   const hasLoadedOnceRef = useRef(false);
+  const closeTimerRef = useRef<ReturnType<typeof window.setTimeout> | null>(null);
+
+  const clearCloseTimer = useCallback(() => {
+    if (closeTimerRef.current === null) {
+      return;
+    }
+    window.clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  }, []);
 
   const syncFromLocal = useCallback(() => {
     const hydrated = hydrateCartFromLocal(isLoggedIn, user?.id);
@@ -58,6 +68,7 @@ export function CartDrawer() {
 
   useEffect(() => {
     const handleOpen = () => {
+      clearCloseTimer();
       setOpen(true);
       setSlideIn(false);
 
@@ -79,7 +90,11 @@ export function CartDrawer() {
 
     const handleClose = () => {
       setSlideIn(false);
-      setOpen(false);
+      clearCloseTimer();
+      closeTimerRef.current = window.setTimeout(() => {
+        setOpen(false);
+        closeTimerRef.current = null;
+      }, CART_DRAWER_TRANSITION_MS);
     };
 
     window.addEventListener(CART_DRAWER_OPEN_EVENT, handleOpen);
@@ -87,8 +102,9 @@ export function CartDrawer() {
     return () => {
       window.removeEventListener(CART_DRAWER_OPEN_EVENT, handleOpen);
       window.removeEventListener(CART_DRAWER_CLOSE_EVENT, handleClose);
+      clearCloseTimer();
     };
-  }, [isLoggedIn, user?.id, syncFromLocal, backgroundSync, t]);
+  }, [isLoggedIn, user?.id, syncFromLocal, backgroundSync, t, clearCloseTimer]);
 
   useEffect(() => {
     if (!open) {
@@ -238,14 +254,14 @@ export function CartDrawer() {
             ? 'pointer-events-auto bg-black/40 opacity-100'
             : 'pointer-events-auto bg-black/0 opacity-0'
           : 'pointer-events-none invisible opacity-0'
-      } backdrop-blur-sm`}
+      }`}
       style={{ zIndex: CART_DRAWER_Z_INDEX }}
       onClick={() => closeCartDrawer()}
       role="presentation"
       aria-hidden={!open}
     >
       <aside
-        className={`flex h-full min-h-screen w-full flex-col overflow-hidden rounded-l-2xl bg-white shadow-2xl transition-transform duration-300 ease-out ${
+        className={`flex h-full min-h-screen w-full transform-gpu flex-col overflow-hidden rounded-l-2xl bg-white shadow-2xl transition-transform duration-300 ease-out will-change-transform ${
           open && slideIn ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ maxWidth: CART_DRAWER_MAX_WIDTH_PX }}

@@ -4,6 +4,7 @@ import { Input } from '@shop/ui';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { CheckoutProductsInOrder } from './components/CheckoutProductsInOrder';
 import { DeliveryAddressFields } from './components/DeliveryAddressFields';
 import {
   CHECKOUT_GLASS_ERROR_CLASS,
@@ -13,12 +14,13 @@ import {
   CHECKOUT_GLASS_OPTION_SELECTED,
 } from './checkout-glass-styles';
 import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from './checkout-layout.constants';
-import { CheckoutFormData } from './types';
+import type { Cart, CheckoutFormData } from './types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 
 const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
 interface CheckoutFormProps {
+  cart: Cart;
   register: UseFormRegister<CheckoutFormData>;
   setValue: UseFormSetValue<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
@@ -48,6 +50,7 @@ function optionClass(isSelected: boolean): string {
 }
 
 export function CheckoutForm({
+  cart,
   register,
   setValue,
   errors,
@@ -68,6 +71,8 @@ export function CheckoutForm({
 
   return (
     <div className="lg:col-span-2 space-y-6">
+      <CheckoutProductsInOrder cart={cart} />
+
       <CheckoutGlassCard
         className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
         data-checkout-section="contact"

@@ -109,6 +109,7 @@ export function CheckoutPageClient() {
           <form id={CHECKOUT_FORM_ID} noValidate onSubmit={onCheckoutSubmit}>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
               <CheckoutForm
+                cart={cart}
                 register={register}
                 setValue={setValue}
                 errors={errors}

@@ -91,46 +91,44 @@ export default function ContactPage() {
           <div className="mx-auto max-w-7xl py-8 md:py-12">
             <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
               <div className="space-y-8">
-                <div>
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                      <PhoneIcon />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                    <PhoneIcon />
                   </div>
-                  <p className="mb-2 text-gray-600">{t('contact.callToUs.description')}</p>
-                  <a href={`tel:${phoneHref}`} className="font-medium text-black/80 hover:text-black">
-                    {phoneLabel}
-                  </a>
+                  <div>
+                    <h3 className="mb-3 text-xl font-semibold text-gray-900">{t('contact.callToUs.title')}</h3>
+                    <a href={`tel:${phoneHref}`} className="font-medium text-black/80 hover:text-black">
+                      {phoneLabel}
+                    </a>
+                  </div>
                 </div>
 
-                <div>
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                      <EnvelopeIcon />
-                    </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                    <EnvelopeIcon />
                   </div>
-                  <p className="mb-2 text-gray-600">{t('contact.writeToUs.description')}</p>
-                  <a href={`mailto:${t('contact.email')}`} className="font-medium text-black/80 hover:text-black">
-                    {t('contact.writeToUs.emailLabel')} {t('contact.email')}
-                  </a>
+                  <div>
+                    <h3 className="mb-3 text-xl font-semibold text-gray-900">{t('contact.writeToUs.title')}</h3>
+                    <a href={`mailto:${t('contact.email')}`} className="font-medium text-black/80 hover:text-black">
+                      {t('contact.writeToUs.emailLabel')} {t('contact.email')}
+                    </a>
+                  </div>
                 </div>
 
-                <div>
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-700">
-                      <MapPinIcon />
+                <div className="flex items-start gap-3">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-700">
+                    <MapPinIcon />
+                  </div>
+                  <div>
+                    <h3 className="mb-3 text-xl font-semibold text-gray-900">{t('contact.headquarter.title')}</h3>
+                    <div className="mb-2 space-y-1 text-gray-600">
+                      <p>{t('contact.headquarter.hours.weekdays')}</p>
+                      <p>{t('contact.headquarter.hours.saturday')}</p>
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900">{t('contact.headquarter.title')}</h3>
+                    <p className="whitespace-pre-line font-medium text-black/80">
+                      {t('contact.address')}
+                    </p>
                   </div>
-                  <div className="mb-2 space-y-1 text-gray-600">
-                    <p>{t('contact.headquarter.hours.weekdays')}</p>
-                    <p>{t('contact.headquarter.hours.saturday')}</p>
-                  </div>
-                  <p className="whitespace-pre-line font-medium text-black/80">
-                    {t('contact.address')}
-                  </p>
                 </div>
               </div>
 

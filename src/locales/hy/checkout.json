@@ -5,6 +5,11 @@
   "shippingAddress": "Առաքման հասցե",
   "paymentMethod": "Վճարման եղանակ",
   "orderSummary": "Պատվերի ամփոփում",
+  "productsInOrder": {
+    "title": "Ձեր պատվերի ապրանքները",
+    "itemCountOne": "{count} ապրանք",
+    "itemCountMany": "{count} ապրանք"
+  },
   "form": {
     "firstName": "Անուն",
     "lastName": "Ազգանուն",
@@ -66,7 +71,6 @@
     "items": "Ապրանքներ",
     "subtotal": "Ենթագումար",
     "shipping": "Առաքում",
-    "tax": "Հարկ",
     "discount": "Զեղչ",
     "total": "Ընդամենը"
   },
