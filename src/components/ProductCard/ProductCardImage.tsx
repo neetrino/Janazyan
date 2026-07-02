@@ -14,6 +14,7 @@ interface ProductCardImageProps {
   imageError: boolean;
   onImageError: () => void;
   isCompact?: boolean;
+  onNavigate?: () => void;
 }
 
 /**
@@ -28,12 +29,17 @@ export function ProductCardImage({
   imageError,
   onImageError,
   isCompact = false,
+  onNavigate,
 }: ProductCardImageProps) {
   const showPlaceholder = !image || imageError;
 
   return (
     <div data-product-fly-origin className="aspect-square bg-gray-100 relative overflow-hidden">
-      <Link href={`/products/${slug}`} className="relative block w-full h-full">
+      <Link
+        href={`/products/${slug}`}
+        className="relative block w-full h-full"
+        onClick={onNavigate}
+      >
         {showPlaceholder ? (
           <ProductImagePlaceholder
             className="w-full h-full"

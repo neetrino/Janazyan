@@ -16,6 +16,7 @@ import {
 import { R2_IMAGE_FOLDERS } from '@/lib/r2/r2-image-folders';
 import { uploadAdminImagesToR2 } from '@/lib/r2/upload-admin-images-client';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { AdminSideDrawer } from '../components/AdminSideDrawer';
 interface Brand {
   id: string;
   name: string;
@@ -350,25 +351,36 @@ function BrandsSection() {
         </div>
       )}
 
-      {/* Add/Edit Modal */}
+      {/* Add/Edit Drawer */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">
-                {editingBrand ? t('admin.brands.editBrand') : t('admin.brands.addNewBrand')}
-              </h3>
-              <button
+        <AdminSideDrawer
+          open={showModal}
+          onClose={handleCloseModal}
+          title={editingBrand ? t('admin.brands.editBrand') : t('admin.brands.addNewBrand')}
+          side="right"
+          size="wide"
+          footer={
+            <div className="flex items-center justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
                 onClick={handleCloseModal}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                disabled={submitting}
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+                {t('admin.brands.cancel')}
+              </Button>
+              <Button
+                type="submit"
+                form="brand-form"
+                variant="primary"
+                disabled={submitting || imageUploading}
+              >
+                {submitting ? t('admin.brands.saving') : (editingBrand ? t('admin.brands.update') : t('admin.brands.create'))}
+              </Button>
             </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
+          }
+        >
+          <form id="brand-form" onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="brand-name" className="block text-sm font-medium text-gray-700 mb-1">
                   {t('admin.brands.brandName')}
@@ -452,27 +464,8 @@ function BrandsSection() {
                   />
                 </label>
               </div>
-
-              <div className="flex items-center justify-end gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleCloseModal}
-                  disabled={submitting}
-                >
-                  {t('admin.brands.cancel')}
-                </Button>
-                <Button
-                  type="submit"
-                  variant="primary"
-                  disabled={submitting || imageUploading}
-                >
-                  {submitting ? t('admin.brands.saving') : (editingBrand ? t('admin.brands.update') : t('admin.brands.create'))}
-                </Button>
-              </div>
             </form>
-          </div>
-        </div>
+        </AdminSideDrawer>
       )}
     </>
   );

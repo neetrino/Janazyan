@@ -10,6 +10,7 @@ import {
   CART_QTY_STEP_BUTTON_CLASS,
   CART_QTY_VALUE_CLASS,
 } from '../../app/products/[slug]/product-action-bar.constants';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 const DRAWER_ITEM_IMAGE_SIZE_PX = 72;
 
@@ -34,15 +35,24 @@ export function CartDrawerItemRow({
   t,
 }: CartDrawerItemRowProps) {
   const productHref = `/products/${item.variant.product.slug}`;
+  const handleNavigateToProduct = () => {
+    primeProductPageSnapshot({
+      slug: item.variant.product.slug,
+      title: item.variant.product.title,
+      image: item.variant.product.image ?? null,
+      price: item.variant.price,
+      originalPrice: item.variant.compareAtPrice ?? null,
+      compareAtPrice: item.variant.compareAtPrice ?? null,
+      discountPercent: null,
+    });
+  };
 
   return (
     <article className="flex gap-3 border-b border-gray-100 py-4 last:border-b-0">
       <Link
         href={productHref}
         className="block h-[72px] w-[72px] shrink-0 overflow-hidden rounded-xl border border-gray-100 bg-white p-1.5"
-        onClick={() => {
-          /* navigation closes drawer via route change — optional */
-        }}
+        onClick={handleNavigateToProduct}
       >
         <div className="relative h-full w-full">
           {item.variant.product.image ? (
@@ -74,6 +84,7 @@ export function CartDrawerItemRow({
           <Link
             href={productHref}
             className="line-clamp-2 text-sm font-medium leading-snug text-ink-800 hover:text-sky-700"
+            onClick={handleNavigateToProduct}
           >
             {item.variant.product.title}
           </Link>

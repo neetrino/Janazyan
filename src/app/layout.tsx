@@ -77,9 +77,9 @@ function resolveMetadataBase(): URL {
 
 export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
-  title: 'Janazyan — Premium Baby & Family Care',
+  title: 'Janazyan — Baby & Family Care',
   description:
-    'Premium baby & family skincare crafted with love, safety and your family comfort in mind.',
+    'Baby & family skincare crafted with love, safety and your family comfort in mind.',
 };
 
 export const viewport: Viewport = {

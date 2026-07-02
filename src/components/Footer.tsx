@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from '../lib/i18n-client';
 import {
   FOOTER_COMPANY,
   FOOTER_CONTACT,
@@ -44,9 +45,7 @@ const FOOTER_DECORATION_TOP_PX =
 /** Footer block height (matches `lg:h-[407px]`). */
 const FOOTER_HEIGHT_PX = 407;
 
-/** Pull shell upward so decoration can overlap the section above. */
 const FOOTER_SHELL_UP_PULL_PX = 400;
-/** Extend purple gradient upward into the bleed zone (matches Figma overlap). */
 const FOOTER_GRADIENT_OVERLAP_PX = 0;
 
 /** Shell includes top bleed zone; footer content sits in the bottom `FOOTER_HEIGHT_PX`. */
@@ -78,6 +77,7 @@ function getFooterDecorationPositionStyle(): CSSProperties {
 
 export function Footer() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   if (!shouldShowStorefrontFooter(pathname)) {
     return null;
@@ -136,8 +136,7 @@ export function Footer() {
               <p
                 className={`absolute left-0 top-[82px] w-[284px] text-[16px] leading-[24px] tracking-[-0.31px] ${FOOTER_TEXT}`}
               >
-                Նուրբ խնամք Ձեր փոքրիկի համար՝ ստեղծված սիրով և ուշադրությամբ
-                յուրաքանչյուր մանրուքի նկատմամբ։
+                {t('common.footer.description')}
               </p>
               <div className="absolute left-0 top-[198px] flex gap-3">
                 {FOOTER_SOCIAL.map((social) => (
@@ -147,13 +146,13 @@ export function Footer() {
             </div>
 
             <FooterColumn
-              title="Ընկերություն"
+              title={t('common.footer.companyTitle')}
               className={`absolute left-[26.46%] top-[66px] ${FOOTER_Z_CONTENT}`}
             >
               {FOOTER_COMPANY.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className={FOOTER_LINK}>
-                    {link.label}
+                    {t('common.footer.' + link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -163,21 +162,25 @@ export function Footer() {
               className={`absolute left-[63.4%] top-[66px] flex flex-col gap-[15px] ${FOOTER_Z_CONTENT}`}
             >
               <h3 className="text-[16px] font-bold uppercase leading-[16.5px] text-black/65">
-                Կապ մեզ հետ
+                {t('common.footer.contactTitle')}
               </h3>
               {FOOTER_CONTACT.map((item) => (
-                <FooterContactRow key={item.label} {...item} />
+                <FooterContactRow
+                  key={item.href}
+                  {...item}
+                  label={getFooterContactLabel(item, t)}
+                />
               ))}
             </div>
 
             <FooterColumn
-              title="Աջակցություն"
+              title={t('common.footer.supportTitle')}
               className={`absolute left-[79.25%] top-[66px] ${FOOTER_Z_CONTENT}`}
             >
               {FOOTER_SUPPORT.map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className={FOOTER_LINK}>
-                    {link.label}
+                    {t('common.footer.' + link.labelKey)}
                   </Link>
                 </li>
               ))}
@@ -190,8 +193,8 @@ export function Footer() {
                 className={`whitespace-nowrap text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT}`}
               >
                 © 2026{' '}
-                <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>։
-                Բոլոր իրավունքները պաշտպանված են։
+                <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>
+                {t('common.footer.rightsReserved')}
               </p>
               <div
                 className="flex shrink-0 items-center"
@@ -207,6 +210,16 @@ export function Footer() {
       </footer>
     </div>
   );
+}
+
+function getFooterContactLabel(
+  item: FooterContactItem,
+  t: (path: string) => string,
+): string {
+  if ('label' in item) {
+    return item.label;
+  }
+  return t('common.footer.' + item.labelKey);
 }
 
 function FooterColumn({
@@ -228,7 +241,12 @@ function FooterColumn({
   );
 }
 
-function FooterContactRow({ label, href, icon, iconSize }: FooterContactItem) {
+function FooterContactRow({
+  label,
+  href,
+  icon,
+  iconSize,
+}: FooterContactItem & { label: string }) {
   const className = `flex items-center gap-[6px] ${FOOTER_LINK}`;
   const inner = (
     <>

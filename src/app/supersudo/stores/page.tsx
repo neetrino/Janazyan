@@ -32,7 +32,6 @@ export default function PartnerStoresAdminPage() {
 
   return (
     <Card className="p-6">
-      <p className="mb-4 text-sm text-gray-600">{t('admin.partnerStores.subtitle')}</p>
       <PartnerStoresSection />
     </Card>
   );

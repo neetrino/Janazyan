@@ -7,6 +7,7 @@ import { SearchDropdown } from '../SearchDropdown';
 import { useInstantSearch, type InstantSearchResultItem } from '../hooks/useInstantSearch';
 import { useTranslation } from '../../lib/i18n-hooks';
 import { getStoredLanguage, type LanguageCode } from '../../lib/language';
+import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 
 export function HeaderProductSearch() {
   const router = useRouter();
@@ -76,6 +77,15 @@ export function HeaderProductSearch() {
     (result: InstantSearchResultItem) => {
       clearSearch();
       setIsPopupOpen(false);
+      primeProductPageSnapshot({
+        slug: result.slug,
+        title: result.title,
+        image: result.image,
+        price: result.price,
+        originalPrice: result.compareAtPrice,
+        compareAtPrice: result.compareAtPrice,
+        discountPercent: null,
+      });
       router.push(`/products/${result.slug}`);
     },
     [clearSearch, router],

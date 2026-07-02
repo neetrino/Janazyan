@@ -21,7 +21,7 @@ export default async function FAQPage() {
     <ProductsHeroShell
       sectionAriaLabel="FAQ"
       catalog={
-        <div className="mx-auto max-w-3xl pb-12 pt-8 md:pt-12">
+        <div className="mx-auto max-w-5xl pb-12 pt-8 md:pt-12">
           <FaqPageHeader copy={copy} />
           <Suspense fallback={<FaqPageMainSkeleton />}>
             <FaqPageMain sectionsPromise={sectionsPromise} locale={locale} />

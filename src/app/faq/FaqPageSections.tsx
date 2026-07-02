@@ -32,12 +32,6 @@ export function FaqPageFooter({ copy }: { copy: FaqPageCopy }) {
         >
           {copy.stillHaveQuestions.contactUs}
         </Link>
-        <Link
-          href="/support"
-          className="font-medium text-teal-700 transition-colors hover:text-teal-800 hover:underline"
-        >
-          {copy.stillHaveQuestions.getSupport}
-        </Link>
       </div>
     </section>
   );

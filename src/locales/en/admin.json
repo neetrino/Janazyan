@@ -639,7 +639,6 @@
   },
   "partnerStores": {
     "title": "Partner stores",
-    "subtitle": "Manage store locations shown on the public /stores page. Logos are stored in R2.",
     "loading": "Loading partner stores...",
     "noStores": "No partner stores yet",
     "addNew": "Add store",
@@ -675,7 +674,6 @@
   },
   "blog": {
     "title": "Blog",
-    "subtitle": "Manage blog posts shown on the public /blog page. Images are stored in R2.",
     "loading": "Loading blog posts...",
     "noPosts": "No blog posts yet",
     "addNew": "Add post",

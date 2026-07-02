@@ -28,6 +28,7 @@ type UseHeaderNavActivePillParams = {
   links: ReadonlyArray<NavLink>;
   pathname: string;
   searchParams: URLSearchParams;
+  pendingActiveHref?: string | null;
 };
 
 function getLinksLayoutKey(links: ReadonlyArray<NavLink>): string {
@@ -49,6 +50,7 @@ export function useHeaderNavActivePill({
   links,
   pathname,
   searchParams,
+  pendingActiveHref = null,
 }: UseHeaderNavActivePillParams) {
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
@@ -59,12 +61,20 @@ export function useHeaderNavActivePill({
     width: 0,
   });
   const pillTopRef = useRef(0);
+  const pointerDownClientXRef = useRef<number | null>(null);
+  const didPointerDragRef = useRef(false);
   const [isDragging, setIsDragging] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
-  const activeIndex = links.findIndex((link) =>
+  const routeActiveIndex = links.findIndex((link) =>
     isNavLinkActive(pathname, link.href, searchParams),
   );
+  const pendingActiveIndex =
+    pendingActiveHref !== null
+      ? links.findIndex((link) => link.href === pendingActiveHref)
+      : -1;
+  const activeIndex =
+    pendingActiveIndex >= 0 ? pendingActiveIndex : routeActiveIndex;
   const linksLayoutKey = getLinksLayoutKey(links);
 
   const syncPillToIndex = useCallback((index: number) => {
@@ -144,6 +154,8 @@ export function useHeaderNavActivePill({
   const handlePillPointerDown = useCallback((event: ReactPointerEvent<HTMLSpanElement>) => {
     event.preventDefault();
     event.currentTarget.setPointerCapture(event.pointerId);
+    pointerDownClientXRef.current = event.clientX;
+    didPointerDragRef.current = false;
     setIsDragging(true);
     updateDragPosition(event.clientX);
   }, [updateDragPosition]);
@@ -152,6 +164,10 @@ export function useHeaderNavActivePill({
     (event: ReactPointerEvent<HTMLSpanElement>) => {
       if (!isDragging) {
         return;
+      }
+      const pointerDownClientX = pointerDownClientXRef.current;
+      if (pointerDownClientX !== null && Math.abs(event.clientX - pointerDownClientX) >= 4) {
+        didPointerDragRef.current = true;
       }
       updateDragPosition(event.clientX);
     },
@@ -209,9 +225,17 @@ export function useHeaderNavActivePill({
       if (!isDragging) {
         return;
       }
+      if (!didPointerDragRef.current) {
+        setIsDragging(false);
+        setHoveredIndex(null);
+        pointerDownClientXRef.current = null;
+        syncPillToActive();
+        return;
+      }
+      pointerDownClientXRef.current = null;
       finishDrag(event.clientX);
     },
-    [finishDrag, isDragging],
+    [finishDrag, isDragging, syncPillToActive],
   );
 
   const handlePillPointerCancel = useCallback(
@@ -221,6 +245,8 @@ export function useHeaderNavActivePill({
       }
       setIsDragging(false);
       setHoveredIndex(null);
+      pointerDownClientXRef.current = null;
+      didPointerDragRef.current = false;
       syncPillToActive();
     },
     [syncPillToActive],

@@ -18,6 +18,7 @@ interface ProductCardInfoProps {
   currency: CurrencyCode;
   colors?: Array<{ value: string; imageUrl?: string | null; colors?: string[] | null }>;
   isCompact?: boolean;
+  onNavigate?: () => void;
 }
 
 /**
@@ -35,10 +36,11 @@ export function ProductCardInfo({
   currency,
   colors,
   isCompact = false,
+  onNavigate,
 }: ProductCardInfoProps) {
   return (
     <div className={isCompact ? 'p-2.5' : 'p-4'}>
-      <Link href={`/products/${slug}`} className="block">
+      <Link href={`/products/${slug}`} className="block" onClick={onNavigate}>
         {/* Product Title */}
         <h3 className={`${isCompact ? 'text-base' : 'text-xl'} font-medium text-gray-900 ${isCompact ? 'mb-0.5' : 'mb-1'} line-clamp-2`}>
           {title}

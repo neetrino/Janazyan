@@ -2,8 +2,11 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState, type MouseEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import { HOME_NAV_LINK_HREFS } from '../home/constants';
 import { useTranslation } from '../../lib/i18n-client';
+import { isNavLinkActive } from '../../lib/nav/is-nav-link-active';
 import {
   HEADER_ACTIVE_PILL_HEIGHT_PX,
   HEADER_ACTIVE_PILL_RADIUS_PX,
@@ -46,6 +49,11 @@ type HeaderBrandClusterProps = {
   searchParams: URLSearchParams;
 };
 
+/**
+ * Persists optimistic active nav item across route-transition remounts.
+ */
+let pendingHeaderNavHref: string | null = null;
+
 function HeaderLogo() {
   return (
     <Link href="/" className="relative block shrink-0" aria-label="Janazyan Home">
@@ -73,10 +81,51 @@ function HeaderNav({
   pathname: string;
   searchParams: URLSearchParams;
 }) {
+  const router = useRouter();
   const { lang } = useTranslation();
   const navLinks = useHeaderNavLinks();
+  const [pendingActiveHref, setPendingActiveHref] = useState<string | null>(
+    () => pendingHeaderNavHref,
+  );
   const navLinkTextClass = getHeaderNavLinkTextClass(lang);
   const navLinkRowClass = getHeaderNavLinkRowClass(lang);
+
+  const setPendingHref = (href: string | null) => {
+    pendingHeaderNavHref = href;
+    setPendingActiveHref(href);
+  };
+
+  useEffect(() => {
+    if (!pendingActiveHref) {
+      return;
+    }
+
+    if (isNavLinkActive(pathname, pendingActiveHref, searchParams)) {
+      setPendingHref(null);
+    }
+  }, [pathname, pendingActiveHref, searchParams]);
+
+  const handleNavLinkClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (event.defaultPrevented || event.button !== 0) {
+      return;
+    }
+
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (isNavLinkActive(pathname, href, searchParams)) {
+      setPendingHref(null);
+      return;
+    }
+
+    setPendingHref(href);
+    router.push(href);
+  };
+
   const {
     navRef,
     setLinkRef,
@@ -89,6 +138,7 @@ function HeaderNav({
     links: navLinks,
     pathname,
     searchParams,
+    pendingActiveHref,
   });
 
   return (
@@ -109,7 +159,7 @@ function HeaderNav({
           width: pillPosition.width,
           left: pillPosition.left,
           top: pillPosition.top,
-          transition: isDragging ? 'none' : 'left 200ms ease, top 200ms ease, width 200ms ease',
+          transition: 'none',
         }}
         {...pillPointerHandlers}
       />
@@ -122,6 +172,7 @@ function HeaderNav({
             key={link.href}
             ref={setLinkRef(index)}
             href={link.href}
+            onClick={(event) => handleNavLinkClick(event, link.href)}
             aria-current={isCurrentPage ? 'page' : undefined}
             className={`relative z-30 inline-flex ${navLinkRowClass} items-center ${navLinkTextClass} transition-colors duration-200 ${
               isDragging ? 'pointer-events-none' : ''
