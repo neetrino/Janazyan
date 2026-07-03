@@ -5,15 +5,15 @@ import { PRODUCTS_PAGE_CONTENT_INSET_CLASS } from '../../app/products/products-p
 import {
   STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   STOREFRONT_MOBILE_SHELL_CLASS,
+  STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS,
   STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS,
-  STOREFRONT_MOBILE_TOP_INSET_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { MobileTopBar } from '../home/MobileTopBar';
 import { MobileBackdrop } from './MobileBackdrop';
 
 type StorefrontMobileShellProps = {
   children: ReactNode;
-  /** Breadcrumb, category pills, etc. — rendered below the search row. */
+  /** Optional page toolbar rendered below the search row. */
   toolbar?: ReactNode;
   /** Override default white content card — e.g. /products catalog gradient. */
   contentSurfaceClassName?: string;
@@ -47,7 +47,7 @@ export function StorefrontMobileShell({
     <section aria-label={sectionAriaLabel} className={shellClassName}>
       {hideTopBar ? null : <MobileBackdrop extendWhiteToBottom />}
       {showHeaderChrome ? (
-        <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS}`}>
+        <div className={`relative z-10 ${STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS}`}>
           {hideTopBar ? null : <MobileTopBar />}
           {toolbar ? (
             <div className={`${STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>

@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import {
   PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
@@ -6,7 +5,6 @@ import {
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import type { LanguageCode } from '../../lib/language';
-import { t } from '../../lib/i18n';
 import { CategoryNavigationServer } from '../CategoryNavigation/CategoryNavigationServer';
 import { ProductsToolbarControls } from './ProductsToolbarControls';
 
@@ -15,28 +13,8 @@ type ProductsShopHeroToolbarProps = {
   activeCategorySlug?: string;
 };
 
-function ProductsShopBreadcrumb({ language }: { language: LanguageCode }) {
-  return (
-    <nav
-      aria-label="Breadcrumb"
-      className="mb-4 text-base capitalize leading-[18px] lg:mb-6 lg:text-white"
-    >
-      <Link
-        href="/"
-        className="font-normal text-ink-600 transition-colors hover:text-ink-900 lg:text-white/65 lg:hover:text-white"
-      >
-        {t(language, 'common.navigation.home')}
-      </Link>
-      <span className="font-bold text-ink-900 lg:text-white">
-        {' / '}
-        {t(language, 'common.footer.shop')}
-      </span>
-    </nav>
-  );
-}
-
 /**
- * Figma shop hero toolbar — breadcrumb, category pills, view + sort controls.
+ * Figma shop hero toolbar — category pills, view + sort controls.
  */
 export function ProductsShopHeroToolbar({
   language,
@@ -44,7 +22,6 @@ export function ProductsShopHeroToolbar({
 }: ProductsShopHeroToolbarProps) {
   return (
     <div className="pb-1">
-      <ProductsShopBreadcrumb language={language} />
       <div className="hidden flex-col gap-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
         <Suspense
           fallback={

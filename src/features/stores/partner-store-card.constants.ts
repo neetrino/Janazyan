@@ -1,5 +1,5 @@
-/** Brand accent for partner store cards and carousel CTAs. */
-export const PARTNER_STORE_ACCENT_HEX = '#7CB342';
+/** Storefront sky accent for partner store cards and carousel CTAs. */
+export const PARTNER_STORE_ACCENT_HEX = '#93b6e3';
 
 export const PARTNER_STORE_CARD_SELECTED_CLASS = 'partner-store-card--selected';
 export const PARTNER_STORE_CARD_COMPACT_CLASS = 'partner-store-card--compact';

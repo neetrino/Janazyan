@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo } from 'react';
 import { buildCartShippingAndTotalLabels } from '../../app/cart/cart-summary-labels';
-import { STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
+import { STOREFRONT_SKY_SUBMIT_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import type { Cart } from '../../app/cart/types';
 import { useCartDeliveryEstimate } from '../../app/cart/use-cart-delivery-estimate';
 import { formatPrice } from '../../lib/currency';
@@ -61,7 +61,7 @@ export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
       <div className="mt-5 space-y-3">
         <button
           type="button"
-          className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
+          className={STOREFRONT_SKY_SUBMIT_BUTTON_CLASS}
           onClick={() => {
             closeCartDrawer();
             router.push('/checkout');

@@ -19,11 +19,14 @@ import {
   getHeaderNavLinkTextClass,
 } from './header-nav-typography.constants';
 import {
+  HEADER_LOGO_COMPACT_HEIGHT_PX,
+  HEADER_LOGO_COMPACT_WIDTH_PX,
   HEADER_LOGO_HEIGHT_PX,
   HEADER_LOGO_NAV_GAP_PX,
   HEADER_LOGO_WIDTH_PX,
   HEADER_NAV_PILL_PADDING_LEFT_PX,
   HEADER_NAV_PILL_PADDING_RIGHT_PX,
+  HEADER_NAV_PILL_PADDING_Y_PX,
   HEADER_PILL_BORDER_RADIUS_PX,
   HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
@@ -55,12 +58,15 @@ type HeaderBrandClusterProps = {
  */
 let pendingHeaderNavHref: string | null = null;
 
-function HeaderLogo() {
+function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
+  const logoWidthPx = isHomePage ? HEADER_LOGO_WIDTH_PX : HEADER_LOGO_COMPACT_WIDTH_PX;
+  const logoHeightPx = isHomePage ? HEADER_LOGO_HEIGHT_PX : HEADER_LOGO_COMPACT_HEIGHT_PX;
+
   return (
     <Link href="/" className="relative block shrink-0" aria-label="Janazyan Home">
       <span
         className="relative block overflow-hidden"
-        style={{ width: HEADER_LOGO_WIDTH_PX, height: HEADER_LOGO_HEIGHT_PX }}
+        style={{ width: logoWidthPx, height: logoHeightPx }}
       >
         <Image
           src={HEADER_LOGO_SRC}
@@ -209,9 +215,15 @@ export function HeaderBrandCluster({ pathname, searchParams, isHomePage }: Heade
         borderRadius: HEADER_PILL_BORDER_RADIUS_PX,
         paddingLeft: HEADER_NAV_PILL_PADDING_LEFT_PX,
         paddingRight: HEADER_NAV_PILL_PADDING_RIGHT_PX,
+        ...(isHomePage
+          ? {}
+          : {
+              paddingTop: HEADER_NAV_PILL_PADDING_Y_PX,
+              paddingBottom: HEADER_NAV_PILL_PADDING_Y_PX,
+            }),
       }}
     >
-      <HeaderLogo />
+      <HeaderLogo isHomePage={isHomePage} />
       <HeaderNav pathname={pathname} searchParams={searchParams} />
     </div>
   );

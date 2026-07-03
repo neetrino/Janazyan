@@ -2,12 +2,13 @@
 
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { MIRAGE_PAGE_SUBHEADING_CLASS } from '../../../components/home/mirage-heading-styles';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { getStoredLanguage } from '../../../lib/language';
 import { fetchPartnerStores } from '../fetch-partner-stores';
-import { MAP_HEIGHT_PX } from '../constants';
+import { STORES_PAGE_MAP_HEIGHT_PX } from '../constants';
 import { scrollPartnerMapIntoView } from '../scroll-to-map';
-import { PartnerStoresCarousel } from './PartnerStoresCarousel';
+import { PartnerStoresDirectory } from './PartnerStoresDirectory';
 import { PartnerStoresMapModal } from './PartnerStoresMapModal';
 import type { PartnerStore, StoreSelectHandler, StoresTranslation } from '../types';
 
@@ -21,7 +22,7 @@ const PartnerStoresMap = dynamic(
     loading: () => (
       <div
         className="animate-pulse bg-gray-100"
-        style={{ minHeight: MAP_HEIGHT_PX }}
+        style={{ minHeight: STORES_PAGE_MAP_HEIGHT_PX }}
         aria-hidden
       />
     ),
@@ -49,7 +50,7 @@ function usePartnerStoresOnLanguageChange(initialStores: PartnerStore[]) {
 }
 
 /**
- * Interactive stores block — carousel + map only (header/footer rendered on server).
+ * Interactive stores block — scalable directory + map only (header/footer rendered on server).
  */
 export function StoresPageInteractive({ copy, stores: initialStores }: StoresPageInteractiveProps) {
   const stores = usePartnerStoresOnLanguageChange(initialStores);
@@ -88,27 +89,31 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
   return (
     <section className="pb-10 md:pb-16">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
-          <div className="relative z-10 lg:col-span-2">
-            <div className="overflow-visible lg:sticky lg:top-28">
-              <h2 className="text-2xl font-bold text-gray-900">{copy.listTitle}</h2>
-              <p className="mt-2 text-sm text-gray-500">{copy.map.hint}</p>
-              <div className="mt-6 -mx-6 w-[calc(100%+3rem)] overflow-visible sm:-mx-8 sm:w-[calc(100%+4rem)] md:mx-0 md:w-full">
-                <PartnerStoresCarousel
-                  stores={stores}
-                  selectedStoreId={resolvedSelectedStoreId}
-                  viewOnMapLabel={copy.viewOnMap}
-                  onSelect={handleStoreSelect}
-                  ariaLabel={copy.listTitle}
-                />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,0.42fr)_minmax(0,1fr)] lg:gap-8">
+          <div className="relative z-10">
+            <div className="partner-stores-directory-shell lg:sticky lg:top-28">
+              <div className="partner-stores-directory-shell__header">
+                <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
+                  {copy.listTitle}
+                </h2>
+                <p className="partner-stores-directory-shell__subtitle">{copy.map.hint}</p>
               </div>
+              <PartnerStoresDirectory
+                stores={stores}
+                selectedStoreId={resolvedSelectedStoreId}
+                viewOnMapLabel={copy.viewOnMap}
+                onSelect={handleStoreSelect}
+                ariaLabel={copy.listTitle}
+              />
             </div>
           </div>
 
-          <div ref={mapSectionRef} className="scroll-mt-28 lg:col-span-3">
+          <div ref={mapSectionRef} className="scroll-mt-28">
             <div className="partner-stores-map-section lg:sticky lg:top-28">
               <div className="partner-stores-map-section__header">
-                <h2 className="partner-stores-map-section__title">{copy.map.title}</h2>
+                <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
+                  {copy.map.title}
+                </h2>
                 <p className="partner-stores-map-section__subtitle lg:hidden">{copy.map.hint}</p>
               </div>
               <div className="partner-stores-map-shell">
@@ -119,6 +124,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                   onStoreSelect={handleStoreSelect}
                   ariaLabel={copy.map.ariaLabel}
                   getDirectionsLabel={copy.getDirections}
+                  minHeightPx={STORES_PAGE_MAP_HEIGHT_PX}
                 />
               </div>
             </div>

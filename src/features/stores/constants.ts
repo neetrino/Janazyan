@@ -11,6 +11,7 @@ export const MAP_SELECTED_ZOOM_MOBILE = 13;
 
 export const MAP_HEIGHT_PX = 480;
 export const MAP_HEIGHT_MOBILE_PX = 320;
+export const STORES_PAGE_MAP_HEIGHT_PX = 640;
 export const MAP_MODAL_MAP_MIN_HEIGHT_PX = 560;
 export const MAP_MODAL_MAP_MIN_HEIGHT_MOBILE_PX = 420;
 export const MAP_MODAL_Z_INDEX = 9999;

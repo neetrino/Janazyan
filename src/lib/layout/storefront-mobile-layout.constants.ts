@@ -3,8 +3,11 @@ import {
   STOREFRONT_SIDE_PADDING_NEG_CLASS,
 } from './storefront-layout.constants';
 
-/** Safe-area + breathing room below status bar. */
+/** Safe-area + breathing room below status bar (home mobile). */
 export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-8';
+
+/** Non-home mobile hero shell — tighter top inset than home. */
+export const STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS = 'pt-2';
 
 /**
  * MobileBottomNav outer chrome + icon row + labels (see MobileBottomNav).
@@ -16,11 +19,17 @@ export const STOREFRONT_MOBILE_BOTTOM_NAV_HEIGHT_PX = 88;
 export const STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS =
   'pb-[calc(88px+env(safe-area-inset-bottom,0px))]';
 
+/** Non-home mobile backdrop — white curve starts below top bar (home hero uses top-24). */
+export const STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS = 'top-32';
+
+/** Non-home mobile content card offset below header chrome. */
+export const STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS = 'mt-8';
+
 /** White content card — full-bleed, no pink gutter/backdrop at the bottom (home uses its own shell). */
 export const STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS =
-  `relative z-10 mt-6 w-auto rounded-t-[44px] bg-white pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
+  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-white pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
 
-/** Gap between search row and optional page toolbar (breadcrumb, pills). */
+/** Gap between search row and optional page toolbar. */
 export const STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS = 'mt-5';
 
 /** Home mobile sky→pink section — content spacing + bottom nav clearance. */

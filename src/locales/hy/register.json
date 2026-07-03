@@ -8,6 +8,8 @@
     "phone": "Հեռախոս (ընտրովի)",
     "password": "Գաղտնաբառ",
     "confirmPassword": "Հաստատել գաղտնաբառը",
+    "showPassword": "Ցուցադրել գաղտնաբառը",
+    "hidePassword": "Թաքցնել գաղտնաբառը",
     "acceptTerms": "Ես համաձայն եմ",
     "termsOfService": "Ծառայությունների պայմաններ",
     "and": "և",

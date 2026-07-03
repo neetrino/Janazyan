@@ -2,8 +2,8 @@
 
 import { useTranslation } from '../../lib/i18n-client';
 import {
-  STOREFRONT_GLASS_ACTION_BUTTON_CLASS,
-  STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS,
+  STOREFRONT_SKY_ACTION_BUTTON_CLASS,
+  STOREFRONT_SKY_SUBMIT_BUTTON_CLASS,
 } from '../products/[slug]/product-action-bar.constants';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CheckoutOrderSummaryBreakdown } from './components/CheckoutOrderSummaryBreakdown';
@@ -94,7 +94,7 @@ export function OrderSummary({
               type="button"
               onClick={onApplyPromo}
               disabled={promoApplying || isSubmitting}
-              className={`${STOREFRONT_GLASS_ACTION_BUTTON_CLASS} h-11 min-w-[104px] px-4 text-sm uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`${STOREFRONT_SKY_ACTION_BUTTON_CLASS} h-11 min-w-[104px] px-4 text-sm uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60`}
             >
               {promoApplying ? t('checkout.promo.applying') : t('checkout.promo.apply')}
             </button>
@@ -115,7 +115,7 @@ export function OrderSummary({
 
         <button
           type="submit"
-          className={STOREFRONT_GLASS_SUBMIT_BUTTON_CLASS}
+          className={STOREFRONT_SKY_SUBMIT_BUTTON_CLASS}
           disabled={isSubmitting}
         >
           {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.placeOrder')}

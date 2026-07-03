@@ -1,11 +1,11 @@
 {
   "phone": "+374 41 402080",
   "email": "Janazyan@janazyanprojects.com",
-  "address": "Գայի պողոտա 16, Մեգամոլլ 2-րդ հարկ",
+  "address": "Գայի պողոտա 16,\nՄեգամոլլ 2-րդ\u00a0հարկ",
   "workingHours": "Երկ-Ուրբ 10:00-19:00",
   "social": { "instagram": "", "facebook": "", "linkedin": "" },
-  "callToUs": {"title":"Զանգահարեք մեզ:","description":"Մենք հասանելի ենք շաբաթվա 7 օր, օրվա 24 ժամ:"},
-  "writeToUs": {"title":"Գրեք մեզ:","description":"Լրացրեք մեր ձևը, և մենք կկապվենք ձեզ հետ 24 ժամվա ընթացքում:","emailLabel":"Էլ. փոստ:"},
-  "headquarter": {"title":"Գլխավոր գրասենյակ:","hours":{"weekdays":"Երկուշաբթի - Ուրբաթ: 9:00-20:00","saturday":"Շաբաթ: 11:00 - 15:00"}},
-  "form": {"name":"Անուն *","namePlaceholder":"Ձեր անունը","email":"Էլ. փոստ *","emailPlaceholder":"your@email.com","subject":"Թեմա *","subjectPlaceholder":"Ինչի՞ մասին է","message":"Հաղորդագրություն","messagePlaceholder":"Ձեր հաղորդագրությունը...","submit":"Ուղարկել","submitting":"Ուղարկվում է...","submitSuccess":"Ձեր հաղորդագրությունը հաջողությամբ ուղարկվեց","submitError":"Սխալ: Չհաջողվեց ուղարկել հաղորդագրությունը"}
+  "callToUs": {"title":"Զանգահարեք մեզ","description":"Մենք հասանելի ենք շաբաթվա 7 օր, օրվա 24 ժամ:"},
+  "writeToUs": {"title":"Գրեք մեզ","description":"Մենք միշտ պատրաստ ենք պատասխանել ձեր հարցերին և լսել ձեր առաջարկները։","emailLabel":"Էլ. փոստ:"},
+  "headquarter": {"title":"Գլխավոր գրասենյակ","hours":{"weekdaysLabel":"Երկուշաբթի - Ուրբաթ:","weekdaysTime":"9:00-20:00","saturdayLabel":"Շաբաթ:","saturdayTime":"11:00-15:00"}},
+  "form": {"name":"Անուն","namePlaceholder":"Ձեր անունը","email":"Էլ. փոստ","emailPlaceholder":"john@example.com","subject":"Թեմա","subjectPlaceholder":"Ինչի՞ մասին է","message":"Հաղորդագրություն","messagePlaceholder":"Ձեր հաղորդագրությունը","submit":"Ուղարկել","submitting":"Ուղարկվում է...","submitSuccess":"Ձեր հաղորդագրությունը հաջողությամբ ուղարկվեց","submitError":"Սխալ: Չհաջողվեց ուղարկել հաղորդագրությունը"}
 }

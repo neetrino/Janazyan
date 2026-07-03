@@ -2,9 +2,6 @@ import { t } from '../../lib/i18n';
 import type { LanguageCode } from '../../lib/language';
 
 export type BlogPageCopy = {
-  breadcrumbHome: string;
-  breadcrumbCurrent: string;
-  subtitle: string;
   title: string;
   description: string;
   emptyTitle: string;
@@ -19,9 +16,6 @@ export type BlogDetailCopy = {
 
 export function loadBlogPageCopy(lang: LanguageCode): BlogPageCopy {
   return {
-    breadcrumbHome: t(lang, 'blog.breadcrumbHome'),
-    breadcrumbCurrent: t(lang, 'blog.breadcrumbCurrent'),
-    subtitle: t(lang, 'blog.subtitle'),
     title: t(lang, 'blog.title'),
     description: t(lang, 'blog.description'),
     emptyTitle: t(lang, 'blog.emptyTitle'),

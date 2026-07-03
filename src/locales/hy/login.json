@@ -6,6 +6,8 @@
     "emailPlaceholder": "your@email.com",
     "password": "Գաղտնաբառ",
     "passwordPlaceholder": "••••••••",
+    "showPassword": "Ցուցադրել գաղտնաբառը",
+    "hidePassword": "Թաքցնել գաղտնաբառը",
     "rememberMe": "Հիշել ինձ",
     "forgotPassword": "Մոռացել եք գաղտնաբառը?",
     "submit": "Մուտք",

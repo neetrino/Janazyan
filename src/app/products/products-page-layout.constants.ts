@@ -1,6 +1,7 @@
 import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
-/** Same rounded shell as {@link HomeHero} — width follows {@link PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}. */
+/** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
   'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
 
@@ -15,23 +16,26 @@ export const PRODUCTS_PAGE_SIDE_PADDING_MAX_PX = 36;
 /** Side gutters — same visual inset on all viewports (matches narrow-phone spacing, capped on wide). */
 export const PRODUCTS_PAGE_SIDE_PADDING_CLASS = 'px-[clamp(24px,3.2vw,36px)]';
 
-/** Desktop page wrapper — responsive max-width with reduced side free space. */
-export const PRODUCTS_PAGE_DESKTOP_SHELL_CLASS = `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`;
+/** Desktop page wrapper — full-width background shell for non-home storefront pages. */
+export const PRODUCTS_PAGE_DESKTOP_SHELL_CLASS = 'w-full';
 
 /** Same viewBox proportions as {@link HeroRectangleBackground} — keeps the hero shape unsmeared. */
 export const PRODUCTS_PAGE_HERO_ASPECT_CLASS = 'aspect-[1388/852]';
 
-/** Desktop hero gradient top inset tuned to sit closer to the embedded header. */
-export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-[14px]';
+/** Desktop hero gradient flush with shell top — header pills center in the blue band. */
+export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 
-/** Breadcrumb baseline from shell top (node 269:900, y=210). */
+/** Desktop hero gradient spans the full header band. */
+export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
+
+/** Toolbar baseline from shell top (node 269:900, y=210). */
 export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'lg:pt-[210px]';
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
   'pt-[120px] sm:pt-[140px] lg:pt-[156px]';
 
-/** Mobile — clear embedded header before breadcrumb / category pills. */
+/** Mobile — clear embedded header before category pills. */
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[140px]';
 
 /** Embedded header actions — fixed px (7.77% of Figma 940px frame). */
@@ -75,7 +79,7 @@ export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
 
 /** Mobile catalog — full-bleed gradient, white at top fading to shop sky blue. */
 export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
-  `relative z-10 mt-6 w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
+  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
 /** Legacy mobile reset hook for single-mount catalog slots; intentionally a no-op. */
 export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';

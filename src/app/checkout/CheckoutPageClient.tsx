@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS, ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
-import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
+import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
 import { OrderSummary } from './OrderSummary';
@@ -83,7 +83,7 @@ export function CheckoutPageClient() {
               <p className="mb-4 text-gray-600">{t('checkout.errors.cartEmpty')}</p>
               <button
                 type="button"
-                className={STOREFRONT_GLASS_PILL_BUTTON_CLASS}
+                className={STOREFRONT_SKY_PILL_BUTTON_CLASS}
                 onClick={() => router.push('/products')}
               >
                 {t('checkout.buttons.continueShopping')}

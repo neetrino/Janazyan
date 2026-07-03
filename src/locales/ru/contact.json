@@ -1,11 +1,11 @@
 {
   "phone": "+374 41 402080",
   "email": "Janazyan@janazyanprojects.com",
-  "address": "пр-т Гая 16\nMegamall, 2-й этаж",
+  "address": "пр-т Гая 16,\nMegamall 2-й\u00a0этаж",
   "workingHours": "Пн-Пт 10:00-19:00",
   "social": { "instagram": "", "facebook": "", "linkedin": "" },
-  "callToUs": {"title":"Позвоните нам:","description":"Мы доступны 24/7, 7 дней в неделю."},
-  "writeToUs": {"title":"Напишите нам:","description":"Заполните нашу форму, и мы свяжемся с вами в течение 24 часов.","emailLabel":"Электронная почта:"},
-  "headquarter": {"title":"Главный офис:","hours":{"weekdays":"Понедельник - Пятница: 9:00-20:00","saturday":"Суббота: 11:00 - 15:00"}},
-  "form": {"name":"Имя *","namePlaceholder":"Ваше имя","email":"E-mail *","emailPlaceholder":"your@email.com","subject":"Тема *","subjectPlaceholder":"О чем это?","message":"Сообщение","messagePlaceholder":"Ваше сообщение...","submit":"Отправить","submitting":"Отправка...","submitSuccess":"Ваше сообщение успешно отправлено","submitError":"Ошибка: Не удалось отправить сообщение"}
+  "callToUs": {"title":"Позвоните нам","description":"Мы доступны 24/7, 7 дней в неделю."},
+  "writeToUs": {"title":"Напишите нам","description":"Мы всегда готовы ответить на ваши вопросы и выслушать ваши предложения.","emailLabel":"Электронная почта:"},
+  "headquarter": {"title":"Главный офис","hours":{"weekdaysLabel":"Понедельник - Пятница:","weekdaysTime":"9:00-20:00","saturdayLabel":"Суббота:","saturdayTime":"11:00-15:00"}},
+  "form": {"name":"Имя","namePlaceholder":"Ваше имя","email":"E-mail","emailPlaceholder":"john@example.com","subject":"Тема","subjectPlaceholder":"О чем это?","message":"Сообщение","messagePlaceholder":"Ваше сообщение","submit":"Отправить","submitting":"Отправка...","submitSuccess":"Ваше сообщение успешно отправлено","submitError":"Ошибка: Не удалось отправить сообщение"}
 }
