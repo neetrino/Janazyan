@@ -17,6 +17,7 @@ import { HOME_HERO_BLEED_CLASS } from '../lib/layout/hero-frame.constants';
 import {
   STOREFRONT_ARC_SHELL_CLASS,
   STOREFRONT_CONTENT_SHELL_CLASS,
+  STOREFRONT_DESKTOP_ONLY_CLASS,
 } from '../lib/layout/storefront-layout.constants';
 import { getServerLanguage } from '../lib/language-server';
 import { warmDefaultProductsCatalogCache } from '../lib/products/warm-products-catalog-cache';
@@ -29,10 +30,10 @@ export default async function HomePage() {
   });
 
   return (
-    <div className="relative isolate overflow-x-clip lg:bg-white">
+    <div className="relative isolate overflow-x-clip desktop:bg-white">
       <HomeMobileFigma featuredSlot={<HomeMobileFeaturedAsync />} />
 
-      <div className="hidden lg:block">
+      <div className={STOREFRONT_DESKTOP_ONLY_CLASS}>
         <Header embedded />
         <div
           className="-mt-[var(--header-sticky-overlap)]"
@@ -42,7 +43,7 @@ export default async function HomePage() {
             <div className={HOME_HERO_BLEED_CLASS}>
               <HomeHero />
             </div>
-            <div className="relative lg:-mt-[30px]">
+            <div className="relative desktop:-mt-[30px]">
               <CategoryPosters />
             </div>
           </div>

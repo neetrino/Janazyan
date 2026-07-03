@@ -3,6 +3,7 @@ import {
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
 } from './products-page-layout.constants';
+import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 
 const GRID =
   'grid grid-cols-2 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4';
@@ -13,8 +14,8 @@ const GRID =
 export function ProductsShopToolbarSkeleton() {
   return (
     <div className="pb-1" aria-busy="true" aria-label="Loading shop toolbar">
-      <div className="mb-4 h-[18px] w-40 animate-pulse rounded bg-white/50 lg:mb-6" />
-      <div className="hidden flex-col gap-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
+      <div className="mb-4 h-[18px] w-40 animate-pulse rounded bg-white/50 desktop:mb-6" />
+      <div className={`${STOREFRONT_DESKTOP_FLEX_CLASS} flex-col gap-3 desktop:flex-row desktop:items-center desktop:justify-between desktop:gap-[11px]`}>
         <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>
           {Array.from({ length: 5 }).map((_, index) => (
             <div

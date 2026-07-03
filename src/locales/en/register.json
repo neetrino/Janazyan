@@ -8,6 +8,8 @@
     "phone": "Phone (optional)",
     "password": "Password",
     "confirmPassword": "Confirm Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "acceptTerms": "I agree to",
     "termsOfService": "Terms of Service",
     "and": "and",

@@ -7,6 +7,15 @@ export const MIRAGE_LINE_HEIGHT_CLASS = 'leading-[0.652]';
 /** Centered section titles (Featured, Why Choose Us, etc.) */
 export const MIRAGE_SECTION_HEADING_CLASS = `${MIRAGE_DISPLAY_BASE} ${MIRAGE_LINE_HEIGHT_CLASS} text-[clamp(34px,5vw,66px)]`;
 
+/** Storefront inner-page main titles (about, stores header/footer). */
+export const MIRAGE_PAGE_HEADING_CLASS = `${MIRAGE_DISPLAY_BASE} ${MIRAGE_LINE_HEIGHT_CLASS} text-[clamp(32px,3.6vw,50px)]`;
+
+/** Storefront inner-page section titles (contact blocks, stores list/map). */
+export const MIRAGE_PAGE_SUBHEADING_CLASS = `${MIRAGE_DISPLAY_BASE} ${MIRAGE_LINE_HEIGHT_CLASS} text-[clamp(24px,2.8vw,34px)]`;
+
+/** Contact page hero title — Figma node 496:458 (Mirage 85px). */
+export const MIRAGE_CONTACT_HEADING_CLASS = `${MIRAGE_DISPLAY_BASE} leading-[0.9] text-[clamp(42px,5.9vw,85px)]`;
+
 export const MIRAGE_SECTION_HEADING_CREAM_CLASS =
   'font-mirage font-normal text-cream tracking-[-0.4492px] leading-[0.652] text-[clamp(34px,5vw,66px)]';
 

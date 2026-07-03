@@ -24,7 +24,6 @@ export type StoreSelectHandler = (
 ) => void;
 
 export type StoresTranslation = {
-  subtitle: string;
   title: string;
   description: string;
   map: {

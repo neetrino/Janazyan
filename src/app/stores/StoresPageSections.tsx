@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
+import { MIRAGE_PAGE_HEADING_CLASS } from '../../components/home/mirage-heading-styles';
+import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import type { StoresTranslation } from '../../features/stores/types';
 
 export function StoresPageHeader({ copy }: { copy: StoresTranslation }) {
@@ -7,10 +8,7 @@ export function StoresPageHeader({ copy }: { copy: StoresTranslation }) {
     <section className="py-8 md:py-12">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-semibold uppercase tracking-wider text-[#7CB342] md:text-base">
-            {copy.subtitle}
-          </p>
-          <h1 className="mt-3 text-4xl font-bold leading-tight text-gray-900 md:text-5xl">
+          <h1 className={MIRAGE_PAGE_HEADING_CLASS}>
             {copy.title}
           </h1>
           <p className="mt-4 text-base leading-relaxed text-gray-600 md:text-lg">
@@ -26,11 +24,11 @@ export function StoresPageFooter({ copy }: { copy: StoresTranslation }) {
   return (
     <section className="border-t border-gray-100 py-14 md:py-16">
       <div className="mx-auto max-w-3xl text-center">
-        <h2 className="text-2xl font-bold text-gray-900 md:text-3xl">
+        <h2 className={MIRAGE_PAGE_HEADING_CLASS}>
           {copy.cantFind.title}
         </h2>
         <p className="mt-3 text-gray-600">{copy.cantFind.description}</p>
-        <Link href="/contact" className={`mt-6 ${STOREFRONT_GLASS_PILL_BUTTON_CLASS}`}>
+        <Link href="/contact" className={`mt-6 ${STOREFRONT_SKY_PILL_BUTTON_CLASS}`}>
           {copy.cantFind.contactUs}
         </Link>
       </div>

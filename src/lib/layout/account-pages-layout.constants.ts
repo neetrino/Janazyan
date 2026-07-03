@@ -33,7 +33,7 @@ export const PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS = {
 } as const;
 
 /** Profile mobile shell — full width inside storefront gutter. */
-export const PROFILE_MOBILE_OUTER_CLASS = 'mx-auto w-full pb-8 lg:hidden';
+export const PROFILE_MOBILE_OUTER_CLASS = 'mx-auto w-full pb-8 desktop:hidden';
 
 /** Profile mobile card — reduced horizontal padding on narrow screens. */
 export const PROFILE_MOBILE_CARD_CLASS =

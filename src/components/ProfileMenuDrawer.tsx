@@ -2,6 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
+import { STOREFRONT_TABLET_DOWN_CLASS } from '../lib/layout/storefront-layout.constants';
 
 export interface ProfileMenuItem {
   id: string;
@@ -41,7 +42,7 @@ export function ProfileMenuDrawer({ tabs, activeTab, onSelect }: ProfileMenuDraw
   };
 
   return (
-    <div className="lg:hidden">
+    <div className={STOREFRONT_TABLET_DOWN_CLASS}>
       <button
         type="button"
         onClick={() => {

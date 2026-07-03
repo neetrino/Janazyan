@@ -8,6 +8,8 @@
     "phone": "Телефон (необязательно)",
     "password": "Пароль",
     "confirmPassword": "Подтвердите пароль",
+    "showPassword": "Показать пароль",
+    "hidePassword": "Скрыть пароль",
     "acceptTerms": "Я согласен с",
     "termsOfService": "Условиями использования",
     "and": "и",

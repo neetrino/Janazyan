@@ -13,6 +13,7 @@ import {
 } from './hero-typography.constants';
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_DESKTOP_ONLY_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS } from '../../lib/layout/hero-frame.constants';
 
 type HeroDraggableShellProps = {
@@ -218,7 +219,7 @@ export function HomeHero() {
         <HeroKidsLabel visible={activeSlide.showKidsLabel} label={heroKidsLabel} />
         <HeroNavigationArrows onPrevious={goToPreviousSlide} onNext={goToNextSlide} />
 
-        <div className="relative z-20 lg:hidden">
+        <div className={`relative z-20 ${STOREFRONT_TABLET_DOWN_CLASS}`}>
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-16 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-20 md:pt-10">
             <div className="relative -mt-2 h-[280px] w-full overflow-visible rounded-2xl md:hidden">
               <HeroDraggableShell
@@ -263,7 +264,7 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 z-[25] hidden lg:block">
+        <div className={`pointer-events-none absolute inset-0 z-[25] ${STOREFRONT_DESKTOP_ONLY_CLASS}`}>
           <div className={`pointer-events-auto absolute top-[285px] max-w-[min(760px,52%)] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS}`}>
             <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
               {heroTitle}

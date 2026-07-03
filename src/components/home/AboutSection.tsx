@@ -10,6 +10,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import {
   STOREFRONT_CONTENT_MAX_WIDTH_PX,
   STOREFRONT_CONTENT_SHELL_CLASS,
+  STOREFRONT_DESKTOP_ONLY_CLASS,
 } from '../../lib/layout/storefront-layout.constants';
 
 const ABOUT_IMAGE = '/figma/about-hero.webp';
@@ -30,7 +31,7 @@ export function AboutSection() {
   return (
     <section
       aria-label={t('home.about.sectionAria')}
-      className="relative hidden w-full overflow-hidden font-armenian lg:block"
+      className={`relative w-full overflow-hidden font-armenian ${STOREFRONT_DESKTOP_ONLY_CLASS}`}
       style={ABOUT_BG_STYLE}
     >
       <div className={STOREFRONT_CONTENT_SHELL_CLASS}>

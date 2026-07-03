@@ -2,7 +2,7 @@
 
 import {
   STOREFRONT_GLASS_SECONDARY_BUTTON_CLASS,
-  STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS,
+  STOREFRONT_SKY_SUBMIT_BUTTON_FLEX_CLASS,
 } from '../../products/[slug]/product-action-bar.constants';
 import { UseFormRegister, UseFormSetValue, UseFormHandleSubmit, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -212,7 +212,7 @@ export function ShippingAddressModal({
           </button>
           <button
             type="button"
-            className={STOREFRONT_GLASS_SUBMIT_BUTTON_FLEX_CLASS}
+            className={STOREFRONT_SKY_SUBMIT_BUTTON_FLEX_CLASS}
             onClick={handleSubmit(
               (data) => {
                 onClose();

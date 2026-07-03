@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { MIRAGE_PAGE_HEADING_CLASS } from '../../components/home/mirage-heading-styles';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { TeamCarousel } from '../../components/TeamCarousel';
 import { useTranslation } from '../../lib/i18n-client';
@@ -33,11 +34,7 @@ export default function AboutPage() {
                 </div>
 
                 <div className="space-y-6">
-                  <p className="text-sm font-semibold uppercase tracking-wider text-[#7CB342] md:text-base">
-                    {t('about.subtitle')}
-                  </p>
-
-                  <h1 className="text-4xl font-bold leading-tight text-gray-900 md:text-5xl lg:text-6xl">
+                  <h1 className={MIRAGE_PAGE_HEADING_CLASS}>
                     {t('about.title')}
                   </h1>
 

@@ -11,7 +11,6 @@ export function loadStoresPageCopy(lang: LanguageCode): StoresTranslation {
     buttons: { close: string };
   };
   return {
-    subtitle: raw.subtitle,
     title: raw.title,
     description: raw.description,
     map: raw.map,

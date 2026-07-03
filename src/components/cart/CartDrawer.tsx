@@ -20,7 +20,7 @@ import {
 } from '../../lib/cart-drawer-events';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
-import { STOREFRONT_GLASS_PILL_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
+import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import { useCurrency } from '../hooks/useCurrency';
 import { CartDrawerItemRow } from './CartDrawerItemRow';
 import { CartDrawerFooter } from './CartDrawerFooter';
@@ -301,7 +301,7 @@ export function CartDrawer() {
               <Link
                 href="/products"
                 onClick={() => closeCartDrawer()}
-                className={`mt-6 ${STOREFRONT_GLASS_PILL_BUTTON_CLASS}`}
+                className={`mt-6 ${STOREFRONT_SKY_PILL_BUTTON_CLASS}`}
               >
                 {t('common.buttons.browseProducts')}
               </Link>

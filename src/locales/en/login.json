@@ -6,6 +6,8 @@
     "emailPlaceholder": "your@email.com",
     "password": "Password",
     "passwordPlaceholder": "••••••••",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "rememberMe": "Remember me",
     "forgotPassword": "Forgot password?",
     "submit": "Sign In",

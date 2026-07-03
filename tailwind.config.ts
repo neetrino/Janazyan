@@ -7,6 +7,10 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      screens: {
+        /** Storefront desktop chrome — header pills, hero shell (below = tablet/mobile). */
+        desktop: '1300px',
+      },
       colors: {
         primary: '#000000',
         secondary: '#FFFFFF',

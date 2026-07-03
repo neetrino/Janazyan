@@ -14,6 +14,7 @@ import {
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
+  PDP_REVIEWS_BUTTON_CLASS,
 } from './product-action-bar.constants';
 import { Heart } from 'lucide-react';
 import type { ProductPageSnapshot } from '@/lib/products/product-page-snapshot';
@@ -39,7 +40,7 @@ function SnapshotRatingRow({ averageRating, reviewsCount }: SnapshotRatingRowPro
         </div>
       </div>
       <span className="text-sm font-semibold text-gray-900 tabular-nums">{averageRating.toFixed(1)}</span>
-      <div className="inline-flex h-9 items-center rounded-full border border-white/55 bg-gradient-to-b from-white/55 to-sky-mist/35 px-4 text-sm font-medium text-ink-800 shadow-[0_4px_24px_rgba(147,182,227,0.22)] backdrop-blur-[14px]">
+      <div className={PDP_REVIEWS_BUTTON_CLASS}>
         {reviewsCount} reviews
       </div>
     </div>
