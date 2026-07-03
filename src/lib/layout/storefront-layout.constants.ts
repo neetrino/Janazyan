@@ -1,3 +1,15 @@
+/** Viewport min-width where storefront desktop chrome activates (header pills, hero shell). */
+export const STOREFRONT_DESKTOP_MIN_WIDTH_PX = 1300;
+
+/** Tablet + mobile shell — hidden from {@link STOREFRONT_DESKTOP_MIN_WIDTH_PX} upward. */
+export const STOREFRONT_TABLET_DOWN_CLASS = 'desktop:hidden';
+
+/** Desktop-only block surfaces (paired with {@link STOREFRONT_TABLET_DOWN_CLASS}). */
+export const STOREFRONT_DESKTOP_ONLY_CLASS = 'hidden desktop:block';
+
+/** Desktop-only flex rows (toolbar, nav cluster). */
+export const STOREFRONT_DESKTOP_FLEX_CLASS = 'hidden desktop:flex';
+
 /** Figma home artboard width (node 10:517) — design coordinate reference. */
 export const STOREFRONT_CONTENT_MAX_WIDTH_PX = 1470;
 

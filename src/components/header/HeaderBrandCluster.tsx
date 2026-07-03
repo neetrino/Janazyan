@@ -24,12 +24,14 @@ import {
   HEADER_LOGO_HEIGHT_PX,
   HEADER_LOGO_NAV_GAP_PX,
   HEADER_LOGO_WIDTH_PX,
+  HEADER_NAV_LINK_GAP_CLASS,
   HEADER_NAV_PILL_PADDING_LEFT_PX,
   HEADER_NAV_PILL_PADDING_RIGHT_PX,
   HEADER_NAV_PILL_PADDING_Y_PX,
   HEADER_PILL_BORDER_RADIUS_PX,
   HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
+import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
 function useHeaderNavLinks() {
@@ -42,8 +44,6 @@ function useHeaderNavLinks() {
         : t(`common.navigation.${link.labelKey}`),
   }));
 }
-
-const HEADER_NAV_LINK_GAP_PX = 28;
 
 const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
@@ -151,8 +151,7 @@ function HeaderNav({
   return (
     <nav
       ref={navRef}
-      className="relative hidden items-center lg:flex"
-      style={{ gap: HEADER_NAV_LINK_GAP_PX }}
+      className={`relative items-center ${STOREFRONT_DESKTOP_FLEX_CLASS} ${HEADER_NAV_LINK_GAP_CLASS}`}
       aria-label="Main navigation"
     >
       <span

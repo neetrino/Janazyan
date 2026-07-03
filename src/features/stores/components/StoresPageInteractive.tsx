@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MIRAGE_PAGE_SUBHEADING_CLASS } from '../../../components/home/mirage-heading-styles';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
+import { STOREFRONT_TABLET_DOWN_CLASS } from '../../../lib/layout/storefront-layout.constants';
 import { getStoredLanguage } from '../../../lib/language';
 import { fetchPartnerStores } from '../fetch-partner-stores';
 import { STORES_PAGE_MAP_HEIGHT_PX } from '../constants';
@@ -114,7 +115,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                 <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
                   {copy.map.title}
                 </h2>
-                <p className="partner-stores-map-section__subtitle lg:hidden">{copy.map.hint}</p>
+                <p className={`partner-stores-map-section__subtitle ${STOREFRONT_TABLET_DOWN_CLASS}`}>{copy.map.hint}</p>
               </div>
               <div className="partner-stores-map-shell">
                 <PartnerStoresMap

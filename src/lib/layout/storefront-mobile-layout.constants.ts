@@ -1,6 +1,7 @@
 import {
   STOREFRONT_HORIZONTAL_GUTTER_CLASS,
   STOREFRONT_SIDE_PADDING_NEG_CLASS,
+  STOREFRONT_TABLET_DOWN_CLASS,
 } from './storefront-layout.constants';
 
 /** Safe-area + breathing room below status bar (home mobile). */
@@ -37,4 +38,4 @@ export const HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS =
   'pb-[calc(120px+env(safe-area-inset-bottom,0px))]';
 
 /** Outer mobile shell — gradient backdrop + horizontal gutter. */
-export const STOREFRONT_MOBILE_SHELL_CLASS = `relative lg:hidden ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`;
+export const STOREFRONT_MOBILE_SHELL_CLASS = `relative ${STOREFRONT_TABLET_DOWN_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`;

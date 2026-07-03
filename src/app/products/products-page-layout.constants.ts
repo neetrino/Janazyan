@@ -3,7 +3,7 @@ import { STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS } from '../../lib/la
 
 /** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px]';
+  'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px]';
 
 /** Slightly wider than home column — tighter outer gutters on /products. */
 export const PRODUCTS_PAGE_MAX_WIDTH_CLASS =
@@ -29,11 +29,11 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
 
 /** Toolbar baseline from shell top (node 269:900, y=210). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'lg:pt-[210px]';
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[210px]';
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
-  'pt-[120px] sm:pt-[140px] lg:pt-[156px]';
+  'pt-[120px] sm:pt-[140px] desktop:pt-[156px]';
 
 /** Mobile — clear embedded header before category pills. */
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[140px]';
@@ -88,13 +88,13 @@ export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';
 export const PRODUCTS_PAGE_CATALOG_DESKTOP_SHELL_CONTINUATION_CLASS = '';
 
 /** Space between toolbar and first product row. */
-export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 lg:pt-8';
+export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-8';
 
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
 
 /** Bottom padding inside the catalog zone. */
-export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS = 'pb-10 lg:pb-14';
+export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS = 'pb-10 desktop:pb-14';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

@@ -19,6 +19,7 @@ import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
 import { Header } from '../Header';
 import { HEADER_HERO_SHELL_STICKY_OVERLAP_PX } from '../header/header-shell-shape.constants';
 import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
+import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
 type ProductsHeroShellProps = {
@@ -59,7 +60,7 @@ function ProductsHeroShellInner({
     <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
       <Header embedded />
       <div
-        className="relative shrink-0 overflow-hidden lg:-mt-[var(--header-sticky-overlap)]"
+        className="relative shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
         style={{ '--header-sticky-overlap': `${HEADER_HERO_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
       >
         <div
@@ -68,7 +69,7 @@ function ProductsHeroShellInner({
           <HeroRectangleBackground variant="blue" solidColor="#C9DDF0" />
         </div>
         <div
-          className={`relative z-20 mx-auto w-full pb-2 lg:pb-4 ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`}
+          className={`relative z-20 mx-auto w-full pb-2 desktop:pb-4 ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`}
         >
           <div className={`${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${heroToolbarOffsetClass}`}>
             {toolbar}
@@ -114,7 +115,7 @@ export function ProductsHeroShell({
         {catalog}
       </StorefrontMobileShell>
 
-      <div className={`hidden lg:block ${PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}`}>
+      <div className={`${STOREFRONT_DESKTOP_ONLY_CLASS} ${PRODUCTS_PAGE_DESKTOP_SHELL_CLASS}`}>
         <section
           aria-label={sectionAriaLabel}
           className="relative w-full"

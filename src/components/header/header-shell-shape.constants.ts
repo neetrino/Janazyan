@@ -54,6 +54,24 @@ export const HEADER_NAV_PILL_PADDING_Y_PX = 14;
 /** Gap between logo and navigation (Figma gap 15px). */
 export const HEADER_LOGO_NAV_GAP_PX = 15;
 
+/** Desktop viewports below this width keep extra space between brand and actions pills. */
+export const HEADER_COMPACT_DESKTOP_MAX_WIDTH_PX = 1440;
+
+/** Minimum gap between brand and actions pills on compact desktop (desktop…1439px). */
+export const HEADER_COMPACT_DESKTOP_CLUSTER_MIN_GAP_PX = 40;
+
+/** Tighter nav link spacing on compact desktop so pills keep a safe center gap. */
+export const HEADER_COMPACT_DESKTOP_NAV_LINK_GAP_PX = 18;
+
+/** Tailwind — minimum cluster gap on compact desktop (must stay a complete class string). */
+export const HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS = 'desktop:max-[1439px]:gap-10';
+
+/** Tailwind — responsive nav link gap inside the brand pill. */
+export const HEADER_NAV_LINK_GAP_CLASS = 'desktop:gap-[28px] desktop:max-[1439px]:gap-[18px]';
+
+/** Default desktop nav link gap inside the brand pill. */
+export const HEADER_NAV_LINK_GAP_PX = 28;
+
 /** Actions pill inner padding (Figma Frame 472 inset 11×14). */
 export const HEADER_ACTIONS_PILL_PADDING_X_PX = 11;
 export const HEADER_ACTIONS_PILL_PADDING_Y_PX = 14;

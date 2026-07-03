@@ -17,7 +17,7 @@ import {
 } from './mirage-heading-styles';
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
-import { STOREFRONT_HORIZONTAL_GUTTER_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { STOREFRONT_HORIZONTAL_GUTTER_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
   HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
   STOREFRONT_MOBILE_TOP_INSET_CLASS,
@@ -52,7 +52,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   const hairCategory = categoryPosters.find((item) => item.id === 'hair');
 
   return (
-    <section className="relative lg:hidden">
+    <section className={`relative ${STOREFRONT_TABLET_DOWN_CLASS}`}>
       <MobileBackdrop />
       <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />

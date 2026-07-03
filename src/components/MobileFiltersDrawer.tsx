@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { STOREFRONT_TABLET_DOWN_CLASS } from '../lib/layout/storefront-layout.constants';
 import { useTranslation } from '../lib/i18n-client';
 
 interface MobileFiltersDrawerProps {
@@ -51,7 +52,7 @@ export function MobileFiltersDrawer({
   }, [openEventName]);
 
   return (
-    <div className="lg:hidden">
+    <div className={STOREFRONT_TABLET_DOWN_CLASS}>
       {open && (
         <div
           className="fixed inset-0 z-50 flex bg-black/40 backdrop-blur-sm"

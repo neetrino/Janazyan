@@ -39,7 +39,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const usesHeroSurface = heroShellPage || useCatalogTheme;
 
   return (
-    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'lg:bg-white' : ''}`}>
+    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'desktop:bg-white' : ''}`}>
       {heroShellPage ? (
         <div className={`relative z-10 w-full ${mainBottomPaddingClass}`}>{children}</div>
       ) : useCatalogTheme ? (

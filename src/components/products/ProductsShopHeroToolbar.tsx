@@ -4,6 +4,7 @@ import {
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
 } from '../../app/products/products-page-layout.constants';
+import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 import type { LanguageCode } from '../../lib/language';
 import { CategoryNavigationServer } from '../CategoryNavigation/CategoryNavigationServer';
 import { ProductsToolbarControls } from './ProductsToolbarControls';
@@ -22,7 +23,7 @@ export function ProductsShopHeroToolbar({
 }: ProductsShopHeroToolbarProps) {
   return (
     <div className="pb-1">
-      <div className="hidden flex-col gap-3 lg:flex lg:flex-row lg:items-center lg:justify-between lg:gap-[11px]">
+      <div className={`${STOREFRONT_DESKTOP_FLEX_CLASS} flex-col gap-3 desktop:flex-row desktop:items-center desktop:justify-between desktop:gap-[11px]`}>
         <Suspense
           fallback={
             <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>

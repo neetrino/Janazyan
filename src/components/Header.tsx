@@ -17,6 +17,7 @@ import {
   resolveHeaderBandHeightPx,
   resolveHeaderRowVerticalInsetPx,
   resolveHeaderStickyOverlapPx,
+  HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS,
 } from './header/header-shell-shape.constants';
 import {
   PRODUCTS_PAGE_CONTENT_INSET_CLASS,
@@ -25,6 +26,7 @@ import {
 } from '../app/products/products-page-layout.constants';
 import {
   STOREFRONT_CONTENT_MAX_WIDTH_CLASS,
+  STOREFRONT_DESKTOP_ONLY_CLASS,
   STOREFRONT_HORIZONTAL_GUTTER_CLASS,
   STOREFRONT_SIDE_PADDING_CLASS,
 } from '../lib/layout/storefront-layout.constants';
@@ -37,7 +39,7 @@ import {
 const STOREFRONT_HEADER_BG_CLASS = 'bg-sky-mist';
 
 const HEADER_STICKY_CLASS = 'sticky top-0';
-const HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS = 'lg:max-[1649px]:-translate-y-4';
+const HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS = 'desktop:max-[1649px]:-translate-y-4';
 
 type HeaderProps = {
   /** When true, only the overlay bar (parent supplies positioning shell). */
@@ -112,9 +114,9 @@ function HeaderContentRow({
 
   return (
     <div
-      className={`relative flex w-full items-center justify-between overflow-visible min-h-[var(--header-shell-height)] ${
+      className={`relative flex w-full items-center justify-between overflow-visible min-h-[var(--header-shell-height)] ${HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS} ${
         embedded
-          ? 'pt-[var(--header-mobile-row-top)] pb-[var(--header-mobile-row-bottom)] lg:pt-[var(--header-row-top)] lg:pb-[var(--header-row-bottom)]'
+          ? 'pt-[var(--header-mobile-row-top)] pb-[var(--header-mobile-row-bottom)] desktop:pt-[var(--header-row-top)] desktop:pb-[var(--header-row-bottom)]'
           : ''
       }`}
       style={
@@ -190,7 +192,7 @@ function HeaderShell({
 
   return (
     <div
-      className={`${HEADER_STICKY_CLASS} hidden w-full ${outerBgClass} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS} lg:block`}
+      className={`${HEADER_STICKY_CLASS} ${STOREFRONT_DESKTOP_ONLY_CLASS} w-full ${outerBgClass} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}
       style={{
         zIndex: HEADER_SHELL_STICKY_Z_INDEX,
         paddingTop: 'env(safe-area-inset-top, 0px)',

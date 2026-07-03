@@ -2,12 +2,11 @@
 
 import Image from 'next/image';
 import {
-  CONTACT_HERO_FRAME_CLASS,
-  CONTACT_HERO_IMAGE_CLASS,
-  CONTACT_HERO_IMAGE_RADIUS_CLASS,
-  CONTACT_HERO_WALL_BLEED_CLASS,
-  CONTACT_HERO_WIDTH_PX,
+  LOGIN_HERO_LEFT_FRAME_CLASS,
+  LOGIN_HERO_LEFT_IMAGE_CLASS,
   LOGIN_HERO_LEFT_IMAGE_SRC,
+  LOGIN_HERO_LEFT_WALL_CLASS,
+  LOGIN_HERO_LEFT_WIDTH_PX,
   LOGIN_HERO_RIGHT_FLIP_CLASS,
   LOGIN_HERO_RIGHT_HEIGHT_PX,
   LOGIN_HERO_RIGHT_IMAGE_SRC,
@@ -18,15 +17,15 @@ import {
 /** Login page left hero — Figma node 513:865, same asset as contact. */
 export function LoginLeftHeroVisual() {
   return (
-    <div className={`relative z-0 ${CONTACT_HERO_WALL_BLEED_CLASS}`}>
-      <div className={`${CONTACT_HERO_FRAME_CLASS} ${CONTACT_HERO_IMAGE_RADIUS_CLASS}`}>
+    <div className={`relative z-0 ${LOGIN_HERO_LEFT_WALL_CLASS}`}>
+      <div className={LOGIN_HERO_LEFT_FRAME_CLASS}>
         <Image
           src={LOGIN_HERO_LEFT_IMAGE_SRC}
           alt=""
           fill
           priority
-          sizes={`(max-width: 1024px) 100vw, ${CONTACT_HERO_WIDTH_PX}px`}
-          className={CONTACT_HERO_IMAGE_CLASS}
+          sizes={`(max-width: 1299px) 100vw, ${LOGIN_HERO_LEFT_WIDTH_PX}px`}
+          className={LOGIN_HERO_LEFT_IMAGE_CLASS}
         />
       </div>
     </div>

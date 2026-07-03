@@ -8,7 +8,11 @@ import {
   MIRAGE_LINE_HEIGHT_CLASS,
 } from './mirage-heading-styles';
 import { useTranslation } from '../../lib/i18n-client';
-import { STOREFRONT_PROMO_MAX_WIDTH_CLASS } from '../../lib/layout/storefront-layout.constants';
+import {
+  STOREFRONT_DESKTOP_ONLY_CLASS,
+  STOREFRONT_PROMO_MAX_WIDTH_CLASS,
+  STOREFRONT_TABLET_DOWN_CLASS,
+} from '../../lib/layout/storefront-layout.constants';
 
 const PROMO_PHOTO = '/figma/promo-poster-photo.webp';
 const PROMO_CTA_HREF = '/products?category=hair';
@@ -43,7 +47,7 @@ function MobilePromo() {
   const titleLines = [t('home.promo.titleLine1'), t('home.promo.titleLine2')];
 
   return (
-    <div className="overflow-hidden rounded-[28px] bg-white md:rounded-[36px] lg:hidden">
+    <div className={`overflow-hidden rounded-[28px] bg-white md:rounded-[36px] ${STOREFRONT_TABLET_DOWN_CLASS}`}>
       <div className="relative h-[240px] w-full sm:h-[280px]">
         <Image
           src={PROMO_PHOTO}
@@ -90,7 +94,7 @@ function DesktopPromo() {
 
   return (
     <div
-      className="relative hidden w-full overflow-hidden rounded-[36px] bg-white lg:block"
+      className={`relative w-full overflow-hidden rounded-[36px] bg-white ${STOREFRONT_DESKTOP_ONLY_CLASS}`}
       style={{ minHeight: DESKTOP_MIN_HEIGHT_PX }}
     >
       <div className="pointer-events-none absolute inset-y-0 left-0 w-[min(72%,932px)] overflow-hidden">
