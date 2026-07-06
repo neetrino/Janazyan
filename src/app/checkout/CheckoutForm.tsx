@@ -6,6 +6,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CheckoutProductsInOrder } from './components/CheckoutProductsInOrder';
 import { DeliveryAddressFields } from './components/DeliveryAddressFields';
+import { CheckoutPickupStorePicker } from './components/CheckoutPickupStorePicker';
 import {
   CHECKOUT_GLASS_ERROR_CLASS,
   CHECKOUT_GLASS_INNER_CLASS,
@@ -16,6 +17,7 @@ import {
 import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from './checkout-layout.constants';
 import type { Cart, CheckoutFormData } from './types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
+import type { PartnerStore } from '@/features/stores/types';
 
 const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
@@ -26,9 +28,12 @@ interface CheckoutFormProps {
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
   shippingMethod: 'pickup' | 'delivery';
+  pickupStoreId?: string;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingCountry?: string;
   shippingCity?: string;
+  pickupStores: PartnerStore[];
+  pickupStoresLoading: boolean;
   deliveryOptions: DeliveryOptionsPublic | null;
   deliveryOptionsLoading: boolean;
   paymentMethods: Array<{
@@ -56,9 +61,12 @@ export function CheckoutForm({
   errors,
   isSubmitting,
   shippingMethod,
+  pickupStoreId,
   paymentMethod,
   shippingCountry,
   shippingCity,
+  pickupStores,
+  pickupStoresLoading,
   deliveryOptions,
   deliveryOptionsLoading,
   paymentMethods,
@@ -171,6 +179,19 @@ export function CheckoutForm({
           </label>
         </div>
       </CheckoutGlassCard>
+
+      {shippingMethod === 'pickup' && (
+        <CheckoutGlassCard className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}>
+          <input type="hidden" {...register('pickupStoreId')} />
+          <CheckoutPickupStorePicker
+            stores={pickupStores}
+            loading={pickupStoresLoading}
+            selectedStoreId={pickupStoreId?.trim() ? pickupStoreId : null}
+            onSelect={(storeId) => setValue('pickupStoreId', storeId, { shouldValidate: true })}
+            errorMessage={errors.pickupStoreId?.message}
+          />
+        </CheckoutGlassCard>
+      )}
 
       {shippingMethod === 'delivery' && (
         <CheckoutGlassCard

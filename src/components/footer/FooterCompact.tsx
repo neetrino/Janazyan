@@ -4,11 +4,11 @@ import Link from 'next/link';
 import { useTranslation } from '../../lib/i18n-client';
 import {
   FOOTER_CONTACT,
-  FOOTER_COPYRIGHT_COMPANY,
   FOOTER_PAYMENTS,
   FOOTER_SOCIAL,
   FOOTER_SUPPORT,
 } from './constants';
+import { FooterCopyright } from './FooterShared';
 import {
   FOOTER_COMPACT_CONTACT_LIST_CLASS,
   FOOTER_COMPACT_COPYRIGHT_CLASS,
@@ -110,13 +110,7 @@ export function FooterCompact({ extraUpPullPx = 0 }: { extraUpPullPx?: number })
           ))}
         </div>
 
-        <p
-          className={`${FOOTER_COMPACT_COPYRIGHT_CLASS} text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT}`}
-        >
-          © 2026{' '}
-          <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>
-          {t('common.footer.rightsReserved')}
-        </p>
+        <FooterCopyright className={FOOTER_COMPACT_COPYRIGHT_CLASS} />
       </div>
     </footer>
   );

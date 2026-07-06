@@ -50,8 +50,11 @@ export function CheckoutPageClient() {
     setValue,
     paymentMethod,
     shippingMethod,
+    pickupStoreId,
     shippingCountry,
     shippingCity,
+    pickupStores,
+    pickupStoresLoading,
     deliveryOptions,
     deliveryOptionsLoading,
     paymentMethods,
@@ -116,9 +119,12 @@ export function CheckoutPageClient() {
                 errors={errors}
                 isSubmitting={isSubmitting}
                 shippingMethod={shippingMethod}
+                pickupStoreId={pickupStoreId}
                 paymentMethod={paymentMethod}
                 shippingCountry={shippingCountry}
                 shippingCity={shippingCity}
+                pickupStores={pickupStores}
+                pickupStoresLoading={pickupStoresLoading}
                 deliveryOptions={deliveryOptions}
                 deliveryOptionsLoading={deliveryOptionsLoading}
                 paymentMethods={paymentMethods}

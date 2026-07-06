@@ -168,6 +168,7 @@
     "method": "Способ",
     "delivery": "Доставка",
     "pickup": "Самовывоз",
+    "pickupStore": "Магазин самовывоза",
     "notSpecified": "Не указано",
     "deliveryAddress": "Адрес доставки",
     "phone": "Телефон",

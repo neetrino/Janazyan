@@ -818,6 +818,7 @@
       "noShippingAddress": "Առաքման հասցե չկա",
       "shippingMethod": "Առաքման եղանակ:",
       "pickup": "ինքնավերցում",
+      "pickupStore": "Վերցման խանութ",
       "paymentInfo": "Վճարում",
       "method": "Եղանակ:",
       "amount": "Գումար:",

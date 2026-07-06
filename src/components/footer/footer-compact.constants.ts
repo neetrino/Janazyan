@@ -25,7 +25,7 @@ export const FOOTER_COMPACT_PAYMENTS_CLASS =
   'absolute left-[6.05%] top-[275px] z-10 flex items-center gap-[11px]';
 
 export const FOOTER_COMPACT_COPYRIGHT_CLASS =
-  'absolute bottom-[56px] left-[6.05%] z-10 w-[541px] max-w-[56%] pt-[13px]';
+  'absolute bottom-[56px] left-[6.05%] z-10 max-w-[88%] pt-[13px] text-left';
 
 export const FOOTER_COMPACT_DECORATION_CLASS =
   'pointer-events-none absolute bottom-0 right-0 z-40 w-[43%] min-w-[330px] max-w-[430px]';

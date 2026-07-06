@@ -410,6 +410,10 @@ body {
   background: rgb(147 182 227 / 0.52);
 }
 
+.checkout-pickup-stores-directory .partner-stores-directory__list {
+  max-height: 320px;
+}
+
 .partner-stores-directory__item {
   position: relative;
   display: grid;
@@ -742,6 +746,10 @@ body {
 
   .partner-stores-directory__list {
     max-height: 420px;
+  }
+
+  .checkout-pickup-stores-directory .partner-stores-directory__list {
+    max-height: 280px;
   }
 
   .partner-stores-map-section {

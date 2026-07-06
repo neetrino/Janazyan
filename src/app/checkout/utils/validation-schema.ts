@@ -36,6 +36,7 @@ export function useCheckoutSchema() {
     shippingMethod: z.enum(['pickup', 'delivery'], {
       message: t('checkout.errors.selectShippingMethod'),
     }),
+    pickupStoreId: z.string().optional(),
     paymentMethod: z.enum(['idram', 'arca', 'cash_on_delivery'], {
       message: t('checkout.errors.selectPaymentMethod'),
     }),
@@ -49,6 +50,14 @@ export function useCheckoutSchema() {
     cardExpiry: z.string().optional(),
     cardCvv: z.string().optional(),
     cardHolderName: z.string().optional(),
+  }).refine((data) => {
+    if (data.shippingMethod === 'pickup') {
+      return Boolean(data.pickupStoreId?.trim());
+    }
+    return true;
+  }, {
+    message: t('checkout.errors.pickupStoreRequired'),
+    path: ['pickupStoreId'],
   }).refine((data) => {
     if (data.shippingMethod === 'delivery') {
       return data.shippingAddress && data.shippingAddress.trim().length > 0;

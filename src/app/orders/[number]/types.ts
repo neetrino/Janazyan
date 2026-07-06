@@ -46,6 +46,9 @@ export interface Order {
     postalCode?: string;
     countryCode?: string;
     phone?: string;
+    pickupStoreId?: string;
+    storeName?: string;
+    address?: string;
   };
   shippingMethod: string;
   trackingNumber?: string;

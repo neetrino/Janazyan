@@ -820,6 +820,7 @@
       "noShippingAddress": "Нет адреса доставки",
       "shippingMethod": "Способ доставки:",
       "pickup": "самовывоз",
+      "pickupStore": "Магазин самовывоза",
       "paymentInfo": "Оплата",
       "method": "Метод:",
       "amount": "Сумма:",

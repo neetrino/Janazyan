@@ -7,13 +7,13 @@ import { useTranslation } from '../lib/i18n-client';
 import {
   FOOTER_COMPANY,
   FOOTER_CONTACT,
-  FOOTER_COPYRIGHT_COMPANY,
   FOOTER_PAYMENTS,
   FOOTER_PAYMENTS_GAP_PX,
   FOOTER_SOCIAL,
   FOOTER_SUPPORT,
 } from './footer/constants';
 import { FooterCompact } from './footer/FooterCompact';
+import { FooterCopyright } from './footer/FooterShared';
 import {
   FOOTER_DESKTOP_DECORATION_HEIGHT_PX,
   FOOTER_DESKTOP_DECORATION_LEFT_PERCENT,
@@ -143,24 +143,16 @@ function FooterDesktop({ extraUpPullPx }: { extraUpPullPx: number }) {
               ))}
             </FooterColumn>
 
+            <FooterCopyright
+              className={`absolute bottom-[57px] left-[77px] pt-[33px] ${FOOTER_Z_CONTENT}`}
+            />
             <div
-              className={`absolute bottom-[24px] left-1/2 flex w-[1280px] max-w-[calc(100%-154px)] -translate-x-1/2 items-end justify-between gap-6 pt-[33px] ${FOOTER_Z_CONTENT}`}
+              className={`absolute bottom-[24px] right-[77px] flex shrink-0 items-center pt-[33px] ${FOOTER_Z_CONTENT}`}
+              style={{ gap: FOOTER_PAYMENTS_GAP_PX }}
             >
-              <p
-                className={`whitespace-nowrap text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT}`}
-              >
-                © 2026{' '}
-                <span className="font-bold">{FOOTER_COPYRIGHT_COMPANY}</span>
-                {t('common.footer.rightsReserved')}
-              </p>
-              <div
-                className="flex shrink-0 items-center"
-                style={{ gap: FOOTER_PAYMENTS_GAP_PX }}
-              >
-                {FOOTER_PAYMENTS.map((pay) => (
-                  <FooterPaymentBadge key={pay.label} payment={pay} />
-                ))}
-              </div>
+              {FOOTER_PAYMENTS.map((pay) => (
+                <FooterPaymentBadge key={pay.label} payment={pay} />
+              ))}
             </div>
           </div>
         </div>

@@ -820,6 +820,7 @@
       "noShippingAddress": "No shipping address",
       "shippingMethod": "Shipping Method:",
       "pickup": "pickup",
+      "pickupStore": "Pickup store",
       "paymentInfo": "Payment",
       "method": "Method:",
       "amount": "Amount:",

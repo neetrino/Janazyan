@@ -15,3 +15,6 @@ export const CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS =
 
 /** Offset when scrolling invalid fields into view on mobile (below top bar). */
 export const CHECKOUT_FIELD_SCROLL_MARGIN_CLASS = 'scroll-mt-28';
+
+/** Scrollable pickup store list shell class (compact height vs /stores page). */
+export const CHECKOUT_PICKUP_STORE_LIST_SHELL_CLASS = 'checkout-pickup-stores-directory';

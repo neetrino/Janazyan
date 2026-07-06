@@ -131,4 +131,6 @@ export const FOOTER_SOCIAL: ReadonlyArray<FooterSocialLink> = [
   },
 ];
 
-export const FOOTER_COPYRIGHT_COMPANY = 'NEETRINO IT COMPANY';
+export const FOOTER_COPYRIGHT_YEAR = 2026;
+export const FOOTER_COPYRIGHT_COMPANY = 'Neetrino IT Company';
+export const FOOTER_COPYRIGHT_URL = 'https://www.neetrino.com/';

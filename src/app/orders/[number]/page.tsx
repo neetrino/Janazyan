@@ -116,7 +116,10 @@ export default function OrderPage() {
 
           {order.shippingAddress && (
             <section className="mt-4 space-y-6 border-t border-gray-200 pt-10">
-              <ShippingAddress shippingAddress={order.shippingAddress} />
+              <ShippingAddress
+                shippingAddress={order.shippingAddress}
+                shippingMethod={order.shippingMethod}
+              />
             </section>
           )}
         </div>

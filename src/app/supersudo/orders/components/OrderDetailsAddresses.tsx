@@ -3,6 +3,8 @@
 import { useTranslation } from '../../../../lib/i18n-client';
 import { Card } from '@shop/ui';
 import { CurrencyCode } from '../../../../lib/currency';
+import { PickupStoreDetails } from '../../../../components/orders/PickupStoreDetails';
+import { isPickupStoreAddress } from '../../../../lib/types/pickup-store';
 import type { OrderDetails } from '../useOrders';
 import { getCheckoutPaymentMethodKey, getPaymentStatusColor } from '../utils/orderUtils';
 
@@ -21,11 +23,19 @@ export function OrderDetailsAddresses({ orderDetails, formatCurrency }: OrderDet
           {t('admin.orders.orderDetails.shippingAddress')}
         </h3>
         {orderDetails.shippingMethod === 'pickup' ? (
-          <div className="text-sm text-gray-700 space-y-1">
+          <div className="text-sm text-gray-700 space-y-3">
             <div>
               <span className="font-medium">{t('admin.orders.orderDetails.shippingMethod')}</span>{' '}
               {t('admin.orders.orderDetails.pickup')}
             </div>
+            {isPickupStoreAddress(orderDetails.shippingAddress) ? (
+              <div>
+                <p className="mb-2 font-medium text-gray-900">
+                  {t('admin.orders.orderDetails.pickupStore')}
+                </p>
+                <PickupStoreDetails pickupStore={orderDetails.shippingAddress} />
+              </div>
+            ) : null}
           </div>
         ) : orderDetails.shippingMethod === 'delivery' && orderDetails.shippingAddress ? (
           <div className="text-sm text-gray-700 space-y-1">
