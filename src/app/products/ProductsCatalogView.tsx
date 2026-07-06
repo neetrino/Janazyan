@@ -8,6 +8,7 @@ import { buildCatalogPaginationUrl } from '@/lib/products/build-catalog-paginati
 import type { CatalogGridProduct } from '@/lib/products/normalize-catalog-products';
 import type { ParsedCatalogParams, SearchParamsInput } from '@/lib/products/catalog-search-params';
 import type { ProductsCatalogCacheResponse } from '@/lib/cache/products-catalog-cache.types';
+import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '@/lib/ui/storefront-interactive-button-classes';
 import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
 
 type ProductsCatalogViewProps = {
@@ -62,7 +63,7 @@ export function ProductsCatalogView({
                 <Link href={buildCatalogPaginationUrl(parsed.page - 1, raw)}>
                   <Button
                     variant="outline"
-                    className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
+                    className={`min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm hover:border-neutral-400 hover:bg-neutral-50 ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
                   >
                     {t('common.pagination.previous')}
                   </Button>
@@ -86,7 +87,7 @@ export function ProductsCatalogView({
                 <Link href={buildCatalogPaginationUrl(parsed.page + 1, raw)}>
                   <Button
                     variant="outline"
-                    className="min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm transition hover:border-neutral-400 hover:bg-neutral-50"
+                    className={`min-w-[90px] rounded-lg border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-neutral-700 shadow-sm hover:border-neutral-400 hover:bg-neutral-50 ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
                   >
                     {t('common.pagination.next')}
                   </Button>

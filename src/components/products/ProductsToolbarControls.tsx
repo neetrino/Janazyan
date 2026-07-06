@@ -9,6 +9,9 @@ import {
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { useTranslation } from '../../lib/i18n-client';
+import {
+  STOREFRONT_PILL_INTERACTIVE_CLASS,
+} from '../../lib/ui/storefront-interactive-button-classes';
 
 type ViewMode = 'list' | 'grid-2' | 'grid-3';
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
@@ -43,7 +46,7 @@ const VIEW_MODE_ICONS: Record<
 };
 
 const VIEW_MODE_BUTTON_CLASS =
-  'flex h-[25px] items-center justify-center rounded-md transition-opacity hover:opacity-80';
+  'flex h-[25px] cursor-pointer items-center justify-center rounded-md transition-all duration-200 hover:scale-105 active:scale-95';
 
 const SORT_DROPDOWN_GAP_PX = 8;
 const SORT_DROPDOWN_Z_INDEX = 100;
@@ -223,7 +226,7 @@ export function ProductsToolbarControls() {
               key={mode}
               type="button"
               onClick={() => handleViewModeChange(mode)}
-              className={`${VIEW_MODE_BUTTON_CLASS} ${isSelected ? 'opacity-100' : 'opacity-70'}`}
+              className={`${VIEW_MODE_BUTTON_CLASS} ${isSelected ? 'opacity-100' : 'opacity-70 hover:opacity-80'}`}
               aria-label={t(`products.header.viewModes.${mode === 'grid-2' ? 'grid2' : mode === 'grid-3' ? 'grid3' : 'list'}`)}
               aria-pressed={isSelected}
             >
@@ -247,7 +250,7 @@ export function ProductsToolbarControls() {
           onClick={() => setShowSortDropdown((open) => !open)}
           aria-expanded={showSortDropdown}
           aria-haspopup="listbox"
-          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] items-center justify-center gap-2 bg-sky-deep px-5 text-base font-normal text-white ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] items-center justify-center gap-2 bg-sky-deep px-5 text-base font-normal text-white ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
         >
           <Image
             src="/figma/shop-sort-filter-icon.svg"

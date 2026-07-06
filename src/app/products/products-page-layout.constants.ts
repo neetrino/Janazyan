@@ -1,5 +1,6 @@
 import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
 /** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
@@ -60,7 +61,7 @@ export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
 
 /** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  'inline-flex h-16 shrink-0 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-medium leading-[18px] tracking-[0.5px] whitespace-nowrap transition-colors';
+  `inline-flex h-16 shrink-0 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-medium leading-[18px] tracking-[0.5px] whitespace-nowrap ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
 
 /** Active category pill — dark ink slate with 3px white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =

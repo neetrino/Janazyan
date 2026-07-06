@@ -5,13 +5,13 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from '../lib/i18n-client';
 import {
-  FOOTER_COMPANY,
   FOOTER_CONTACT,
   FOOTER_PAYMENTS,
   FOOTER_PAYMENTS_GAP_PX,
   FOOTER_SOCIAL,
   FOOTER_SUPPORT,
 } from './footer/constants';
+import { FooterCompanyLinks } from './footer/FooterCompanyLinks';
 import { FooterCompact } from './footer/FooterCompact';
 import { FooterCopyright } from './footer/FooterShared';
 import {
@@ -35,6 +35,7 @@ import { shouldShowStorefrontFooter, resolveContactPageFooterExtraUpPull } from 
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_COLUMN_LIST_CLASS = 'mt-[18px] space-y-[24px]';
+const FOOTER_COMPANY_COLUMN_LIST_CLASS = 'mt-[18px] space-y-[12px]';
 const FOOTER_CONTACT_COLUMN_GAP_CLASS = 'gap-[26px]';
 const FOOTER_CONTACT_COLUMN_WIDTH_CLASS = 'w-[260px]';
 
@@ -98,19 +99,11 @@ function FooterDesktop({ extraUpPullPx }: { extraUpPullPx: number }) {
               </div>
             </div>
 
-            <FooterColumn
+            <FooterCompanyLinks
               title={t('common.footer.companyTitle')}
               className={`absolute left-[26.46%] top-[66px] ${FOOTER_Z_CONTENT}`}
-              listClassName={FOOTER_COLUMN_LIST_CLASS}
-            >
-              {FOOTER_COMPANY.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className={FOOTER_LINK}>
-                    {t('common.footer.' + link.labelKey)}
-                  </Link>
-                </li>
-              ))}
-            </FooterColumn>
+              listClassName={FOOTER_COMPANY_COLUMN_LIST_CLASS}
+            />
 
             <div
               className={`absolute left-[63.4%] top-[66px] flex ${FOOTER_CONTACT_COLUMN_WIDTH_CLASS} flex-col ${FOOTER_CONTACT_COLUMN_GAP_CLASS} ${FOOTER_Z_CONTENT}`}

@@ -108,6 +108,9 @@ export const STOREFRONT_GLASS_ACTION_BUTTON_COMPACT_CLASS = `flex w-full cursor-
 /** Compare / wishlist icon buttons — glass circles. */
 export const PDP_GLASS_ICON_BUTTON_CLASS = `flex size-12 items-center justify-center rounded-full text-white ${PDP_SKY_SURFACE_CLASS} ${PDP_SKY_SURFACE_HOVER_CLASS} active:scale-95`;
 
+/** Wishlist active — red heart icon on sky button. */
+export const PDP_WISHLIST_HEART_ACTIVE_CLASS = 'text-red-600';
+
 export const PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS =
   'border-sky-deep bg-sky-deep text-white shadow-[0_6px_28px_rgba(147,182,227,0.36)]';
 

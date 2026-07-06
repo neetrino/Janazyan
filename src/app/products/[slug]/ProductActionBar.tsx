@@ -8,8 +8,8 @@ import {
   PDP_ACTION_ROW_CLASS,
   PDP_ACTION_STACK_CLASS,
   PDP_ADD_TO_CART_CLASS,
-  PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS,
   PDP_GLASS_ICON_BUTTON_CLASS,
+  PDP_WISHLIST_HEART_ACTIVE_CLASS,
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
   PDP_QTY_VALUE_CLASS,
@@ -45,10 +45,13 @@ function WishlistButton({
     <button
       type="button"
       onClick={onAddToWishlist}
-      className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0 ${isInWishlist ? PDP_GLASS_ICON_BUTTON_ACTIVE_CLASS : ''}`}
+      className={`${PDP_GLASS_ICON_BUTTON_CLASS} shrink-0`}
       aria-label={t(language, isInWishlist ? 'common.ariaLabels.removeFromWishlist' : 'common.ariaLabels.addToWishlist')}
     >
-      <Heart fill={isInWishlist ? 'currentColor' : 'none'} />
+      <Heart
+        className={isInWishlist ? PDP_WISHLIST_HEART_ACTIVE_CLASS : 'text-white'}
+        fill={isInWishlist ? 'currentColor' : 'none'}
+      />
     </button>
   );
 }

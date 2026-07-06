@@ -7,6 +7,7 @@ import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { useAddToCart } from '../hooks/useAddToCart';
 import { useWishlist } from '../hooks/useWishlist';
+import { STOREFRONT_ICON_ACTION_BUTTON_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
 const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
 const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
@@ -88,8 +89,8 @@ export function FeaturedProductCardActions({ product }: FeaturedProductCardActio
         }
         aria-pressed={isInWishlist}
         onClick={handleWishlist}
-        className={`absolute left-[235px] top-[62px] z-20 grid size-9 place-items-center transition-transform hover:scale-105 ${
-          isInWishlist ? 'text-red-600' : 'text-[#4a5565]'
+        className={`absolute left-[235px] top-[62px] z-20 grid size-9 place-items-center ${STOREFRONT_ICON_ACTION_BUTTON_CLASS} ${
+          isInWishlist ? 'text-red-600' : 'text-[#4a5565] hover:text-red-500'
         }`}
       >
         <svg
@@ -116,7 +117,7 @@ export function FeaturedProductCardActions({ product }: FeaturedProductCardActio
         aria-label={t('common.ariaLabels.addToCart')}
         disabled={!product.inStock}
         onClick={handleAddToCart}
-        className="absolute z-20 grid place-items-center transition-transform hover:scale-105 disabled:opacity-50"
+        className={`absolute z-20 grid place-items-center ${STOREFRONT_ICON_ACTION_BUTTON_CLASS} disabled:opacity-50`}
         style={{
           left: `${FEATURED_CART_ICON_LEFT_RATIO * 100}%`,
           top: FEATURED_CART_ICON_TOP_PX,
