@@ -21,6 +21,7 @@ import { HEADER_HERO_SHELL_STICKY_OVERLAP_PX } from '../header/header-shell-shap
 import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
 import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
@@ -35,6 +36,7 @@ type ProductsHeroShellProps = {
   /** Hide mobile search top bar (e.g. /profile). */
   hideMobileTopBar?: boolean;
   sectionAriaLabel?: string;
+  activeCategorySlug?: string;
 };
 
 function resolveHeroToolbarOffsetClass(toolbar: ReactNode | undefined, compactHero: boolean): string {
@@ -102,9 +104,10 @@ export function ProductsHeroShell({
   mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   hideMobileTopBar = false,
   sectionAriaLabel = 'Shop',
+  activeCategorySlug,
 }: ProductsHeroShellProps) {
   return (
-    <>
+    <CategoryFilterDropdownProvider activeCategorySlug={activeCategorySlug}>
       <StorefrontMobileShell
         toolbar={toolbar}
         contentSurfaceClassName={mobileContentSurfaceClassName}
@@ -127,6 +130,6 @@ export function ProductsHeroShell({
           />
         </section>
       </div>
-    </>
+    </CategoryFilterDropdownProvider>
   );
 }

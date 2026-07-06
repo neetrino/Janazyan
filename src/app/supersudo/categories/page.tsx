@@ -38,6 +38,8 @@ export default function CategoriesPage() {
     handleDeleteCategory,
     cancelDeleteCategory,
     confirmDeleteCategory,
+    handleReorderCategories,
+    reordering,
     resetForm,
   } = useCategoryActions();
 
@@ -103,8 +105,12 @@ export default function CategoriesPage() {
           <CategoriesList
             categories={categories}
             searchQuery={searchQuery}
+            reordering={reordering}
             onEdit={handleEditCategory}
             onDelete={handleDeleteCategory}
+            onReorder={(parentId, orderedIds) => {
+              void handleReorderCategories(parentId, orderedIds, fetchCategories);
+            }}
           />
         )}
       </Card>

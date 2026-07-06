@@ -13,40 +13,12 @@ import {
   STOREFRONT_PILL_INTERACTIVE_CLASS,
 } from '../../lib/ui/storefront-interactive-button-classes';
 
-type ViewMode = 'list' | 'grid-2' | 'grid-3';
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
 type DropdownPosition = {
   top: number;
   right: number;
 };
-
-const VIEW_MODE_ICONS: Record<
-  ViewMode,
-  { src: string; width: number; height: number; className: string }
-> = {
-  list: {
-    src: '/figma/shop-view-list-icon.svg',
-    width: 28,
-    height: 25,
-    className: 'h-[25px] w-[28px]',
-  },
-  'grid-2': {
-    src: '/figma/shop-view-grid-2-icon.svg',
-    width: 16,
-    height: 25,
-    className: 'h-[25px] w-4',
-  },
-  'grid-3': {
-    src: '/figma/shop-view-grid-3-icon.svg',
-    width: 26,
-    height: 25,
-    className: 'h-[25px] w-[26px]',
-  },
-};
-
-const VIEW_MODE_BUTTON_CLASS =
-  'flex h-[25px] cursor-pointer items-center justify-center rounded-md transition-all duration-200 hover:scale-105 active:scale-95';
 
 const SORT_DROPDOWN_GAP_PX = 8;
 const SORT_DROPDOWN_Z_INDEX = 100;
@@ -90,13 +62,12 @@ function useSortDropdownPosition(
 }
 
 /**
- * View-mode toggles + sort dropdown — Figma shop toolbar (node 269:906 / 269:918).
+ * Sort dropdown — Figma shop toolbar (node 269:918).
  */
 export function ProductsToolbarControls() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useTranslation();
-  const [viewMode, setViewMode] = useState<ViewMode>('grid-3');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showSortDropdown, setShowSortDropdown] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -111,13 +82,6 @@ export function ProductsToolbarControls() {
     { value: 'name-asc', label: t('products.header.sort.nameAsc') },
     { value: 'name-desc', label: t('products.header.sort.nameDesc') },
   ];
-
-  useEffect(() => {
-    const stored = localStorage.getItem('products-view-mode');
-    if (stored && ['list', 'grid-2', 'grid-3'].includes(stored)) {
-      setViewMode(stored as ViewMode);
-    }
-  }, []);
 
   useEffect(() => {
     setIsMounted(true);
@@ -157,12 +121,6 @@ export function ProductsToolbarControls() {
       document.removeEventListener('keydown', handleEscape);
     };
   }, [showSortDropdown]);
-
-  const handleViewModeChange = (mode: ViewMode) => {
-    setViewMode(mode);
-    localStorage.setItem('products-view-mode', mode);
-    window.dispatchEvent(new CustomEvent('view-mode-changed', { detail: mode }));
-  };
 
   const handleSortChange = (option: SortOption) => {
     setSortBy(option);
@@ -211,38 +169,7 @@ export function ProductsToolbarControls() {
     ) : null;
 
   return (
-    <div className="flex shrink-0 items-center gap-[11px]">
-      <div
-        className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[182px] items-center justify-center gap-7 bg-white ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
-        role="group"
-        aria-label={t('products.header.sortProducts')}
-      >
-        {(Object.keys(VIEW_MODE_ICONS) as ViewMode[]).map((mode) => {
-          const icon = VIEW_MODE_ICONS[mode];
-          const isSelected = viewMode === mode;
-
-          return (
-            <button
-              key={mode}
-              type="button"
-              onClick={() => handleViewModeChange(mode)}
-              className={`${VIEW_MODE_BUTTON_CLASS} ${isSelected ? 'opacity-100' : 'opacity-70 hover:opacity-80'}`}
-              aria-label={t(`products.header.viewModes.${mode === 'grid-2' ? 'grid2' : mode === 'grid-3' ? 'grid3' : 'list'}`)}
-              aria-pressed={isSelected}
-            >
-              <Image
-                src={icon.src}
-                alt=""
-                width={icon.width}
-                height={icon.height}
-                className={icon.className}
-                aria-hidden
-              />
-            </button>
-          );
-        })}
-      </div>
-
+    <div className="flex shrink-0 items-center">
       <div className="relative">
         <button
           ref={sortTriggerRef}

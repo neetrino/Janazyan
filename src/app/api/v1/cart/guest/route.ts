@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@white-shop/db";
 import { logger } from "@/lib/utils/logger";
 import { createSyntheticCartItemId } from "@/lib/cart/cart-item-id";
+import { resolveCartProductImageUrl } from "@/lib/products/resolve-stored-product-image-url";
 
 interface GuestCartItemInput {
   productId: string;
@@ -59,26 +60,6 @@ interface GuestCartResponse {
   normalizedItems: GuestCartItemInput[];
 }
 
-function pickFirstImage(media: unknown): string | null {
-  if (!Array.isArray(media) || media.length === 0) {
-    return null;
-  }
-
-  const first = media[0];
-  if (typeof first === "string") {
-    return first.trim() || null;
-  }
-
-  if (typeof first === "object" && first !== null) {
-    const maybeUrl = "url" in first ? first.url : undefined;
-    const maybeSrc = "src" in first ? first.src : undefined;
-    const raw = typeof maybeUrl === "string" ? maybeUrl : typeof maybeSrc === "string" ? maybeSrc : "";
-    return raw.trim() || null;
-  }
-
-  return null;
-}
-
 function sanitizeItems(items: GuestCartItemInput[] | undefined): GuestCartItemInput[] {
   if (!Array.isArray(items)) {
     return [];
@@ -133,6 +114,7 @@ export async function POST(req: NextRequest) {
             price: true,
             compareAtPrice: true,
             stock: true,
+            imageUrl: true,
           },
         },
       },
@@ -183,7 +165,7 @@ export async function POST(req: NextRequest) {
             id: product.id,
             title: preferredTranslation?.title || "Product",
             slug: productSlug,
-            image: pickFirstImage(product.media),
+            image: resolveCartProductImageUrl(product.media, selectedVariant.imageUrl),
           },
         },
         quantity: item.quantity,

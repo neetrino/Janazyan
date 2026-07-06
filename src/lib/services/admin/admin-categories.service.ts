@@ -3,7 +3,18 @@ import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
 import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
 import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
+import { getRootCategoryRows } from "@/lib/categories/category-sibling-order";
 import { pickAdminCategoryTitle } from "./admin-category-title";
+
+type AdminCategoryRow = {
+  id: string;
+  parentId: string | null;
+  position: number;
+  requiresSizes: boolean | null;
+  published: boolean | null;
+  media: unknown[];
+  translations?: Array<{ locale: string; title: string; slug: string }>;
+};
 
 class AdminCategoriesService {
   private extractImageUrl(media: unknown): string | null {
@@ -18,6 +29,76 @@ class AdminCategoriesService {
 
     const url = (firstItem as { url?: unknown }).url;
     return typeof url === "string" ? url : null;
+  }
+
+  private mapAdminCategoryRow(category: AdminCategoryRow) {
+    const translations = Array.isArray(category.translations) ? category.translations : [];
+    const translation =
+      translations.find((row) => row.locale === "en") ??
+      translations[0] ??
+      null;
+
+    return {
+      id: category.id,
+      title: pickAdminCategoryTitle(translations),
+      slug: translation?.slug || "",
+      parentId: category.parentId,
+      position: category.position,
+      requiresSizes: category.requiresSizes || false,
+      published: Boolean(category.published),
+      imageUrl: this.extractImageUrl(category.media),
+    };
+  }
+
+  private async getNextSiblingPosition(parentId: string | null): Promise<number> {
+    const aggregate = await db.category.aggregate({
+      where: {
+        parentId,
+        deletedAt: null,
+      },
+      _max: {
+        position: true,
+      },
+    });
+
+    return (aggregate._max.position ?? -1) + 1;
+  }
+
+  private async generateUniqueSlug(
+    title: string,
+    locale: string,
+    excludeCategoryId?: string,
+  ): Promise<string> {
+    const baseSlug = toSlug(title) || "category";
+    let slug = baseSlug;
+    let counter = 1;
+
+    while (true) {
+      const existing = await db.categoryTranslation.findFirst({
+        where: {
+          slug,
+          locale,
+          ...(excludeCategoryId ? { categoryId: { not: excludeCategoryId } } : {}),
+        },
+        select: { id: true },
+      });
+
+      if (!existing) {
+        return slug;
+      }
+
+      slug = `${baseSlug}-${counter}`;
+      counter += 1;
+
+      if (counter > 1000) {
+        throw {
+          status: 500,
+          type: "https://api.shop.am/problems/internal-error",
+          title: "Unable to generate unique slug",
+          detail: "Could not generate a unique slug for the category",
+        };
+      }
+    }
   }
 
   private async detachCategoryFromProducts(categoryId: string): Promise<void> {
@@ -83,23 +164,24 @@ class AdminCategoriesService {
       },
     });
 
+    const rows = categories as AdminCategoryRow[];
+    const orderedRows = [
+      ...getRootCategoryRows(rows),
+      ...rows
+        .filter((row) => row.parentId)
+        .sort((left, right) => {
+          if (left.parentId !== right.parentId) {
+            return (left.parentId ?? "").localeCompare(right.parentId ?? "");
+          }
+          if (left.position !== right.position) {
+            return left.position - right.position;
+          }
+          return left.id.localeCompare(right.id);
+        }),
+    ];
+
     return {
-      data: categories.map((category: { id: string; parentId: string | null; requiresSizes: boolean | null; published: boolean | null; media: unknown[]; translations?: Array<{ locale: string; title: string; slug: string }> }) => {
-        const translations = Array.isArray(category.translations) ? category.translations : [];
-        const translation =
-          translations.find((row) => row.locale === "en") ??
-          translations[0] ??
-          null;
-        return {
-          id: category.id,
-          title: pickAdminCategoryTitle(translations),
-          slug: translation?.slug || "",
-          parentId: category.parentId,
-          requiresSizes: category.requiresSizes || false,
-          published: Boolean(category.published),
-          imageUrl: this.extractImageUrl(category.media),
-        };
-      }),
+      data: orderedRows.map((category) => this.mapAdminCategoryRow(category)),
     };
   }
 
@@ -132,13 +214,14 @@ class AdminCategoriesService {
       }
     }
     
-    // Generate slug from title (ReDoS-safe)
-    const slug = toSlug(data.title);
+    const slug = await this.generateUniqueSlug(data.title, locale);
+    const position = await this.getNextSiblingPosition(data.parentId ?? null);
     const imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.categories);
 
     const category = await db.category.create({
       data: {
         parentId: data.parentId || undefined,
+        position,
         requiresSizes: data.requiresSizes || false,
         published: data.published ?? true,
         media: imageUrl
@@ -358,9 +441,8 @@ class AdminCategoriesService {
         : [];
     }
 
-    // Update translation if title is provided
     if (data.title) {
-      const slug = toSlug(data.title);
+      const slug = await this.generateUniqueSlug(data.title, locale, categoryId);
 
       const categoryTranslations = Array.isArray(category.translations) ? category.translations : [];
       const existingTranslation = categoryTranslations.find((t: { locale: string }) => t.locale === locale);
@@ -411,6 +493,51 @@ class AdminCategoriesService {
         imageUrl: this.extractImageUrl(updatedCategory.media),
       },
     };
+  }
+
+  /**
+   * Reorder sibling categories (same parentId) — drives /products category strip order.
+   */
+  async reorderCategories(data: { parentId: string | null; orderedIds: string[] }) {
+    const siblings = await db.category.findMany({
+      where: {
+        parentId: data.parentId,
+        deletedAt: null,
+      },
+      select: { id: true },
+      orderBy: { position: "asc" },
+    });
+
+    const siblingIds = siblings.map((row) => row.id);
+    const orderedSet = new Set(data.orderedIds);
+    const hasValidIds =
+      data.orderedIds.length === siblingIds.length &&
+      siblingIds.every((id) => orderedSet.has(id));
+
+    if (!hasValidIds) {
+      throw {
+        status: 400,
+        type: "https://api.shop.am/problems/bad-request",
+        title: "Invalid reorder payload",
+        detail: "orderedIds must include every sibling category exactly once",
+      };
+    }
+
+    await db.$transaction(
+      data.orderedIds.map((id, index) =>
+        db.category.update({
+          where: { id },
+          data: { position: index },
+        }),
+      ),
+    );
+
+    logger.info("Category sibling order updated", {
+      parentId: data.parentId,
+      count: data.orderedIds.length,
+    });
+
+    return { success: true };
   }
 
   /**

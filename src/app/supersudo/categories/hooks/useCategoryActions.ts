@@ -31,6 +31,12 @@ interface UseCategoryActionsReturn {
   handleDeleteCategory: (categoryId: string, categoryTitle: string) => void;
   cancelDeleteCategory: () => void;
   confirmDeleteCategory: (fetchCategories: () => Promise<void>) => Promise<void>;
+  handleReorderCategories: (
+    parentId: string | null,
+    orderedIds: string[],
+    fetchCategories: () => Promise<void>,
+  ) => Promise<void>;
+  reordering: boolean;
   resetForm: () => void;
 }
 
@@ -56,6 +62,7 @@ export function useCategoryActions(): UseCategoryActionsReturn {
   const [saving, setSaving] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [reordering, setReordering] = useState(false);
 
   const resetForm = () => {
     setFormData(initialFormData);
@@ -254,6 +261,34 @@ export function useCategoryActions(): UseCategoryActionsReturn {
     }
   };
 
+  const handleReorderCategories = async (
+    parentId: string | null,
+    orderedIds: string[],
+    fetchCategories: () => Promise<void>,
+  ) => {
+    setReordering(true);
+    try {
+      await apiClient.put('/api/v1/admin/categories/reorder', {
+        parentId,
+        orderedIds,
+      });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.categories);
+      await fetchCategories();
+      showToast(t('admin.categories.reorderSuccess'), 'success');
+    } catch (err: unknown) {
+      logger.error('Error reordering categories', { error: err });
+      const errorMessage =
+        err && typeof err === 'object' && 'data' in err
+          ? (err as { data?: { detail?: string } }).data?.detail
+          : err && typeof err === 'object' && 'message' in err
+            ? (err as { message?: string }).message
+            : t('admin.categories.errorReordering');
+      showToast(errorMessage || t('admin.categories.errorReordering'), 'error');
+    } finally {
+      setReordering(false);
+    }
+  };
+
   return {
     showAddModal,
     showEditModal,
@@ -274,6 +309,8 @@ export function useCategoryActions(): UseCategoryActionsReturn {
     handleDeleteCategory,
     cancelDeleteCategory,
     confirmDeleteCategory,
+    handleReorderCategories,
+    reordering,
     resetForm,
   };
 }

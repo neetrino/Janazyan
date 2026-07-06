@@ -5,6 +5,7 @@ import { type ChangeEvent } from 'react';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category, CategoryFormData } from '../types';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { CategorySlugPreview } from './CategorySlugPreview';
 import { AdminSideDrawer } from '../../components/AdminSideDrawer';
 
 interface EditCategoryModalProps {
@@ -79,6 +80,7 @@ export function EditCategoryModal({
               className="w-full"
             />
           </div>
+          <CategorySlugPreview title={formData.title} />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('admin.categories.parentCategory')}

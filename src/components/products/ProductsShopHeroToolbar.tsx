@@ -7,6 +7,7 @@ import {
 import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 import type { LanguageCode } from '../../lib/language';
 import { CategoryNavigationServer } from '../CategoryNavigation/CategoryNavigationServer';
+import { ProductsShopBreadcrumb } from './ProductsShopBreadcrumb';
 import { ProductsToolbarControls } from './ProductsToolbarControls';
 
 type ProductsShopHeroToolbarProps = {
@@ -15,7 +16,7 @@ type ProductsShopHeroToolbarProps = {
 };
 
 /**
- * Figma shop hero toolbar — category pills, view + sort controls.
+ * Figma shop hero toolbar — category pills + sort control.
  */
 export function ProductsShopHeroToolbar({
   language,
@@ -23,14 +24,15 @@ export function ProductsShopHeroToolbar({
 }: ProductsShopHeroToolbarProps) {
   return (
     <div className="pb-1">
+      <ProductsShopBreadcrumb language={language} />
       <div className={`${STOREFRONT_DESKTOP_FLEX_CLASS} flex-col gap-3 desktop:flex-row desktop:items-center desktop:justify-between desktop:gap-[11px]`}>
         <Suspense
           fallback={
-            <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>
+            <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-14`}>
               {Array.from({ length: 5 }).map((_, index) => (
                 <div
                   key={index}
-                  className="h-16 w-[128px] shrink-0 animate-pulse rounded-full bg-white/50"
+                  className="h-14 w-28 shrink-0 animate-pulse rounded-full bg-white/50"
                 />
               ))}
             </div>
@@ -44,14 +46,9 @@ export function ProductsShopHeroToolbar({
         </Suspense>
         <Suspense
           fallback={
-            <div className="flex shrink-0 items-center gap-3">
-              <div
-                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[182px] animate-pulse bg-white/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
-              />
-              <div
-                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
-              />
-            </div>
+            <div
+              className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+            />
           }
         >
           <ProductsToolbarControls />
