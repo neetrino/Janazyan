@@ -22,6 +22,7 @@ import {
   HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
   STOREFRONT_MOBILE_TOP_INSET_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
+import { MobileOurStoresBanner } from './MobileOurStoresBanner';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
@@ -70,6 +71,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
         <div className={STOREFRONT_HORIZONTAL_GUTTER_CLASS}>
           {featuredSlot}
           <MobileWhyChooseUs cards={whyCards} />
+          <MobileOurStoresBanner />
         </div>
       </div>
     </section>

@@ -118,6 +118,12 @@
       "sun": "Sun"
     },
     "orderCta": "Order — 32,400 AMD",
+    "stores": {
+      "sectionAria": "Our stores",
+      "titleLine1": "Our",
+      "titleLine2": "stores",
+      "cta": "View"
+    },
     "aria": {
       "search": "Search",
       "call": "Call",

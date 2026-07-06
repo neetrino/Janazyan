@@ -124,31 +124,41 @@ export const CONTACT_PILL_TIME_SATURDAY_LINE_CLASS = 'whitespace-nowrap';
 
 export const CONTACT_PILL_TIME_ACCENT_CLASS = 'text-[#6b95cb]';
 
+/** Mobile matches /login card; desktop keeps Figma contact form. */
 export const CONTACT_FORM_CARD_CLASS =
-  'rounded-[30px] bg-white px-5 pb-[7px] pt-6 desktop:w-[633px]';
+  'flex w-full flex-col rounded-[34px] bg-white p-8 sm:p-12 desktop:w-[633px] desktop:rounded-[30px] desktop:px-5 desktop:pb-[7px] desktop:pt-6';
 
 /** Figma node 496:460 — inner app shell inside card. */
 export const CONTACT_FORM_STACK_CLASS =
-  'flex flex-col gap-[5px] pb-6 pl-4 pr-6 desktop:pb-6 desktop:pl-4 desktop:pr-6';
+  'flex w-full flex-col gap-5 desktop:gap-[5px] desktop:pb-6 desktop:pl-4 desktop:pr-6';
 
 /** Figma node 496:461 — name + email row; 26px column gap at 270/274 widths. */
 export const CONTACT_FORM_ROW_CLASS =
-  'grid grid-cols-1 gap-6 sm:grid-cols-2 desktop:gap-[26px]';
+  'grid grid-cols-1 gap-4 sm:grid-cols-2 desktop:gap-[26px]';
 
-/** Figma node 496:474 — subject block top inset. */
-export const CONTACT_FORM_SUBJECT_GROUP_CLASS = 'pt-6';
+/** Figma node 496:474 — subject block top inset (desktop only). */
+export const CONTACT_FORM_SUBJECT_GROUP_CLASS = 'desktop:pt-6';
 
-/** Figma node 496:480 — message block vertical inset. */
-export const CONTACT_FORM_MESSAGE_GROUP_CLASS = 'py-6';
+/** Label + input gap — matches /login on mobile. */
+export const CONTACT_FORM_FIELD_GROUP_CLASS = 'flex w-full flex-col gap-1.5 desktop:gap-0';
 
+/** Figma node 496:480 — message block vertical inset (desktop only). */
+export const CONTACT_FORM_MESSAGE_GROUP_CLASS = 'desktop:py-6';
+
+/** Mobile label matches /login; desktop keeps Figma contact labels. */
 export const CONTACT_FORM_LABEL_CLASS =
-  'mb-2 block text-sm font-medium tracking-[-0.15px] text-[#0a0a0a]';
+  'block text-base font-medium leading-normal tracking-[-0.24px] text-[#232323] desktop:mb-2 desktop:text-sm desktop:tracking-[-0.15px] desktop:text-[#0a0a0a]';
 
+/** Mobile pill shell matches /login; desktop keeps Figma rounded field. */
+export const CONTACT_FORM_INPUT_SHELL_CLASS =
+  'flex h-12 w-full items-center gap-3.5 rounded-[42px] border border-transparent bg-[#f3f3f5] px-4 py-3.5 focus-within:border-sky-deep/30 focus-within:ring-2 focus-within:ring-sky-deep/15 desktop:rounded-[20px] desktop:px-[13px] desktop:py-0';
+
+/** Inner input — transparent on mobile pill; desktop field inherits shell chrome. */
 export const CONTACT_FORM_INPUT_CLASS =
-  'h-12 w-full rounded-[20px] border border-transparent bg-[#f3f3f5] px-[13px] text-sm tracking-[-0.1504px] text-ink-800 placeholder:text-[#717182] focus:border-sky-deep/30 focus:outline-none focus:ring-2 focus:ring-sky-deep/15';
+  'min-w-0 flex-1 border-0 bg-transparent text-base font-medium leading-normal tracking-[-0.24px] text-[#232323] placeholder:font-normal placeholder:text-[#717182] focus:outline-none focus:ring-0 desktop:text-sm desktop:tracking-[-0.1504px] desktop:text-ink-800';
 
 export const CONTACT_FORM_TEXTAREA_CLASS =
-  'min-h-[95px] w-full resize-y rounded-[20px] border border-transparent bg-[#f3f3f5] px-[13px] py-[9px] text-sm leading-5 tracking-[-0.1504px] text-ink-800 placeholder:text-[#717182] focus:border-sky-deep/30 focus:outline-none focus:ring-2 focus:ring-sky-deep/15';
+  'min-h-[120px] w-full resize-y rounded-[42px] border border-transparent bg-[#f3f3f5] px-4 py-3.5 text-base font-medium leading-normal tracking-[-0.24px] text-[#232323] placeholder:font-normal placeholder:text-[#717182] focus:border-sky-deep/30 focus:outline-none focus:ring-2 focus:ring-sky-deep/15 desktop:min-h-[95px] desktop:rounded-[20px] desktop:px-[13px] desktop:py-[9px] desktop:text-sm desktop:leading-5 desktop:tracking-[-0.1504px] desktop:font-normal desktop:text-ink-800';
 
 export const CONTACT_SUBMIT_BUTTON_CLASS =
   'inline-flex h-12 w-full items-center justify-center gap-2 rounded-[30px] bg-sky-deep px-3 text-sm font-medium tracking-[-0.15px] text-white transition-all duration-200 hover:shadow-[0_6px_22px_rgba(147,182,227,0.34)] disabled:cursor-not-allowed disabled:opacity-50';
