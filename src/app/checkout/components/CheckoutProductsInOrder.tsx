@@ -5,7 +5,25 @@ import { useTranslation } from '@/lib/i18n-client';
 import { CheckoutGlassCard } from './CheckoutGlassCard';
 import type { Cart } from '../types';
 
-const PRODUCT_PREVIEW_IMAGE_SIZE_PX = 64;
+const PRODUCT_PREVIEW_IMAGE_SIZE_MOBILE_PX = 64;
+const PRODUCT_PREVIEW_IMAGE_SIZE_DESKTOP_PX = 88;
+
+const CHECKOUT_PRODUCTS_IN_ORDER_TITLE_CLASS =
+  'text-xs font-bold uppercase tracking-wide text-gray-900 desktop:text-sm';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_COUNT_CLASS =
+  'shrink-0 text-xs font-semibold text-gray-700 desktop:text-sm';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS = 'w-20 shrink-0 desktop:w-[5.5rem]';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_IMAGE_WRAPPER_CLASS =
+  'relative h-16 w-16 overflow-hidden rounded-xl border border-white/60 bg-white/70 p-1.5 shadow-sm desktop:h-[5.5rem] desktop:w-[5.5rem]';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_PRODUCT_TITLE_CLASS =
+  'mt-2 line-clamp-2 text-[10px] font-medium uppercase leading-tight text-gray-700 sm:text-[11px] desktop:text-xs';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_LIST_CLASS =
+  'flex gap-6 overflow-x-auto pb-1 desktop:gap-8';
 
 function formatItemCount(count: number, t: (key: string) => string): string {
   const key = count === 1 ? 'checkout.productsInOrder.itemCountOne' : 'checkout.productsInOrder.itemCountMany';
@@ -23,21 +41,21 @@ export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) 
   return (
     <CheckoutGlassCard className="py-4 sm:py-5">
       <div className="mb-5 flex items-start justify-between gap-4">
-        <h2 className="text-xs font-bold uppercase tracking-wide text-gray-900">
+        <h2 className={CHECKOUT_PRODUCTS_IN_ORDER_TITLE_CLASS}>
           {t('checkout.productsInOrder.title')}
         </h2>
-        <span className="shrink-0 text-sm font-semibold text-gray-700">
+        <span className={CHECKOUT_PRODUCTS_IN_ORDER_COUNT_CLASS}>
           {formatItemCount(itemCount, t)}
         </span>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-1">
+      <div className={CHECKOUT_PRODUCTS_IN_ORDER_LIST_CLASS}>
         {cart.items.map((item) => {
           const product = item.variant.product;
 
           return (
-            <article key={item.id} className="w-20 shrink-0">
-              <div className="relative h-16 w-16 overflow-hidden rounded-xl border border-white/60 bg-white/70 p-1.5 shadow-sm">
+            <article key={item.id} className={CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS}>
+              <div className={CHECKOUT_PRODUCTS_IN_ORDER_IMAGE_WRAPPER_CLASS}>
                 <div className="relative h-full w-full">
                   {product.image ? (
                     <Image
@@ -45,7 +63,7 @@ export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) 
                       alt={product.title}
                       fill
                       className="object-contain"
-                      sizes={`${PRODUCT_PREVIEW_IMAGE_SIZE_PX}px`}
+                      sizes={`(max-width: 1299px) ${PRODUCT_PREVIEW_IMAGE_SIZE_MOBILE_PX}px, ${PRODUCT_PREVIEW_IMAGE_SIZE_DESKTOP_PX}px`}
                       unoptimized
                     />
                   ) : (
@@ -62,7 +80,7 @@ export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) 
                   )}
                 </div>
               </div>
-              <p className="mt-2 line-clamp-2 text-xs font-semibold uppercase leading-tight text-gray-700">
+              <p className={CHECKOUT_PRODUCTS_IN_ORDER_PRODUCT_TITLE_CLASS}>
                 {product.title}
               </p>
             </article>

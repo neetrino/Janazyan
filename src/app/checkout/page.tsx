@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
-import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS } from '../../lib/layout/account-pages-layout.constants';
+import { CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS } from './checkout-layout.constants';
 import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
 
 const CheckoutPageClient = dynamic(
@@ -13,7 +13,7 @@ const CheckoutPageClient = dynamic(
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
         compactHero
-        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+        {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={<CheckoutPageSkeleton />}
       />
     ),

@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
-import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS, ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
+import { ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
+import { CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS } from './checkout-layout.constants';
 import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
@@ -64,7 +65,7 @@ export function CheckoutPageClient() {
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
         compactHero
-        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+        {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={<CheckoutPageSkeleton />}
       />
     );
@@ -75,7 +76,7 @@ export function CheckoutPageClient() {
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
         compactHero
-        {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+        {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={
           <div className={ACCOUNT_PAGE_INNER_CLASS}>
             <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
@@ -101,7 +102,7 @@ export function CheckoutPageClient() {
     <ProductsHeroShell
       sectionAriaLabel="Checkout"
       compactHero
-      {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
+      {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
         <div className={ACCOUNT_PAGE_INNER_CLASS}>
           <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>

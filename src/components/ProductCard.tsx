@@ -60,7 +60,7 @@ export function ProductCard({ product, viewMode = 'grid-3', priority = false }: 
   }
 
   return (
-    <div data-product-card className="flex w-auto justify-center">
+    <div data-product-card className="flex w-full min-w-0 justify-center">
       <FeaturedProductCardSlot product={featuredProduct} scale="responsive-catalog" priority={priority} />
     </div>
   );

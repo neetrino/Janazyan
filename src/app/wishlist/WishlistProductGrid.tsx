@@ -27,7 +27,7 @@ function WishlistProductCardSkeleton() {
  */
 export function WishlistProductGrid({ products, pendingCount }: WishlistProductGridProps) {
   return (
-    <div className="grid w-full grid-cols-2 justify-items-center gap-x-6 gap-y-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    <div className="grid w-full grid-cols-2 justify-items-center gap-x-1 gap-y-10 sm:grid-cols-3 desktop:grid-cols-4 sm:gap-x-6">
       {products.map((product, index) => (
         <ProductCard
           key={product.id}

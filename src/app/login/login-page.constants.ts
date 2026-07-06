@@ -40,6 +40,12 @@ export {
   CONTACT_SECTION_DESKTOP_BLEED_CLASS,
 } from '../contact/contact-page.constants';
 
+/** Desktop pull-up into hero band — Figma contact/auth alignment. */
+export const AUTH_PAGE_DESKTOP_SECTION_BLEED_PX = 122;
+
+/** Large screens — nudge hero art + form stack lower within the auth section. */
+export const AUTH_PAGE_DESKTOP_CONTENT_DROP_PX = 40;
+
 /** Catalog bleed — same pull-up + footer overlap as contact hero. */
 export const LOGIN_SECTION_DESKTOP_BLEED_CLASS =
   'desktop:relative desktop:-mt-[122px] desktop:-mb-8 desktop:py-0 desktop:overflow-visible desktop:rounded-tl-[36px]';
@@ -57,11 +63,11 @@ export const LOGIN_HERO_LEFT_CLIP_CLASS =
 
 /** Right decoration — Figma 508:858, overlaps form card on the right (above content). */
 export const LOGIN_HERO_RIGHT_WRAPPER_CLASS =
-  'login-hero-right-clip pointer-events-none absolute right-0 top-[282px] z-20 h-[497px] w-[594px]';
+  'login-hero-right-clip pointer-events-none absolute right-0 top-[282px] desktop:top-[322px] z-20 h-[497px] w-[594px]';
 
 /** Login left hero — fixed desktop frame (used inside scaled artboard and on desktop). */
 export const LOGIN_HERO_LEFT_WALL_CLASS =
-  'pointer-events-none absolute left-0 top-[88px] z-0 mx-0 h-[860px] w-[484px] shrink-0 origin-top-left scale-[0.96]';
+  'pointer-events-none absolute left-0 top-[88px] desktop:top-[128px] z-0 mx-0 h-[860px] w-[484px] shrink-0 origin-top-left scale-[0.96]';
 
 export const LOGIN_HERO_LEFT_FRAME_CLASS =
   'relative h-[860px] w-[484px] overflow-hidden rounded-tl-[36px]';
@@ -74,7 +80,7 @@ export const LOGIN_HERO_RIGHT_FLIP_CLASS = '-scale-y-100 rotate-180';
 
 /** Center stack — heading + form; below right decoration overlap. */
 export const LOGIN_CENTER_COLUMN_CLASS =
-  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-12 pt-[65px]';
+  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-12 pt-[65px] desktop:pt-[105px]';
 
 /** Mobile auth — centered column with white form card (no hero art). */
 export const AUTH_MOBILE_CENTER_COLUMN_CLASS =

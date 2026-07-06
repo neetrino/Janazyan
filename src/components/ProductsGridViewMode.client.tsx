@@ -13,7 +13,7 @@ const VIEW_MODE_STORAGE_KEY = 'products-view-mode';
 const VALID_VIEW_MODES = new Set<ViewMode>(['list', 'grid-2', 'grid-3']);
 
 function getGridClasses(viewMode: ViewMode): string {
-  const mobileGridGap = 'gap-x-1 gap-y-4 lg:gap-x-6 lg:gap-y-10';
+  const mobileGridGap = 'gap-x-1 gap-y-4 sm:gap-x-4 sm:gap-y-8 desktop:gap-x-6 desktop:gap-y-10';
 
   switch (viewMode) {
     case 'list':
@@ -21,9 +21,9 @@ function getGridClasses(viewMode: ViewMode): string {
     case 'grid-2':
       return `grid w-full grid-cols-1 justify-items-center ${mobileGridGap} sm:grid-cols-2`;
     case 'grid-3':
-      return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`;
+      return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-3 desktop:grid-cols-4`;
     default:
-      return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4`;
+      return `grid w-full grid-cols-2 justify-items-center ${mobileGridGap} sm:grid-cols-3 desktop:grid-cols-4`;
   }
 }
 

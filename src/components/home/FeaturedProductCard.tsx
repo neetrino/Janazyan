@@ -13,9 +13,9 @@ const CARD_WIDTH_PX = 283;
 const CARD_HEIGHT_PX = 347;
 const CARD_BODY_TOP_PX = 47;
 const PRODUCT_IMAGE_WIDTH_PX = 62;
-const PRODUCT_IMAGE_HEIGHT_PX = 255;
-const PRODUCT_IMAGE_TOP_PX = -42;
-const PRODUCT_TITLE_TOP_PX = 234;
+const PRODUCT_IMAGE_HEIGHT_PX = 235;
+const PRODUCT_IMAGE_TOP_PX = -28;
+const PRODUCT_TITLE_TOP_PX = 212;
 
 const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
 const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
@@ -25,6 +25,8 @@ const FEATURED_CART_ICON_SIZE_PX = Math.round(
 );
 
 const FEATURED_CARD_BG = '/figma/featured-card-bg.svg';
+const FEATURED_CARD_BG_WIDTH_PX = 283;
+const FEATURED_CARD_BG_HEIGHT_PX = 300;
 const FEATURED_CARD_CART_CORNER = '/figma/featured-card-cart-corner.svg';
 const FEATURED_STAR_ICON = '/figma/featured-star.svg';
 
@@ -101,21 +103,27 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
       />
 
       <div
-        className="absolute inset-x-0 bottom-0 overflow-hidden rounded-[26px] bg-cream"
+        className="pointer-events-none absolute inset-x-0 bottom-0 overflow-visible"
         style={{ top: CARD_BODY_TOP_PX }}
       >
-        <div className="absolute inset-0 rotate-180 overflow-visible">
-          <img
+        <div className="absolute inset-0 rotate-180">
+          <Image
             src={FEATURED_CARD_BG}
             alt=""
+            width={FEATURED_CARD_BG_WIDTH_PX}
+            height={FEATURED_CARD_BG_HEIGHT_PX}
+            aria-hidden
             className="block h-full w-full max-w-none"
           />
         </div>
 
         <div className="absolute bottom-0 left-[73.58%] right-0 top-[77.44%] z-10">
-          <img
+          <Image
             src={FEATURED_CARD_CART_CORNER}
             alt=""
+            width={75}
+            height={78}
+            aria-hidden
             className="block h-full w-full max-w-none object-fill"
           />
         </div>
