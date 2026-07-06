@@ -17,6 +17,7 @@ import { useCart } from './hooks/useCart';
 import { useUserProfile } from './hooks/useUserProfile';
 import { useOrderSubmission } from './hooks/useOrderSubmission';
 import { useOrderSummary } from './hooks/useOrderSummary';
+import { useCheckoutPartnerStores } from './hooks/useCheckoutPartnerStores';
 import { useCurrency } from '../../components/hooks/useCurrency';
 import type { CheckoutFormData } from './types';
 import {
@@ -58,6 +59,7 @@ export function useCheckout() {
       email: '',
       phone: '',
       shippingMethod: 'pickup',
+      pickupStoreId: '',
       paymentMethod: 'cash_on_delivery',
       shippingAddress: '',
       shippingCountry: '',
@@ -74,8 +76,11 @@ export function useCheckout() {
 
   const paymentMethod = watch('paymentMethod');
   const shippingMethod = watch('shippingMethod');
+  const pickupStoreId = watch('pickupStoreId');
   const shippingCountry = watch('shippingCountry');
   const shippingCity = watch('shippingCity');
+
+  const { stores: pickupStores, loading: pickupStoresLoading } = useCheckoutPartnerStores();
 
   const { options: deliveryOptions, loading: deliveryOptionsLoading } = useDeliveryOptions();
   const { cart, loading } = useCart(isLoggedIn);
@@ -157,6 +162,13 @@ export function useCheckout() {
     currency,
     appliedDiscountAmd: appliedPromo?.discountAmountAmd ?? 0,
   });
+
+  useEffect(() => {
+    if (shippingMethod === 'delivery') {
+      setValue('pickupStoreId', '');
+      clearErrors('pickupStoreId');
+    }
+  }, [shippingMethod, setValue, clearErrors]);
 
   useEffect(() => {
     if (!deliveryOptions?.countries.length) {
@@ -257,8 +269,11 @@ export function useCheckout() {
     // Computed
     paymentMethod,
     shippingMethod,
+    pickupStoreId,
     shippingCountry,
     shippingCity,
+    pickupStores,
+    pickupStoresLoading,
     deliveryOptions,
     deliveryOptionsLoading,
     paymentMethods,

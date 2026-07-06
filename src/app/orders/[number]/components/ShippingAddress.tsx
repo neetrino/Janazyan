@@ -2,18 +2,32 @@
 
 import { Card } from '@shop/ui';
 import { useTranslation } from '../../../../lib/i18n-client';
+import { PickupStoreDetails } from '../../../../components/orders/PickupStoreDetails';
+import { isPickupStoreAddress } from '../../../../lib/types/pickup-store';
 import { ORDER_DETAIL_CARD_CLASS } from '../constants/order-detail-ui';
 import type { Order } from '../types';
 
 interface ShippingAddressProps {
   shippingAddress: Order['shippingAddress'];
+  shippingMethod?: string;
 }
 
-export function ShippingAddress({ shippingAddress }: ShippingAddressProps) {
+export function ShippingAddress({ shippingAddress, shippingMethod }: ShippingAddressProps) {
   const { t } = useTranslation();
 
   if (!shippingAddress) {
     return null;
+  }
+
+  if (shippingMethod === 'pickup' && isPickupStoreAddress(shippingAddress)) {
+    return (
+      <Card className={`p-6 ${ORDER_DETAIL_CARD_CLASS}`}>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+          {t('orders.shippingAddress.pickupStoreTitle')}
+        </h2>
+        <PickupStoreDetails pickupStore={shippingAddress} />
+      </Card>
+    );
   }
 
   return (
@@ -51,7 +65,3 @@ export function ShippingAddress({ shippingAddress }: ShippingAddressProps) {
     </Card>
   );
 }
-
-
-
-

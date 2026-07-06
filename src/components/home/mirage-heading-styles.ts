@@ -37,3 +37,7 @@ export const MIRAGE_CATEGORY_TITLE_MOBILE_CLASS =
 /** Mobile hero promo card — Figma node 49:1695 */
 export const MIRAGE_MOBILE_HERO_TITLE_CLASS =
   'font-mirage font-normal text-white tracking-[-0.5px] text-[62px] leading-[35px]';
+
+/** Mobile home stores banner — Figma node 486:334 */
+export const MIRAGE_MOBILE_STORES_TITLE_CLASS =
+  'font-mirage font-normal text-ink-500 tracking-[-0.5px] text-[38px] leading-[21px]';

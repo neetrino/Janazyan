@@ -2,6 +2,11 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { FooterContactItem } from './constants';
+import {
+  FOOTER_COPYRIGHT_COMPANY,
+  FOOTER_COPYRIGHT_URL,
+  FOOTER_COPYRIGHT_YEAR,
+} from './constants';
 
 export const FOOTER_TEXT = 'text-black/65';
 export const FOOTER_LINK =
@@ -114,6 +119,25 @@ export function FooterSocialLink({
     >
       <Image src={icon} alt="" width={20} height={20} className="size-5" />
     </Link>
+  );
+}
+
+/** Copyright line — always English, links to Neetrino site. */
+export function FooterCopyright({ className = '' }: { className?: string }) {
+  return (
+    <p
+      className={`text-left text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT} ${className}`}
+    >
+      Copyright © {FOOTER_COPYRIGHT_YEAR} | All Rights Reserved, Created by{' '}
+      <a
+        href={FOOTER_COPYRIGHT_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="font-bold transition-colors hover:text-black/80"
+      >
+        {FOOTER_COPYRIGHT_COMPANY}
+      </a>
+    </p>
   );
 }
 

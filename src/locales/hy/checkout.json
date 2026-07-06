@@ -52,6 +52,12 @@
     "delivery": "Առաքում",
     "deliveryDescription": "Մենք կառաքենք ձեր պատվերը ձեր հասցեին",
     "freePickup": "Անվճար (Խանութից)",
+    "selectPickupStore": "Ընտրեք խանութ",
+    "selectPickupStoreDescription": "Ընտրեք այն խանութը, որտեղից ցանկանում եք վերցնել պատվերը",
+    "pickupStoreListTitle": "Խանութներ",
+    "pickupStoreListHint": "Ընտրեք խանութը ցանկից",
+    "selectedPickupStoreHint": "Պատվերը կարող եք վերցնել այս խանութից",
+    "noPickupStores": "Այս պահին վերցման համար հասանելի խանութներ չկան",
     "loading": "Բեռնվում է...",
     "enterCity": "Մուտքագրել քաղաք",
     "selectRegion": "Ընտրեք մարզը",
@@ -127,6 +133,7 @@
     "zoneRequired": "Մարզը պարտադիր է առաքման համար",
     "recipientRequired": "Ստացողի անուն, ազգանունը պարտադիր է",
     "postalIndexRequired": "Ինդեքսը պարտադիր է",
-    "additionalNotesRequired": "Այս դաշտը պարտադիր է"
+    "additionalNotesRequired": "Այս դաշտը պարտադիր է",
+    "pickupStoreRequired": "Խնդրում ենք ընտրել խանութ վերցման համար"
   }
 }

@@ -168,6 +168,7 @@
     "method": "Method",
     "delivery": "Delivery",
     "pickup": "Pickup",
+    "pickupStore": "Pickup store",
     "notSpecified": "Not Specified",
     "deliveryAddress": "Delivery Address",
     "phone": "Phone",

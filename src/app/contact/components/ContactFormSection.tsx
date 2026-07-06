@@ -1,12 +1,13 @@
 'use client';
 
-import { Input } from '@shop/ui';
 import Image from 'next/image';
 import { useState } from 'react';
 import type { ChangeEvent, FormEvent } from 'react';
 import {
   CONTACT_FORM_CARD_CLASS,
+  CONTACT_FORM_FIELD_GROUP_CLASS,
   CONTACT_FORM_INPUT_CLASS,
+  CONTACT_FORM_INPUT_SHELL_CLASS,
   CONTACT_FORM_LABEL_CLASS,
   CONTACT_FORM_MESSAGE_GROUP_CLASS,
   CONTACT_FORM_ROW_CLASS,
@@ -76,55 +77,61 @@ export function ContactFormSection() {
     <div className={CONTACT_FORM_CARD_CLASS}>
       <form onSubmit={handleSubmit} className={CONTACT_FORM_STACK_CLASS}>
         <div className={CONTACT_FORM_ROW_CLASS}>
-          <div>
+          <div className={CONTACT_FORM_FIELD_GROUP_CLASS}>
             <label htmlFor="contact-name" className={CONTACT_FORM_LABEL_CLASS}>
               {t('contact.form.name')}
             </label>
-            <Input
-              id="contact-name"
-              name="name"
-              type="text"
-              required
-              value={formData.name}
-              onChange={handleChange}
-              className={CONTACT_FORM_INPUT_CLASS}
-              placeholder={t('contact.form.namePlaceholder')}
-            />
+            <div className={CONTACT_FORM_INPUT_SHELL_CLASS}>
+              <input
+                id="contact-name"
+                name="name"
+                type="text"
+                required
+                value={formData.name}
+                onChange={handleChange}
+                className={CONTACT_FORM_INPUT_CLASS}
+                placeholder={t('contact.form.namePlaceholder')}
+              />
+            </div>
           </div>
 
-          <div>
+          <div className={CONTACT_FORM_FIELD_GROUP_CLASS}>
             <label htmlFor="contact-email" className={CONTACT_FORM_LABEL_CLASS}>
               {t('contact.form.email')}
             </label>
-            <Input
-              id="contact-email"
-              name="email"
-              type="email"
-              required
-              value={formData.email}
+            <div className={CONTACT_FORM_INPUT_SHELL_CLASS}>
+              <input
+                id="contact-email"
+                name="email"
+                type="email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+                className={CONTACT_FORM_INPUT_CLASS}
+                placeholder={t('contact.form.emailPlaceholder')}
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className={`${CONTACT_FORM_SUBJECT_GROUP_CLASS} ${CONTACT_FORM_FIELD_GROUP_CLASS}`}>
+          <label htmlFor="contact-subject" className={CONTACT_FORM_LABEL_CLASS}>
+            {t('contact.form.subject')}
+          </label>
+          <div className={CONTACT_FORM_INPUT_SHELL_CLASS}>
+            <input
+              id="contact-subject"
+              name="subject"
+              type="text"
+              value={formData.subject}
               onChange={handleChange}
               className={CONTACT_FORM_INPUT_CLASS}
-              placeholder={t('contact.form.emailPlaceholder')}
+              placeholder={t('contact.form.subjectPlaceholder')}
             />
           </div>
         </div>
 
-        <div className={CONTACT_FORM_SUBJECT_GROUP_CLASS}>
-          <label htmlFor="contact-subject" className={CONTACT_FORM_LABEL_CLASS}>
-            {t('contact.form.subject')}
-          </label>
-          <Input
-            id="contact-subject"
-            name="subject"
-            type="text"
-            value={formData.subject}
-            onChange={handleChange}
-            className={CONTACT_FORM_INPUT_CLASS}
-            placeholder={t('contact.form.subjectPlaceholder')}
-          />
-        </div>
-
-        <div className={CONTACT_FORM_MESSAGE_GROUP_CLASS}>
+        <div className={`${CONTACT_FORM_MESSAGE_GROUP_CLASS} ${CONTACT_FORM_FIELD_GROUP_CLASS}`}>
           <label htmlFor="contact-message" className={CONTACT_FORM_LABEL_CLASS}>
             {t('contact.form.message')}
           </label>

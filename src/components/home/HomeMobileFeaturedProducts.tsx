@@ -55,7 +55,7 @@ export function HomeMobileFeaturedSkeleton() {
         {Array.from({ length: 4 }).map((_, index) => (
           <div
             key={index}
-            className="relative h-[238px] w-[164px] overflow-hidden rounded-3xl bg-white/25"
+            className="relative h-[213px] w-[144px] overflow-hidden rounded-3xl bg-white/25"
           >
             <div className="absolute inset-x-3 top-3 h-24 rounded-2xl bg-white/30" />
             <div className="absolute inset-x-3 bottom-4 space-y-2">

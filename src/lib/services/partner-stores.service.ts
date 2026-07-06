@@ -69,3 +69,30 @@ export async function getPublishedPartnerStores(locale: string): Promise<Partner
     .map((row) => mapStoreRow(row, locale))
     .filter((store): store is PartnerStore => store !== null);
 }
+
+/** Resolve a published partner store by id for checkout pickup validation. */
+export async function getPublishedPartnerStoreById(
+  storeId: string,
+  locale: string,
+): Promise<PartnerStore | null> {
+  if (!isDatabaseConnectionUrlConfigured()) {
+    return null;
+  }
+
+  const row = await db.partnerStore.findFirst({
+    where: {
+      id: storeId,
+      deletedAt: null,
+      published: true,
+    },
+    include: {
+      translations: true,
+    },
+  });
+
+  if (!row) {
+    return null;
+  }
+
+  return mapStoreRow(row, locale);
+}

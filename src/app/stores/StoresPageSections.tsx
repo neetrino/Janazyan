@@ -11,7 +11,7 @@ export function StoresPageHeader({ copy }: { copy: StoresTranslation }) {
           <h1 className={MIRAGE_PAGE_HEADING_CLASS}>
             {copy.title}
           </h1>
-          <p className="mt-4 text-base leading-relaxed text-gray-600 md:text-lg">
+          <p className="mt-4 hidden text-base leading-relaxed text-gray-600 md:block md:text-lg">
             {copy.description}
           </p>
         </div>

@@ -13,6 +13,8 @@ import { resolveCheckoutPromo } from "@/lib/promo-codes/resolve-checkout-promo";
 import { arcaClient, toArcaAmountMinorUnits } from "@/lib/payments/arca/client";
 import { buildArcaReturnUrl, getArcaConfig } from "@/lib/payments/arca/config";
 import { convertPrice } from "@/lib/currency";
+import { getPublishedPartnerStoreById } from "./partner-stores.service";
+import type { PickupStoreAddress } from "@/lib/types/pickup-store";
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -111,7 +113,7 @@ class OrdersService {
     resolvedUserCartId: string | null;
     paymentMethod: string;
     shippingMethod: string;
-    shippingAddress: CheckoutData['shippingAddress'];
+    shippingAddress: CheckoutData['shippingAddress'] | PickupStoreAddress | null | undefined;
     email: string;
     phone: string;
     subtotal: number;
@@ -371,6 +373,7 @@ class OrdersService {
         email,
         phone,
         shippingMethod = 'pickup',
+        pickupStoreId,
         shippingAddress,
         paymentMethod = 'idram',
         promoCode,
@@ -608,7 +611,36 @@ class OrdersService {
       const discountAmount = convertPrice(discountAmountAmd, 'AMD', 'USD');
       // Shipping: computed server-side only (never trust client-provided amount)
       let shippingAmount = 0;
-      if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
+      let resolvedShippingAddress: CheckoutData['shippingAddress'] | PickupStoreAddress | undefined =
+        shippingAddress;
+
+      if (shippingMethod === 'pickup') {
+        const normalizedPickupStoreId = pickupStoreId?.trim();
+        if (!normalizedPickupStoreId) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/validation-error",
+            title: "Validation Error",
+            detail: "Pickup store is required for store pickup orders",
+          };
+        }
+
+        const pickupStore = await getPublishedPartnerStoreById(normalizedPickupStoreId, 'en');
+        if (!pickupStore) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/validation-error",
+            title: "Validation Error",
+            detail: "Selected pickup store is unavailable",
+          };
+        }
+
+        resolvedShippingAddress = {
+          pickupStoreId: pickupStore.id,
+          storeName: pickupStore.name,
+          address: pickupStore.address,
+        };
+      } else if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
         const country = (shippingAddress.countryCode ?? 'Armenia').toString();
         shippingAmount = await adminDeliveryService.getDeliveryPrice(
           shippingAddress.city.trim(),
@@ -626,7 +658,7 @@ class OrdersService {
         resolvedUserCartId,
         paymentMethod,
         shippingMethod,
-        shippingAddress,
+        shippingAddress: resolvedShippingAddress,
         email,
         phone,
         subtotal,

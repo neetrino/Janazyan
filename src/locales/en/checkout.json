@@ -52,6 +52,12 @@
     "delivery": "Delivery",
     "deliveryDescription": "We will deliver your order to your address",
     "freePickup": "Free (Store Pickup)",
+    "selectPickupStore": "Select a store",
+    "selectPickupStoreDescription": "Choose the store where you want to pick up your order",
+    "pickupStoreListTitle": "Stores",
+    "pickupStoreListHint": "Select a store from the list",
+    "selectedPickupStoreHint": "You can pick up your order at this store",
+    "noPickupStores": "No pickup stores are available right now",
     "loading": "Loading...",
     "enterCity": "Enter City",
     "selectRegion": "Select region",
@@ -127,6 +133,7 @@
     "zoneRequired": "Region is required for delivery",
     "recipientRequired": "Recipient full name is required",
     "postalIndexRequired": "Postal index is required",
-    "additionalNotesRequired": "This field is required"
+    "additionalNotesRequired": "This field is required",
+    "pickupStoreRequired": "Please select a store for pickup"
   }
 }

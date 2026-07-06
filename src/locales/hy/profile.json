@@ -168,6 +168,7 @@
     "method": "Եղանակ",
     "delivery": "Առաքում",
     "pickup": "Ինքնավերցում",
+    "pickupStore": "Վերցման խանութ",
     "notSpecified": "Նշված չէ",
     "deliveryAddress": "Առաքման հասցե",
     "phone": "Հեռախոս",

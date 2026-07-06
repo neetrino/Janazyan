@@ -19,6 +19,7 @@ export const CHECKOUT_VALIDATION_FIELD_ORDER: (keyof CheckoutFormData)[] = [
   'email',
   'phone',
   'shippingMethod',
+  'pickupStoreId',
   'shippingCity',
   'shippingAddress',
   'paymentMethod',
@@ -26,6 +27,7 @@ export const CHECKOUT_VALIDATION_FIELD_ORDER: (keyof CheckoutFormData)[] = [
 
 const CHECKOUT_FIELD_SECTION_SELECTOR: Partial<Record<keyof CheckoutFormData, string>> = {
   shippingMethod: '[data-checkout-section="shipping-method"]',
+  pickupStoreId: '[data-checkout-section="pickup-store"]',
   shippingCity: '[data-shipping-section]',
   shippingAddress: '[data-shipping-section]',
   paymentMethod: '[data-checkout-section="payment-method"]',

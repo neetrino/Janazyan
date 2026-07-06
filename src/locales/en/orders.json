@@ -31,6 +31,7 @@
   },
   "shippingAddress": {
     "title": "Shipping Address",
+    "pickupStoreTitle": "Pickup store",
     "phone": "Phone: {phone}"
   },
   "orderSummary": {

@@ -106,6 +106,9 @@ export function useOrderSubmission({
         email: data.email,
         phone: data.phone,
         shippingMethod: data.shippingMethod,
+        ...(data.shippingMethod === 'pickup' && data.pickupStoreId?.trim()
+          ? { pickupStoreId: data.pickupStoreId.trim() }
+          : {}),
         ...(shippingAddress ? { shippingAddress } : {}),
         shippingAmount: shippingAmount,
         paymentMethod: data.paymentMethod,

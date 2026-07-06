@@ -4,6 +4,7 @@ export type CheckoutFormData = {
   email: string;
   phone: string;
   shippingMethod: 'pickup' | 'delivery';
+  pickupStoreId?: string;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingCountry?: string;
   shippingCity?: string;

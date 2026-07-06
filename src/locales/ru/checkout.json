@@ -52,6 +52,12 @@
     "delivery": "Доставка",
     "deliveryDescription": "Мы доставим ваш заказ по вашему адресу",
     "freePickup": "Бесплатно (Самовывоз)",
+    "selectPickupStore": "Выберите магазин",
+    "selectPickupStoreDescription": "Выберите магазин, из которого хотите забрать заказ",
+    "pickupStoreListTitle": "Магазины",
+    "pickupStoreListHint": "Выберите магазин из списка",
+    "selectedPickupStoreHint": "Вы можете забрать заказ в этом магазине",
+    "noPickupStores": "Сейчас нет доступных магазинов для самовывоза",
     "loading": "Загрузка...",
     "enterCity": "Введите город",
     "selectRegion": "Выберите регион",
@@ -127,6 +133,7 @@
     "zoneRequired": "Регион обязателен для доставки",
     "recipientRequired": "ФИО получателя обязательно",
     "postalIndexRequired": "Почтовый индекс обязателен",
-    "additionalNotesRequired": "Это поле обязательно"
+    "additionalNotesRequired": "Это поле обязательно",
+    "pickupStoreRequired": "Пожалуйста, выберите магазин для самовывоза"
   }
 }

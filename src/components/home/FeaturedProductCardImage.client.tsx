@@ -22,7 +22,7 @@ export function FeaturedProductCardImage({
       src={imageSrc}
       alt={alt}
       fill
-      sizes="112px"
+      sizes="96px"
       className="object-contain object-bottom"
       priority={priority}
       loading={priority ? undefined : 'lazy'}

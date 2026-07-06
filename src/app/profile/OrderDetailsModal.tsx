@@ -1,5 +1,7 @@
     import { Button, Card } from '@shop/ui';
 import { formatPriceInCurrency, convertPrice, type CurrencyCode } from '../../lib/currency';
+import { PickupStoreDetails } from '../../components/orders/PickupStoreDetails';
+import { isPickupStoreAddress } from '../../lib/types/pickup-store';
 import { getStatusColor, getPaymentStatusColor, getColorValue } from './utils';
 import type { OrderDetails } from './types';
 
@@ -303,6 +305,15 @@ export function OrderDetailsModal({
                             {selectedOrder.shippingAddress.countryCode && <p>{selectedOrder.shippingAddress.countryCode}</p>}
                             {selectedOrder.shippingAddress.phone && <p className="mt-2">{t('profile.orderDetails.phone')}: {selectedOrder.shippingAddress.phone}</p>}
                           </div>
+                        </div>
+                      )}
+                      {selectedOrder.shippingMethod === 'pickup' &&
+                        isPickupStoreAddress(selectedOrder.shippingAddress) && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <p className="font-medium text-gray-900 mb-2">
+                            {t('profile.orderDetails.pickupStore')}:
+                          </p>
+                          <PickupStoreDetails pickupStore={selectedOrder.shippingAddress} />
                         </div>
                       )}
                     </div>

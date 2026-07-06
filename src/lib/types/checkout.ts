@@ -12,6 +12,7 @@ export interface CheckoutData {
   email: string;
   phone: string;
   shippingMethod?: string;
+  pickupStoreId?: string;
   shippingAddress?: {
     firstName?: string;
     lastName?: string;
