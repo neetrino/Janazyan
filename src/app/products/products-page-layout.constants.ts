@@ -1,5 +1,7 @@
 import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
-import { STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import {
+  STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS,
+} from '../../lib/layout/storefront-mobile-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
 /** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
@@ -30,7 +32,7 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
 
 /** Toolbar baseline from shell top (node 269:900, y=210). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[210px]';
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[300px]';
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
@@ -46,34 +48,70 @@ export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 /** Figma toolbar pills — fully rounded capsule on both edges (nodes 269:907 / 269:919). */
 export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 
-/** Shared toolbar control pill height — aligned with category pills (Figma 56px). */
-export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-14';
+/** Shared toolbar control pill height — aligned with category pills. */
+export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10';
+
+/** Sort control width — compact on narrow viewports, full width on desktop. */
+export const PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS =
+  'min-w-[152px] shrink-0 px-2.5 sm:min-w-[168px] sm:px-3 desktop:min-w-[188px] desktop:px-4';
+
+/** Gap between category pills and sort control. */
+export const PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS = 'gap-1.5 desktop:gap-2';
+
+/** Toolbar row — single line at all breakpoints; categories scroll, sort stays pinned right. */
+export const PRODUCTS_PAGE_TOOLBAR_ROW_CLASS =
+  `flex flex-row items-center ${PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS}`;
+
+/** Outer shop toolbar wrapper — extra top inset on tablet/laptop mobile shell. */
+export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-16 sm:pt-20 desktop:pt-0';
+
+/** Mobile toolbar slot — full-bleed category row below search (cancels shell side padding). */
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-9 sm:mt-11';
+
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS =
+  `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
+
+/** Horizontal inset for first/last pill while the scroll track stays full-bleed on mobile. */
+export const PRODUCTS_PAGE_CATEGORY_ROW_EDGE_INSET_CLASS =
+  'px-[clamp(24px,3.2vw,36px)] scroll-px-[clamp(24px,3.2vw,36px)] desktop:px-0 desktop:scroll-px-0';
+
+/** Category pills occupy remaining toolbar width; full width on mobile (no sort slot). */
+export const PRODUCTS_PAGE_CATEGORY_SCROLL_SHELL_CLASS =
+  'min-w-0 w-full max-w-none flex-1 overflow-hidden';
+
+/** Category filter pills row — Figma "categories" frame (node 269:894). */
+export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
+  `flex w-full max-w-none items-center gap-1.5 overflow-x-auto scrollbar-hide ${PRODUCTS_PAGE_CATEGORY_ROW_EDGE_INSET_CLASS}`;
+
+/** Right-edge fade when category row overflows — matches hero band on desktop, white on tablet/laptop. */
+export const PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS =
+  'pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-white/95 to-transparent desktop:w-10 desktop:from-[#C9DDF0]';
+
+/** Shop hero breadcrumb — Figma node 269:900. */
+export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
+  'mb-5 text-base leading-[18px] text-white drop-shadow-[0_1px_3px_rgba(30,41,57,0.35)] sm:mb-6 desktop:mb-6';
+
+/** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
+export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
+  `inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} shrink-0 items-center justify-center rounded-full text-[11px] font-medium leading-[14px] tracking-[0.35px] whitespace-nowrap ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
+
+/** Active category pill — dark ink slate with white ring (node 269:895). */
+export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
+  'border-2 border-white bg-ink-500 text-white';
+
+/** Inactive category pill — sky surface on mobile; white on desktop hero. */
+export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
+  'bg-sky-mist/70 text-sky-deep hover:bg-sky-mist desktop:bg-white desktop:hover:bg-sky-mist/70';
+
+/** Sort control — saturated accent for contrast on mobile/laptop gradient hero. */
+export const PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS =
+  'bg-accent text-white hover:bg-accent/90';
 
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
 
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
-
-/** Category filter pills row — Figma "categories" frame (node 269:894). */
-export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
-  'flex items-center gap-[11px] overflow-x-auto scrollbar-hide';
-
-/** Shop hero breadcrumb — Figma node 269:900. */
-export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
-  'mb-4 text-base leading-[18px] text-white desktop:mb-6';
-
-/** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
-export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  `inline-flex h-14 shrink-0 items-center justify-center rounded-full text-[13px] font-medium leading-[16.5px] tracking-[0.5px] whitespace-nowrap ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
-
-/** Active category pill — dark ink slate with 3px white ring (node 269:895). */
-export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
-  'border-[3px] border-white bg-ink-500 text-white';
-
-/** Inactive category pill — white surface, sky-deep label + icon (nodes 269:861 …). */
-export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
-  'bg-white text-sky-deep hover:bg-sky-mist/50';
 
 /** Gradient continuation for the catalog zone. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
@@ -98,8 +136,9 @@ export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-8';
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
 
-/** Bottom padding inside the catalog zone. */
-export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS = 'pb-10 desktop:pb-14';
+/** Bottom padding inside the catalog zone — tighter above overlapping footer on tablet/laptop. */
+export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-10 md:pb-8 desktop:pb-16';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

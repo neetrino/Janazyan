@@ -1,10 +1,13 @@
+import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
   PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
-  PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS,
+  PRODUCTS_PAGE_CATEGORY_SCROLL_SHELL_CLASS,
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_ROW_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS,
 } from './products-page-layout.constants';
-import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 
 const GRID =
   'grid grid-cols-2 gap-4 sm:grid-cols-3 desktop:grid-cols-4';
@@ -14,19 +17,20 @@ const GRID =
  */
 export function ProductsShopToolbarSkeleton() {
   return (
-    <div className="pb-1" aria-busy="true" aria-label="Loading shop toolbar">
-      <div className={`${PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS} h-[18px] w-40 animate-pulse rounded bg-white/50`} />
-      <div className={`${STOREFRONT_DESKTOP_FLEX_CLASS} flex-col gap-3 desktop:flex-row desktop:items-center desktop:justify-between desktop:gap-[11px]`}>
-        <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-14`}>
-          {Array.from({ length: 5 }).map((_, index) => (
-            <div
-              key={index}
-              className="h-14 w-28 shrink-0 animate-pulse rounded-full bg-white/50"
-            />
-          ))}
+    <div className={PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS} aria-busy="true" aria-label="Loading shop toolbar">
+      <div className={PRODUCTS_PAGE_TOOLBAR_ROW_CLASS}>
+        <div className={PRODUCTS_PAGE_CATEGORY_SCROLL_SHELL_CLASS}>
+          <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS}`}>
+            {Array.from({ length: 5 }).map((_, index) => (
+              <div
+                key={index}
+                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-20 shrink-0 animate-pulse rounded-full bg-white/50`}
+              />
+            ))}
+          </div>
         </div>
         <div
-          className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+          className={`${STOREFRONT_DESKTOP_ONLY_CLASS} ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-accent/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
         />
       </div>
     </div>

@@ -15,6 +15,8 @@ type StorefrontMobileShellProps = {
   children: ReactNode;
   /** Optional page toolbar rendered below the search row. */
   toolbar?: ReactNode;
+  /** Override toolbar slot layout — e.g. /products full-bleed category row. */
+  toolbarClassName?: string;
   /** Override default white content card — e.g. /products catalog gradient. */
   contentSurfaceClassName?: string;
   /** Inner horizontal inset on the content surface — defaults to products page inset. */
@@ -32,12 +34,16 @@ const STOREFRONT_MOBILE_PLAIN_SHELL_CLASS = 'bg-white';
 export function StorefrontMobileShell({
   children,
   toolbar,
+  toolbarClassName,
   contentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   contentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   hideTopBar = false,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   const showHeaderChrome = !hideTopBar || Boolean(toolbar);
+  const toolbarSlotClassName =
+    toolbarClassName ??
+    `${STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`;
   const storefrontMobileBaseShellClass = `${STOREFRONT_MOBILE_SHELL_CLASS} min-h-[100dvh] flex flex-col`;
   const shellClassName = hideTopBar
     ? `${storefrontMobileBaseShellClass} ${STOREFRONT_MOBILE_PLAIN_SHELL_CLASS}`
@@ -50,7 +56,7 @@ export function StorefrontMobileShell({
         <div className={`relative z-10 ${STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS}`}>
           {hideTopBar ? null : <MobileTopBar />}
           {toolbar ? (
-            <div className={`${STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}>
+            <div className={toolbarSlotClassName}>
               {toolbar}
             </div>
           ) : null}
