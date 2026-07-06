@@ -1,18 +1,13 @@
 import Link from 'next/link';
 import type { LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
-import {
-  PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS,
-  PRODUCTS_PAGE_CATEGORY_PILL_CLASS,
-  PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS,
-  PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
-} from '../../app/products/products-page-layout.constants';
 import { getCategoryNavStripCached } from '../../lib/categories/categories-nav-strip-cache';
-import { getShopCategoryFallbackStrip } from '../../lib/categories/shop-category-fallback';
+import { getShopCategoryToolbarStrip } from '../../lib/categories/shop-category-toolbar';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
 import { getCategoryIcon } from './utils';
-import { CategoryPillIcon } from './CategoryPillIcon';
+import { CategoryFilterPills } from './CategoryFilterPills.client';
 import { getCategoryNavHref, getCategoryNavLabel } from './category-nav-label';
+import { isCategoryFilterParamActive } from '../../lib/categories/category-filter-param';
 
 type CategoryNavigationVariant = 'strip' | 'pills';
 
@@ -69,52 +64,6 @@ function NavCategoryIcon({
   return <CategoryPlaceholderIcon isActive={isActive} />;
 }
 
-function isCategoryActive(slug: string, activeCategorySlug?: string): boolean {
-  if (slug === 'all') {
-    return !activeCategorySlug;
-  }
-  return activeCategorySlug === slug;
-}
-
-/** Figma "categories" pill row (node 269:894) — horizontal filter buttons. */
-function CategoryPillRow({
-  categories,
-  activeCategorySlug,
-  language,
-}: {
-  categories: CategoryTreeNode[];
-  activeCategorySlug?: string;
-  language: LanguageCode;
-}) {
-  return (
-    <div className={PRODUCTS_PAGE_CATEGORY_ROW_CLASS}>
-      {categories.map((category) => {
-        const isActive = isCategoryActive(category.slug, activeCategorySlug);
-
-        return (
-          <Link
-            key={category.id}
-            href={getCategoryNavHref(category.slug)}
-            aria-current={isActive ? 'page' : undefined}
-            className={`${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${
-              isActive
-                ? PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS
-                : PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS
-            }`}
-          >
-            <CategoryPillIcon
-              title={category.title}
-              slug={category.slug}
-              isActive={isActive}
-            />
-            <span>{getCategoryNavLabel(category, language)}</span>
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
 /**
  * Server-rendered category navigation for /products (streams in Suspense, no client fetch).
  * `pills` renders the Figma filter buttons; `strip` keeps the legacy circular icon row.
@@ -125,9 +74,11 @@ export async function CategoryNavigationServer({
   variant = 'strip',
 }: CategoryNavigationServerProps) {
   if (variant === 'pills') {
+    const categories = await getShopCategoryToolbarStrip(language);
+
     return (
-      <CategoryPillRow
-        categories={getShopCategoryFallbackStrip(language)}
+      <CategoryFilterPills
+        categories={categories}
         activeCategorySlug={activeCategorySlug}
         language={language}
       />
@@ -135,8 +86,6 @@ export async function CategoryNavigationServer({
   }
 
   const dbCategories = await getCategoryNavStripCached(language);
-  const displayCategories =
-    dbCategories.length > 0 ? dbCategories : getShopCategoryFallbackStrip(language);
 
   return (
     <div className="border-b border-black/5 py-3 sm:py-4 md:py-6 w-full">
@@ -144,13 +93,13 @@ export async function CategoryNavigationServer({
         <div
           className="flex items-center gap-4 sm:gap-6 md:gap-8 overflow-x-auto scrollbar-hide pb-1 sm:pb-2 pl-2 sm:pl-4 md:pl-6"
         >
-          {displayCategories.map((category) => {
-            const isActive = activeCategorySlug === category.slug;
+          {dbCategories.map((category) => {
+            const isActive = isCategoryFilterParamActive(category, activeCategorySlug);
 
             return (
               <Link
                 key={category.id}
-                href={getCategoryNavHref(category.slug)}
+                href={getCategoryNavHref(category)}
                 className="flex flex-col items-center gap-1 sm:gap-2 min-w-[80px] sm:min-w-[100px] group cursor-pointer transition-all duration-200 hover:opacity-80"
               >
                 <NavCategoryIcon

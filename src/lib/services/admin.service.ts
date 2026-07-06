@@ -60,6 +60,7 @@ class AdminService {
   createCategory = adminCategoriesService.createCategory.bind(adminCategoriesService);
   getCategoryById = adminCategoriesService.getCategoryById.bind(adminCategoriesService);
   updateCategory = adminCategoriesService.updateCategory.bind(adminCategoriesService);
+  reorderCategories = adminCategoriesService.reorderCategories.bind(adminCategoriesService);
   deleteCategory = adminCategoriesService.deleteCategory.bind(adminCategoriesService);
 
   // Products methods

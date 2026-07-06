@@ -1,16 +1,34 @@
-import { existsSync } from 'fs';
-import path from 'path';
+import { extractMediaUrl } from '@/lib/utils/extractMediaUrl';
 import { processImageUrl, smartSplitUrls } from '@/lib/utils/image-utils';
 
 const LOCAL_PRODUCT_MEDIA_PREFIX = '/product-media/';
 
 function localPublicFileExists(publicPath: string): boolean {
-  if (!publicPath.startsWith('/')) {
+  if (typeof window !== 'undefined' || !publicPath.startsWith('/')) {
     return false;
   }
 
+  // Lazy require keeps `fs` out of the client bundle.
+  const { existsSync } = require('fs') as typeof import('fs');
+  const path = require('path') as typeof import('path');
   const filePath = path.join(process.cwd(), 'public', publicPath.slice(1));
   return existsSync(filePath);
+}
+
+function isProduction(): boolean {
+  return process.env.NODE_ENV === 'production';
+}
+
+function isLocalDevHttpImageUrl(url: string): boolean {
+  return url.startsWith('http://localhost') || url.startsWith('http://127.0.0.1');
+}
+
+function resolveLocalProductMediaPath(processed: string): string | null {
+  if (typeof window === 'undefined') {
+    return localPublicFileExists(processed) ? processed : null;
+  }
+
+  return isProduction() ? null : processed;
 }
 
 /**
@@ -30,19 +48,46 @@ export function sanitizeStoredProductImageUrl(
     return null;
   }
 
-  if (
-    processed.startsWith('http://') ||
-    processed.startsWith('https://') ||
-    processed.startsWith('data:image/')
-  ) {
+  if (processed.startsWith('data:image/')) {
     return processed;
   }
 
+  if (processed.startsWith('https://')) {
+    return processed;
+  }
+
+  if (processed.startsWith('http://')) {
+    if (isProduction() && isLocalDevHttpImageUrl(processed)) {
+      return null;
+    }
+    return isProduction() ? null : processed;
+  }
+
   if (processed.startsWith(LOCAL_PRODUCT_MEDIA_PREFIX)) {
-    return localPublicFileExists(processed) ? processed : null;
+    return resolveLocalProductMediaPath(processed);
   }
 
   return processed;
+}
+
+/**
+ * Extracts the first product media URL and normalizes it for storefront display.
+ */
+export function extractSanitizedProductImageUrl(media: unknown): string | null {
+  return sanitizeStoredProductImageUrl(extractMediaUrl(media));
+}
+
+/**
+ * Resolves a cart/checkout line image from product media with variant fallback.
+ */
+export function resolveCartProductImageUrl(
+  media: unknown,
+  variantImageUrl?: string | null,
+): string | null {
+  return (
+    extractSanitizedProductImageUrl(media) ??
+    sanitizeStoredProductImageUrl(variantImageUrl)
+  );
 }
 
 /** Async alias — same behavior as sync validation for local public assets. */

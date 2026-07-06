@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
+import {
+  CATEGORY_PILL_ICON_ACTIVE_CLASS,
+} from './category-pill-dropdown.constants';
 import { getCategoryPillIcon, resolveCategoryPillIconKey } from './category-pill-icons';
 
 type CategoryPillIconProps = {
@@ -9,8 +12,7 @@ type CategoryPillIconProps = {
 };
 
 /**
- * Leading icon for a category filter pill — Figma assets (node 269:894).
- * Active pills use the grid icon in white; inactive pills use category silhouettes in sky-deep.
+ * Leading icon for a category filter pill — same asset in all states; active only inverts color.
  */
 export function CategoryPillIcon({
   title,
@@ -19,6 +21,7 @@ export function CategoryPillIcon({
 }: CategoryPillIconProps): ReactElement | null {
   const iconKey = resolveCategoryPillIconKey(slug, title);
   const icon = getCategoryPillIcon(iconKey, isActive);
+  const useActiveColorInvert = isActive && iconKey !== 'all';
 
   if (!icon) {
     return null;
@@ -28,9 +31,9 @@ export function CategoryPillIcon({
     <Image
       src={icon.src}
       alt=""
-      width={28}
-      height={28}
-      className={`shrink-0 ${icon.className}`}
+      width={icon.width}
+      height={icon.height}
+      className={`shrink-0 ${icon.className} ${useActiveColorInvert ? CATEGORY_PILL_ICON_ACTIVE_CLASS : ''}`}
       aria-hidden
     />
   );

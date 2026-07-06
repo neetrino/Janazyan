@@ -1,7 +1,7 @@
 import type { LanguageCode } from '../../lib/language';
 import { t } from '../../lib/i18n';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
-import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
+import { getCategoryTreeNodeHref } from '../../lib/categories/category-products-href';
 
 /**
  * Display label for a category nav pill (server + client).
@@ -14,7 +14,7 @@ export function getCategoryNavLabel(
   const slug = category.slug.toLowerCase();
 
   if (slug === 'all') {
-    return t(language, 'products.categoryNavigation.shopAll');
+    return t(language, 'products.categoryNavigation.all');
   }
   if (title.toLowerCase().includes('new')) {
     return t(language, 'products.categoryNavigation.newArrivals');
@@ -25,6 +25,6 @@ export function getCategoryNavLabel(
   return title;
 }
 
-export function getCategoryNavHref(slug: string): string {
-  return getCategoryProductsHref(slug);
+export function getCategoryNavHref(category: Pick<CategoryTreeNode, 'id' | 'slug' | 'title'>): string {
+  return getCategoryTreeNodeHref(category);
 }

@@ -9,6 +9,7 @@ export const CART_WITH_ITEMS_INCLUDE = {
           stock: true,
           price: true,
           compareAtPrice: true,
+          imageUrl: true,
         },
       },
       product: {

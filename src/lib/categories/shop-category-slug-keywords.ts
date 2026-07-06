@@ -1,12 +1,11 @@
 /** Figma / home / shop toolbar category slugs. */
-export type ShopCategorySlug = 'face' | 'hair' | 'body' | 'kids' | 'sun';
+export type ShopCategorySlug = 'face' | 'hair' | 'body' | 'kids';
 
 export const SHOP_CATEGORY_SLUGS: readonly ShopCategorySlug[] = [
   'face',
   'hair',
   'body',
   'kids',
-  'sun',
 ] as const;
 
 const SHOP_SLUG_KEYWORDS: Record<ShopCategorySlug, readonly string[]> = {
@@ -14,7 +13,6 @@ const SHOP_SLUG_KEYWORDS: Record<ShopCategorySlug, readonly string[]> = {
   hair: ['hair', 'hair care', 'մազ', 'волос'],
   body: ['body', 'body care', 'մարմին', 'մարմն', 'тело'],
   kids: ['kids', 'kid', 'baby', 'child', 'kids care', 'մանկ', 'дет', 'երեխ'],
-  sun: ['sun', 'spf', 'sun care', 'արև', 'солн'],
 };
 
 /** Whether a URL `category` param is a known shop filter slug. */

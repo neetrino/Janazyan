@@ -4,7 +4,6 @@ export type CategoryPillIconKey =
   | 'hair'
   | 'body'
   | 'kids'
-  | 'sun'
   | 'women'
   | 'men'
   | 'accessories'
@@ -13,29 +12,40 @@ export type CategoryPillIconKey =
 type CategoryPillIcon = {
   src: string;
   className: string;
+  width: number;
+  height: number;
+  activeSrc?: string;
 };
 
 const CATEGORY_PILL_ICONS: Record<
-  Exclude<CategoryPillIconKey, 'default' | 'sun'>,
+  Exclude<CategoryPillIconKey, 'default'>,
   CategoryPillIcon
 > = {
-  all: { src: '/figma/filter-active-grid-icon.svg', className: 'h-7 w-7' },
-  face: { src: '/figma/filter-face-icon.svg', className: 'h-6 w-6' },
-  hair: { src: '/figma/filter-hair-icon.svg', className: 'h-6 w-[22px]' },
-  body: { src: '/figma/filter-body-icon.svg', className: 'h-6 w-[18px]' },
-  kids: { src: '/figma/filter-kids-icon.svg', className: 'h-7 w-7' },
-  women: { src: '/figma/filter-women-icon.svg', className: 'h-6 w-6' },
-  men: { src: '/figma/filter-men-icon.svg', className: 'h-6 w-6' },
-  accessories: { src: '/figma/filter-accessories-icon.svg', className: 'h-6 w-6' },
+  all: {
+    src: '/figma/filter-all-grid-icon.svg',
+    activeSrc: '/figma/filter-active-grid-icon.svg',
+    className: 'h-6 w-6',
+    width: 24,
+    height: 24,
+  },
+  face: { src: '/figma/filter-face-icon.svg', className: 'h-5 w-5', width: 20, height: 20 },
+  hair: { src: '/figma/filter-hair-icon.svg', className: 'h-[19px] w-[18px]', width: 18, height: 19 },
+  body: { src: '/figma/filter-body-icon.svg', className: 'h-5 w-[15px]', width: 15, height: 20 },
+  kids: { src: '/figma/filter-kids-icon.svg', className: 'h-6 w-6', width: 24, height: 24 },
+  women: { src: '/figma/filter-women-icon.svg', className: 'h-5 w-5', width: 20, height: 20 },
+  men: { src: '/figma/filter-men-icon.svg', className: 'h-5 w-5', width: 20, height: 20 },
+  accessories: {
+    src: '/figma/filter-accessories-icon.svg',
+    className: 'h-5 w-5',
+    width: 20,
+    height: 20,
+  },
 };
-
-const ACTIVE_GRID_ICON: CategoryPillIcon = CATEGORY_PILL_ICONS.all;
 
 const FACE_KEYWORDS = ['face', 'դեմք', 'лицо', 'դիմ'];
 const HAIR_KEYWORDS = ['hair', 'մազ', 'волос'];
 const BODY_KEYWORDS = ['body', 'body care', 'մարմին', 'մարմն', 'тело', 'adult'];
 const KIDS_KEYWORDS = ['kids', 'kid', 'baby', 'child', 'մանկ', 'дет', 'երեխ'];
-const SUN_KEYWORDS = ['sun', 'spf', 'արև', 'солн'];
 const WOMEN_KEYWORDS = ['women', 'woman', 'female', 'կանայ', 'жен'];
 const MEN_KEYWORDS = ['men', 'man', 'male', 'տղամարդ', 'муж'];
 const ACCESSORIES_KEYWORDS = ['accessor', 'աքսեսուար', 'аксессуар', 'bag'];
@@ -50,9 +60,6 @@ export function resolveCategoryPillIconKey(slug: string, title: string): Categor
 
   const haystack = `${slug} ${title}`.toLowerCase();
 
-  if (slug === 'sun' || SUN_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-    return 'sun';
-  }
   if (WOMEN_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
     return 'women';
   }
@@ -80,15 +87,16 @@ export function resolveCategoryPillIconKey(slug: string, title: string): Categor
 
 export function getCategoryPillIcon(
   key: CategoryPillIconKey,
-  isActive: boolean
+  isActive = false,
 ): CategoryPillIcon | null {
-  if (isActive) {
-    return ACTIVE_GRID_ICON;
-  }
-
-  if (key === 'default' || key === 'sun') {
+  if (key === 'default') {
     return null;
   }
 
-  return CATEGORY_PILL_ICONS[key];
+  const icon = CATEGORY_PILL_ICONS[key];
+  if (!isActive || !icon.activeSrc) {
+    return icon;
+  }
+
+  return { ...icon, src: icon.activeSrc };
 }

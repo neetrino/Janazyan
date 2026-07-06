@@ -42,8 +42,7 @@
     "face": "Face",
     "hair": "Hair",
     "body": "Body",
-    "kids": "Kids",
-    "sun": "Sun"
+    "kids": "Kids"
   },
   "grid": {
     "noProducts": "No products found."

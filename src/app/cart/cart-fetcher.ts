@@ -19,6 +19,7 @@ import {
   resolveCartCacheScope,
   writeCartSnapshot,
 } from '../../lib/cart/cart-snapshot-cache';
+import { resolveCartProductImageUrl } from '@/lib/products/resolve-stored-product-image-url';
 import { createSyntheticCartItemId } from '../../lib/cart/cart-item-id';
 import type { Cart, CartItem } from './types';
 import { CART_KEY } from './constants';
@@ -38,6 +39,7 @@ interface ProductData {
     price: number;
     originalPrice?: number | null;
     stock?: number;
+    imageUrl?: string | null;
   }>;
 }
 
@@ -86,11 +88,10 @@ async function fetchGuestCartItems(
         }
 
         const translation = productData.translations?.[0];
-        const imageUrl = productData.media?.[0] 
-          ? (typeof productData.media[0] === 'string' 
-              ? productData.media[0] 
-              : productData.media[0].url || productData.media[0].src)
-          : null;
+        const imageUrl = resolveCartProductImageUrl(
+          productData.media,
+          variant.imageUrl,
+        );
 
         return {
           item: {

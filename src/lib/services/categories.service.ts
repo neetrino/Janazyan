@@ -1,5 +1,9 @@
 import { db } from "@white-shop/db";
 import { isDatabaseConnectionUrlConfigured } from "@white-shop/db/env";
+import {
+  getChildCategoryRows,
+  getRootCategoryRows,
+} from "@/lib/categories/category-sibling-order";
 
 class CategoriesService {
   /**
@@ -28,47 +32,82 @@ class CategoriesService {
       },
     });
 
-    // Build tree structure
-    const categoryMap = new Map();
-    const rootCategories: any[] = [];
-
-    categories.forEach((category: {
+    const categoryRows = categories as Array<{
       id: string;
       parentId: string | null;
+      position: number;
       translations: Array<{ locale: string; slug: string; title: string; fullPath: string }>;
-    }) => {
-      const translation =
-        category.translations.find((t: { locale: string }) => t.locale === lang) ||
-        category.translations[0];
-      if (!translation) return;
+    }>;
 
-      const categoryData = {
+    const categoryMap = new Map<
+      string,
+      {
+        id: string;
+        slug: string;
+        title: string;
+        fullPath: string;
+        children: Array<{
+          id: string;
+          slug: string;
+          title: string;
+          fullPath: string;
+          children: unknown[];
+        }>;
+      }
+    >();
+    const rootCategories: Array<{
+      id: string;
+      slug: string;
+      title: string;
+      fullPath: string;
+      children: Array<{
+        id: string;
+        slug: string;
+        title: string;
+        fullPath: string;
+        children: unknown[];
+      }>;
+    }> = [];
+
+    categoryRows.forEach((category) => {
+      const translation =
+        category.translations.find((row) => row.locale === lang) ||
+        category.translations[0];
+      if (!translation) {
+        return;
+      }
+
+      categoryMap.set(category.id, {
         id: category.id,
         slug: translation.slug,
         title: translation.title,
         fullPath: translation.fullPath,
-        children: [] as any[],
-      };
+        children: [],
+      });
+    });
 
-      categoryMap.set(category.id, categoryData);
-
-      if (!category.parentId) {
+    getRootCategoryRows(categoryRows).forEach((category) => {
+      const categoryData = categoryMap.get(category.id);
+      if (categoryData) {
         rootCategories.push(categoryData);
       }
     });
 
-    // Build parent-child relationships
-    categories.forEach((category: {
-      id: string;
-      parentId: string | null;
-    }) => {
-      if (category.parentId) {
-        const parent = categoryMap.get(category.parentId);
-        const child = categoryMap.get(category.id);
-        if (parent && child) {
-          parent.children.push(child);
-        }
+    const parentIds = new Set(
+      categoryRows
+        .map((row) => row.parentId)
+        .filter((parentId): parentId is string => Boolean(parentId)),
+    );
+
+    parentIds.forEach((parentId) => {
+      const parent = categoryMap.get(parentId);
+      if (!parent) {
+        return;
       }
+
+      parent.children = getChildCategoryRows(categoryRows, parentId)
+        .map((row) => categoryMap.get(row.id))
+        .filter((node): node is NonNullable<typeof node> => Boolean(node));
     });
 
     return {

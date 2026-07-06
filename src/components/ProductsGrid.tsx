@@ -1,6 +1,8 @@
 import { ProductCard } from './ProductCard';
-import { ProductsGridViewMode } from './ProductsGridViewMode.client';
-import { CATALOG_PRIORITY_CARD_COUNT } from '../lib/products/catalog-page.constants';
+import {
+  CATALOG_PRIORITY_CARD_COUNT,
+  PRODUCTS_CATALOG_GRID_CLASS,
+} from '../lib/products/catalog-page.constants';
 
 interface Product {
   id: string;
@@ -32,18 +34,18 @@ export function ProductsGrid({ products }: ProductsGridProps) {
   }
 
   return (
-    <ProductsGridViewMode>
+    <div className={PRODUCTS_CATALOG_GRID_CLASS}>
       {products.map((product, index) => (
-        <ProductCard 
-          key={product.id} 
+        <ProductCard
+          key={product.id}
           product={{
             ...product,
-            compareAtPrice: product.compareAtPrice ?? undefined
-          }} 
+            compareAtPrice: product.compareAtPrice ?? undefined,
+          }}
           priority={index < CATALOG_PRIORITY_CARD_COUNT}
         />
       ))}
-    </ProductsGridViewMode>
+    </div>
   );
 }
 

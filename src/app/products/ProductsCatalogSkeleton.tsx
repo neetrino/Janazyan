@@ -1,5 +1,6 @@
 import {
   PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
+  PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS,
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
 } from './products-page-layout.constants';
@@ -14,24 +15,19 @@ const GRID =
 export function ProductsShopToolbarSkeleton() {
   return (
     <div className="pb-1" aria-busy="true" aria-label="Loading shop toolbar">
-      <div className="mb-4 h-[18px] w-40 animate-pulse rounded bg-white/50 desktop:mb-6" />
+      <div className={`${PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS} h-[18px] w-40 animate-pulse rounded bg-white/50`} />
       <div className={`${STOREFRONT_DESKTOP_FLEX_CLASS} flex-col gap-3 desktop:flex-row desktop:items-center desktop:justify-between desktop:gap-[11px]`}>
-        <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-16`}>
+        <div className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} min-h-14`}>
           {Array.from({ length: 5 }).map((_, index) => (
             <div
               key={index}
-              className="h-16 w-[128px] shrink-0 animate-pulse rounded-full bg-white/50"
+              className="h-14 w-28 shrink-0 animate-pulse rounded-full bg-white/50"
             />
           ))}
         </div>
-        <div className="flex shrink-0 items-center gap-3">
-          <div
-            className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[182px] animate-pulse bg-white/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
-          />
-          <div
-            className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
-          />
-        </div>
+        <div
+          className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+        />
       </div>
     </div>
   );

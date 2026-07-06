@@ -1,4 +1,5 @@
 import { db } from "@white-shop/db";
+import { isCategoryIdFilterParam } from "@/lib/categories/category-filter-param";
 import {
   isShopCategorySlug,
   titleMatchesShopCategorySlug,
@@ -150,6 +151,24 @@ async function findAllCategoryIdsByShopSlugTitle(
   return [...allIds];
 }
 
+async function findCategoryIdsByCategoryId(categoryId: string): Promise<string[]> {
+  const categoryDoc = await db.category.findFirst({
+    where: {
+      id: categoryId,
+      published: true,
+      deletedAt: null,
+    },
+    select: { id: true },
+  });
+
+  if (!categoryDoc) {
+    return [];
+  }
+
+  const childCategoryIds = await getAllChildCategoryIds(categoryDoc.id);
+  return [categoryDoc.id, ...childCategoryIds];
+}
+
 /**
  * Resolve all category IDs for a storefront filter slug (includes descendants).
  */
@@ -157,17 +176,26 @@ export async function findCategoryIdsBySlug(
   categorySlug: string,
   lang: string,
 ): Promise<string[]> {
-  const slugMatch = await findCategoryDocByTranslationSlug(categorySlug, lang);
+  const normalizedSlug = categorySlug.trim();
+  if (!normalizedSlug) {
+    return [];
+  }
+
+  if (isCategoryIdFilterParam(normalizedSlug)) {
+    return findCategoryIdsByCategoryId(normalizedSlug);
+  }
+
+  const slugMatch = await findCategoryDocByTranslationSlug(normalizedSlug, lang);
   if (slugMatch) {
     const childCategoryIds = await getAllChildCategoryIds(slugMatch.id);
     return [slugMatch.id, ...childCategoryIds];
   }
 
-  if (!isShopCategorySlug(categorySlug)) {
+  if (!isShopCategorySlug(normalizedSlug)) {
     return [];
   }
 
-  const titleMatches = await findAllCategoryIdsByShopSlugTitle(categorySlug, lang);
+  const titleMatches = await findAllCategoryIdsByShopSlugTitle(normalizedSlug, lang);
   if (titleMatches.length === 0) {
     return [];
   }

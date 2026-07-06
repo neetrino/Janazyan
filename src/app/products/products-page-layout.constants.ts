@@ -46,8 +46,8 @@ export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 /** Figma toolbar pills — fully rounded capsule on both edges (nodes 269:907 / 269:919). */
 export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 
-/** Shared toolbar control pill height — aligned with category pills. */
-export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-16';
+/** Shared toolbar control pill height — aligned with category pills (Figma 56px). */
+export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-14';
 
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
@@ -57,11 +57,15 @@ export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBA
 
 /** Category filter pills row — Figma "categories" frame (node 269:894). */
 export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
-  'flex items-center gap-3 overflow-x-auto scrollbar-hide';
+  'flex items-center gap-[11px] overflow-x-auto scrollbar-hide';
+
+/** Shop hero breadcrumb — Figma node 269:900. */
+export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
+  'mb-4 text-base leading-[18px] text-white desktop:mb-6';
 
 /** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  `inline-flex h-16 shrink-0 items-center justify-center gap-2 rounded-full px-5 py-3.5 text-[15px] font-medium leading-[18px] tracking-[0.5px] whitespace-nowrap ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
+  `inline-flex h-14 shrink-0 items-center justify-center rounded-full text-[13px] font-medium leading-[16.5px] tracking-[0.5px] whitespace-nowrap ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
 
 /** Active category pill — dark ink slate with 3px white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =

@@ -47,7 +47,10 @@ export function parseCatalogSearchParams(params: SearchParamsInput): ParsedCatal
     perPage,
     sort,
     search: typeof params.search === 'string' ? params.search : undefined,
-    category: typeof params.category === 'string' ? params.category : undefined,
+    category:
+      typeof params.category === 'string' && params.category.trim()
+        ? params.category.trim()
+        : undefined,
     colors,
     sizes,
     brand: brands,

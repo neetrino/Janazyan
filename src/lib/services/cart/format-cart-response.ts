@@ -1,4 +1,4 @@
-import { extractMediaUrl } from '@/lib/utils/extractMediaUrl';
+import { resolveCartProductImageUrl } from '@/lib/products/resolve-stored-product-image-url';
 import type { ProductDiscountSettings } from '@/lib/services/products-discount-settings.cache';
 import type { CartViewResponse } from '@/lib/cart/cart-view-cache.types';
 
@@ -21,6 +21,7 @@ type CartItemRow = {
     stock: number;
     price: number;
     compareAtPrice: number | null;
+    imageUrl?: string | null;
   };
 };
 
@@ -77,7 +78,7 @@ function formatCartItem(
         id: product.id,
         title: translation?.title ?? '',
         slug: translation?.slug ?? '',
-        image: extractMediaUrl(product.media),
+        image: resolveCartProductImageUrl(product.media, variant.imageUrl),
       },
     },
     quantity: item.quantity,

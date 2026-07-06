@@ -4,12 +4,17 @@ import {
   flattenCategoryTree,
   type CategoryTreeNode,
 } from '../categories/category-tree';
+import {
+  getChildCategoryRows,
+  getRootCategoryRows,
+} from '../categories/category-sibling-order';
 
 const MAX_STRIP_CATEGORIES = 9;
 
 type CategoryRow = {
   id: string;
   parentId: string | null;
+  position: number;
   translations: Array<{
     locale: string;
     slug: string;
@@ -20,7 +25,6 @@ type CategoryRow = {
 
 function buildTreeFromRows(rows: CategoryRow[], lang: string): CategoryTreeNode[] {
   const categoryMap = new Map<string, CategoryTreeNode>();
-  const rootCategories: CategoryTreeNode[] = [];
 
   for (const category of rows) {
     const translation =
@@ -29,28 +33,32 @@ function buildTreeFromRows(rows: CategoryRow[], lang: string): CategoryTreeNode[
       continue;
     }
 
-    const node: CategoryTreeNode = {
+    categoryMap.set(category.id, {
       id: category.id,
       slug: translation.slug,
       title: translation.title,
       fullPath: translation.fullPath,
       children: [],
-    };
-    categoryMap.set(category.id, node);
-    if (!category.parentId) {
-      rootCategories.push(node);
-    }
+    });
   }
+
+  const rootCategories = getRootCategoryRows(rows)
+    .map((row) => categoryMap.get(row.id))
+    .filter((node): node is CategoryTreeNode => Boolean(node));
 
   for (const category of rows) {
     if (!category.parentId) {
       continue;
     }
+
     const parent = categoryMap.get(category.parentId);
-    const child = categoryMap.get(category.id);
-    if (parent && child) {
-      parent.children.push(child);
+    if (!parent) {
+      continue;
     }
+
+    parent.children = getChildCategoryRows(rows, category.parentId)
+      .map((row) => categoryMap.get(row.id))
+      .filter((node): node is CategoryTreeNode => Boolean(node));
   }
 
   return rootCategories;
@@ -74,6 +82,7 @@ class CategoriesNavStripService {
       select: {
         id: true,
         parentId: true,
+        position: true,
         translations: {
           select: {
             locale: true,
