@@ -12,7 +12,7 @@ type CategoryPillIconProps = {
 };
 
 /**
- * Leading icon for a category filter pill — same asset in all states; active only inverts color.
+ * Leading icon for a category filter pill — sky-deep on inactive pills, white on active.
  */
 export function CategoryPillIcon({
   title,

@@ -27,5 +27,8 @@ export const FOOTER_COMPACT_PAYMENTS_CLASS =
 export const FOOTER_COMPACT_COPYRIGHT_CLASS =
   'absolute bottom-[56px] left-[6.05%] z-10 max-w-[88%] pt-[13px] text-left';
 
+/** Nudge bottle decoration slightly right on laptop/tablet footer. */
+export const FOOTER_COMPACT_DECORATION_RIGHT_OFFSET_PX = 104;
+
 export const FOOTER_COMPACT_DECORATION_CLASS =
-  'pointer-events-none absolute bottom-0 right-0 z-40 w-[43%] min-w-[330px] max-w-[430px]';
+  'pointer-events-none absolute bottom-0 z-40 w-[43%] min-w-[330px] max-w-[430px]';

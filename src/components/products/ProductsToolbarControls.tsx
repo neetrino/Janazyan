@@ -179,14 +179,14 @@ export function ProductsToolbarControls() {
           onClick={() => setShowSortDropdown((open) => !open)}
           aria-expanded={showSortDropdown}
           aria-haspopup="listbox"
-          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} text-xs font-medium ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
+          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1 desktop:gap-1.5 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} text-xs font-medium desktop:text-sm ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
         >
           <Image
             src="/figma/shop-sort-filter-icon.svg"
             alt=""
             width={14}
             height={16}
-            className="h-4 w-3.5 shrink-0"
+            className="h-4 w-3.5 shrink-0 desktop:h-[18px] desktop:w-4"
             aria-hidden
           />
           <span>{t('products.header.sortBy')}</span>
@@ -195,7 +195,7 @@ export function ProductsToolbarControls() {
             alt=""
             width={8}
             height={13}
-            className={`h-[13px] w-2 shrink-0 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
+            className={`h-[13px] w-2 shrink-0 desktop:h-[15px] desktop:w-2.5 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
             aria-hidden
           />
         </button>

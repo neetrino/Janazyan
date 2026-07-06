@@ -30,7 +30,7 @@ export function ProductsShopToolbarSkeleton() {
           </div>
         </div>
         <div
-          className={`${STOREFRONT_DESKTOP_ONLY_CLASS} ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-accent/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+          className={`${STOREFRONT_DESKTOP_ONLY_CLASS} ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
         />
       </div>
     </div>

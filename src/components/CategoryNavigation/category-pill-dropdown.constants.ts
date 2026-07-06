@@ -15,7 +15,7 @@ export const CATEGORY_PILL_CHEVRON = {
   src: '/figma/filter-kids-chevron.svg',
   width: 14,
   height: 14,
-  className: 'h-3.5 w-3.5 transition-transform duration-200',
+  className: 'h-3.5 w-3.5 desktop:h-4 desktop:w-4 transition-transform duration-200',
 } as const;
 
 export const CATEGORY_PILL_CHEVRON_ACTIVE_CLASS = CATEGORY_PILL_ICON_ACTIVE_CLASS;

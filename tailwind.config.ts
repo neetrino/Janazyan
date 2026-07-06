@@ -64,9 +64,9 @@ const config: Config = {
         'pastel-arc':
           'linear-gradient(39deg, #93b6e3 8%, #fcf8ec 101%)',
         'products-catalog':
-          'linear-gradient(180deg, #c6ddf3 0%, #c6ddf3 28%, #d4e7f8 42%, #e2eff9 56%, #eef5fc 68%, #f7fafd 82%, #d8c8e8 92%, #c6ddf3 100%)',
+          'linear-gradient(180deg, #c6ddf3 0%, #c6ddf3 28%, #d4e7f8 42%, #e2eff9 56%, #eef5fc 68%, #f7fafd 82%, #ffffff 94%, #ffffff 100%)',
         'products-catalog-mobile':
-          'linear-gradient(180deg, #ffffff 0%, #ffffff 6%, #f7fafd 18%, #eef5fc 32%, #e2eff9 44%, #d4e7f8 58%, #c6ddf3 68%, #eef5fc 82%, #ffffff 92%, #ffffff 100%)',
+          'linear-gradient(180deg, #ffffff 0%, #ffffff 6%, #f7fafd 18%, #eef5fc 32%, #e2eff9 44%, #d4e7f8 58%, #c6ddf3 72%, #c6ddf3 100%)',
         'promo-pink':
           'linear-gradient(131deg, #f49395 5%, #b49cc4 82%)',
       },

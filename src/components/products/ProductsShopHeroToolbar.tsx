@@ -52,7 +52,7 @@ export function ProductsShopHeroToolbar({
           <Suspense
             fallback={
               <div
-                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-accent/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
               />
             }
           >
