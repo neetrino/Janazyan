@@ -22,7 +22,7 @@ const STORES_CTA_ICON_SIZE_PX = 18;
 const STORES_BANNER_GRADIENT =
   'linear-gradient(109.85deg, #bcd4ec 25.25%, #ffffff 57.605%, #ffffff 75.066%)';
 
-const STORES_BASKET_IMAGE = '/figma/mobile-stores-basket.png';
+const STORES_BASKET_IMAGE = '/figma/mobile-stores-basket.webp';
 const STORES_CTA_ARROW = '/figma/mobile-stores-cta-arrow.svg';
 const STORES_PAGE_HREF = '/stores';
 

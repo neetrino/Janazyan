@@ -10,8 +10,8 @@ export const AUTH_PAGE_SCALE_HOST_CLASS = 'auth-page-scale-host @container relat
 export const AUTH_PAGE_SCALE_VIEWPORT_CLASS = 'auth-page-scale-viewport relative mx-auto w-full';
 export const AUTH_PAGE_SCALE_ARTBOARD_CLASS = 'auth-page-scale-artboard relative';
 
-export const LOGIN_HERO_LEFT_IMAGE_SRC = '/figma/contact-hero.png';
-export const LOGIN_HERO_RIGHT_IMAGE_SRC = '/figma/login-hero-decoration.png';
+export const LOGIN_HERO_LEFT_IMAGE_SRC = '/figma/contact-hero.webp';
+export const LOGIN_HERO_RIGHT_IMAGE_SRC = '/figma/login-hero-decoration.webp';
 
 /** Left hero — Figma node 513:865 (487×865). */
 export const LOGIN_HERO_LEFT_WIDTH_PX = 487;

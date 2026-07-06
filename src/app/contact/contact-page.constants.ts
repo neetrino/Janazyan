@@ -1,10 +1,10 @@
 /** Contact page — Figma node 496:276 */
 
-export const CONTACT_HERO_IMAGE_SRC = '/figma/contact-hero.png';
+export const CONTACT_HERO_IMAGE_SRC = '/figma/contact-hero.webp';
 
-/** Actual asset dimensions — contact-hero.png */
-export const CONTACT_HERO_IMAGE_NATURAL_WIDTH_PX = 1412;
-export const CONTACT_HERO_IMAGE_NATURAL_HEIGHT_PX = 2508;
+/** Actual asset dimensions — contact-hero.webp */
+export const CONTACT_HERO_IMAGE_NATURAL_WIDTH_PX = 900;
+export const CONTACT_HERO_IMAGE_NATURAL_HEIGHT_PX = 1599;
 
 /** Display width — Figma node 496:497. */
 export const CONTACT_HERO_WIDTH_PX = 484;
