@@ -13,6 +13,7 @@ import {
   FOOTER_COMPACT_CONTACT_LIST_CLASS,
   FOOTER_COMPACT_COPYRIGHT_CLASS,
   FOOTER_COMPACT_DECORATION_CLASS,
+  FOOTER_COMPACT_DECORATION_RIGHT_OFFSET_PX,
   FOOTER_COMPACT_DEFAULT_TOP_MARGIN_PX,
   FOOTER_COMPACT_INSET_CLASS,
   FOOTER_COMPACT_PAYMENTS_CLASS,
@@ -55,6 +56,7 @@ export function FooterCompact({ extraUpPullPx = 0 }: { extraUpPullPx?: number })
           src={FOOTER_DECORATION}
           alt=""
           className={FOOTER_COMPACT_DECORATION_CLASS}
+          style={{ right: `-${FOOTER_COMPACT_DECORATION_RIGHT_OFFSET_PX}px` }}
         />
 
         <div className="absolute left-[6.45%] top-[43px] z-10 w-[210px]">

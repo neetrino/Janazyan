@@ -7,6 +7,8 @@ import { createPortal } from 'react-dom';
 import {
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import {
@@ -177,14 +179,14 @@ export function ProductsToolbarControls() {
           onClick={() => setShowSortDropdown((open) => !open)}
           aria-expanded={showSortDropdown}
           aria-haspopup="listbox"
-          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-[231px] items-center justify-center gap-2 bg-sky-deep px-5 text-base font-normal text-white ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
+          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1 desktop:gap-1.5 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} text-xs font-medium desktop:text-sm ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
         >
           <Image
             src="/figma/shop-sort-filter-icon.svg"
             alt=""
-            width={16}
-            height={18}
-            className="h-[18px] w-4 shrink-0"
+            width={14}
+            height={16}
+            className="h-4 w-3.5 shrink-0 desktop:h-[18px] desktop:w-4"
             aria-hidden
           />
           <span>{t('products.header.sortBy')}</span>
@@ -192,8 +194,8 @@ export function ProductsToolbarControls() {
             src="/figma/shop-sort-chevron.svg"
             alt=""
             width={8}
-            height={15}
-            className={`h-[15px] w-2 shrink-0 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
+            height={13}
+            className={`h-[13px] w-2 shrink-0 desktop:h-[15px] desktop:w-2.5 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
             aria-hidden
           />
         </button>

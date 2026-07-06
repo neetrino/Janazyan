@@ -31,7 +31,7 @@ import {
   FooterSocialLink,
   getFooterContactLabel,
 } from './footer/FooterShared';
-import { shouldShowStorefrontFooter, resolveContactPageFooterExtraUpPull } from '../lib/layout/storefront-footer-layout';
+import { shouldShowStorefrontFooter, resolvePageFooterExtraUpPull } from '../lib/layout/storefront-footer-layout';
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_COLUMN_LIST_CLASS = 'mt-[18px] space-y-[24px]';
@@ -156,7 +156,7 @@ function FooterDesktop({ extraUpPullPx }: { extraUpPullPx: number }) {
 
 export function Footer() {
   const pathname = usePathname();
-  const extraUpPullPx = resolveContactPageFooterExtraUpPull(pathname);
+  const extraUpPullPx = resolvePageFooterExtraUpPull(pathname);
 
   if (!shouldShowStorefrontFooter(pathname)) {
     return null;

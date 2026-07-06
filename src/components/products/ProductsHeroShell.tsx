@@ -13,6 +13,7 @@ import {
   PRODUCTS_PAGE_SHELL_CLASS,
   PRODUCTS_PAGE_SIDE_PADDING_CLASS,
   PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS,
+  PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import { HeroRectangleBackground } from '../home/HeroRectangleBackground';
@@ -110,6 +111,7 @@ export function ProductsHeroShell({
     <CategoryFilterDropdownProvider activeCategorySlug={activeCategorySlug}>
       <StorefrontMobileShell
         toolbar={toolbar}
+        toolbarClassName={toolbar ? PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS : undefined}
         contentSurfaceClassName={mobileContentSurfaceClassName}
         contentInsetClassName={mobileContentInsetClassName}
         hideTopBar={hideMobileTopBar}
