@@ -101,7 +101,7 @@ export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
 
 /** Inactive category pill — sky surface on mobile; white on desktop hero. */
 export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
-  'bg-sky-mist/70 text-sky-deep hover:bg-sky-mist desktop:bg-white desktop:hover:bg-sky-mist/70';
+  'border-2 border-transparent bg-sky-mist/70 text-sky-deep hover:border-white hover:bg-ink-500 hover:text-white hover:opacity-100 desktop:bg-white desktop:hover:border-white desktop:hover:bg-ink-500 desktop:hover:text-white';
 
 /** Sort control — sky-deep brand tone (#93B6E3). */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS =

@@ -1,6 +1,14 @@
 import { db } from "@white-shop/db";
 import * as bcrypt from "bcryptjs";
 
+interface UpdateProfileInput {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  locale?: string;
+}
+
 class UsersService {
   /**
    * Get user profile
@@ -46,32 +54,120 @@ class UsersService {
   /**
    * Update user profile
    */
-  async updateProfile(userId: string, data: any) {
-    const user = await db.user.update({
+  async updateProfile(userId: string, data: UpdateProfileInput) {
+    const current = await db.user.findUnique({
       where: { id: userId },
-      data: {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        locale: data.locale,
-      },
-      select: {
-        id: true,
-        email: true,
-        phone: true,
-        firstName: true,
-        lastName: true,
-        locale: true,
-      },
+      select: { email: true, phone: true, deletedAt: true },
     });
 
-    return {
-      id: user.id,
-      email: user.email,
-      phone: user.phone,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      locale: user.locale,
-    };
+    if (!current || current.deletedAt) {
+      throw {
+        status: 404,
+        type: "https://api.shop.am/problems/not-found",
+        title: "User not found",
+      };
+    }
+
+    const emailNorm =
+      data.email !== undefined ? data.email.trim().toLowerCase() || null : undefined;
+    const phoneNorm =
+      data.phone !== undefined ? data.phone.trim() || null : undefined;
+
+    const nextEmail = emailNorm !== undefined ? emailNorm : current.email;
+    const nextPhone = phoneNorm !== undefined ? phoneNorm : current.phone;
+
+    if (!nextEmail && !nextPhone) {
+      throw {
+        status: 400,
+        type: "https://api.shop.am/problems/validation-error",
+        title: "Validation Error",
+        detail: "Either email or phone is required",
+      };
+    }
+
+    if (emailNorm !== undefined && emailNorm !== current.email) {
+      const emailConflict = await db.user.findFirst({
+        where: {
+          email: emailNorm,
+          id: { not: userId },
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+
+      if (emailConflict) {
+        throw {
+          status: 409,
+          type: "https://api.shop.am/problems/conflict",
+          title: "Email already in use",
+          detail: "Another account is already using this email",
+        };
+      }
+    }
+
+    if (phoneNorm !== undefined && phoneNorm !== current.phone) {
+      const phoneConflict = await db.user.findFirst({
+        where: {
+          phone: phoneNorm,
+          id: { not: userId },
+          deletedAt: null,
+        },
+        select: { id: true },
+      });
+
+      if (phoneConflict) {
+        throw {
+          status: 409,
+          type: "https://api.shop.am/problems/conflict",
+          title: "Phone already in use",
+          detail: "Another account is already using this phone number",
+        };
+      }
+    }
+
+    const updateData: {
+      firstName?: string | null;
+      lastName?: string | null;
+      locale?: string;
+      email?: string | null;
+      phone?: string | null;
+    } = {};
+
+    if (data.firstName !== undefined) {
+      updateData.firstName = data.firstName.trim() || null;
+    }
+    if (data.lastName !== undefined) {
+      updateData.lastName = data.lastName.trim() || null;
+    }
+    if (data.locale !== undefined) {
+      updateData.locale = data.locale;
+    }
+    if (emailNorm !== undefined) {
+      updateData.email = emailNorm;
+    }
+    if (phoneNorm !== undefined) {
+      updateData.phone = phoneNorm;
+    }
+
+    try {
+      await db.user.update({
+        where: { id: userId },
+        data: updateData,
+      });
+    } catch (error: unknown) {
+      const prismaError = error as { code?: string };
+      if (prismaError.code === "P2002") {
+        throw {
+          status: 409,
+          type: "https://api.shop.am/problems/conflict",
+          title: "Profile update conflict",
+          detail: "User with this email or phone already exists",
+        };
+      }
+      throw error;
+    }
+
+    return this.getProfile(userId);
   }
 
   /**

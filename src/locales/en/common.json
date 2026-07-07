@@ -17,6 +17,7 @@
     "close": "Close"
   },
   "navigation": {
+    "back": "Back",
     "home": "Home",
     "products": "Products",
     "categories": "Categories",

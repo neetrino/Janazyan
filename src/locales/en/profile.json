@@ -70,6 +70,7 @@
       "firstName": "First Name",
       "lastName": "Last Name",
       "company": "Company (optional)",
+      "address": "Address",
       "addressLine1": "Address Line 1",
       "addressLine2": "Address Line 2 (optional)",
       "city": "City",
@@ -90,7 +91,8 @@
     "failedToSave": "Failed to save address",
     "failedToDelete": "Failed to delete address",
     "failedToSetDefault": "Failed to set default address",
-    "deleteConfirm": "Are you sure you want to delete this address?"
+    "deleteConfirm": "Are you sure you want to delete this address?",
+    "limitOneAddress": "You can only save one address"
   },
   "password": {
     "title": "Change Password",

@@ -4,6 +4,7 @@ import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import type { OrderDetails, OrderListItem, ProfileTab } from '../types';
 import { logger } from "@/lib/utils/logger";
+import { STOREFRONT_DESKTOP_MIN_WIDTH_PX } from '../../../lib/layout/storefront-layout.constants';
 
 interface OrdersMeta {
   total: number;
@@ -100,7 +101,7 @@ export function useOrders({
   };
 
   const handleOrderClick = (orderNumber: string, e: MouseEvent<HTMLAnchorElement>) => {
-    if (window.innerWidth >= 1024) {
+    if (window.innerWidth >= STOREFRONT_DESKTOP_MIN_WIDTH_PX) {
       e.preventDefault();
       loadOrderDetails(orderNumber);
     }

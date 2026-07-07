@@ -4,6 +4,10 @@
 export const ORDER_DETAIL_INNER_CLASS =
   'mx-auto w-full max-w-2xl py-4 lg:px-8 lg:py-12';
 
+/** Mobile back row — sits inside the white content card, below the header chrome. */
+export const ORDER_DETAIL_MOBILE_BACK_ROW_CLASS =
+  'mb-4 px-6 pt-3 desktop:hidden';
+
 /** Card overrides: light border, no drop shadow (per mock). */
 export const ORDER_DETAIL_CARD_CLASS =
   '!border-gray-200 shadow-none';

@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
 import { useProfilePage } from './useProfilePage';
@@ -14,6 +15,13 @@ import { ProfilePassword } from './ProfilePassword';
 import { ProfileDeleteAccount } from './ProfileDeleteAccount';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import type { ProfileTab, ProfileTabConfig } from './types';
+import {
+  PROFILE_ASIDE_BORDER_CLASS,
+  PROFILE_BODY_TEXT_CLASS,
+  PROFILE_DESKTOP_MAIN_SURFACE_CLASS,
+  PROFILE_ERROR_ALERT_CLASS,
+  PROFILE_SUCCESS_ALERT_CLASS,
+} from './profile-layout.constants';
 
 function ProfilePageContent() {
   const { isLoggedIn, isLoading: authLoading, logout } = useAuth();
@@ -40,7 +48,6 @@ function ProfilePageContent() {
     savingAddress,
     handleSaveAddress,
     handleDeleteAddress,
-    handleSetDefaultAddress,
     handleEditAddress,
     resetAddressForm,
     passwordForm,
@@ -71,13 +78,21 @@ function ProfilePageContent() {
     deletingAccount,
     handleDeleteAccount,
   } = useProfilePage();
+  const searchParams = useSearchParams();
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== 'dashboard') {
+      setIsMobileSheetOpen(true);
+    }
+  }, [searchParams]);
 
   if (authLoading || loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
-          <p className="text-gray-600">{t('profile.common.loadingProfile')}</p>
+          <p className={PROFILE_BODY_TEXT_CLASS}>{t('profile.common.loadingProfile')}</p>
         </div>
       </div>
     );
@@ -153,8 +168,8 @@ function ProfilePageContent() {
 
   const renderTabContent = (compact: boolean) => (
     <>
-      {error && <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-600">{error}</div>}
-      {success && <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-600">{success}</div>}
+      {error && <div className={PROFILE_ERROR_ALERT_CLASS}>{error}</div>}
+      {success && <div className={PROFILE_SUCCESS_ALERT_CLASS}>{success}</div>}
       {activeTab === 'dashboard' && (
         <ProfileDashboard
           dashboardData={dashboardData}
@@ -173,6 +188,7 @@ function ProfilePageContent() {
           onSave={handleSavePersonalInfo}
           profile={profile}
           t={t}
+          compact={compact}
         />
       )}
       {activeTab === 'addresses' && (
@@ -186,10 +202,10 @@ function ProfilePageContent() {
           savingAddress={savingAddress}
           onSave={handleSaveAddress}
           onDelete={handleDeleteAddress}
-          onSetDefault={handleSetDefaultAddress}
           onEdit={handleEditAddress}
           onResetForm={resetAddressForm}
           t={t}
+          compact={compact}
         />
       )}
       {activeTab === 'orders' && (
@@ -244,17 +260,22 @@ function ProfilePageContent() {
         onLogout={logout}
         t={t}
         isSheetOpen={isMobileSheetOpen}
-        onCloseSheet={() => setIsMobileSheetOpen(false)}
+        onCloseSheet={() => {
+          setIsMobileSheetOpen(false);
+          if (activeTab !== 'dashboard') {
+            handleTabChange('dashboard');
+          }
+        }}
       >
         {renderTabContent(true)}
       </ProfileMobilePage>
       <div className="mx-auto hidden max-w-7xl px-3 py-8 sm:px-6 desktop:block desktop:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
-          <aside className="w-full shrink-0 md:sticky md:top-24 md:w-64 md:self-start md:border-r md:border-gray-200/90 md:pr-8 lg:w-72">
+          <aside className={`w-full shrink-0 md:sticky md:top-24 md:w-64 md:self-start md:pr-8 lg:w-72 ${PROFILE_ASIDE_BORDER_CLASS}`}>
             <ProfileHeader profile={profile} tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} onLogout={logout} t={t} />
           </aside>
           <main className="min-w-0 flex-1">
-            <div className="space-y-6 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-gray-200/80 sm:p-6 md:space-y-8 lg:rounded-3xl lg:p-8">
+            <div className={PROFILE_DESKTOP_MAIN_SURFACE_CLASS}>
               {renderTabContent(false)}
             </div>
           </main>
@@ -281,7 +302,7 @@ export default function ProfilePage() {
     <Suspense fallback={
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center">
-          <p className="text-gray-600">Loading profile...</p>
+          <p className={PROFILE_BODY_TEXT_CLASS}>Loading profile...</p>
         </div>
       </div>
     }>

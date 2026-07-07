@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { apiClient } from '../../../lib/api-client';
-import { useAuth } from '../../../lib/auth/AuthContext';
+import { patchStoredAuthUser } from '../../../lib/api-client/auth-utils';
 import { useTranslation } from '../../../lib/i18n-client';
 import type { UserProfile } from '../types';
 
@@ -25,8 +25,6 @@ export function usePersonalInfo({
   onSuccess,
 }: UsePersonalInfoProps) {
   const { t } = useTranslation();
-  const { user: authUser } = useAuth();
-  
   const [personalInfo, setPersonalInfo] = useState<PersonalInfoForm>({
     firstName: '',
     lastName: '',
@@ -57,10 +55,13 @@ export function usePersonalInfo({
       const updated = await apiClient.put<UserProfile>('/api/v1/users/profile', personalInfo);
       onProfileUpdate(updated);
       onSuccess(t('profile.personal.updatedSuccess'));
-      
-      if (authUser) {
-        window.dispatchEvent(new Event('auth-updated'));
-      }
+
+      patchStoredAuthUser({
+        firstName: updated.firstName,
+        lastName: updated.lastName,
+        email: updated.email,
+        phone: updated.phone,
+      });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       onError(errorMessage || t('profile.personal.failedToUpdate'));

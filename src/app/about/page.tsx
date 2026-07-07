@@ -1,9 +1,11 @@
 'use client';
 
 import Image from 'next/image';
+import { useMemo } from 'react';
 import { MIRAGE_PAGE_HEADING_CLASS } from '../../components/home/mirage-heading-styles';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { TeamCarousel } from '../../components/TeamCarousel';
+import { loadTranslation } from '../../lib/i18n';
 import { useTranslation } from '../../lib/i18n-client';
 
 /** Set to true when the Our Team section should be visible again. */
@@ -13,7 +15,13 @@ const SHOW_ABOUT_TEAM_SECTION = false;
  * About Us page — store intro; team carousel gated by {@link SHOW_ABOUT_TEAM_SECTION}.
  */
 export default function AboutPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
+  const paragraphs = useMemo(() => {
+    const about = loadTranslation(lang, 'about');
+    const items = about?.description?.paragraphs;
+    return Array.isArray(items) ? (items as string[]) : [];
+  }, [lang]);
+
   return (
     <ProductsHeroShell
       sectionAriaLabel="About us"
@@ -39,9 +47,9 @@ export default function AboutPage() {
                   </h1>
 
                   <div className="space-y-4 text-base leading-relaxed text-gray-600 md:text-lg">
-                    <p>{t('about.description.paragraph1')}</p>
-                    <p>{t('about.description.paragraph2')}</p>
-                    <p>{t('about.description.paragraph3')}</p>
+                    {paragraphs.map((paragraph, index) => (
+                      <p key={index}>{paragraph}</p>
+                    ))}
                   </div>
                 </div>
               </div>

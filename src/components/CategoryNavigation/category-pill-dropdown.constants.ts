@@ -11,6 +11,10 @@ export const CATEGORY_PILL_DROPDOWN_ITEM_ACTIVE_CLASS = 'underline';
 /** Active pill — invert sky-deep SVG assets to white on dark background. */
 export const CATEGORY_PILL_ICON_ACTIVE_CLASS = 'brightness-0 invert';
 
+/** Inactive pill hover — match active dark surface (requires `group` on the pill). */
+export const CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS =
+  'group-hover:brightness-0 group-hover:invert';
+
 export const CATEGORY_PILL_CHEVRON = {
   src: '/figma/filter-kids-chevron.svg',
   width: 14,

@@ -1,6 +1,15 @@
 import type { FormEvent } from 'react';
 import { Button, Input, Card } from '@shop/ui';
 import type { UserProfile } from './types';
+import {
+  PROFILE_BORDER_DIVIDER_CLASS,
+  PROFILE_CARD_CLASS,
+  PROFILE_DESKTOP_FORM_ACTIONS_CLASS,
+  PROFILE_MOBILE_COMPACT_SURFACE_CLASS,
+  PROFILE_MOBILE_FORM_ACTIONS_CLASS,
+  PROFILE_PRIMARY_BUTTON_CLASS,
+  PROFILE_SECTION_TITLE_CLASS,
+} from './profile-layout.constants';
 
 interface ProfilePersonalInfoProps {
   personalInfo: {
@@ -14,6 +23,7 @@ interface ProfilePersonalInfoProps {
   onSave: (e: FormEvent) => void;
   profile: UserProfile | null;
   t: (key: string) => string;
+  compact?: boolean;
 }
 
 export function ProfilePersonalInfo({
@@ -23,13 +33,27 @@ export function ProfilePersonalInfo({
   onSave,
   profile,
   t,
+  compact = false,
 }: ProfilePersonalInfoProps) {
+  const formActionsClass = compact ? PROFILE_MOBILE_FORM_ACTIONS_CLASS : PROFILE_DESKTOP_FORM_ACTIONS_CLASS;
+
   return (
-    <Card className="rounded-2xl border border-gray-200/80 p-5 shadow-none sm:p-7 lg:p-8">
-      <div className="mb-8 border-b border-gray-100 pb-5 sm:mb-10 sm:pb-6">
-        <h2 className="text-lg font-bold tracking-tight text-gray-900 sm:text-xl">{t('profile.personal.title')}</h2>
-      </div>
-      <form onSubmit={onSave} className="mx-auto max-w-xl space-y-6 lg:mx-0 lg:max-w-2xl">
+    <Card
+      className={
+        compact
+          ? PROFILE_MOBILE_COMPACT_SURFACE_CLASS
+          : PROFILE_CARD_CLASS
+      }
+    >
+      {!compact && (
+        <div className={`mb-8 pb-5 sm:mb-10 sm:pb-6 ${PROFILE_BORDER_DIVIDER_CLASS}`}>
+          <h2 className={PROFILE_SECTION_TITLE_CLASS}>{t('profile.personal.title')}</h2>
+        </div>
+      )}
+      <form
+        onSubmit={onSave}
+        className={`mx-auto max-w-xl lg:mx-0 lg:max-w-2xl ${compact ? 'space-y-4' : 'space-y-6'}`}
+      >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
           <Input
             label={t('profile.personal.firstName')}
@@ -58,11 +82,11 @@ export function ProfilePersonalInfo({
           onChange={(e) => setPersonalInfo({ ...personalInfo, phone: e.target.value })}
           placeholder={t('profile.personal.phonePlaceholder')}
         />
-        <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:gap-4 sm:pt-4">
+        <div className={formActionsClass}>
           <Button
             type="button"
             variant="outline"
-            className="h-11 w-full rounded-xl sm:w-auto"
+            className="h-11 w-full rounded-xl border-sky-mist text-ink-700 hover:border-sky-soft hover:bg-sky-mist/20 sm:w-auto"
             onClick={() => {
               setPersonalInfo({
                 firstName: profile?.firstName || '',
@@ -74,7 +98,12 @@ export function ProfilePersonalInfo({
           >
             {t('profile.personal.cancel')}
           </Button>
-          <Button type="submit" variant="primary" className="h-11 w-full rounded-xl sm:w-auto" disabled={savingPersonal}>
+          <Button
+            type="submit"
+            variant="primary"
+            className={`h-11 w-full sm:w-auto ${PROFILE_PRIMARY_BUTTON_CLASS}`}
+            disabled={savingPersonal}
+          >
             {savingPersonal ? t('profile.personal.saving') : t('profile.personal.save')}
           </Button>
         </div>

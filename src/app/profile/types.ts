@@ -6,7 +6,7 @@ export interface Address {
   company?: string;
   addressLine1: string;
   addressLine2?: string;
-  city: string;
+  city?: string;
   state?: string;
   postalCode?: string;
   countryCode?: string;
