@@ -63,13 +63,13 @@ function ProductsHeroShellInner({
     <div className={`${PRODUCTS_PAGE_SHELL_CLASS} flex flex-col`}>
       <Header embedded />
       <div
-        className="relative shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
+        className="relative z-10 shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
         style={{ '--header-sticky-overlap': `${HEADER_HERO_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
       >
         <div
           className={`absolute inset-x-0 w-full ${PRODUCTS_PAGE_HERO_ASPECT_CLASS} ${PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS}`}
         >
-          <HeroRectangleBackground variant="blue" solidColor="#C9DDF0" />
+          <HeroRectangleBackground variant="blue" />
         </div>
         <div
           className={`relative z-20 mx-auto w-full pb-2 desktop:pb-4 ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`}

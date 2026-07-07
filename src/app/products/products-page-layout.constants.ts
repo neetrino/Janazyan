@@ -4,7 +4,7 @@ import {
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
-/** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
+/** Same rounded shell as {@link HomeHero}; white backdrop keeps the hero shape visible under the header. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
   'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px]';
 
@@ -136,9 +136,9 @@ export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-8';
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
 
-/** Bottom padding inside the catalog zone — tighter above overlapping footer on tablet/laptop. */
+/** Bottom padding inside the catalog zone — space before footer + decoration bleed on large screens. */
 export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
-  'pb-10 md:pb-8 desktop:pb-16';
+  'pb-24 md:pb-32 desktop:pb-36 min-[1650px]:pb-56';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

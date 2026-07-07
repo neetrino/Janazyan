@@ -15,6 +15,7 @@ import { FooterCompanyLinks } from './footer/FooterCompanyLinks';
 import { FooterCompact } from './footer/FooterCompact';
 import { FooterCopyright } from './footer/FooterShared';
 import {
+  FOOTER_DESKTOP_DECORATION_BLEED_PX,
   FOOTER_DESKTOP_DECORATION_HEIGHT_PX,
   FOOTER_DESKTOP_DECORATION_LEFT_PERCENT,
   FOOTER_DESKTOP_DECORATION_SRC,
@@ -31,7 +32,11 @@ import {
   FooterSocialLink,
   getFooterContactLabel,
 } from './footer/FooterShared';
-import { shouldShowStorefrontFooter, resolvePageFooterExtraUpPull } from '../lib/layout/storefront-footer-layout';
+import {
+  shouldShowStorefrontFooter,
+  resolvePageFooterExtraUpPull,
+  resolvePageFooterShellUpPullPx,
+} from '../lib/layout/storefront-footer-layout';
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
 const FOOTER_COLUMN_LIST_CLASS = 'mt-[18px] space-y-[24px]';
@@ -42,28 +47,42 @@ const FOOTER_CONTACT_COLUMN_WIDTH_CLASS = 'w-[260px]';
 /** Footer block height (matches `lg:h-[407px]`). */
 const FOOTER_HEIGHT_PX = 407;
 
-const FOOTER_SHELL_UP_PULL_PX = 400;
-
-/** Shell includes top bleed zone; footer content sits in the bottom `FOOTER_HEIGHT_PX`. */
-const FOOTER_SHELL_HEIGHT_PX = FOOTER_HEIGHT_PX + FOOTER_SHELL_UP_PULL_PX;
-
-const FOOTER_Z_DECORATION = 'z-0';
+const FOOTER_Z_DECORATION = 'z-[1]';
 const FOOTER_Z_CONTENT = 'z-10';
 
-function getFooterShellStyle(extraUpPullPx = 0): CSSProperties {
+function resolveFooterDecorationBleedPx(shellUpPullPx: number): number {
+  return shellUpPullPx === 0 ? FOOTER_DESKTOP_DECORATION_BLEED_PX : 0;
+}
+
+function getFooterShellStyle(
+  shellUpPullPx: number,
+  extraUpPullPx: number,
+  decorationBleedPx: number,
+): CSSProperties {
+  const overlapPx = shellUpPullPx + extraUpPullPx;
+
   return {
-    height: FOOTER_SHELL_HEIGHT_PX,
-    marginTop: -(FOOTER_SHELL_UP_PULL_PX + extraUpPullPx),
+    height: FOOTER_HEIGHT_PX + shellUpPullPx + decorationBleedPx,
+    marginTop: overlapPx > 0 ? -overlapPx : 0,
   };
 }
 
-function FooterDesktop({ extraUpPullPx }: { extraUpPullPx: number }) {
+function FooterDesktop({
+  shellUpPullPx,
+  extraUpPullPx,
+}: {
+  shellUpPullPx: number;
+  extraUpPullPx: number;
+}) {
   const { t } = useTranslation();
+  const decorationBleedPx = resolveFooterDecorationBleedPx(shellUpPullPx);
+  const shellOverflowClass =
+    decorationBleedPx > 0 ? 'overflow-visible' : 'overflow-hidden';
 
   return (
     <div
-      className="pointer-events-none relative z-[1] hidden shrink-0 overflow-hidden min-[1650px]:block"
-      style={getFooterShellStyle(extraUpPullPx)}
+      className={`pointer-events-none relative z-0 hidden shrink-0 ${shellOverflowClass} min-[1650px]:block`}
+      style={getFooterShellStyle(shellUpPullPx, extraUpPullPx, decorationBleedPx)}
     >
       <footer className="pointer-events-auto absolute inset-x-0 bottom-0 z-0 h-[407px] w-full overflow-visible rounded-t-[60px] border-t border-black/10 bg-gradient-to-b from-purple to-cream font-armenian">
         <div className="relative mx-auto h-full w-full">
@@ -156,6 +175,7 @@ function FooterDesktop({ extraUpPullPx }: { extraUpPullPx: number }) {
 
 export function Footer() {
   const pathname = usePathname();
+  const shellUpPullPx = resolvePageFooterShellUpPullPx(pathname);
   const extraUpPullPx = resolvePageFooterExtraUpPull(pathname);
 
   if (!shouldShowStorefrontFooter(pathname)) {
@@ -165,7 +185,7 @@ export function Footer() {
   return (
     <>
       <FooterCompact extraUpPullPx={extraUpPullPx} />
-      <FooterDesktop extraUpPullPx={extraUpPullPx} />
+      <FooterDesktop shellUpPullPx={shellUpPullPx} extraUpPullPx={extraUpPullPx} />
     </>
   );
 }
