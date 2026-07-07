@@ -187,6 +187,41 @@ function collectProductColors(
   return Array.from(colorMap.values());
 }
 
+type CategoryRelation = {
+  id: string;
+  translations?: Array<{ locale: string; slug: string; title: string }>;
+};
+
+function resolvePrimaryCategory(
+  product: ProductWithRelations,
+  lang: string,
+): Array<{ id: string; slug: string; title: string }> {
+  const categories = Array.isArray(product.categories)
+    ? (product.categories as CategoryRelation[])
+    : [];
+  if (categories.length === 0) {
+    return [];
+  }
+
+  const primaryId = product.primaryCategoryId;
+  const primary =
+    (primaryId ? categories.find((cat) => cat.id === primaryId) : undefined) ??
+    categories[0];
+  const catTranslations = Array.isArray(primary.translations)
+    ? primary.translations
+    : [];
+  const catTranslation =
+    catTranslations.find((t) => t.locale === lang) || catTranslations[0] || null;
+
+  return [
+    {
+      id: primary.id,
+      slug: catTranslation?.slug || "",
+      title: catTranslation?.title || "",
+    },
+  ];
+}
+
 function pickCheapestVariant(
   variants: ProductWithRelations["variants"]
 ): ProductWithRelations["variants"][number] | null {
@@ -259,12 +294,9 @@ class ProductsFindTransformService {
       }
 
       const categories = isCatalog
-        ? []
+        ? resolvePrimaryCategory(product, lang)
         : Array.isArray(product.categories)
-          ? product.categories.map((cat: {
-              id: string;
-              translations?: Array<{ locale: string; slug: string; title: string }>;
-            }) => {
+          ? product.categories.map((cat: CategoryRelation) => {
               const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
               const catTranslation =
                 catTranslations.find((t: { locale: string }) => t.locale === lang) ||

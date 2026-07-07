@@ -37,6 +37,6 @@ const getCachedProductsCatalog = unstable_cache(
       search: search || undefined,
       category: category || undefined,
     }),
-  ['products-catalog-storefront-v3'],
+  ['products-catalog-storefront-v4'],
   { revalidate: PRODUCTS_CATALOG_REVALIDATE_SECONDS, tags: ['products'] },
 );

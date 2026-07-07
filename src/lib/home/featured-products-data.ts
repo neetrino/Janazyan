@@ -1,9 +1,9 @@
 import { cache } from 'react';
 import { unstable_cache } from 'next/cache';
-import { db } from '@white-shop/db';
 import type { ProductLabel } from '../../components/ProductLabels';
 import { sanitizeStoredProductImageUrl } from '../products/resolve-stored-product-image-url';
 import { productsFindService } from '../services/products-find.service';
+import { fetchProductAverageRatings } from '../products/fetch-product-average-ratings';
 import { mapToHomeFeaturedProduct } from './map-to-home-featured-product';
 
 const HOME_FEATURED_LIMIT = 4;
@@ -43,34 +43,6 @@ export type HomeFeaturedProduct = {
   labels: ProductLabel[];
 };
 
-async function fetchAverageRatings(
-  productIds: string[],
-): Promise<Map<string, number>> {
-  if (productIds.length === 0) {
-    return new Map();
-  }
-
-  try {
-    const rows = await db.productReview.groupBy({
-      by: ['productId'],
-      where: {
-        productId: { in: productIds },
-        published: true,
-      },
-      _avg: { rating: true },
-    });
-
-    return new Map(
-      rows.map((row) => [
-        row.productId,
-        row._avg.rating ?? 0,
-      ]),
-    );
-  } catch {
-    return new Map();
-  }
-}
-
 async function fetchCatalogProducts(
   limit: number,
   filter?: string,
@@ -93,7 +65,7 @@ async function loadFeaturedCatalog(limit: number): Promise<CatalogProduct[]> {
 async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
   try {
     const catalog = await loadFeaturedCatalog(HOME_FEATURED_LIMIT);
-    const ratings = await fetchAverageRatings(catalog.map((item) => item.id));
+    const ratings = await fetchProductAverageRatings(catalog.map((item) => item.id));
 
     return catalog.map((product) =>
       mapToHomeFeaturedProduct(

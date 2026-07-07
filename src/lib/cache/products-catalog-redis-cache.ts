@@ -2,6 +2,7 @@ import 'server-only';
 
 import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import { productsService } from '@/lib/services/products.service';
+import { fetchProductAverageRatings } from '@/lib/products/fetch-product-average-ratings';
 import {
   readJsonCache,
   writeJsonCache,
@@ -81,6 +82,8 @@ async function loadProductsCatalogFromDbAndCache(
     fastCatalog: true,
   });
 
+  const ratings = await fetchProductAverageRatings(result.data.map((product) => product.id));
+
   const response: ProductsCatalogCacheResponse = {
     data: result.data.map((product) => ({
       id: product.id,
@@ -94,6 +97,8 @@ async function loadProductsCatalogFromDbAndCache(
       brand: product.brand ? { id: product.brand.id, name: product.brand.name } : null,
       defaultVariantId: product.defaultVariantId,
       colors: product.colors ?? [],
+      categories: product.categories.map((category) => ({ title: category.title })),
+      ratingAverage: ratings.get(product.id) ?? null,
       labels: product.labels ?? [],
     })),
     meta: result.meta,

@@ -19,6 +19,8 @@ export type ProductsCatalogCacheResponse = {
     brand: { id: string; name: string } | null;
     defaultVariantId: string | null;
     colors: unknown[];
+    categories: Array<{ title: string }>;
+    ratingAverage: number | null;
     labels: Array<{
       id: string;
       type: 'text' | 'percentage';
@@ -41,5 +43,5 @@ export function buildProductsCatalogCacheKey(
 ): string {
   const search = filters.search?.trim() || '-';
   const category = filters.category?.trim() || '-';
-  return `v3:${filters.lang}:${filters.page}:${filters.limit}:${category}:${search}`;
+  return `v4:${filters.lang}:${filters.page}:${filters.limit}:${category}:${search}`;
 }

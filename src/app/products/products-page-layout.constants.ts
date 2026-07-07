@@ -51,9 +51,9 @@ export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 /** Shared toolbar control pill height — aligned with category pills. */
 export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10 desktop:h-12';
 
-/** Sort control width — compact on narrow viewports, full width on desktop. */
+/** Sort control width — icon + chevron only (no label text). */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS =
-  'min-w-[152px] shrink-0 px-2.5 sm:min-w-[168px] sm:px-3 desktop:min-w-[208px] desktop:px-5';
+  'shrink-0 px-2.5 desktop:px-3';
 
 /** Gap between category pills and sort control. */
 export const PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS = 'gap-1.5 desktop:gap-2.5';
