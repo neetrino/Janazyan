@@ -141,6 +141,7 @@ export function DeliveryAddressFields({
           label={t('checkout.form.address')}
           type="text"
           placeholder={t('checkout.placeholders.address')}
+          className="rounded-xl"
           {...register('shippingAddress', {
             onChange: () => onClearError?.(),
           })}
@@ -160,6 +161,7 @@ export function DeliveryAddressFields({
               <Input
                 label={t('checkout.form.recipientFullName')}
                 type="text"
+                className="rounded-xl"
                 {...register('shippingRecipientName')}
                 error={errors.shippingRecipientName?.message}
                 disabled={isSubmitting}
@@ -178,6 +180,7 @@ export function DeliveryAddressFields({
               <Input
                 label={t('checkout.form.postalIndex')}
                 type="text"
+                className="rounded-xl"
                 {...register('shippingPostalIndex')}
                 error={errors.shippingPostalIndex?.message}
                 disabled={isSubmitting}
@@ -195,6 +198,7 @@ export function DeliveryAddressFields({
             <Input
               label={t('checkout.form.additionalNotes')}
               type="text"
+              className="rounded-xl"
               {...register('shippingAdditionalNotes')}
               error={errors.shippingAdditionalNotes?.message}
               disabled={isSubmitting}

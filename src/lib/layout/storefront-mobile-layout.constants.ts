@@ -10,6 +10,9 @@ export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-8';
 /** Non-home mobile hero shell — tighter top inset than home. */
 export const STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS = 'pt-2';
 
+/** Mobile header chrome — above content cards so search dropdown is never covered. */
+export const STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS = 'z-30';
+
 /**
  * MobileBottomNav outer chrome + icon row + labels (see MobileBottomNav).
  * Keeps scrollable content above the fixed bar without a layout-level white strip.

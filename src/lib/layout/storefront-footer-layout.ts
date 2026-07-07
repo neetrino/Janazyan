@@ -19,6 +19,9 @@ export function shouldShowStorefrontFooter(pathname: string): boolean {
   );
 }
 
+/** /products — footer sits flush below catalog; no white gutter before the shell. */
+export const PRODUCTS_PAGE_FOOTER_COMPACT_TOP_MARGIN_CLASS = 'md:max-[1649px]:mt-0';
+
 function isProductsCatalogFooterRoute(pathname: string): boolean {
   return pathname === '/products' || /^\/products\/[^/]+$/.test(pathname);
 }
@@ -43,6 +46,15 @@ export function resolvePageFooterExtraUpPull(pathname: string): number {
   }
 
   return 0;
+}
+
+/** Compact footer top gap — catalog pages keep the sky gradient flush to the footer shell. */
+export function resolvePageFooterCompactTopMarginClass(pathname: string): string {
+  if (isProductsCatalogFooterRoute(pathname)) {
+    return PRODUCTS_PAGE_FOOTER_COMPACT_TOP_MARGIN_CLASS;
+  }
+
+  return '';
 }
 
 /** @deprecated Use {@link resolvePageFooterExtraUpPull}. */

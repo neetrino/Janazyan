@@ -11,6 +11,8 @@ type PartnerStoresDirectoryProps = {
   viewOnMapLabel: string;
   onSelect: StoreSelectHandler;
   ariaLabel: string;
+  /** When true, list scroll is handled by a parent shell container. */
+  embedded?: boolean;
 };
 
 type PartnerStoreDirectoryItemProps = {
@@ -75,6 +77,7 @@ export function PartnerStoresDirectory({
   viewOnMapLabel,
   onSelect,
   ariaLabel,
+  embedded = false,
 }: PartnerStoresDirectoryProps) {
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
 
@@ -103,7 +106,14 @@ export function PartnerStoresDirectory({
 
   return (
     <div className="partner-stores-directory" aria-label={ariaLabel}>
-      <div className="partner-stores-directory__list" role="list">
+      <div
+        className={
+          embedded
+            ? 'partner-stores-directory__list partner-stores-directory__list--embedded'
+            : 'partner-stores-directory__list'
+        }
+        role="list"
+      >
         {stores.map((store) => {
           const isSelected = selectedStoreId === store.id;
 

@@ -1,14 +1,21 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { Search } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { MIRAGE_PAGE_SUBHEADING_CLASS } from '../../../components/home/mirage-heading-styles';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { STOREFRONT_TABLET_DOWN_CLASS } from '../../../lib/layout/storefront-layout.constants';
 import { getStoredLanguage } from '../../../lib/language';
 import { fetchPartnerStores } from '../fetch-partner-stores';
+import { filterPartnerStores } from '../filter-partner-stores';
 import { STORES_PAGE_MAP_HEIGHT_PX } from '../constants';
 import { scrollPartnerMapIntoView } from '../scroll-to-map';
+import {
+  STORES_PAGE_SEARCH_ICON_CLASS,
+  STORES_PAGE_SEARCH_INPUT_CLASS,
+  STORES_PAGE_SEARCH_WRAPPER_CLASS,
+} from '../stores-page-search.constants';
 import { PartnerStoresDirectory } from './PartnerStoresDirectory';
 import { PartnerStoresMapModal } from './PartnerStoresMapModal';
 import type { PartnerStore, StoreSelectHandler, StoresTranslation } from '../types';
@@ -51,14 +58,20 @@ function usePartnerStoresOnLanguageChange(initialStores: PartnerStore[]) {
 }
 
 /**
- * Interactive stores block — scalable directory + map only (header/footer rendered on server).
+ * Interactive stores block — partner stores directory + map.
  */
 export function StoresPageInteractive({ copy, stores: initialStores }: StoresPageInteractiveProps) {
   const stores = usePartnerStoresOnLanguageChange(initialStores);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedStoreId, setSelectedStoreId] = useState<string | null>(null);
   const [mapFocusRequest, setMapFocusRequest] = useState(0);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const mapSectionRef = useRef<HTMLDivElement>(null);
+
+  const filteredStores = useMemo(
+    () => filterPartnerStores(stores, searchQuery),
+    [searchQuery, stores],
+  );
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
@@ -84,6 +97,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
   const resolvedSelectedStoreId =
     selectedStoreId ??
+    filteredStores.find((store) => normalizePartnerStoreCoordinates(store.lat, store.lng) !== null)?.id ??
     stores.find((store) => normalizePartnerStoreCoordinates(store.lat, store.lng) !== null)?.id ??
     null;
 
@@ -93,19 +107,30 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,0.42fr)_minmax(0,1fr)] lg:gap-8">
           <div className="relative z-10">
             <div className="partner-stores-directory-shell lg:sticky lg:top-28">
-              <div className="partner-stores-directory-shell__header">
-                <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
-                  {copy.listTitle}
-                </h2>
-                <p className="partner-stores-directory-shell__subtitle">{copy.map.hint}</p>
+              <div className="partner-stores-directory-shell__header flex items-center justify-end">
+                <label className={STORES_PAGE_SEARCH_WRAPPER_CLASS}>
+                  <Search className={STORES_PAGE_SEARCH_ICON_CLASS} aria-hidden="true" />
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder={copy.searchPlaceholder}
+                    className={STORES_PAGE_SEARCH_INPUT_CLASS}
+                    aria-label={copy.searchPlaceholder}
+                  />
+                </label>
               </div>
-              <PartnerStoresDirectory
-                stores={stores}
-                selectedStoreId={resolvedSelectedStoreId}
-                viewOnMapLabel={copy.viewOnMap}
-                onSelect={handleStoreSelect}
-                ariaLabel={copy.listTitle}
-              />
+              {filteredStores.length === 0 ? (
+                <p className="px-5 pb-5 text-sm text-gray-600">{copy.searchNoResults}</p>
+              ) : (
+                <PartnerStoresDirectory
+                  stores={filteredStores}
+                  selectedStoreId={resolvedSelectedStoreId}
+                  viewOnMapLabel={copy.viewOnMap}
+                  onSelect={handleStoreSelect}
+                  ariaLabel={copy.title}
+                />
+              )}
             </div>
           </div>
 
@@ -115,11 +140,13 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                 <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
                   {copy.map.title}
                 </h2>
-                <p className={`partner-stores-map-section__subtitle ${STOREFRONT_TABLET_DOWN_CLASS}`}>{copy.map.hint}</p>
+                <p className={`partner-stores-map-section__subtitle ${STOREFRONT_TABLET_DOWN_CLASS}`}>
+                  {copy.map.hint}
+                </p>
               </div>
               <div className="partner-stores-map-shell">
                 <PartnerStoresMap
-                  stores={stores}
+                  stores={filteredStores}
                   selectedStoreId={resolvedSelectedStoreId}
                   mapFocusRequest={mapFocusRequest}
                   onStoreSelect={handleStoreSelect}
@@ -135,7 +162,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
       <PartnerStoresMapModal
         isOpen={mapModalOpen}
-        stores={stores}
+        stores={filteredStores}
         selectedStoreId={resolvedSelectedStoreId}
         mapFocusRequest={mapFocusRequest}
         mapTitle={copy.map.title}

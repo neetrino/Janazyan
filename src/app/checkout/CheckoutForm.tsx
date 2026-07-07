@@ -9,12 +9,14 @@ import { DeliveryAddressFields } from './components/DeliveryAddressFields';
 import { CheckoutPickupStorePicker } from './components/CheckoutPickupStorePicker';
 import {
   CHECKOUT_GLASS_ERROR_CLASS,
-  CHECKOUT_GLASS_INNER_CLASS,
   CHECKOUT_GLASS_OPTION_BASE,
   CHECKOUT_GLASS_OPTION_IDLE,
   CHECKOUT_GLASS_OPTION_SELECTED,
 } from './checkout-glass-styles';
-import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from './checkout-layout.constants';
+import { CheckoutPaymentMethodOptions } from './components/CheckoutPaymentMethodOptions';
+import {
+  CHECKOUT_FIELD_SCROLL_MARGIN_CLASS,
+} from './checkout-layout.constants';
 import type { Cart, CheckoutFormData } from './types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 import type { PartnerStore } from '@/features/stores/types';
@@ -23,6 +25,8 @@ const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
 interface CheckoutFormProps {
   cart: Cart;
+  onRemoveCartItem: (itemId: string) => void;
+  removingItemIds: Set<string>;
   register: UseFormRegister<CheckoutFormData>;
   setValue: UseFormSetValue<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
@@ -56,6 +60,8 @@ function optionClass(isSelected: boolean): string {
 
 export function CheckoutForm({
   cart,
+  onRemoveCartItem,
+  removingItemIds,
   register,
   setValue,
   errors,
@@ -79,7 +85,11 @@ export function CheckoutForm({
 
   return (
     <div className="lg:col-span-2 space-y-6">
-      <CheckoutProductsInOrder cart={cart} />
+      <CheckoutProductsInOrder
+        cart={cart}
+        onRemoveItem={onRemoveCartItem}
+        removingItemIds={removingItemIds}
+      />
 
       <CheckoutGlassCard
         className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
@@ -250,46 +260,15 @@ export function CheckoutForm({
             <p className="text-sm text-red-600">{errors.paymentMethod.message}</p>
           </div>
         )}
-        <div className="space-y-3">
-          {paymentMethods.map((method) => (
-            <label key={method.id} className={optionClass(paymentMethod === method.id)}>
-              <input
-                type="radio"
-                {...register('paymentMethod')}
-                value={method.id}
-                checked={paymentMethod === method.id}
-                onChange={(e) => setValue('paymentMethod', e.target.value as 'idram' | 'arca' | 'cash_on_delivery')}
-                className="mr-4"
-                disabled={isSubmitting}
-              />
-              <div className="flex items-center gap-4 flex-1">
-                <div
-                  className={`relative w-20 h-12 flex-shrink-0 ${CHECKOUT_GLASS_INNER_CLASS} flex items-center justify-center overflow-hidden`}
-                >
-                  {!method.logo || logoErrors[method.id] ? (
-                    <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  ) : (
-                    <img
-                      src={method.logo}
-                      alt={method.name}
-                      className="w-full h-full object-contain p-1.5"
-                      loading="lazy"
-                      onError={() => {
-                        setLogoErrors((prev) => ({ ...prev, [method.id]: true }));
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className="font-medium text-gray-900">{method.name}</div>
-                  <div className="text-sm text-gray-600">{method.description}</div>
-                </div>
-              </div>
-            </label>
-          ))}
-        </div>
+        <CheckoutPaymentMethodOptions
+          register={register}
+          setValue={setValue}
+          isSubmitting={isSubmitting}
+          paymentMethod={paymentMethod}
+          paymentMethods={paymentMethods}
+          logoErrors={logoErrors}
+          setLogoErrors={setLogoErrors}
+        />
       </CheckoutGlassCard>
     </div>
   );

@@ -1,10 +1,10 @@
-import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
   STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
+import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
-/** Same rounded shell as {@link HomeHero}; white backdrop keeps the hero shape visible under the header. */
+/** Same rounded shell as {@link HomeHero}; white backdrop keeps the header pill gap white. */
 export const PRODUCTS_PAGE_SHELL_CLASS =
   'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px]';
 
@@ -63,10 +63,10 @@ export const PRODUCTS_PAGE_TOOLBAR_ROW_CLASS =
   `flex flex-row items-center ${PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS}`;
 
 /** Outer shop toolbar wrapper — extra top inset on tablet/laptop mobile shell. */
-export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-20 sm:pt-24 desktop:pt-0';
+export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-16 sm:pt-20 desktop:pt-0';
 
 /** Mobile toolbar slot — full-bleed category row below search (cancels shell side padding). */
-export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-12 sm:mt-14';
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-9 sm:mt-11';
 
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS =
   `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
@@ -113,7 +113,7 @@ export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBA
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
 
-/** Gradient continuation for the catalog zone. */
+/** Gradient continuation for the catalog zone — starts at sky-mist to meet the hero band. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
 
 /** Mobile catalog — nav clearance + last-row card breathing room (88px nav + 16px). */

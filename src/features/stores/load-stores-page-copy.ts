@@ -15,6 +15,8 @@ export function loadStoresPageCopy(lang: LanguageCode): StoresTranslation {
     description: raw.description,
     map: raw.map,
     listTitle: raw.listTitle,
+    searchPlaceholder: raw.searchPlaceholder,
+    searchNoResults: raw.searchNoResults,
     getDirections: raw.getDirections,
     viewOnMap: raw.viewOnMap,
     closeLabel: common.buttons.close,

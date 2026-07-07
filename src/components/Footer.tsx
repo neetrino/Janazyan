@@ -36,6 +36,7 @@ import {
   shouldShowStorefrontFooter,
   resolvePageFooterExtraUpPull,
   resolvePageFooterShellUpPullPx,
+  resolvePageFooterCompactTopMarginClass,
 } from '../lib/layout/storefront-footer-layout';
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS } from '../lib/layout/storefront-layout.constants';
 
@@ -177,6 +178,7 @@ export function Footer() {
   const pathname = usePathname();
   const shellUpPullPx = resolvePageFooterShellUpPullPx(pathname);
   const extraUpPullPx = resolvePageFooterExtraUpPull(pathname);
+  const compactTopMarginClass = resolvePageFooterCompactTopMarginClass(pathname);
 
   if (!shouldShowStorefrontFooter(pathname)) {
     return null;
@@ -184,7 +186,7 @@ export function Footer() {
 
   return (
     <>
-      <FooterCompact extraUpPullPx={extraUpPullPx} />
+      <FooterCompact extraUpPullPx={extraUpPullPx} topMarginClassName={compactTopMarginClass} />
       <FooterDesktop shellUpPullPx={shellUpPullPx} extraUpPullPx={extraUpPullPx} />
     </>
   );

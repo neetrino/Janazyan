@@ -8,6 +8,7 @@ import {
   readCartSnapshot,
   resolveCartCacheScope,
 } from '../../../lib/cart/cart-snapshot-cache';
+import { parseCartUpdatedDetail } from '../../../lib/cart/cart-events';
 
 function readInitialCart(
   isLoggedIn: boolean,
@@ -78,5 +79,24 @@ export function useCart(isLoggedIn: boolean) {
     }
   }, [fetchCartData, isLoggedIn, userId]);
 
-  return { cart, loading, error, setError, fetchCart: fetchCartData };
+  useEffect(() => {
+    const handleCartUpdate = (event: Event) => {
+      const scope = resolveCartCacheScope(isLoggedIn, userId);
+      const snapshot = scope ? readCartSnapshot(scope) : null;
+
+      if (snapshot) {
+        setCart(snapshot);
+        return;
+      }
+
+      if (parseCartUpdatedDetail(event)?.fromMutation) {
+        setCart(null);
+      }
+    };
+
+    window.addEventListener('cart-updated', handleCartUpdate);
+    return () => window.removeEventListener('cart-updated', handleCartUpdate);
+  }, [isLoggedIn, userId]);
+
+  return { cart, loading, error, setError, setCart, fetchCart: fetchCartData };
 }

@@ -94,7 +94,7 @@ export function OrderSummary({
               type="button"
               onClick={onApplyPromo}
               disabled={promoApplying || isSubmitting}
-              className={`${STOREFRONT_SKY_ACTION_BUTTON_CLASS} h-11 min-w-[104px] px-4 text-sm uppercase tracking-wide disabled:cursor-not-allowed disabled:opacity-60`}
+              className={`${STOREFRONT_SKY_ACTION_BUTTON_CLASS} h-11 min-w-[104px] shrink-0 px-4 text-sm uppercase tracking-wide whitespace-nowrap disabled:cursor-not-allowed disabled:opacity-60`}
             >
               {promoApplying ? t('checkout.promo.applying') : t('checkout.promo.apply')}
             </button>

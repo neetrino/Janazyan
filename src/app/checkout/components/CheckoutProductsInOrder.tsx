@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslation } from '@/lib/i18n-client';
+import { formatTitleCaseWords } from '@/lib/format/format-title-case';
 import { CheckoutGlassCard } from './CheckoutGlassCard';
 import type { Cart } from '../types';
 
@@ -14,13 +15,16 @@ const CHECKOUT_PRODUCTS_IN_ORDER_TITLE_CLASS =
 const CHECKOUT_PRODUCTS_IN_ORDER_COUNT_CLASS =
   'shrink-0 text-xs font-semibold text-gray-700 desktop:text-sm';
 
-const CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS = 'w-20 shrink-0 desktop:w-[5.5rem]';
+const CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS = 'relative w-20 shrink-0 desktop:w-[5.5rem]';
+
+const CHECKOUT_PRODUCTS_IN_ORDER_REMOVE_BUTTON_CLASS =
+  'absolute -right-1 -top-1 z-10 grid h-6 w-6 place-items-center rounded-full border border-white/80 bg-white text-gray-500 shadow-sm transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 desktop:h-7 desktop:w-7';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_IMAGE_WRAPPER_CLASS =
   'relative h-16 w-16 overflow-hidden rounded-xl border border-white/60 bg-white/70 p-1.5 shadow-sm desktop:h-[5.5rem] desktop:w-[5.5rem]';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_PRODUCT_TITLE_CLASS =
-  'mt-2 line-clamp-2 text-[10px] font-medium uppercase leading-tight text-gray-700 sm:text-[11px] desktop:text-xs';
+  'mt-2 line-clamp-2 text-[10px] font-medium leading-tight text-gray-700 sm:text-[11px] desktop:text-xs';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_LIST_CLASS =
   'flex gap-6 overflow-x-auto pb-1 desktop:gap-8';
@@ -32,9 +36,15 @@ function formatItemCount(count: number, t: (key: string) => string): string {
 
 type CheckoutProductsInOrderProps = {
   cart: Cart;
+  onRemoveItem: (itemId: string) => void;
+  removingItemIds: Set<string>;
 };
 
-export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) {
+export function CheckoutProductsInOrder({
+  cart,
+  onRemoveItem,
+  removingItemIds,
+}: CheckoutProductsInOrderProps) {
   const { t } = useTranslation();
   const itemCount = cart.itemsCount;
 
@@ -52,15 +62,28 @@ export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) 
       <div className={CHECKOUT_PRODUCTS_IN_ORDER_LIST_CLASS}>
         {cart.items.map((item) => {
           const product = item.variant.product;
+          const isRemoving = removingItemIds.has(item.id);
+          const displayTitle = formatTitleCaseWords(product.title);
 
           return (
             <article key={item.id} className={CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS}>
+              <button
+                type="button"
+                onClick={() => onRemoveItem(item.id)}
+                disabled={isRemoving}
+                className={CHECKOUT_PRODUCTS_IN_ORDER_REMOVE_BUTTON_CLASS}
+                aria-label={t('common.buttons.remove')}
+              >
+                <svg className="h-3.5 w-3.5 desktop:h-4 desktop:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
               <div className={CHECKOUT_PRODUCTS_IN_ORDER_IMAGE_WRAPPER_CLASS}>
                 <div className="relative h-full w-full">
                   {product.image ? (
                     <Image
                       src={product.image}
-                      alt={product.title}
+                      alt={displayTitle}
                       fill
                       className="object-contain"
                       sizes={`(max-width: 1299px) ${PRODUCT_PREVIEW_IMAGE_SIZE_MOBILE_PX}px, ${PRODUCT_PREVIEW_IMAGE_SIZE_DESKTOP_PX}px`}
@@ -81,7 +104,7 @@ export function CheckoutProductsInOrder({ cart }: CheckoutProductsInOrderProps) 
                 </div>
               </div>
               <p className={CHECKOUT_PRODUCTS_IN_ORDER_PRODUCT_TITLE_CLASS}>
-                {product.title}
+                {displayTitle}
               </p>
             </article>
           );

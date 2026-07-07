@@ -21,6 +21,7 @@ import { STOREFRONT_HORIZONTAL_GUTTER_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from
 import {
   HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
   STOREFRONT_MOBILE_TOP_INSET_CLASS,
+  STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { MobileOurStoresBanner } from './MobileOurStoresBanner';
 import type { WhyCardConfig } from './constants';
@@ -55,7 +56,7 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   return (
     <section className={`relative ${STOREFRONT_TABLET_DOWN_CLASS}`}>
       <MobileBackdrop />
-      <div className={`relative z-10 ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+      <div className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />

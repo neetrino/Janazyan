@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, type MouseEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { openCartDrawer } from '../../../lib/cart-drawer-events';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import type { OrderDetails, OrderListItem, ProfileTab } from '../types';
@@ -155,9 +154,6 @@ export function useOrders({
       if (addedCount > 0) {
         const skippedText = skippedCount > 0 ? `, ${skippedCount} ${t('profile.orderDetails.skipped')}` : '';
         onSuccess(`${addedCount} ${t('profile.orderDetails.itemsAdded')}${skippedText}`);
-        setTimeout(() => {
-          openCartDrawer();
-        }, 1500);
       } else {
         onError(t('profile.orderDetails.failedToAdd'));
       }

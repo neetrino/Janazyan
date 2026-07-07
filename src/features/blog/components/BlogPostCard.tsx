@@ -33,7 +33,7 @@ export function BlogPostCard({ post, locale, priorityImage = false }: BlogPostCa
             </time>
           ) : null}
 
-          <h2 className="text-lg font-bold leading-snug text-gray-900 transition-colors group-hover:text-[#7CB342] md:text-xl">
+          <h2 className="text-lg font-bold leading-snug text-gray-900 transition-colors group-hover:text-blue-400 md:text-xl">
             {post.title}
           </h2>
 

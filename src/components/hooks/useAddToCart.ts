@@ -20,7 +20,6 @@ import {
   scheduleCartRevalidate,
 } from '../../lib/cart/cart-revalidate';
 import { registerPendingCartAdd } from '../../lib/cart/cart-pending-add';
-import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
 
 interface ProductDetails {
@@ -64,7 +63,7 @@ function pushOptimisticSnapshot(
 }
 
 /**
- * Hook for adding products to cart — optimistic snapshot + instant drawer.
+ * Hook for adding products to cart — optimistic snapshot update without auto-opening the drawer.
  */
 export function useAddToCart({
   productId,
@@ -176,7 +175,6 @@ export function useAddToCart({
 
         localStorage.setItem(CART_KEY, JSON.stringify(cart));
         pushOptimisticSnapshot(scope, optimisticLine(variantId, variantPrice || 0), 'guest-cart');
-        openCartDrawer();
         scheduleCartRevalidate(false, null, t, { force: true });
       } catch (error: unknown) {
         logger.error('[PRODUCT CARD] Error adding to guest cart', { error });
@@ -210,7 +208,6 @@ export function useAddToCart({
           optimisticLine(variantId, unitPrice),
           `user-cart-${user?.id ?? 'pending'}`,
         );
-        openCartDrawer();
       } else {
         const encodedSlug = encodeURIComponent(productSlug.trim());
         const productDetails = await apiClient.get<ProductDetails>(
@@ -228,7 +225,6 @@ export function useAddToCart({
           optimisticLine(variantId, price),
           `user-cart-${user?.id ?? 'pending'}`,
         );
-        openCartDrawer();
       }
 
       const addRequest = apiClient.post<{

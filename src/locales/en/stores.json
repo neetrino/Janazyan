@@ -1,5 +1,5 @@
 {
-  "title": "Our Stores",
+  "title": "Partner stores",
   "description": "Find Janazyan products at our partner stores across Yerevan. Choose a store below or explore the map to see all locations.",
   "map": {
     "title": "Store map",
@@ -8,7 +8,9 @@
     "loading": "Loading map…"
   },
   "listTitle": "Partner stores",
-  "getDirections": "Get directions",
+  "searchPlaceholder": "Search",
+  "searchNoResults": "No matching stores found",
+  "getDirections": "Get direction",
   "viewOnMap": "View on map",
   "partnerStores": [
     {

@@ -6,6 +6,7 @@ import {
   STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   STOREFRONT_MOBILE_SHELL_CLASS,
   STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS,
+  STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS,
   STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { MobileTopBar } from '../home/MobileTopBar';
@@ -53,7 +54,7 @@ export function StorefrontMobileShell({
     <section aria-label={sectionAriaLabel} className={shellClassName}>
       {hideTopBar ? null : <MobileBackdrop extendWhiteToBottom />}
       {showHeaderChrome ? (
-        <div className={`relative z-10 ${STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS}`}>
+        <div className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS}`}>
           {hideTopBar ? null : <MobileTopBar />}
           {toolbar ? (
             <div className={toolbarSlotClassName}>

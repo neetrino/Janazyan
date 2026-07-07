@@ -4,6 +4,40 @@ import { normalizePartnerStoreCoordinates } from './coordinates';
 import type { PartnerStore, StoresTranslation } from './types';
 import { PARTNER_STORE_COORDINATES } from './partner-store-coordinates';
 
+type LocaleStoreEntry = {
+  id: string;
+  name: string;
+  address: string;
+  logo: string;
+  logoAlt: string;
+};
+
+type StoresLocaleData = StoresTranslation & {
+  partnerStores?: LocaleStoreEntry[];
+};
+
+function buildStoresFromLocale(
+  lang: LanguageCode,
+  coordinates: Record<string, { lat: number; lng: number }>,
+): PartnerStore[] {
+  const storesData = loadTranslation(lang, 'stores') as StoresLocaleData;
+  const list = storesData.partnerStores ?? [];
+
+  return list
+    .map((store) => {
+      const coords = coordinates[store.id];
+      if (!coords) {
+        return null;
+      }
+      return {
+        ...store,
+        lat: coords.lat,
+        lng: coords.lng,
+      };
+    })
+    .filter((store): store is PartnerStore => store !== null);
+}
+
 type PartnerStoresApiResponse = {
   data: PartnerStore[];
 };
@@ -37,28 +71,5 @@ export async function fetchPartnerStores(locale: LanguageCode): Promise<PartnerS
 
 /** Legacy static fallback from translation files. */
 export function buildPartnerStoresFromLocale(lang: LanguageCode): PartnerStore[] {
-  const storesData = loadTranslation(lang, 'stores') as StoresTranslation & {
-    partnerStores?: Array<{
-      id: string;
-      name: string;
-      address: string;
-      logo: string;
-      logoAlt: string;
-    }>;
-  };
-
-  const list = storesData.partnerStores ?? [];
-  return list
-    .map((store) => {
-      const coordinates = PARTNER_STORE_COORDINATES[store.id as keyof typeof PARTNER_STORE_COORDINATES];
-      if (!coordinates) {
-        return null;
-      }
-      return {
-        ...store,
-        lat: coordinates.lat,
-        lng: coordinates.lng,
-      };
-    })
-    .filter((store): store is PartnerStore => store !== null);
+  return buildStoresFromLocale(lang, PARTNER_STORE_COORDINATES);
 }
