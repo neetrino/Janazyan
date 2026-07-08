@@ -4,11 +4,18 @@ import { Button, Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
 import type { ProductLabel } from '../types';
 
+const DEFAULT_LABEL_PICKER_COLOR = '#000000';
+const HEX_COLOR_PATTERN = /^#[0-9A-Fa-f]{6}$/;
+
 interface ProductLabelsProps {
   labels: ProductLabel[];
   onAddLabel: () => void;
   onRemoveLabel: (index: number) => void;
-  onUpdateLabel: (index: number, field: keyof ProductLabel, value: any) => void;
+  onUpdateLabel: (index: number, field: keyof ProductLabel, value: ProductLabel[keyof ProductLabel]) => void;
+}
+
+function getPickerColor(color?: string | null): string {
+  return color && HEX_COLOR_PATTERN.test(color) ? color : DEFAULT_LABEL_PICKER_COLOR;
 }
 
 export function ProductLabels({ labels, onAddLabel, onRemoveLabel, onUpdateLabel }: ProductLabelsProps) {
@@ -99,13 +106,22 @@ export function ProductLabels({ labels, onAddLabel, onRemoveLabel, onUpdateLabel
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('admin.products.add.colorOptional')}
                   </label>
-                  <Input
-                    type="text"
-                    value={label.color || ''}
-                    onChange={(e) => onUpdateLabel(index, 'color', e.target.value || null)}
-                    placeholder={t('admin.products.add.colorHexPlaceholder')}
-                    className="w-full"
-                  />
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="color"
+                      value={getPickerColor(label.color)}
+                      onChange={(e) => onUpdateLabel(index, 'color', e.target.value)}
+                      aria-label={t('admin.products.add.colorOptional')}
+                      className="h-10 w-14 cursor-pointer p-1"
+                    />
+                    <Input
+                      type="text"
+                      value={label.color || ''}
+                      onChange={(e) => onUpdateLabel(index, 'color', e.target.value || null)}
+                      placeholder={t('admin.products.add.colorHexPlaceholder')}
+                      className="w-full"
+                    />
+                  </div>
                   <p className="mt-1 text-xs text-gray-500">{t('admin.products.add.hexColorHint')}</p>
                 </div>
               </div>
