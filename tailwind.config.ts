@@ -69,7 +69,7 @@ const config: Config = {
         'pastel-arc':
           'linear-gradient(39deg, #93b6e3 8%, #fcf8ec 101%)',
         'products-catalog':
-          'linear-gradient(180deg, #c6ddf3 0%, #c6ddf3 28%, #d4e7f8 42%, #e2eff9 56%, #eef5fc 68%, #f7fafd 82%, #ffffff 94%, #ffffff 100%)',
+          'linear-gradient(180deg, #c6ddf3 0%, #c6ddf3 24%, #d4e7f8 42%, #e8f2fa 58%, #f4f1e8 78%, #fcf8ec 100%)',
         'products-catalog-mobile': STOREFRONT_HERO_SHELL_MOBILE_GRADIENT_CSS,
         'storefront-hero-shell': STOREFRONT_HERO_SHELL_GRADIENT_CSS,
         'storefront-hero-shell-laptop': STOREFRONT_HERO_SHELL_LAPTOP_GRADIENT_CSS,

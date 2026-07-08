@@ -31,8 +31,8 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 /** Desktop hero gradient spans the full header band. */
 export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
 
-/** Toolbar baseline from shell top (node 269:900, y=210). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[300px]';
+/** Toolbar baseline from shell top (node 269:894, y=251 inside 20px artboard inset). */
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[271px]';
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
@@ -130,15 +130,15 @@ export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';
 /** Legacy desktop shell continuation hook for single-mount catalog slots; intentionally a no-op. */
 export const PRODUCTS_PAGE_CATALOG_DESKTOP_SHELL_CONTINUATION_CLASS = '';
 
-/** Space between toolbar and first product row. */
-export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-8';
+/** Space between toolbar and first product row (node 570:646, y=388 inside 20px artboard inset). */
+export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-[69px]';
 
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
 
 /** Bottom padding inside the catalog zone — space before footer + decoration bleed on large screens. */
 export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
-  'pb-24 md:pb-32 desktop:pb-36 min-[1650px]:pb-56';
+  'pb-24 md:pb-32 desktop:pb-[297px]';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

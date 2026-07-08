@@ -10,6 +10,9 @@ export const FOOTER_DESKTOP_SHELL_UP_PULL_PX = 400;
 /** /products — footer sits below cards; no upward shell overlap. */
 export const PRODUCTS_PAGE_FOOTER_SHELL_UP_PULL_PX = 0;
 
+/** /products — cancels desktop footer decoration bleed so no white gap remains. */
+export const PRODUCTS_PAGE_FOOTER_EXTRA_UP_PULL_PX = 147;
+
 const HIDDEN_FOOTER_PREFIXES = ['/supersudo', '/admin', '/login', '/register'] as const;
 
 /** Whether the global storefront footer renders for the current route. */
@@ -42,7 +45,7 @@ export function resolvePageFooterExtraUpPull(pathname: string): number {
   }
 
   if (isProductsCatalogFooterRoute(pathname)) {
-    return 0;
+    return PRODUCTS_PAGE_FOOTER_EXTRA_UP_PULL_PX;
   }
 
   return 0;

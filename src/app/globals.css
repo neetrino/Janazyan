@@ -258,6 +258,12 @@ body {
     clip-path: polygon(0 12%, 100% 50%, 0 88%);
     pointer-events: none;
   }
+
+  .products-catalog-desktop-background {
+    --products-catalog-background-top-offset: 20px;
+    top: var(--products-catalog-background-top-offset);
+    height: calc(100% + var(--products-catalog-background-top-offset));
+  }
 }
 
 /* Policy pages typography & spacing */

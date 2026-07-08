@@ -48,6 +48,7 @@ export default async function ProductsPage({
 
   return (
     <ProductsHeroShell
+      desktopBackground="catalog"
       mobileContentSurfaceClassName={PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS}
       activeCategorySlug={parsed.category}
       toolbar={

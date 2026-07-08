@@ -82,10 +82,10 @@ function FooterDesktop({
 
   return (
     <div
-      className={`pointer-events-none relative z-0 hidden shrink-0 ${shellOverflowClass} min-[1650px]:block`}
+      className={`pointer-events-none relative z-30 hidden shrink-0 ${shellOverflowClass} min-[1650px]:block`}
       style={getFooterShellStyle(shellUpPullPx, extraUpPullPx, decorationBleedPx)}
     >
-      <footer className="pointer-events-auto absolute inset-x-0 bottom-0 z-0 h-[407px] w-full overflow-visible rounded-t-[60px] border-t border-black/10 bg-gradient-to-b from-purple to-cream font-armenian">
+      <footer className="pointer-events-auto absolute inset-x-0 bottom-0 z-30 h-[407px] w-full overflow-visible rounded-t-[60px] border-t border-black/10 bg-gradient-to-b from-purple to-cream font-armenian">
         <div className="relative mx-auto h-full w-full">
           <div
             className={`relative mx-auto hidden h-full w-full min-[1650px]:block ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`}

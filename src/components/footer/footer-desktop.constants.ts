@@ -1,7 +1,8 @@
 import { STOREFRONT_CONTENT_MAX_WIDTH_PX } from '../../lib/layout/storefront-layout.constants';
 
 /** Desktop footer decoration — Figma node 516:869. */
-export const FOOTER_DESKTOP_DECORATION_SRC = '/figma/footer-decoration-desktop.webp';
+export const FOOTER_DESKTOP_DECORATION_SRC =
+  '/figma/ChatGPT%20Image%20Jun%201%2C%202026%20at%2002_43_35%20PM%201%201%402x.png';
 
 export const FOOTER_DESKTOP_DECORATION_WIDTH_PX = 635;
 export const FOOTER_DESKTOP_DECORATION_HEIGHT_PX = 554;
