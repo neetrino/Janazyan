@@ -1,8 +1,8 @@
 /** Sticky header band height — home embedded and non-embedded shell (24 + 72 + 24). */
 export const HEADER_HOME_BAND_HEIGHT_PX = 120;
 
-/** Sticky header band height — hero-shell embedded pages (56 + 72 + 0). */
-export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = 128;
+/** Sticky header band height — hero-shell embedded pages; matches {@link HEADER_HOME_BAND_HEIGHT_PX}. */
+export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = HEADER_HOME_BAND_HEIGHT_PX;
 
 /** Figma header / Frame 472 pill height. */
 export const HEADER_PILL_HEIGHT_PX = 72;
@@ -10,8 +10,8 @@ export const HEADER_PILL_HEIGHT_PX = 72;
 /** Home embedded header — Figma row offset from hero top (top-only inset). */
 export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 48;
 
-/** Hero-shell embedded header — desktop row sits slightly below home Figma offset. */
-export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = 56;
+/** Hero-shell embedded header — same top inset as home hero. */
+export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 
 /** Vertical inset — centers pills in {@link HEADER_HOME_BAND_HEIGHT_PX} (non-home). */
 export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PILL_HEIGHT_PX) / 2;

@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
+import { STOREFRONT_PAGE_CONTENT_TOP_PADDING_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import { loadFaqPageCopy } from '../../features/faq/load-faq-page-copy';
 import { fetchPublishedFaq } from '../../lib/faq/faq-cache';
 import { getServerLanguage } from '../../lib/language-server';
@@ -21,7 +22,7 @@ export default async function FAQPage() {
     <ProductsHeroShell
       sectionAriaLabel="FAQ"
       catalog={
-        <div className="mx-auto max-w-5xl pb-12 pt-8 md:pt-12">
+        <div className={`mx-auto max-w-5xl pb-12 ${STOREFRONT_PAGE_CONTENT_TOP_PADDING_CLASS}`}>
           <FaqPageHeader copy={copy} />
           <Suspense fallback={<FaqPageMainSkeleton />}>
             <FaqPageMain sectionsPromise={sectionsPromise} locale={locale} />

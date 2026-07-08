@@ -26,12 +26,31 @@ export const STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS =
 /** Non-home mobile backdrop — white curve starts below top bar (home hero uses top-24). */
 export const STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS = 'top-32';
 
+/** Content-only pages (no toolbar) — shorter sky band below the search row. */
+export const STOREFRONT_MOBILE_CONTENT_ONLY_BACKDROP_WHITE_TOP_CLASS = 'top-24';
+
 /** Non-home mobile content card offset below header chrome. */
 export const STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS = 'mt-8';
+
+/** Content-only pages — tighter gap between search row and content card. */
+export const STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS = 'mt-3';
+
+/** Content-only pages — less inner padding at the top of the content card. */
+export const STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS = 'pt-3';
+
+/** Shared page title block — reduced top padding on mobile. */
+export const STOREFRONT_PAGE_HEADER_SECTION_CLASS = 'py-4 md:py-12';
+
+/** Page body wrapper — top inset only (keeps existing bottom padding). */
+export const STOREFRONT_PAGE_CONTENT_TOP_PADDING_CLASS = 'pt-4 md:pt-12';
 
 /** White content card — full-bleed, no pink gutter/backdrop at the bottom (home uses its own shell). */
 export const STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS =
   `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-white pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
+
+/** Content-only white content card — tighter top spacing on mobile. */
+export const STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS =
+  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-white ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
 
 /** Gap between search row and optional page toolbar. */
 export const STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS = 'mt-5';

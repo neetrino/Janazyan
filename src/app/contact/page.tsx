@@ -9,13 +9,10 @@ import {
   CONTACT_HERO_COLUMN_CLASS,
   CONTACT_PAGE_DESCRIPTION_CLASS,
   CONTACT_PAGE_GRID_CLASS,
+  CONTACT_PAGE_HERO_SHELL_PROPS,
   CONTACT_SECTION_DESKTOP_BLEED_CLASS,
 } from './contact-page.constants';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
-import {
-  AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
-  AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
-} from '../../components/auth/auth-layout.constants';
 import {
   MIRAGE_CONTACT_HEADING_CLASS,
 } from '../../components/home/mirage-heading-styles';
@@ -27,8 +24,7 @@ export default function ContactPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Contact"
-      mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
-      mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
+      {...CONTACT_PAGE_HERO_SHELL_PROPS}
       catalog={
         <section className={`py-8 md:py-10 lg:py-0 ${CONTACT_SECTION_DESKTOP_BLEED_CLASS}`}>
           <div className={CONTACT_PAGE_GRID_CLASS}>

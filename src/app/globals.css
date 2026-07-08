@@ -264,14 +264,13 @@ body {
   }
 
   .products-catalog-desktop-background {
-    --products-catalog-background-top-offset: 12px;
     left: 50%;
     width: 100vw;
     transform: translateX(-50%);
-    top: var(--products-catalog-background-top-offset);
+    top: var(--products-catalog-background-top-offset, 24px);
     height: calc(
-      100% + var(--products-catalog-background-top-offset) +
-        var(--products-catalog-background-footer-bleed, 147px)
+      100% + var(--products-catalog-background-top-offset, 24px) +
+        var(--products-catalog-background-footer-bleed, 191px)
     );
   }
 }

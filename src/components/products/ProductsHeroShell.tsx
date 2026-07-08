@@ -4,6 +4,7 @@ import { useId, type CSSProperties, type ReactNode } from 'react';
 import {
   PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
   PRODUCTS_CATALOG_BACKGROUND_PATH,
+  PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX,
   PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT,
   PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
   PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
@@ -11,21 +12,25 @@ import {
   PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS,
   PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS,
+  PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_LEGACY_CLASS,
   PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_CLASS,
+  PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_LEGACY_CLASS,
   PRODUCTS_PAGE_DESKTOP_SHELL_CLASS,
   PRODUCTS_PAGE_MAX_WIDTH_CLASS,
   PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS,
+  PRODUCTS_PAGE_MOBILE_CONTENT_ONLY_CATALOG_SURFACE_CLASS,
   PRODUCTS_PAGE_SHELL_CLASS,
   PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS,
   PRODUCTS_PAGE_SIDE_PADDING_CLASS,
   PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS,
   PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS,
-  PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX,
 } from '../../app/products/products-page-layout.constants';
 import { Header } from '../Header';
 import { HEADER_HERO_SHELL_STICKY_OVERLAP_PX } from '../header/header-shell-shape.constants';
 import { StorefrontMobileShell } from '../storefront/StorefrontMobileShell';
 import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layout.constants';
+import { STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS, STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 
 type ProductsHeroShellProps = {
@@ -40,23 +45,38 @@ type ProductsHeroShellProps = {
   mobileContentInsetClassName?: string;
   /** Hide mobile search top bar (e.g. /profile). */
   hideMobileTopBar?: boolean;
+  /** Tighter mobile top spacing for content-only pages — defaults to true when no toolbar. */
+  compactMobileTop?: boolean;
+  /** Tighter desktop hero/catalog spacing for content-only pages — defaults to true when no toolbar. */
+  compactContentSpacing?: boolean;
   sectionAriaLabel?: string;
   activeCategorySlug?: string;
 };
 
-function resolveHeroToolbarOffsetClass(toolbar: ReactNode | undefined, compactHero: boolean): string {
+function resolveHeroToolbarOffsetClass(
+  toolbar: ReactNode | undefined,
+  compactHero: boolean,
+  compactContentSpacing: boolean,
+): string {
   if (toolbar) {
-    return PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS;
+    return '';
   }
 
   if (compactHero) {
     return PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS;
   }
 
+  if (!compactContentSpacing) {
+    return PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_LEGACY_CLASS;
+  }
+
   return PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_CLASS;
 }
 
-function resolveCatalogSpacingClasses(toolbar: ReactNode | undefined): {
+function resolveCatalogSpacingClasses(
+  toolbar: ReactNode | undefined,
+  compactContentSpacing: boolean,
+): {
   topPaddingClass: string;
   bottomPaddingClass: string;
 } {
@@ -68,24 +88,55 @@ function resolveCatalogSpacingClasses(toolbar: ReactNode | undefined): {
   }
 
   return {
-    topPaddingClass: PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS,
+    topPaddingClass: compactContentSpacing
+      ? PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS
+      : PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_LEGACY_CLASS,
     bottomPaddingClass: PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS,
   };
+}
+
+function resolveMobileContentSurfaceClass(
+  toolbar: ReactNode | undefined,
+  mobileContentSurfaceClassName: string,
+  compactMobileTop: boolean,
+): string {
+  if (toolbar || !compactMobileTop) {
+    return mobileContentSurfaceClassName;
+  }
+
+  if (mobileContentSurfaceClassName === PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS) {
+    return PRODUCTS_PAGE_MOBILE_CONTENT_ONLY_CATALOG_SURFACE_CLASS;
+  }
+
+  if (mobileContentSurfaceClassName === STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS) {
+    return STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS;
+  }
+
+  return mobileContentSurfaceClassName;
 }
 
 function ProductsHeroShellInner({
   toolbar,
   catalog,
   compactHero = false,
+  compactContentSpacing = true,
 }: ProductsHeroShellProps) {
-  const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(toolbar, compactHero);
-  const { topPaddingClass, bottomPaddingClass } = resolveCatalogSpacingClasses(toolbar);
+  const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
+    toolbar,
+    compactHero,
+    compactContentSpacing,
+  );
+  const { topPaddingClass, bottomPaddingClass } = resolveCatalogSpacingClasses(
+    toolbar,
+    compactContentSpacing,
+  );
 
   return (
     <div
       className={`${PRODUCTS_PAGE_SHELL_CLASS} ${PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS} flex flex-col`}
       style={
         {
+          '--products-catalog-background-top-offset': `${PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX}px`,
           '--products-catalog-background-footer-bleed': `${PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX}px`,
         } as CSSProperties
       }
@@ -99,7 +150,14 @@ function ProductsHeroShellInner({
         <div
           className={`relative z-20 mx-auto w-full pb-2 desktop:pb-4 ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`}
         >
-          <div className={`${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${heroToolbarOffsetClass}`}>
+          <div
+            className={`${PRODUCTS_PAGE_CONTENT_INSET_CLASS} ${heroToolbarOffsetClass}`}
+            style={
+              toolbar
+                ? ({ paddingTop: PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX } as CSSProperties)
+                : undefined
+            }
+          >
             {toolbar}
           </div>
         </div>
@@ -157,17 +215,29 @@ export function ProductsHeroShell({
   mobileContentSurfaceClassName = PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS,
   mobileContentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   hideMobileTopBar = false,
+  compactMobileTop,
+  compactContentSpacing,
   sectionAriaLabel = 'Shop',
   activeCategorySlug,
 }: ProductsHeroShellProps) {
+  const isContentOnlyPage = !toolbar;
+  const resolvedCompactMobileTop = compactMobileTop ?? isContentOnlyPage;
+  const resolvedCompactContentSpacing = compactContentSpacing ?? isContentOnlyPage;
+  const resolvedMobileContentSurfaceClassName = resolveMobileContentSurfaceClass(
+    toolbar,
+    mobileContentSurfaceClassName,
+    resolvedCompactMobileTop,
+  );
+
   return (
     <CategoryFilterDropdownProvider activeCategorySlug={activeCategorySlug}>
       <StorefrontMobileShell
         toolbar={toolbar}
         toolbarClassName={toolbar ? PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS : undefined}
-        contentSurfaceClassName={mobileContentSurfaceClassName}
+        contentSurfaceClassName={resolvedMobileContentSurfaceClassName}
         contentInsetClassName={mobileContentInsetClassName}
         hideTopBar={hideMobileTopBar}
+        compactMobileTop={resolvedCompactMobileTop}
         sectionAriaLabel={sectionAriaLabel}
       >
         {catalog}
@@ -182,6 +252,7 @@ export function ProductsHeroShell({
             toolbar={toolbar}
             catalog={catalog}
             compactHero={compactHero}
+            compactContentSpacing={resolvedCompactContentSpacing}
           />
         </section>
       </div>

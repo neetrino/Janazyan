@@ -6,14 +6,11 @@ import { HeaderBrandCluster } from './header/HeaderBrandCluster';
 import { HeaderStorefrontActions } from './header/HeaderStorefrontActions';
 import {
   HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX,
-  HEADER_HERO_SHELL_BAND_HEIGHT_PX,
   HEADER_HOME_EMBEDDED_ROW_TOP_PX,
   HEADER_HOME_HORIZONTAL_INSET_LEFT_PX,
   HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX,
   HEADER_SHELL_HORIZONTAL_INSET_PX,
   HEADER_SHELL_STICKY_Z_INDEX,
-  resolveEmbeddedHeaderRowBottomPx,
-  resolveEmbeddedHeaderRowTopPx,
   resolveHeaderBandHeightPx,
   resolveHeaderRowVerticalInsetPx,
   resolveHeaderStickyOverlapPx,
@@ -96,21 +93,17 @@ function HeaderContentRow({
   horizontalInsetRightPx?: number;
 }) {
   const isHomePage = pathname === '/';
+  const usesHomeLikeEmbeddedHeader = isHomePage || usesStorefrontHeroShell(pathname);
   const bandHeightPx = resolveHeaderBandHeightPx(isHomePage, embedded);
-  const isHeroShellBand = !isHomePage && bandHeightPx === HEADER_HERO_SHELL_BAND_HEIGHT_PX;
-  const rowTopPx = isHomePage
+  const rowTopPx = usesHomeLikeEmbeddedHeader
     ? HEADER_HOME_EMBEDDED_ROW_TOP_PX
-    : isHeroShellBand
-      ? resolveEmbeddedHeaderRowTopPx(false)
-      : resolveHeaderRowVerticalInsetPx(bandHeightPx);
-  const rowBottomPx = isHomePage
-    ? 0
-    : isHeroShellBand
-      ? resolveEmbeddedHeaderRowBottomPx(false)
-      : resolveHeaderRowVerticalInsetPx(bandHeightPx);
+    : resolveHeaderRowVerticalInsetPx(bandHeightPx);
+  const rowBottomPx = usesHomeLikeEmbeddedHeader ? 0 : resolveHeaderRowVerticalInsetPx(bandHeightPx);
   const shellHeightPx = resolveHeaderStickyOverlapPx(bandHeightPx);
-  const embeddedMobileRowTopPx = isHomePage ? HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX : rowTopPx;
-  const embeddedMobileRowBottomPx = isHomePage ? 0 : rowBottomPx;
+  const embeddedMobileRowTopPx = usesHomeLikeEmbeddedHeader
+    ? HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX
+    : rowTopPx;
+  const embeddedMobileRowBottomPx = usesHomeLikeEmbeddedHeader ? 0 : rowBottomPx;
 
   return (
     <div
@@ -153,7 +146,9 @@ function HeaderOverlayBar({
   const { containerClassName, insetClassName, horizontalInsetLeftPx, horizontalInsetRightPx } =
     resolveHeaderContainerLayout(pathname);
   const compactScreenOffsetClass =
-    pathname === '/' ? '' : HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS;
+    pathname === '/' || usesStorefrontHeroShell(pathname)
+      ? ''
+      : HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS;
 
   return (
     <header

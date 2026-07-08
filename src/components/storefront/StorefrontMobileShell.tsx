@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { PRODUCTS_PAGE_CONTENT_INSET_CLASS } from '../../app/products/products-page-layout.constants';
 import {
+  STOREFRONT_MOBILE_CONTENT_ONLY_BACKDROP_WHITE_TOP_CLASS,
   STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   STOREFRONT_MOBILE_SHELL_CLASS,
   STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS,
@@ -24,6 +25,8 @@ type StorefrontMobileShellProps = {
   contentInsetClassName?: string;
   /** Hide search / phone / language row (e.g. /profile). */
   hideTopBar?: boolean;
+  /** Tighter top spacing for pages without a toolbar row (stores, FAQ, blog). */
+  compactMobileTop?: boolean;
   sectionAriaLabel?: string;
 };
 
@@ -39,6 +42,7 @@ export function StorefrontMobileShell({
   contentSurfaceClassName = STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS,
   contentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   hideTopBar = false,
+  compactMobileTop = false,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   const showHeaderChrome = !hideTopBar || Boolean(toolbar);
@@ -52,7 +56,14 @@ export function StorefrontMobileShell({
 
   return (
     <section aria-label={sectionAriaLabel} className={shellClassName}>
-      {hideTopBar ? null : <MobileBackdrop extendWhiteToBottom />}
+      {hideTopBar ? null : (
+        <MobileBackdrop
+          extendWhiteToBottom
+          whiteCurveTopClass={
+            compactMobileTop ? STOREFRONT_MOBILE_CONTENT_ONLY_BACKDROP_WHITE_TOP_CLASS : undefined
+          }
+        />
+      )}
       {showHeaderChrome ? (
         <div className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS}`}>
           {hideTopBar ? null : <MobileTopBar />}

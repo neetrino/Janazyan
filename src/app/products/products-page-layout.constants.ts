@@ -1,9 +1,15 @@
 import {
+  STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS,
+  STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS,
   STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 import { FOOTER_DESKTOP_DECORATION_BLEED_PX } from '../../components/footer/footer-desktop.constants';
+import { HEADER_HERO_SHELL_BAND_HEIGHT_PX } from '../../components/header/header-shell-shape.constants';
+
+/** Desktop catalog gradient inset from shell top — shared by all hero-shell pages. */
+export const PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX = 24;
 
 /** Same rounded shell as {@link HomeHero}; white backdrop keeps the header pill gap white. */
 export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
@@ -54,8 +60,15 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 /** Desktop hero gradient spans the full header band. */
 export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
 
-/** Toolbar baseline from shell top (node 269:894, y=251 inside 20px artboard inset). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[271px]';
+/** Gap between embedded header band bottom and category toolbar (desktop). */
+export const PRODUCTS_PAGE_TOOLBAR_BELOW_HEADER_GAP_PX = 100;
+
+/** Toolbar offset from shell top — header band + gap below pills. */
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX =
+  HEADER_HERO_SHELL_BAND_HEIGHT_PX + PRODUCTS_PAGE_TOOLBAR_BELOW_HEADER_GAP_PX;
+
+/** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX} via inline padding in {@link ProductsHeroShell}. */
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = `desktop:pt-[${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX}px]`;
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
@@ -63,6 +76,10 @@ export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
 
 /** Content-only pages without toolbar — shorter white band before the blue hero curve. */
 export const PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_CLASS =
+  'pt-[100px] sm:pt-[120px] desktop:pt-[140px]';
+
+/** Legacy content-only hero offset — preserved for /contact. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_LEGACY_CLASS =
   'pt-[120px] sm:pt-[140px] desktop:pt-[200px]';
 
 /** Mobile — clear embedded header before category pills. */
@@ -151,6 +168,10 @@ export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
 export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
   `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
+/** Content-only mobile catalog — tighter top spacing (stores, about, FAQ, blog). */
+export const PRODUCTS_PAGE_MOBILE_CONTENT_ONLY_CATALOG_SURFACE_CLASS =
+  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
+
 /** Legacy mobile reset hook for single-mount catalog slots; intentionally a no-op. */
 export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';
 
@@ -161,7 +182,11 @@ export const PRODUCTS_PAGE_CATALOG_DESKTOP_SHELL_CONTINUATION_CLASS = '';
 export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-[69px]';
 
 /** Content-only pages — tighter gap between hero curve and page title. */
-export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-10';
+export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS = 'pt-3 sm:pt-4 desktop:pt-10';
+
+/** Legacy content-only catalog top padding — preserved for /contact. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_LEGACY_CLASS =
+  'pt-6 desktop:pt-10';
 
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
