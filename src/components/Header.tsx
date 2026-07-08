@@ -30,6 +30,7 @@ import {
   STOREFRONT_SIDE_PADDING_CLASS,
 } from '../lib/layout/storefront-layout.constants';
 import {
+  isProductDetailPage,
   isProductsListingPage,
   isStorefrontPage,
   usesStorefrontHeroShell,
@@ -51,6 +52,10 @@ type HeaderContainerLayout = {
   horizontalInsetRightPx: number;
 };
 
+function usesEmbeddedHeroHeaderLayout(pathname: string): boolean {
+  return usesStorefrontHeroShell(pathname) || isProductDetailPage(pathname);
+}
+
 function resolveHeaderContainerLayout(pathname: string): HeaderContainerLayout {
   const isHomePage = pathname === '/';
 
@@ -63,7 +68,7 @@ function resolveHeaderContainerLayout(pathname: string): HeaderContainerLayout {
     };
   }
 
-  if (usesStorefrontHeroShell(pathname)) {
+  if (usesEmbeddedHeroHeaderLayout(pathname)) {
     return {
       containerClassName: `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`,
       insetClassName: PRODUCTS_PAGE_CONTENT_INSET_CLASS,
@@ -94,7 +99,7 @@ function HeaderContentRow({
   horizontalInsetRightPx?: number;
 }) {
   const isHomePage = pathname === '/';
-  const usesHomeLikeEmbeddedHeader = isHomePage || usesStorefrontHeroShell(pathname);
+  const usesHomeLikeEmbeddedHeader = isHomePage || usesEmbeddedHeroHeaderLayout(pathname);
   const bandHeightPx = resolveHeaderBandHeightPx(isHomePage, embedded);
   const rowTopPx = usesHomeLikeEmbeddedHeader
     ? HEADER_HOME_EMBEDDED_ROW_TOP_PX

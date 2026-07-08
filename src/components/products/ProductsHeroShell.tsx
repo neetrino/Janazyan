@@ -2,7 +2,19 @@
 
 import { useId, type CSSProperties, type ReactNode } from 'react';
 import {
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET,
+  PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR,
   PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
+  PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1,
+  PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2,
+  PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1,
+  PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2,
   PRODUCTS_CATALOG_BACKGROUND_PATH,
   PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR,
   PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX,
@@ -34,6 +46,8 @@ import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layou
 import { STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS, STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 
+type DesktopBackgroundVariant = 'default' | 'productDetail';
+
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
   toolbar?: ReactNode;
@@ -50,9 +64,39 @@ type ProductsHeroShellProps = {
   compactMobileTop?: boolean;
   /** Tighter desktop hero/catalog spacing for content-only pages — defaults to true when no toolbar. */
   compactContentSpacing?: boolean;
+  /** Override catalog bottom spacing for route-specific footer handoff. */
+  catalogBottomPaddingClassName?: string;
+  /** Route-specific desktop catalog background tuning; defaults to original /products art. */
+  desktopBackgroundVariant?: DesktopBackgroundVariant;
   sectionAriaLabel?: string;
   activeCategorySlug?: string;
 };
+
+function resolveDesktopBackgroundSettings(variant: DesktopBackgroundVariant) {
+  if (variant === 'productDetail') {
+    return {
+      footerBleedPx: PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
+      gradientX1: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1,
+      gradientY1: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1,
+      gradientX2: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2,
+      gradientY2: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2,
+      midColor: PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR,
+      midOffset: PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET,
+      tailColor: PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR,
+    };
+  }
+
+  return {
+    footerBleedPx: PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
+    gradientX1: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1,
+    gradientY1: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1,
+    gradientX2: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2,
+    gradientY2: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2,
+    midColor: null,
+    midOffset: null,
+    tailColor: PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR,
+  };
+}
 
 function resolveHeroToolbarOffsetClass(
   toolbar: ReactNode | undefined,
@@ -121,6 +165,8 @@ function ProductsHeroShellInner({
   catalog,
   compactHero = false,
   compactContentSpacing = true,
+  catalogBottomPaddingClassName,
+  desktopBackgroundVariant = 'default',
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -131,6 +177,8 @@ function ProductsHeroShellInner({
     toolbar,
     compactContentSpacing,
   );
+  const resolvedBottomPaddingClass = catalogBottomPaddingClassName ?? bottomPaddingClass;
+  const background = resolveDesktopBackgroundSettings(desktopBackgroundVariant);
 
   return (
     <div
@@ -138,13 +186,13 @@ function ProductsHeroShellInner({
       style={
         {
           '--products-catalog-background-top-offset': `${PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX}px`,
-          '--products-catalog-background-footer-bleed': `${PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX}px`,
+          '--products-catalog-background-footer-bleed': `${background.footerBleedPx}px`,
           '--products-catalog-background-viewbox-width': `${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH}`,
           '--products-catalog-background-viewbox-height': `${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`,
         } as CSSProperties
       }
     >
-      <ProductsCatalogDesktopBackground />
+      <ProductsCatalogDesktopBackground background={background} />
       <Header embedded />
       <div
         className="relative z-10 shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
@@ -167,7 +215,7 @@ function ProductsHeroShellInner({
       </div>
 
       <div
-        className={`relative z-20 overflow-visible bg-transparent ${topPaddingClass} ${bottomPaddingClass}`}
+        className={`relative z-20 overflow-visible bg-transparent ${topPaddingClass} ${resolvedBottomPaddingClass}`}
       >
         <div
           className={`mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS} ${PRODUCTS_PAGE_CONTENT_INSET_CLASS}`}
@@ -179,7 +227,11 @@ function ProductsHeroShellInner({
   );
 }
 
-function ProductsCatalogDesktopBackground() {
+type ProductsCatalogDesktopBackgroundProps = {
+  background: ReturnType<typeof resolveDesktopBackgroundSettings>;
+};
+
+function ProductsCatalogDesktopBackground({ background }: ProductsCatalogDesktopBackgroundProps) {
   const gradientId = useId();
 
   return (
@@ -194,14 +246,17 @@ function ProductsCatalogDesktopBackground() {
         <defs>
           <linearGradient
             id={gradientId}
-            x1="205.703"
-            y1="137.062"
-            x2="1601.17"
-            y2="988.49"
+            x1={background.gradientX1}
+            y1={background.gradientY1}
+            x2={background.gradientX2}
+            y2={background.gradientY2}
             gradientUnits="userSpaceOnUse"
           >
             <stop stopColor="#93B6E3" />
-            <stop offset="1" stopColor={PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR} />
+            {background.midOffset !== null && background.midColor !== null ? (
+              <stop offset={background.midOffset} stopColor={background.midColor} />
+            ) : null}
+            <stop offset="1" stopColor={background.tailColor} />
           </linearGradient>
         </defs>
         <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
@@ -209,7 +264,7 @@ function ProductsCatalogDesktopBackground() {
       <div
         aria-hidden
         className="products-catalog-desktop-background-fill pointer-events-none absolute z-0"
-        style={{ backgroundColor: PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR }}
+        style={{ backgroundColor: background.tailColor }}
       />
     </>
   );
@@ -227,6 +282,8 @@ export function ProductsHeroShell({
   hideMobileTopBar = false,
   compactMobileTop,
   compactContentSpacing,
+  catalogBottomPaddingClassName,
+  desktopBackgroundVariant = 'default',
   sectionAriaLabel = 'Shop',
   activeCategorySlug,
 }: ProductsHeroShellProps) {
@@ -263,6 +320,8 @@ export function ProductsHeroShell({
             catalog={catalog}
             compactHero={compactHero}
             compactContentSpacing={resolvedCompactContentSpacing}
+            catalogBottomPaddingClassName={catalogBottomPaddingClassName}
+            desktopBackgroundVariant={desktopBackgroundVariant}
           />
         </section>
       </div>

@@ -2,7 +2,7 @@
 
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
-import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from '../app/products/products-page-layout.constants';
+import { PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS } from '../app/products/products-page-layout.constants';
 import { PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS } from '../lib/layout/account-pages-layout.constants';
 import { resolveStorefrontMainBottomPaddingClass } from '../lib/layout/storefront-footer-layout';
 import {
@@ -34,6 +34,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const heroShellPage = usesStorefrontHeroShell(pathname);
   const useCatalogTheme = isStorefrontPage(pathname) && !heroShellPage;
+  const productDetailPage = isProductDetailPage(pathname);
   const mainBottomPaddingClass = resolveStorefrontMainBottomPaddingClass(pathname);
 
   const usesHeroSurface = heroShellPage || useCatalogTheme;
@@ -47,13 +48,16 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
           <ProductsHeroShell
             catalog={children}
             {...(isProfilePage(pathname) ? PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS : {})}
-            {...(isProductDetailPage(pathname)
-              ? { mobileContentSurfaceClassName: PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS }
+            {...(productDetailPage
+              ? {
+                  catalogBottomPaddingClassName: PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS,
+                  desktopBackgroundVariant: 'productDetail',
+                }
               : {})}
             sectionAriaLabel={
               isProfilePage(pathname)
                 ? 'Profile'
-                : isProductDetailPage(pathname)
+                : productDetailPage
                   ? 'Product'
                   : 'Shop'
             }

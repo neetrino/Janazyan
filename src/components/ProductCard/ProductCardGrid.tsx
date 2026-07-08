@@ -69,7 +69,7 @@ export function ProductCardGrid({
   return (
     <div
       data-product-card
-      className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative group"
+      className="bg-[#FCF8EC] rounded-lg border border-gray-200 overflow-hidden hover:shadow-md transition-shadow relative group"
     >
       {/* Product Image */}
       <div className="aspect-square bg-gray-100 relative overflow-hidden">

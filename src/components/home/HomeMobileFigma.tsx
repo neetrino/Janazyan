@@ -20,9 +20,7 @@ import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_HORIZONTAL_GUTTER_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
   HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
-  HOME_MOBILE_HEADER_STICKY_BG_CLASS,
-  HOME_MOBILE_HEADER_STICKY_CLASS,
-  HOME_MOBILE_HEADER_TOP_INSET_CLASS,
+  STOREFRONT_MOBILE_TOP_INSET_CLASS,
   STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { MobileOurStoresBanner } from './MobileOurStoresBanner';
@@ -58,12 +56,8 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   return (
     <section className={`relative ${STOREFRONT_TABLET_DOWN_CLASS}`}>
       <MobileBackdrop />
-      <div
-        className={`${HOME_MOBILE_HEADER_STICKY_CLASS} ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${HOME_MOBILE_HEADER_TOP_INSET_CLASS} ${HOME_MOBILE_HEADER_STICKY_BG_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}
-      >
+      <div className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileTopBar />
-      </div>
-      <div className={`relative ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
         <MobileFilterTabs />
         <MobileCategoryGrid

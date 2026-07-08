@@ -85,7 +85,7 @@ export function ProductCardList({
   };
 
   return (
-    <div data-product-card className="bg-white rounded-lg border border-gray-200 overflow-hidden hover:bg-gray-50 transition-colors">
+    <div data-product-card className="bg-[#FCF8EC] rounded-lg border border-gray-200 overflow-hidden hover:bg-[#FCF8EC] transition-colors">
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 px-4 sm:px-6 py-4">
         {/* Product Image */}
         <Link

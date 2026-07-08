@@ -15,7 +15,7 @@ export const PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX = 24;
 export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
 
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  `relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
+  `relative w-full overflow-x-clip overflow-y-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
 
 /**
  * Extra sky gradient below decoration overlap — fills the wedge where the shell
@@ -36,6 +36,25 @@ export const PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT = 1840;
 
 /** Bottom stop of the catalog desktop gradient — fills tall shells below the fixed shape. */
 export const PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR = '#FCF8EC';
+
+/** Default desktop catalog gradient vector — matches the original /products artwork. */
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1 = 205.703;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1 = 137.062;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2 = 1601.17;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2 = 988.49;
+
+/** Single product background handoff — scoped so other pages keep the original catalog art. */
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX = 220;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX =
+  FOOTER_DESKTOP_DECORATION_BLEED_PX + PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR = '#EAF4FC';
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR = '#EAF4FC';
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET = 0.48;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2 =
+  PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT;
 
 /** Same header S-step as {@link HERO_RECTANGLE_PATH} (Figma node 42:237 ledge y≈94). */
 export const PRODUCTS_CATALOG_BACKGROUND_PATH =
@@ -202,6 +221,10 @@ export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
 /** Content-only hero pages — tighter gap before the overlapping footer decoration. */
 export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS =
   'pb-24 md:pb-32 desktop:pb-28';
+
+/** Single product page — keep reviews above the footer with a small visual gap. */
+export const PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-24 md:pb-32 desktop:pb-40';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

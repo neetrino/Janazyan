@@ -29,7 +29,7 @@ export function ReviewList({
 
   if (reviews.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="py-6 text-center">
         <p className="text-gray-600 mb-4">
           {t('common.reviews.noReviews')}
         </p>
