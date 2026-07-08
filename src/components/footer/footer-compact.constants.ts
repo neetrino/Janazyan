@@ -4,7 +4,7 @@
 export const FOOTER_COMPACT_DEFAULT_TOP_MARGIN_PX = 96;
 
 export const FOOTER_COMPACT_SHELL_CLASS =
-  'hidden md:max-[1649px]:block pointer-events-auto relative z-30 mt-24 w-full shrink-0 overflow-x-clip overflow-y-visible font-armenian';
+  'hidden md:max-[1649px]:block pointer-events-auto relative z-30 w-full shrink-0 overflow-x-clip overflow-y-visible font-armenian';
 
 export const FOOTER_COMPACT_SURFACE_CLASS =
   'relative h-[407px] overflow-visible rounded-t-[60px] border-t border-black/10 bg-gradient-to-b from-purple to-cream';

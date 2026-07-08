@@ -17,6 +17,8 @@ interface Product {
     name: string;
   } | null;
   defaultVariantId?: string | null;
+  categories?: Array<{ title: string }>;
+  ratingAverage?: number | null;
 }
 
 interface ProductsGridProps {

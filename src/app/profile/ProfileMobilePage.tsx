@@ -1,14 +1,24 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
-import { Home } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { ChevronLeft, Home } from 'lucide-react';
 import { UserAvatar } from '../../components/UserAvatar';
 import {
   PROFILE_MOBILE_CARD_CLASS,
   PROFILE_MOBILE_OUTER_CLASS,
-  PROFILE_MOBILE_SHEET_BODY_CLASS,
-  PROFILE_MOBILE_SHEET_HEIGHT_CLASS,
 } from '../../lib/layout/account-pages-layout.constants';
+import {
+  PROFILE_DELETE_MOBILE_ROW_CLASS,
+  PROFILE_DELETE_MOBILE_ROW_ICON_CLASS,
+  PROFILE_DELETE_MOBILE_ROW_LABEL_CLASS,
+  PROFILE_MOBILE_CHEVRON_CLASS,
+  PROFILE_MOBILE_MENU_SURFACE_CLASS,
+  PROFILE_MOBILE_ROW_CLASS,
+  PROFILE_MOBILE_ROW_ICON_CLASS,
+  PROFILE_MOBILE_ROW_LABEL_CLASS,
+  PROFILE_MOBILE_SHEET_OVERLAY_Z_CLASS,
+} from './profile-layout.constants';
 import type { ProfileTab, ProfileTabConfig, UserProfile } from './types';
 
 interface ProfileMobilePageProps {
@@ -30,6 +40,42 @@ function getDisplayName(profile: UserProfile | null, t: (_key: string) => string
   return profile?.firstName || profile?.lastName || t('profile.myProfile');
 }
 
+function ProfileMobileSheet({
+  activeTabLabel,
+  onCloseSheet,
+  t,
+  children,
+}: {
+  activeTabLabel: string;
+  onCloseSheet: () => void;
+  t: (_key: string) => string;
+  children: ReactNode;
+}) {
+  return (
+    <div
+      className={`fixed inset-0 ${PROFILE_MOBILE_SHEET_OVERLAY_Z_CLASS} flex flex-col bg-cream/95`}
+      role="dialog"
+      aria-modal="true"
+      aria-label={activeTabLabel}
+    >
+      <div className="flex shrink-0 items-center gap-3 border-b border-sky-mist/50 px-4 pb-3 pt-[max(env(safe-area-inset-top,0px),0.75rem)] sm:px-5">
+        <button
+          type="button"
+          onClick={onCloseSheet}
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-sky-mist/70 bg-white text-ink-700 shadow-sm"
+          aria-label={t('common.navigation.back')}
+        >
+          <ChevronLeft className="h-5 w-5" strokeWidth={2} aria-hidden />
+        </button>
+        <h2 className="min-w-0 flex-1 text-lg font-semibold text-ink-800">{activeTabLabel}</h2>
+      </div>
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-4 pb-[calc(88px+env(safe-area-inset-bottom,0px))] sm:px-4">
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function ProfileMobilePage({
   profile,
   tabs,
@@ -41,11 +87,16 @@ export function ProfileMobilePage({
   onCloseSheet,
   children,
 }: ProfileMobilePageProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const displayName = getDisplayName(profile, t);
   const activeTabLabel = tabs.find((tab) => tab.id === activeTab)?.label ?? t('profile.myProfile');
   const dashboardTab = tabs.find((tab) => tab.id === 'dashboard');
   const passwordTab = tabs.find((tab) => tab.id === 'password');
   const otherTabs = tabs.filter((tab) => tab.id !== 'dashboard' && tab.id !== 'password');
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!isSheetOpen) return;
@@ -56,73 +107,64 @@ export function ProfileMobilePage({
     };
   }, [isSheetOpen]);
 
+  const sheet =
+    isSheetOpen ? (
+      <ProfileMobileSheet activeTabLabel={activeTabLabel} onCloseSheet={onCloseSheet} t={t}>
+        {children}
+      </ProfileMobileSheet>
+    ) : null;
+
   return (
     <div className={PROFILE_MOBILE_OUTER_CLASS}>
       <div className={PROFILE_MOBILE_CARD_CLASS}>
-
         <div className="mb-5 flex items-center gap-4">
           <UserAvatar
             firstName={profile?.firstName}
             lastName={profile?.lastName}
             avatarUrl={profile?.avatarUrl || profile?.avatar || profile?.imageUrl || profile?.image || null}
             size="lg"
-            className="h-20 w-20 text-xl"
+            className="h-20 w-20 text-xl ring-2 ring-sky/30"
           />
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xl font-semibold text-gray-900">{displayName}</p>
-            {profile?.email && <p className="truncate text-sm text-gray-600">{profile.email}</p>}
+            <p className="truncate text-xl font-semibold text-ink-800">{displayName}</p>
+            {profile?.email && <p className="truncate text-sm text-ink-500">{profile.email}</p>}
           </div>
         </div>
 
-        <div className="divide-y divide-gray-100 rounded-2xl border border-gray-200/80 bg-white">
+        <div className={PROFILE_MOBILE_MENU_SURFACE_CLASS}>
           {dashboardTab && (
-            <>
-              <button
-                type="button"
-                onClick={() => onTabSelect(dashboardTab.id)}
-                className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-              >
-                <span className="flex items-center gap-3 text-base font-medium text-gray-800">
-                  <span className="text-gray-500">
-                    <Home className="h-5 w-5" strokeWidth={1.75} />
-                  </span>
-                  Home
+            <button type="button" onClick={() => onTabSelect(dashboardTab.id)} className={PROFILE_MOBILE_ROW_CLASS}>
+              <span className={PROFILE_MOBILE_ROW_LABEL_CLASS}>
+                <span className={PROFILE_MOBILE_ROW_ICON_CLASS}>
+                  <Home className="h-5 w-5" strokeWidth={1.75} />
                 </span>
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </>
+                Home
+              </span>
+              <svg className={PROFILE_MOBILE_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           )}
           {otherTabs
             .filter((tab) => tab.id !== 'deleteAccount')
             .map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => onTabSelect(tab.id)}
-                className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-              >
-                <span className="flex items-center gap-3 text-base font-medium text-gray-800">
-                  <span className="text-gray-500">{tab.icon}</span>
+              <button key={tab.id} type="button" onClick={() => onTabSelect(tab.id)} className={PROFILE_MOBILE_ROW_CLASS}>
+                <span className={PROFILE_MOBILE_ROW_LABEL_CLASS}>
+                  <span className={PROFILE_MOBILE_ROW_ICON_CLASS}>{tab.icon}</span>
                   {tab.label}
                 </span>
-                <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg className={PROFILE_MOBILE_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             ))}
           {passwordTab && (
-            <button
-              type="button"
-              onClick={() => onTabSelect(passwordTab.id)}
-              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-            >
-              <span className="flex items-center gap-3 text-base font-medium text-gray-800">
-                <span className="text-gray-500">{passwordTab.icon}</span>
+            <button type="button" onClick={() => onTabSelect(passwordTab.id)} className={PROFILE_MOBILE_ROW_CLASS}>
+              <span className={PROFILE_MOBILE_ROW_LABEL_CLASS}>
+                <span className={PROFILE_MOBILE_ROW_ICON_CLASS}>{passwordTab.icon}</span>
                 {passwordTab.label}
               </span>
-              <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <svg className={PROFILE_MOBILE_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -130,61 +172,26 @@ export function ProfileMobilePage({
           {otherTabs
             .filter((tab) => tab.id === 'deleteAccount')
             .map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onTabSelect(tab.id)}
-              className="flex w-full items-center justify-between px-4 py-3.5 text-left"
-            >
-              <span className="flex items-center gap-3 text-base font-medium text-gray-800">
-                <span className="text-gray-500">{tab.icon}</span>
-                {tab.label}
-              </span>
-              <svg className="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          ))}
-          <button
-            type="button"
-            onClick={onLogout}
-            className="flex w-full items-center justify-between px-4 py-3.5 text-left text-red-600"
-          >
+              <button key={tab.id} type="button" onClick={() => onTabSelect(tab.id)} className={PROFILE_DELETE_MOBILE_ROW_CLASS}>
+                <span className={PROFILE_DELETE_MOBILE_ROW_LABEL_CLASS}>
+                  <span className={PROFILE_DELETE_MOBILE_ROW_ICON_CLASS}>{tab.icon}</span>
+                  {tab.label}
+                </span>
+                <svg className={`${PROFILE_MOBILE_CHEVRON_CLASS} text-sale`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            ))}
+          <button type="button" onClick={onLogout} className={PROFILE_DELETE_MOBILE_ROW_CLASS}>
             <span className="text-base font-semibold">{t('common.navigation.logout')}</span>
-            <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+            <svg className="h-5 w-5 text-sale" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
             </svg>
           </button>
         </div>
       </div>
 
-      {isSheetOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end bg-black/35 backdrop-blur-[1px]" onClick={onCloseSheet}>
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-label={activeTabLabel}
-            className={`w-full rounded-t-3xl bg-white shadow-2xl ${PROFILE_MOBILE_SHEET_HEIGHT_CLASS}`}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="mx-auto mt-2 h-1.5 w-14 rounded-full bg-gray-300" />
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
-              <h2 className="text-lg font-semibold text-gray-900">{activeTabLabel}</h2>
-              <button
-                type="button"
-                onClick={onCloseSheet}
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 text-gray-600"
-                aria-label={t('profile.orderDetails.close')}
-              >
-                <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className={PROFILE_MOBILE_SHEET_BODY_CLASS}>{children}</div>
-          </div>
-        </div>
-      )}
+      {isMounted && sheet ? createPortal(sheet, document.body) : null}
     </div>
   );
 }

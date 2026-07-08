@@ -5,6 +5,8 @@ type MobileBackdropProps = {
   extendWhiteToBottom?: boolean;
   /** When true, white curve starts near the top (pages without MobileTopBar). */
   compactTop?: boolean;
+  /** Override white curve top offset — e.g. content-only pages below the search row. */
+  whiteCurveTopClass?: string;
 };
 
 /** Home mobile — white curve sits below hero chrome. */
@@ -13,15 +15,20 @@ const HOME_MOBILE_BACKDROP_WHITE_TOP_CLASS = 'top-24';
 /**
  * Mobile gradient + white curve. Home uses the default (84% white); all other pages extend white to the bottom.
  */
-export function MobileBackdrop({ extendWhiteToBottom = false, compactTop = false }: MobileBackdropProps) {
-  const whiteCurveTopClass = compactTop
-    ? 'top-2'
-    : extendWhiteToBottom
-      ? STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS
-      : HOME_MOBILE_BACKDROP_WHITE_TOP_CLASS;
+export function MobileBackdrop({
+  extendWhiteToBottom = false,
+  compactTop = false,
+  whiteCurveTopClass,
+}: MobileBackdropProps) {
+  const resolvedWhiteCurveTopClass = whiteCurveTopClass
+    ?? (compactTop
+      ? 'top-2'
+      : extendWhiteToBottom
+        ? STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS
+        : HOME_MOBILE_BACKDROP_WHITE_TOP_CLASS);
   const whiteCurveClass = extendWhiteToBottom
-    ? `absolute inset-x-0 bottom-0 ${whiteCurveTopClass} rounded-t-[44px] bg-white`
-    : `absolute left-0 ${whiteCurveTopClass} h-[84%] w-full rounded-t-[44px] bg-white`;
+    ? `absolute inset-x-0 bottom-0 ${resolvedWhiteCurveTopClass} rounded-t-[44px] bg-white`
+    : `absolute left-0 ${resolvedWhiteCurveTopClass} h-[84%] w-full rounded-t-[44px] bg-white`;
 
   return (
     <div className="absolute inset-0 -z-10 bg-[linear-gradient(139deg,#ecf5ff_2%,#e6cbd5_31%)]">

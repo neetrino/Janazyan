@@ -33,6 +33,8 @@ export type StoresTranslation = {
     loading: string;
   };
   listTitle: string;
+  searchPlaceholder: string;
+  searchNoResults: string;
   getDirections: string;
   viewOnMap: string;
   closeLabel: string;

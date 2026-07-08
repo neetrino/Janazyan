@@ -1,4 +1,17 @@
+import {
+  AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
+  AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
+} from '../../components/auth/auth-layout.constants';
+
 /** Contact page — Figma node 496:276 */
+
+/** Contact keeps the pre-compact mobile + desktop hero spacing. */
+export const CONTACT_PAGE_HERO_SHELL_PROPS = {
+  compactMobileTop: false,
+  compactContentSpacing: false,
+  mobileContentSurfaceClassName: AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
+  mobileContentInsetClassName: AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
+} as const;
 
 export const CONTACT_HERO_IMAGE_SRC = '/figma/contact-hero.webp';
 
@@ -33,13 +46,16 @@ export const CONTACT_HERO_WIDTH_CLASS = 'max-desktop:max-w-[484px] desktop:w-[48
 /** Matches shell top-left radius — {@link PRODUCTS_PAGE_SHELL_CLASS}. */
 export const CONTACT_BACKGROUND_BORDER_RADIUS_PX = 36;
 
+/** Pull contact content into the hero band — reduced on large viewports to avoid header overlap. */
+export const CONTACT_SECTION_DESKTOP_BLEED_PX = 100;
+
 /** Catalog top/bottom bleed — hero spans catalog edge to footer. */
 export const CONTACT_SECTION_DESKTOP_BLEED_CLASS =
-  `desktop:relative desktop:-mt-[122px] ${CONTACT_HERO_FOOTER_BLEED_CLASS} desktop:py-0 desktop:overflow-visible desktop:rounded-tl-[36px]`;
+  `desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] ${CONTACT_HERO_FOOTER_BLEED_CLASS} desktop:pt-6 desktop:pb-0 desktop:overflow-visible desktop:rounded-tl-[36px]`;
 
-/** Desktop grid — Figma 496:276: 484px hero, 280px gutter, 633px form. */
+/** Responsive grid — laptop keeps hero beside the form; desktop matches Figma spacing. */
 export const CONTACT_PAGE_GRID_CLASS =
-  'grid grid-cols-1 items-start gap-8 desktop:min-h-[796px] desktop:grid-cols-[484px_633px] desktop:items-start desktop:justify-start desktop:gap-[280px]';
+  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[484px_633px] desktop:items-start desktop:justify-start desktop:gap-[280px]';
 
 /** Left column — stretch target; height spans background top through footer overlap. */
 export const CONTACT_HERO_COLUMN_CLASS =
@@ -52,15 +68,19 @@ export const CONTACT_HERO_COLUMN_CLASS =
 export const CONTACT_HERO_CLIP_WRAPPER_CLASS =
   `contact-hero-viewport-bleed desktop:absolute desktop:top-0 ${CONTACT_HERO_CLIP_BOTTOM_BLEED_CLASS} desktop:left-0 desktop:w-[516px] desktop:overflow-visible desktop:rounded-tl-[36px]`;
 
+/** Form column — Figma heading offset from hero band top; extra inset on wide screens. */
+export const CONTACT_FORM_COLUMN_TOP_OFFSET_PX = 48;
+
 /** Form column — Figma heading/card gap 16px (345 − 329). */
 export const CONTACT_FORM_COLUMN_CLASS =
-  'flex w-full max-w-[633px] flex-col gap-4 self-start desktop:mt-[52px]';
+  `flex w-full max-w-[633px] flex-col gap-4 self-start min-[900px]:mt-8 desktop:mt-[48px] min-[1548px]:mt-[64px] min-[1800px]:mt-[80px]`;
 
 /** Figma node 505:576 — 8px horizontal inset, 10px title/description gap. */
 export const CONTACT_FORM_HEADING_CLASS = 'space-y-2.5 px-1 desktop:px-2';
 
-/** Pull hero image flush to clip wrapper — top at background border, bottom at footer. */
-export const CONTACT_HERO_DESKTOP_DROP_CLASS = 'desktop:top-[88px]';
+/** Pull hero image flush to clip wrapper — adjusted on wide screens to stay inside shell. */
+export const CONTACT_HERO_DESKTOP_DROP_CLASS =
+  'desktop:top-[60px] min-[1548px]:top-[80px] min-[1800px]:top-[100px]';
 export const CONTACT_HERO_DESKTOP_SCALE_CLASS = 'desktop:origin-top-left desktop:scale-[0.96]';
 
 export const CONTACT_HERO_WALL_BLEED_CLASS =

@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { apiClient } from '../../lib/api-client';
 import { convertPrice } from '../../lib/currency';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
+import { handleRemoveItem } from '../cart/cart-handlers';
 import { usePaymentMethods } from './utils/payment-methods';
 import {
   mapZodIssuesToCheckoutFieldErrors,
@@ -26,13 +27,14 @@ import {
 import type { AppliedPromo } from './types';
 
 export function useCheckout() {
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoggedIn, isLoading, user } = useAuth();
   const { t } = useTranslation();
   const [error, setCheckoutError] = useState<string | null>(null);
   const currency = useCurrency();
   const [logoErrors, setLogoErrors] = useState<Record<string, boolean>>({});
   const [showShippingModal, setShowShippingModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
+  const [removingItemIds, setRemovingItemIds] = useState<Set<string>>(new Set());
   const [promoCode, setPromoCode] = useState('');
   const [promoError, setPromoError] = useState<string | null>(null);
   const [promoApplying, setPromoApplying] = useState(false);
@@ -83,7 +85,7 @@ export function useCheckout() {
   const { stores: pickupStores, loading: pickupStoresLoading } = useCheckoutPartnerStores();
 
   const { options: deliveryOptions, loading: deliveryOptionsLoading } = useDeliveryOptions();
-  const { cart, loading } = useCart(isLoggedIn);
+  const { cart, loading, setCart, fetchCart } = useCart(isLoggedIn);
   useUserProfile(isLoggedIn, isLoading, setValue);
 
   const orderSubtotalAmd = useMemo(() => {
@@ -238,6 +240,35 @@ export function useCheckout() {
     });
   };
 
+  const removeCartItem = useCallback(
+    async (itemId: string) => {
+      if (!cart) {
+        return;
+      }
+
+      setRemovingItemIds((previous) => new Set(previous).add(itemId));
+
+      try {
+        await handleRemoveItem(
+          itemId,
+          cart,
+          isLoggedIn,
+          setCart,
+          fetchCart,
+          user?.id,
+          t,
+        );
+      } finally {
+        setRemovingItemIds((previous) => {
+          const next = new Set(previous);
+          next.delete(itemId);
+          return next;
+        });
+      }
+    },
+    [cart, fetchCart, isLoggedIn, setCart, t, user?.id],
+  );
+
   return {
     // State
     cart,
@@ -281,6 +312,8 @@ export function useCheckout() {
     // Actions
     onCheckoutSubmit,
     onSubmit,
+    removeCartItem,
+    removingItemIds,
     // Auth
     isLoggedIn,
   };

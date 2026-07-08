@@ -1,9 +1,16 @@
-    import { Button, Card } from '@shop/ui';
+import { ChevronLeft } from 'lucide-react';
+import { Button, Card } from '@shop/ui';
 import { formatPriceInCurrency, convertPrice, type CurrencyCode } from '../../lib/currency';
 import { PickupStoreDetails } from '../../components/orders/PickupStoreDetails';
 import { isPickupStoreAddress } from '../../lib/types/pickup-store';
 import { getStatusColor, getPaymentStatusColor, getColorValue } from './utils';
 import type { OrderDetails } from './types';
+import {
+  PROFILE_BODY_TEXT_CLASS,
+  PROFILE_PRIMARY_BUTTON_CLASS,
+  PROFILE_SECTION_TITLE_CLASS,
+  PROFILE_SPINNER_CLASS,
+} from './profile-layout.constants';
 
 interface OrderDetailsModalProps {
   selectedOrder: OrderDetails;
@@ -50,39 +57,41 @@ export function OrderDetailsModal({
     <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div 
-        className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"
+        className="fixed inset-0 bg-ink-900/40 transition-opacity"
         onClick={onClose}
       ></div>
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative transform overflow-hidden rounded-lg bg-white shadow-xl transition-all w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div className="relative transform overflow-hidden rounded-2xl bg-cream/95 shadow-xl ring-1 ring-sky-mist/60 transition-all w-full max-w-4xl max-h-[90vh] overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between z-10">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">{t('profile.orderDetails.title')}{selectedOrder.number}</h2>
-              <p className="text-sm text-gray-600 mt-1">
-                {t('profile.orderDetails.placedOn')} {new Date(selectedOrder.createdAt).toLocaleDateString()}
-              </p>
+          <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-sky-mist/50 bg-cream/95 px-4 py-4 sm:px-6">
+            <div className="flex min-w-0 flex-1 items-start gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="mt-0.5 inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-sky-mist/70 bg-white text-ink-700 shadow-sm"
+                aria-label={t('common.navigation.back')}
+              >
+                <ChevronLeft className="h-5 w-5" strokeWidth={2} aria-hidden />
+              </button>
+              <div className="min-w-0">
+                <h2 className="text-xl font-bold text-ink-800 sm:text-2xl">{t('profile.orderDetails.title')}{selectedOrder.number}</h2>
+                <p className={`mt-1 ${PROFILE_BODY_TEXT_CLASS}`}>
+                  {t('profile.orderDetails.placedOn')} {new Date(selectedOrder.createdAt).toLocaleDateString()}
+                </p>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex shrink-0 items-center gap-3">
               <Button
                 onClick={onReOrder}
                 disabled={isReordering}
                 variant="primary"
                 size="sm"
+                className={PROFILE_PRIMARY_BUTTON_CLASS}
               >
                 {isReordering ? t('profile.orderDetails.adding') : t('profile.orderDetails.reorder')}
               </Button>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-500 focus:outline-none"
-                aria-label={t('profile.orderDetails.close')}
-              >
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -90,12 +99,12 @@ export function OrderDetailsModal({
           <div className="px-6 py-6">
             {orderDetailsLoading ? (
               <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-                <p className="text-gray-600">{t('profile.orderDetails.loading')}</p>
+                <div className={`${PROFILE_SPINNER_CLASS} mx-auto mb-4 h-12 w-12`} />
+                <p className={PROFILE_BODY_TEXT_CLASS}>{t('profile.orderDetails.loading')}</p>
               </div>
             ) : orderDetailsError ? (
               <div className="text-center py-12">
-                <p className="text-red-600 mb-4">{orderDetailsError}</p>
+                <p className="mb-4 text-sale">{orderDetailsError}</p>
                 <Button onClick={onClose} variant="outline">{t('profile.orderDetails.close')}</Button>
               </div>
             ) : (
@@ -104,7 +113,7 @@ export function OrderDetailsModal({
                 <div className="lg:col-span-2 space-y-6">
                   {/* Status */}
                   <Card className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.orderDetails.orderStatus')}</h3>
+                    <h3 className="text-lg font-semibold text-ink-800 mb-4">{t('profile.orderDetails.orderStatus')}</h3>
                     <div className="flex flex-wrap items-center gap-4">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(selectedOrder.status)}`}>
                         {selectedOrder.status}
@@ -117,15 +126,15 @@ export function OrderDetailsModal({
 
                   {/* Order Items */}
                   <Card className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.orderDetails.orderItems')}</h3>
+                    <h3 className="text-lg font-semibold text-ink-800 mb-6">{t('profile.orderDetails.orderItems')}</h3>
                     <div className="space-y-4">
                       {selectedOrder.items.map((item, index) => {
                         const allOptions = item.variantOptions || [];
                         
                         return (
-                          <div key={index} className="flex gap-4 pb-4 border-b border-gray-200 last:border-0">
+                          <div key={index} className="flex gap-4 pb-4 border-b border-sky-mist/50 last:border-0">
                             {item.imageUrl && (
-                              <div className="h-24 w-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 p-1 sm:h-28 sm:w-28">
+                              <div className="h-24 w-24 flex-shrink-0 rounded-lg overflow-hidden bg-sky-mist/30 p-1 sm:h-28 sm:w-28">
                                 <img 
                                   src={item.imageUrl} 
                                   alt={item.productTitle}
@@ -134,7 +143,7 @@ export function OrderDetailsModal({
                               </div>
                             )}
                             <div className="flex-1">
-                              <h4 className="text-lg font-semibold text-gray-900 mb-1">{item.productTitle}</h4>
+                              <h4 className="text-lg font-semibold text-ink-800 mb-1">{item.productTitle}</h4>
                               
                               {/* Display all variation options */}
                               {allOptions.length > 0 && (
@@ -151,7 +160,7 @@ export function OrderDetailsModal({
                                     
                                     return (
                                       <div key={optIndex} className="flex items-center gap-2">
-                                        <span className="text-sm font-medium text-gray-700">
+                                        <span className="text-sm font-medium text-ink-700">
                                           {getAttributeLabel(opt.attributeKey)}:
                                         </span>
                                         <div className="flex items-center gap-2">
@@ -159,19 +168,19 @@ export function OrderDetailsModal({
                                             <img 
                                               src={opt.imageUrl!} 
                                               alt={displayLabel}
-                                              className="w-6 h-6 rounded border border-gray-300 object-cover"
+                                              className="w-6 h-6 rounded border border-sky-mist/60 object-cover"
                                               onError={(e) => {
                                                 (e.target as HTMLImageElement).style.display = 'none';
                                               }}
                                             />
                                           ) : isColor && colorHex ? (
                                             <div 
-                                              className="w-5 h-5 rounded-full border border-gray-300"
+                                              className="w-5 h-5 rounded-full border border-sky-mist/60"
                                               style={{ backgroundColor: colorHex }}
                                               title={displayLabel}
                                             />
                                           ) : null}
-                                          <span className="text-sm text-gray-900 capitalize">
+                                          <span className="text-sm text-ink-800 capitalize">
                                             {displayLabel}
                                           </span>
                                         </div>
@@ -181,8 +190,8 @@ export function OrderDetailsModal({
                                 </div>
                               )}
                               
-                              <p className="text-sm text-gray-600">{t('profile.orderDetails.sku')}: {item.sku}</p>
-                              <p className="text-sm text-gray-600 mt-2">
+                              <p className="text-sm text-ink-600">{t('profile.orderDetails.sku')}: {item.sku}</p>
+                              <p className="text-sm text-ink-600 mt-2">
                                 {t('profile.orderDetails.quantity')}: {item.quantity} × {(() => {
                                   const priceAMD = convertPrice(item.price, 'USD', 'AMD');
                                   const priceDisplay = currency === 'AMD' ? priceAMD : convertPrice(priceAMD, 'AMD', currency);
@@ -204,11 +213,11 @@ export function OrderDetailsModal({
                 {/* Order Summary + Shipping */}
                 <div className="space-y-4">
                   <Card className="p-6 sticky top-4">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('profile.orderDetails.orderSummary')}</h3>
+                    <h3 className="text-lg font-semibold text-ink-800 mb-6">{t('profile.orderDetails.orderSummary')}</h3>
                     <div className="space-y-4 mb-6">
                       {selectedOrder.totals ? (
                         <>
-                          <div className="flex justify-between text-gray-600">
+                          <div className="flex justify-between text-ink-600">
                             <span>{t('profile.orderDetails.subtotal')}</span>
                             <span>
                               {(() => {
@@ -219,7 +228,7 @@ export function OrderDetailsModal({
                             </span>
                           </div>
                           {selectedOrder.totals.discount > 0 && (
-                            <div className="flex justify-between text-gray-600">
+                            <div className="flex justify-between text-ink-600">
                               <span>{t('profile.orderDetails.discount')}</span>
                               <span>
                                 -{(() => {
@@ -230,7 +239,7 @@ export function OrderDetailsModal({
                               </span>
                             </div>
                           )}
-                          <div className="flex justify-between text-gray-600">
+                          <div className="flex justify-between text-ink-600">
                             <span>{t('profile.orderDetails.shipping')}</span>
                             <span>
                               {selectedOrder.shippingMethod === 'pickup' 
@@ -242,7 +251,7 @@ export function OrderDetailsModal({
                                   })()}
                             </span>
                           </div>
-                          <div className="flex justify-between text-gray-600">
+                          <div className="flex justify-between text-ink-600">
                             <span>{t('profile.orderDetails.tax')}</span>
                             <span>
                               {(() => {
@@ -252,8 +261,8 @@ export function OrderDetailsModal({
                               })()}
                             </span>
                           </div>
-                          <div className="border-t border-gray-200 pt-4">
-                            <div className="flex justify-between text-lg font-bold text-gray-900">
+                          <div className="border-t border-sky-mist/50 pt-4">
+                            <div className="flex justify-between text-lg font-bold text-ink-800">
                               <span>{t('profile.orderDetails.total')}</span>
                               <span>
                                 {(() => {
@@ -270,15 +279,15 @@ export function OrderDetailsModal({
                           </div>
                         </>
                       ) : (
-                        <div className="text-gray-600">{t('profile.orderDetails.loadingTotals')}</div>
+                        <div className="text-ink-600">{t('profile.orderDetails.loadingTotals')}</div>
                       )}
                     </div>
                   </Card>
 
                   {/* Shipping Method */}
                   <Card className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.orderDetails.shippingMethod')}</h3>
-                    <div className="text-gray-700 space-y-3">
+                    <h3 className="text-lg font-semibold text-ink-800 mb-4">{t('profile.orderDetails.shippingMethod')}</h3>
+                    <div className="text-ink-700 space-y-3">
                       <div>
                         <span className="font-medium">{t('profile.orderDetails.method')}: </span>
                         <span className="capitalize">
@@ -288,9 +297,9 @@ export function OrderDetailsModal({
                         </span>
                       </div>
                       {selectedOrder.shippingMethod === 'delivery' && selectedOrder.shippingAddress && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="font-medium text-gray-900 mb-2">{t('profile.orderDetails.deliveryAddress')}:</p>
-                          <div className="text-gray-600">
+                        <div className="mt-3 pt-3 border-t border-sky-mist/50">
+                          <p className="font-medium text-ink-800 mb-2">{t('profile.orderDetails.deliveryAddress')}:</p>
+                          <div className="text-ink-600">
                             {selectedOrder.shippingAddress.firstName && selectedOrder.shippingAddress.lastName && (
                               <p>{selectedOrder.shippingAddress.firstName} {selectedOrder.shippingAddress.lastName}</p>
                             )}
@@ -309,8 +318,8 @@ export function OrderDetailsModal({
                       )}
                       {selectedOrder.shippingMethod === 'pickup' &&
                         isPickupStoreAddress(selectedOrder.shippingAddress) && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <p className="font-medium text-gray-900 mb-2">
+                        <div className="mt-3 pt-3 border-t border-sky-mist/50">
+                          <p className="font-medium text-ink-800 mb-2">
                             {t('profile.orderDetails.pickupStore')}:
                           </p>
                           <PickupStoreDetails pickupStore={selectedOrder.shippingAddress} />

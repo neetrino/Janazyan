@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { MIRAGE_PAGE_HEADING_CLASS } from '../../../components/home/mirage-heading-styles';
+import { STOREFRONT_PAGE_HEADER_SECTION_CLASS } from '../../../lib/layout/storefront-mobile-layout.constants';
 import { getStoredLanguage, type LanguageCode } from '../../../lib/language';
 import { BLOG_CARD_SKELETON_CLASS, BLOG_GLASS_EMPTY_CLASS } from '../blog-layout-styles';
 import { fetchBlogPosts } from '../fetch-blog-posts';
@@ -54,7 +55,7 @@ export function BlogPageView({
   const showEmpty = !isRefreshing && posts.length === 0;
 
   return (
-    <div className="mx-auto max-w-7xl py-8 md:py-12">
+    <div className={`mx-auto max-w-7xl ${STOREFRONT_PAGE_HEADER_SECTION_CLASS}`}>
       <header className="mx-auto mb-12 max-w-3xl text-center md:mb-16">
         <h1 className={MIRAGE_PAGE_HEADING_CLASS}>
           {copy.title}

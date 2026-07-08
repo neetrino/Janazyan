@@ -20,16 +20,16 @@ export function usePaymentMethods(): PaymentMethod[] {
       logo: null,
     },
     {
-      id: 'idram',
-      name: t('checkout.payment.idram'),
-      description: t('checkout.payment.idramDescription'),
-      logo: '/assets/payments/idram.svg',
-    },
-    {
       id: 'arca',
       name: t('checkout.payment.arca'),
       description: t('checkout.payment.arcaDescription'),
       logo: '/assets/payments/arca.svg',
+    },
+    {
+      id: 'idram',
+      name: t('checkout.payment.idram'),
+      description: t('checkout.payment.idramDescription'),
+      logo: '/assets/payments/idram.svg',
     },
   ];
 }

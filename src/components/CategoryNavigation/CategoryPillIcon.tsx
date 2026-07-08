@@ -2,6 +2,7 @@ import Image from 'next/image';
 import type { ReactElement } from 'react';
 import {
   CATEGORY_PILL_ICON_ACTIVE_CLASS,
+  CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS,
 } from './category-pill-dropdown.constants';
 import { getCategoryPillIcon, resolveCategoryPillIconKey } from './category-pill-icons';
 
@@ -22,9 +23,33 @@ export function CategoryPillIcon({
   const iconKey = resolveCategoryPillIconKey(slug, title);
   const icon = getCategoryPillIcon(iconKey, isActive);
   const useActiveColorInvert = isActive && iconKey !== 'all';
+  const useInactiveHoverInvert = !isActive && iconKey !== 'all';
 
   if (!icon) {
     return null;
+  }
+
+  if (!isActive && iconKey === 'all' && icon.activeSrc) {
+    return (
+      <>
+        <Image
+          src={icon.src}
+          alt=""
+          width={icon.width}
+          height={icon.height}
+          className={`shrink-0 ${icon.className} group-hover:hidden`}
+          aria-hidden
+        />
+        <Image
+          src={icon.activeSrc}
+          alt=""
+          width={icon.width}
+          height={icon.height}
+          className={`hidden shrink-0 ${icon.className} group-hover:block`}
+          aria-hidden
+        />
+      </>
+    );
   }
 
   return (
@@ -33,7 +58,7 @@ export function CategoryPillIcon({
       alt=""
       width={icon.width}
       height={icon.height}
-      className={`shrink-0 ${icon.className} ${useActiveColorInvert ? CATEGORY_PILL_ICON_ACTIVE_CLASS : ''}`}
+      className={`shrink-0 ${icon.className} ${useActiveColorInvert ? CATEGORY_PILL_ICON_ACTIVE_CLASS : ''} ${useInactiveHoverInvert ? CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS : ''}`}
       aria-hidden
     />
   );

@@ -20,13 +20,14 @@ import { ShippingAddress } from './components/ShippingAddress';
 import { OrderPageHeader } from './components/OrderPageHeader';
 import { OrderHelpCard } from './components/OrderHelpCard';
 import { OrderSuccessFooterActions } from './components/OrderSuccessFooterActions';
+import { OrderProfileBackBar } from './components/OrderProfileBackBar';
 import type { Order } from './types';
 import { ORDER_DETAIL_INNER_CLASS } from './constants/order-detail-ui';
 
 export default function OrderPage() {
   const params = useParams();
   const searchParams = useSearchParams();
-  const { isLoggedIn, user } = useAuth();
+  const { isLoggedIn, isLoading: authLoading, user } = useAuth();
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,6 +35,9 @@ export default function OrderPage() {
   const currency = useCurrency();
   const orderNumber = String(params.number);
   const paymentStatus = searchParams.get('payment');
+  const showProfileBack = !authLoading && isLoggedIn;
+
+  const orderPageBack = showProfileBack ? <OrderProfileBackBar /> : null;
 
   const fetchOrder = useCallback(async () => {
     try {
@@ -83,7 +87,12 @@ export default function OrderPage() {
       <ProductsHeroShell
         sectionAriaLabel="Order confirmation"
         {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
-        catalog={<LoadingState />}
+        catalog={
+          <div className={ORDER_DETAIL_INNER_CLASS}>
+            {orderPageBack}
+            <LoadingState />
+          </div>
+        }
       />
     );
   }
@@ -93,7 +102,12 @@ export default function OrderPage() {
       <ProductsHeroShell
         sectionAriaLabel="Order confirmation"
         {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
-        catalog={<ErrorState error={error} />}
+        catalog={
+          <div className={ORDER_DETAIL_INNER_CLASS}>
+            {orderPageBack}
+            <ErrorState error={error} />
+          </div>
+        }
       />
     );
   }
@@ -104,6 +118,7 @@ export default function OrderPage() {
       {...ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
         <div className={ORDER_DETAIL_INNER_CLASS}>
+          {orderPageBack}
           <OrderPageHeader orderNumber={order.number} placedAt={order.createdAt} />
           <OrderItems
             items={order.items}

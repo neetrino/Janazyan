@@ -36,6 +36,34 @@ body {
     background: var(--safe-top-bg);
   }
 
+  /**
+   * Non-home embedded header — piecewise upward ramp: 1600→10px, 1500→16px, 1400→24px, 1300→30px.
+   * Constants: header-shell-shape.constants.ts (HEADER_NON_HOME_COMPACT_RAMP_*).
+   */
+  @media (min-width: 1300px) and (max-width: 1400px) {
+    .header-non-home-compact-ramp {
+      transform: translateY(calc(-24px - (1400px - 100vw) * 6 / 100));
+    }
+  }
+
+  @media (min-width: 1400px) and (max-width: 1500px) {
+    .header-non-home-compact-ramp {
+      transform: translateY(calc(-16px - (1500px - 100vw) * 8 / 100));
+    }
+  }
+
+  @media (min-width: 1500px) and (max-width: 1600px) {
+    .header-non-home-compact-ramp {
+      transform: translateY(calc(-10px - (1600px - 100vw) * 6 / 100));
+    }
+  }
+
+  @media (min-width: 1600px) {
+    .header-non-home-compact-ramp {
+      transform: translateY(-10px);
+    }
+  }
+
   @keyframes fade-in {
     from {
       opacity: 0;
@@ -258,6 +286,49 @@ body {
     clip-path: polygon(0 12%, 100% 50%, 0 88%);
     pointer-events: none;
   }
+
+  .products-hero-shell-canvas {
+    container-type: inline-size;
+  }
+
+  /*
+   * Width-locked S-curve: SVG height never exceeds the viewBox aspect for 100vw,
+   * and never exceeds the shell (plus bleeds). `slice` + xMidYMin keeps scale =
+   * width/viewBoxWidth whenever the box is shorter than aspect — tall shells
+   * use the aspect height and the cream fill below instead of stretching.
+   */
+  .products-catalog-desktop-background {
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    top: var(--products-catalog-background-top-offset, 24px);
+    height: min(
+      calc(
+        100vw * var(--products-catalog-background-viewbox-height, 1840) /
+          var(--products-catalog-background-viewbox-width, 1442)
+      ),
+      calc(
+        100% + var(--products-catalog-background-top-offset, 24px) +
+          var(--products-catalog-background-footer-bleed, 191px)
+      )
+    );
+  }
+
+  /*
+   * Cream continuation when the shell is taller than the width-locked shape.
+   * On short shells the top sits past the bottom and the layer collapses.
+   */
+  .products-catalog-desktop-background-fill {
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
+    top: calc(
+      var(--products-catalog-background-top-offset, 24px) +
+        100vw * var(--products-catalog-background-viewbox-height, 1840) /
+          var(--products-catalog-background-viewbox-width, 1442)
+    );
+    bottom: calc(-1 * var(--products-catalog-background-footer-bleed, 191px));
+  }
 }
 
 /* Policy pages typography & spacing */
@@ -408,6 +479,11 @@ body {
 .partner-stores-directory__list::-webkit-scrollbar-thumb {
   border-radius: 9999px;
   background: rgb(147 182 227 / 0.52);
+}
+
+.partner-stores-directory__list--embedded {
+  max-height: none;
+  overflow: visible;
 }
 
 .checkout-pickup-stores-directory .partner-stores-directory__list {

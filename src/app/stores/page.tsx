@@ -19,7 +19,7 @@ export default async function StoresPage() {
 
   return (
     <ProductsHeroShell
-      sectionAriaLabel="Our stores"
+      sectionAriaLabel="Partner stores"
       catalog={
         <>
           <StoresPageHeader copy={copy} />

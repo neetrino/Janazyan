@@ -1,7 +1,10 @@
 import { STOREFRONT_CONTENT_MAX_WIDTH_CLASS, STOREFRONT_SIDE_PADDING_NEG_CLASS } from './storefront-layout.constants';
 
+/** Desktop upward nudge — hero frame tucks under the header S-notch. */
+export const HOME_HERO_DESKTOP_UPWARD_NUDGE_CLASS = 'lg:-mt-8';
+
 /** Cancel shell side padding so the home hero spans the full content column width. */
-export const HOME_HERO_BLEED_CLASS = `${STOREFRONT_SIDE_PADDING_NEG_CLASS} lg:-mt-6`;
+export const HOME_HERO_BLEED_CLASS = `${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${HOME_HERO_DESKTOP_UPWARD_NUDGE_CLASS}`;
 
 /** Shared Figma storefront hero frame — width follows responsive content column. */
 export const STOREFRONT_HERO_FRAME_CLASS = `relative mx-auto w-full overflow-hidden rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:rounded-t-[36px] lg:rounded-bl-[44px] lg:rounded-br-[44px] ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`;

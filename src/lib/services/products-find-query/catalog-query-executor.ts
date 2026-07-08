@@ -46,6 +46,14 @@ const catalogProductSelect = {
       color: true,
     },
   },
+  categories: {
+    select: {
+      id: true,
+      translations: {
+        select: { title: true, slug: true, locale: true },
+      },
+    },
+  },
 } satisfies Prisma.ProductSelect;
 
 /**

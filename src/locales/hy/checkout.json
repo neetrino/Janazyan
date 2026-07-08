@@ -54,8 +54,8 @@
     "freePickup": "Անվճար (Խանութից)",
     "selectPickupStore": "Ընտրեք խանութ",
     "selectPickupStoreDescription": "Ընտրեք այն խանութը, որտեղից ցանկանում եք վերցնել պատվերը",
-    "pickupStoreListTitle": "Խանութներ",
-    "pickupStoreListHint": "Ընտրեք խանութը ցանկից",
+    "pickupStoreSearchPlaceholder": "Փնտրել",
+    "pickupStoreSearchNoResults": "Համապատասխան խանութ չի գտնվել",
     "selectedPickupStoreHint": "Պատվերը կարող եք վերցնել այս խանութից",
     "noPickupStores": "Այս պահին վերցման համար հասանելի խանութներ չկան",
     "loading": "Բեռնվում է...",
@@ -64,12 +64,12 @@
     "freeDelivery": "Անվճար"
   },
   "payment": {
-    "cashOnDelivery": "Կանխիկ առաքման ժամանակ",
+    "cashOnDelivery": "Կանխիկ",
     "cashOnDeliveryDescription": "Վճարեք կանխիկ, երբ ստանաք ձեր պատվերը",
     "idram": "Idram",
     "idramDescription": "Վճարեք Idram դրամապանակով կամ քարտով",
-    "arca": "ArCa",
-    "arcaDescription": "Վճարեք ArCa քարտով",
+    "arca": "Քարտով",
+    "arcaDescription": "Վճարեք Visa, Mastercard կամ ArCa քարտով",
     "paymentDetails": "Վճարման մանրամասներ",
     "enterCardDetails": "Մուտքագրեք ձեր քարտի տվյալները՝ վճարումն ավարտելու համար"
   },

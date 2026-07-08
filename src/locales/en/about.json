@@ -1,9 +1,16 @@
 {
-  "title": "About our online store",
+  "title": "About us",
   "description": {
-    "paragraph1": "We are delighted to welcome you to our online store. Our company strives to provide you with the best shopping experience with a wide range of quality products and excellent service.",
-    "paragraph2": "Our mission is to make online shopping simple, convenient and enjoyable. We carefully select each product to ensure high quality and customer satisfaction.",
-    "paragraph3": "We are proud to offer not only excellent products but also excellent customer service. Our team is always ready to help you find exactly what you are looking for."
+    "paragraphs": [
+      "Janazyan Projects was born from a very important idea: to create knowledge-based care for children and families.",
+      "At the heart of the brand is a doctor's experience and responsibility. Everything started from the conviction that parents should trust every ingredient that touches their child's skin. Thoughtful formulas, clearly selected ingredients, and the gentlest possible effect.",
+      "At first, the goal was to create a range for children, pregnant women, and breastfeeding mothers.",
+      "However, it became clear that the demand was much greater: parents wanted local care that meets international standards not only for children, but for themselves as well. Because children often had allergic reactions from ingredients in care products used by their mothers.",
+      "Thus, Janazyan Projects gradually expanded its lines, creating products not only for children but also for adults.",
+      "We study ingredients, follow dermatological requirements, and constantly listen to our community.",
+      "Janazyan is not just a brand—it is care from a pediatrician for the whole family. Janazyan is an Armenian brand created with love and sensitivity, with the goal of building long-term trust.",
+      "And our journey continues… ✨"
+    ]
   },
   "team": {
     "subtitle": "ABOUT US",
@@ -11,9 +18,3 @@
     "description": "Our team consists of experienced professionals who are dedicated to their work and strive to provide the best service for our customers."
   }
 }
-
-
-
-
-
-

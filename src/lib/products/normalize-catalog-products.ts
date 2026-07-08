@@ -14,6 +14,8 @@ export type CatalogGridProduct = {
   defaultVariantId: string | null;
   colors: unknown[];
   labels: ProductLabel[];
+  categories: Array<{ title: string }>;
+  ratingAverage: number | null;
 };
 
 export function normalizeCatalogProducts(
@@ -33,6 +35,8 @@ export function normalizeCatalogProducts(
       defaultVariantId: product.defaultVariantId ?? null,
       colors: Array.isArray(product.colors) ? product.colors : [],
       labels: product.labels ?? [],
+      categories: product.categories ?? [],
+      ratingAverage: product.ratingAverage ?? null,
     })),
     sort,
   );

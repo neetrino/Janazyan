@@ -1,17 +1,17 @@
 /** Sticky header band height — home embedded and non-embedded shell (24 + 72 + 24). */
 export const HEADER_HOME_BAND_HEIGHT_PX = 120;
 
-/** Sticky header band height — hero-shell embedded pages (56 + 72 + 0). */
-export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = 128;
+/** Sticky header band height — hero-shell embedded pages; matches {@link HEADER_HOME_BAND_HEIGHT_PX}. */
+export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = HEADER_HOME_BAND_HEIGHT_PX;
 
 /** Figma header / Frame 472 pill height. */
 export const HEADER_PILL_HEIGHT_PX = 72;
 
 /** Home embedded header — Figma row offset from hero top (top-only inset). */
-export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 48;
+export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 64;
 
-/** Hero-shell embedded header — desktop row sits slightly below home Figma offset. */
-export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = 56;
+/** Hero-shell embedded header — same top inset as home hero. */
+export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 
 /** Vertical inset — centers pills in {@link HEADER_HOME_BAND_HEIGHT_PX} (non-home). */
 export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PILL_HEIGHT_PX) / 2;
@@ -31,7 +31,7 @@ export const HEADER_SHELL_ROW_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 export const HEADER_SHELL_BRAND_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 
 /** Embedded mobile brand row — no desktop shell shape. */
-export const HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX = 45;
+export const HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX = 61;
 
 /** Symmetric horizontal inset from the content column edge to header pills (Figma x=25). */
 export const HEADER_SHELL_HORIZONTAL_INSET_PX = 25;
@@ -62,6 +62,45 @@ export const HEADER_COMPACT_DESKTOP_CLUSTER_MIN_GAP_PX = 40;
 
 /** Tighter nav link spacing on compact desktop so pills keep a safe center gap. */
 export const HEADER_COMPACT_DESKTOP_NAV_LINK_GAP_PX = 18;
+
+/** Narrowest desktop band — extra header lift between desktop min (1300) and this width. */
+export const HEADER_NARROW_DESKTOP_MAX_WIDTH_PX = 1400;
+
+/** Embedded home/hero-shell — nudge header up on compact desktop so pills stay in the S-notch. */
+export const HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS =
+  'desktop:max-[1649px]:min-[1401px]:-translate-y-4 desktop:max-[1400px]:-translate-y-6';
+
+/** Non-home compact desktop ramp — lift (px) at 1600 / 1500 / 1400 / 1300 viewport widths. */
+export const HEADER_NON_HOME_COMPACT_RAMP_TOP_WIDTH_PX = 1600;
+export const HEADER_NON_HOME_COMPACT_RAMP_UPPER_MID_WIDTH_PX = 1500;
+export const HEADER_NON_HOME_COMPACT_RAMP_LOWER_MID_WIDTH_PX = 1400;
+export const HEADER_NON_HOME_COMPACT_RAMP_MIN_WIDTH_PX = 1300;
+
+export const HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_TOP_WIDTH_PX = 10;
+export const HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_UPPER_MID_WIDTH_PX = 16;
+export const HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_LOWER_MID_WIDTH_PX = 24;
+export const HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_MIN_WIDTH_PX = 30;
+
+/** Top segment span (1600 → 1500) and lift delta (10 → 16). */
+export const HEADER_NON_HOME_COMPACT_RAMP_TOP_SEGMENT_WIDTH_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_TOP_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_UPPER_MID_WIDTH_PX;
+export const HEADER_NON_HOME_COMPACT_RAMP_TOP_SEGMENT_LIFT_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_UPPER_MID_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_TOP_WIDTH_PX;
+
+/** Upper segment span (1500 → 1400) and lift delta (16 → 24). */
+export const HEADER_NON_HOME_COMPACT_RAMP_UPPER_SEGMENT_WIDTH_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_UPPER_MID_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_LOWER_MID_WIDTH_PX;
+export const HEADER_NON_HOME_COMPACT_RAMP_UPPER_SEGMENT_LIFT_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_LOWER_MID_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_UPPER_MID_WIDTH_PX;
+
+/** Lower segment span (1400 → 1300) and lift delta (24 → 30). */
+export const HEADER_NON_HOME_COMPACT_RAMP_LOWER_SEGMENT_WIDTH_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_LOWER_MID_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_MIN_WIDTH_PX;
+export const HEADER_NON_HOME_COMPACT_RAMP_LOWER_SEGMENT_LIFT_SPAN_PX =
+  HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_MIN_WIDTH_PX - HEADER_NON_HOME_COMPACT_RAMP_LIFT_AT_LOWER_MID_WIDTH_PX;
+
+/** Non-home embedded header — piecewise upward ramp 1300–1600px (see globals.css). */
+export const HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS = 'header-non-home-compact-ramp';
 
 /** Tailwind — minimum cluster gap on compact desktop (must stay a complete class string). */
 export const HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS = 'desktop:max-[1439px]:gap-10';

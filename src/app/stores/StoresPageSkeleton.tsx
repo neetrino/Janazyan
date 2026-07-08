@@ -1,11 +1,12 @@
 import { MAP_HEIGHT_PX } from '../../features/stores/constants';
+import { STOREFRONT_PAGE_HEADER_SECTION_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 
 /**
  * Hero copy placeholder — synchronous on client navigation.
  */
 export function StoresPageHeaderSkeleton() {
   return (
-    <section className="animate-pulse py-8 md:py-12" aria-busy="true" aria-label="Loading stores header">
+    <section className={`animate-pulse ${STOREFRONT_PAGE_HEADER_SECTION_CLASS}`} aria-busy="true" aria-label="Loading stores header">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto h-4 w-32 rounded bg-neutral-200" />

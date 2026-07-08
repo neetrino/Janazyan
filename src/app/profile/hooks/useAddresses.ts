@@ -41,13 +41,26 @@ export function useAddresses({
     onError('');
     onSuccess('');
 
+    const addressId = editingAddress?.id || editingAddress?._id;
+    if (!addressId && profile?.addresses && profile.addresses.length >= 1) {
+      onError(t('profile.addresses.limitOneAddress'));
+      setSavingAddress(false);
+      return;
+    }
+
+    const payload: Address = {
+      ...addressForm,
+      addressLine2: '',
+      city: '',
+      isDefault: true,
+    };
+
     try {
-      const addressId = editingAddress?.id || editingAddress?._id;
       if (addressId) {
-        await apiClient.put(`/api/v1/users/addresses/${addressId}`, addressForm);
+        await apiClient.put(`/api/v1/users/addresses/${addressId}`, payload);
         onSuccess(t('profile.addresses.updatedSuccess'));
       } else {
-        await apiClient.post('/api/v1/users/addresses', addressForm);
+        await apiClient.post('/api/v1/users/addresses', payload);
         onSuccess(t('profile.addresses.addedSuccess'));
       }
       

@@ -1,35 +1,35 @@
 export const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-butter/60 text-ink-800';
     case 'confirmed':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-sky/25 text-sky-deep';
     case 'processing':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-lavender/40 text-ink-800';
     case 'shipped':
-      return 'bg-indigo-100 text-indigo-800';
+      return 'bg-sky-mist/60 text-ink-800';
     case 'delivered':
     case 'completed':
-      return 'bg-green-100 text-green-800';
+      return 'bg-sage/60 text-ink-800';
     case 'cancelled':
-      return 'bg-red-100 text-red-800';
+      return 'bg-sale/15 text-sale';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-sky-mist/40 text-ink-700';
   }
 };
 
 export const getPaymentStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
     case 'paid':
-      return 'bg-green-100 text-green-800';
+      return 'bg-sage/60 text-ink-800';
     case 'pending':
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-butter/60 text-ink-800';
     case 'failed':
-      return 'bg-red-100 text-red-800';
+      return 'bg-sale/15 text-sale';
     case 'refunded':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-lavender/40 text-ink-800';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-sky-mist/40 text-ink-700';
   }
 };
 

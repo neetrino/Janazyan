@@ -14,6 +14,9 @@ import {
 } from '../../lib/language';
 import { SearchDropdown } from '../SearchDropdown';
 import {
+  SEARCH_DROPDOWN_MOBILE_PANEL_CLASS,
+} from '../search-dropdown.constants';
+import {
   useInstantSearch,
   type InstantSearchResultItem,
 } from '../hooks/useInstantSearch';
@@ -102,7 +105,7 @@ export function MobileTopBar() {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div ref={searchContainerRef} className="relative flex items-center gap-2">
       <Link
         href="/"
         aria-label={t('common.navigation.home')}
@@ -123,7 +126,7 @@ export function MobileTopBar() {
         </span>
       </Link>
 
-      <div ref={searchContainerRef} className="relative flex h-12 flex-1 items-center">
+      <div className="relative flex h-12 flex-1 items-center">
         <label htmlFor="mobile-home-search" className="sr-only">
           {t('home.mobile.aria.search')}
         </label>
@@ -147,16 +150,6 @@ export function MobileTopBar() {
           enterKeyHint="search"
           className="h-12 w-full rounded-full bg-white py-0 pl-11 pr-4 text-sm text-ink-800 shadow-[0_4px_18px_rgba(30,41,57,0.08)] placeholder:text-ink-400 focus:outline-none focus:ring-2 focus:ring-sky/60"
         />
-        <SearchDropdown
-          results={results}
-          loading={loading}
-          error={error}
-          isOpen={isOpen}
-          selectedIndex={selectedIndex}
-          query={query}
-          onResultClick={handleResultClick}
-          onClose={() => setIsOpen(false)}
-        />
       </div>
 
       <a
@@ -168,6 +161,18 @@ export function MobileTopBar() {
       </a>
 
       <MobileLanguageButton label={t('home.mobile.aria.language')} />
+
+      <SearchDropdown
+        results={results}
+        loading={loading}
+        error={error}
+        isOpen={isOpen}
+        selectedIndex={selectedIndex}
+        query={query}
+        onResultClick={handleResultClick}
+        onClose={() => setIsOpen(false)}
+        className={SEARCH_DROPDOWN_MOBILE_PANEL_CLASS}
+      />
     </div>
   );
 }

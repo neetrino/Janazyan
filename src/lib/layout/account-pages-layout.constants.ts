@@ -37,11 +37,11 @@ export const PROFILE_MOBILE_OUTER_CLASS = 'mx-auto w-full pb-8 desktop:hidden';
 
 /** Profile mobile card — reduced horizontal padding on narrow screens. */
 export const PROFILE_MOBILE_CARD_CLASS =
-  'rounded-[2rem] bg-white px-4 pb-7 pt-5 shadow-sm ring-1 ring-gray-200/80 sm:px-5';
+  'rounded-[2rem] bg-cream/50 px-3 pb-8 pt-6 shadow-sm ring-1 ring-sky-mist/70 sm:px-4';
 
 /** Bottom sheet — tall enough for forms, with visible backdrop above. */
 export const PROFILE_MOBILE_SHEET_HEIGHT_CLASS = 'h-[calc(100dvh-6.5rem)]';
 
 /** Scrollable body inside the sheet (header handle + title row ≈ 4.75rem). */
 export const PROFILE_MOBILE_SHEET_BODY_CLASS =
-  'h-[calc(100dvh-6.5rem-4.75rem)] overflow-y-auto px-4 py-4 pb-6';
+  'h-[calc(100dvh-6.5rem-4.75rem)] overflow-y-auto overscroll-contain px-3 py-4 pb-8 sm:px-4';

@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { MIRAGE_PAGE_HEADING_CLASS } from '../../components/home/mirage-heading-styles';
+import { STOREFRONT_PAGE_HEADER_SECTION_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import type { StoresTranslation } from '../../features/stores/types';
 
 export function StoresPageHeader({ copy }: { copy: StoresTranslation }) {
   return (
-    <section className="py-8 md:py-12">
+    <section className={STOREFRONT_PAGE_HEADER_SECTION_CLASS}>
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <h1 className={MIRAGE_PAGE_HEADING_CLASS}>

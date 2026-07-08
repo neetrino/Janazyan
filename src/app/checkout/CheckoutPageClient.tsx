@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
-import { CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS } from './checkout-layout.constants';
+import { CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS, CHECKOUT_PAGE_TITLE_CLASS } from './checkout-layout.constants';
 import { STOREFRONT_SKY_PILL_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { CheckoutForm } from './CheckoutForm';
@@ -61,6 +61,8 @@ export function CheckoutPageClient() {
     orderSummary,
     onCheckoutSubmit,
     onSubmit,
+    removeCartItem,
+    removingItemIds,
   } = useCheckout();
 
   if (loading) {
@@ -82,7 +84,7 @@ export function CheckoutPageClient() {
         {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={
           <div className={ACCOUNT_PAGE_INNER_CLASS}>
-            <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
+            <h1 className={CHECKOUT_PAGE_TITLE_CLASS}>{t('checkout.title')}</h1>
             <CheckoutGlassCard className="text-center">
               <p className="mb-4 text-gray-600">{t('checkout.errors.cartEmpty')}</p>
               <button
@@ -108,12 +110,14 @@ export function CheckoutPageClient() {
       {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
         <div className={ACCOUNT_PAGE_INNER_CLASS}>
-          <h1 className="mb-8 text-3xl font-bold text-gray-900">{t('checkout.title')}</h1>
+          <h1 className={CHECKOUT_PAGE_TITLE_CLASS}>{t('checkout.title')}</h1>
 
           <form id={CHECKOUT_FORM_ID} noValidate onSubmit={onCheckoutSubmit}>
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-start">
               <CheckoutForm
                 cart={cart}
+                onRemoveCartItem={removeCartItem}
+                removingItemIds={removingItemIds}
                 register={register}
                 setValue={setValue}
                 errors={errors}

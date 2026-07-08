@@ -54,8 +54,8 @@
     "freePickup": "Free (Store Pickup)",
     "selectPickupStore": "Select a store",
     "selectPickupStoreDescription": "Choose the store where you want to pick up your order",
-    "pickupStoreListTitle": "Stores",
-    "pickupStoreListHint": "Select a store from the list",
+    "pickupStoreSearchPlaceholder": "Search",
+    "pickupStoreSearchNoResults": "No matching stores found",
     "selectedPickupStoreHint": "You can pick up your order at this store",
     "noPickupStores": "No pickup stores are available right now",
     "loading": "Loading...",
@@ -64,12 +64,12 @@
     "freeDelivery": "Free"
   },
   "payment": {
-    "cashOnDelivery": "Cash on Delivery",
+    "cashOnDelivery": "Cash",
     "cashOnDeliveryDescription": "Pay cash when you receive your order",
     "idram": "Idram",
     "idramDescription": "Pay with Idram wallet or card",
-    "arca": "ArCa",
-    "arcaDescription": "Pay with ArCa card",
+    "arca": "By Card",
+    "arcaDescription": "Pay with Visa, Mastercard, or ArCa card",
     "paymentDetails": "Payment Details",
     "enterCardDetails": "Enter your card details to complete payment"
   },

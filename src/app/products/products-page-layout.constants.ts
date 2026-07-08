@@ -1,12 +1,64 @@
-import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
+  STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS,
+  STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS,
   STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
+import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
+import { FOOTER_DESKTOP_DECORATION_BLEED_PX } from '../../components/footer/footer-desktop.constants';
+import { HEADER_HERO_SHELL_BAND_HEIGHT_PX } from '../../components/header/header-shell-shape.constants';
 
-/** Same rounded shell as {@link HomeHero}; non-home background spans the viewport. */
+/** Desktop catalog gradient inset from shell top — shared by all hero-shell pages. */
+export const PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX = 24;
+
+/** Same rounded shell as {@link HomeHero}; white backdrop keeps the header pill gap white. */
+export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
+
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  'relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px]';
+  `relative w-full overflow-x-clip overflow-y-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
+
+/**
+ * Extra sky gradient below decoration overlap — fills the wedge where the shell
+ * bottom arc meets the footer rounded top corners on desktop.
+ */
+export const PRODUCTS_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX = 44;
+
+/** Total desktop footer-zone gradient height (decoration overlap + corner clearance). */
+export const PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX =
+  FOOTER_DESKTOP_DECORATION_BLEED_PX + PRODUCTS_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX;
+
+/** Footer overlap zone — desktop SVG background extends by this amount (see globals.css). */
+export const PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS = '';
+
+/** Figma catalog desktop background SVG viewBox — short pages use this for min-height. */
+export const PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH = 1442;
+export const PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT = 1840;
+
+/** Bottom stop of the catalog desktop gradient — fills tall shells below the fixed shape. */
+export const PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR = '#FCF8EC';
+
+/** Default desktop catalog gradient vector — matches the original /products artwork. */
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1 = 205.703;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1 = 137.062;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2 = 1601.17;
+export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2 = 988.49;
+
+/** Single product background handoff — scoped so other pages keep the original catalog art. */
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX = 220;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX =
+  FOOTER_DESKTOP_DECORATION_BLEED_PX + PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR = '#EAF4FC';
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR = '#EAF4FC';
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET = 0.48;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2 = 0;
+export const PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2 =
+  PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT;
+
+/** Same header S-step as {@link HERO_RECTANGLE_PATH} (Figma node 42:237 ledge y≈94). */
+export const PRODUCTS_CATALOG_BACKGROUND_PATH =
+  'M0 125.383C0 108.262 13.8792 94.3832 31 94.3832H837.525C854.645 94.3832 868.525 80.5041 868.525 63.3832V31C868.525 13.8792 882.404 0 899.525 0H1411C1428.12 0 1442 13.8792 1442 31V1809C1442 1826.12 1428.12 1840 1411 1840H31C13.8792 1840 0 1826.12 0 1809V125.383Z';
 
 /** Slightly wider than home column — tighter outer gutters on /products. */
 export const PRODUCTS_PAGE_MAX_WIDTH_CLASS =
@@ -31,12 +83,27 @@ export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_OFFSET_PX = 0;
 /** Desktop hero gradient spans the full header band. */
 export const PRODUCTS_PAGE_HERO_GRADIENT_TOP_CLASS = 'top-0';
 
-/** Toolbar baseline from shell top (node 269:900, y=210). */
-export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = 'desktop:pt-[300px]';
+/** Gap between embedded header band bottom and category toolbar (desktop). */
+export const PRODUCTS_PAGE_TOOLBAR_BELOW_HEADER_GAP_PX = 100;
+
+/** Toolbar offset from shell top — header band + gap below pills. */
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX =
+  HEADER_HERO_SHELL_BAND_HEIGHT_PX + PRODUCTS_PAGE_TOOLBAR_BELOW_HEADER_GAP_PX;
+
+/** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX} via inline padding in {@link ProductsHeroShell}. */
+export const PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_CLASS = `desktop:pt-[${PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX}px]`;
 
 /** Content-only hero pages (checkout) — header clearance without empty toolbar band. */
 export const PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS =
   'pt-[120px] sm:pt-[140px] desktop:pt-[156px]';
+
+/** Content-only pages without toolbar — shorter white band before the blue hero curve. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_CLASS =
+  'pt-[100px] sm:pt-[120px] desktop:pt-[140px]';
+
+/** Legacy content-only hero offset — preserved for /contact. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_HERO_OFFSET_LEGACY_CLASS =
+  'pt-[120px] sm:pt-[140px] desktop:pt-[200px]';
 
 /** Mobile — clear embedded header before category pills. */
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[140px]';
@@ -51,9 +118,9 @@ export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 /** Shared toolbar control pill height — aligned with category pills. */
 export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10 desktop:h-12';
 
-/** Sort control width — compact on narrow viewports, full width on desktop. */
+/** Sort control width — icon + chevron only (no label text). */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS =
-  'min-w-[152px] shrink-0 px-2.5 sm:min-w-[168px] sm:px-3 desktop:min-w-[208px] desktop:px-5';
+  'shrink-0 px-2.5 desktop:px-3';
 
 /** Gap between category pills and sort control. */
 export const PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS = 'gap-1.5 desktop:gap-2.5';
@@ -63,10 +130,10 @@ export const PRODUCTS_PAGE_TOOLBAR_ROW_CLASS =
   `flex flex-row items-center ${PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS}`;
 
 /** Outer shop toolbar wrapper — extra top inset on tablet/laptop mobile shell. */
-export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-20 sm:pt-24 desktop:pt-0';
+export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-16 sm:pt-20 desktop:pt-0';
 
 /** Mobile toolbar slot — full-bleed category row below search (cancels shell side padding). */
-export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-12 sm:mt-14';
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-9 sm:mt-11';
 
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS =
   `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
@@ -101,7 +168,7 @@ export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
 
 /** Inactive category pill — sky surface on mobile; white on desktop hero. */
 export const PRODUCTS_PAGE_CATEGORY_PILL_INACTIVE_CLASS =
-  'bg-sky-mist/70 text-sky-deep hover:bg-sky-mist desktop:bg-white desktop:hover:bg-sky-mist/70';
+  'border-2 border-transparent bg-sky-mist/70 text-sky-deep hover:border-white hover:bg-ink-500 hover:text-white hover:opacity-100 desktop:bg-white desktop:hover:border-white desktop:hover:bg-ink-500 desktop:hover:text-white';
 
 /** Sort control — sky-deep brand tone (#93B6E3). */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS =
@@ -113,7 +180,7 @@ export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBA
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
 
-/** Gradient continuation for the catalog zone. */
+/** Gradient continuation for the catalog zone — starts at sky-mist to meet the hero band. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
 
 /** Mobile catalog — nav clearance + last-row card breathing room (88px nav + 16px). */
@@ -124,21 +191,40 @@ export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
 export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
   `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
+/** Content-only mobile catalog — tighter top spacing (stores, about, FAQ, blog). */
+export const PRODUCTS_PAGE_MOBILE_CONTENT_ONLY_CATALOG_SURFACE_CLASS =
+  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
+
 /** Legacy mobile reset hook for single-mount catalog slots; intentionally a no-op. */
 export const PRODUCTS_PAGE_CATALOG_MOBILE_SURFACE_RESET_CLASS = '';
 
 /** Legacy desktop shell continuation hook for single-mount catalog slots; intentionally a no-op. */
 export const PRODUCTS_PAGE_CATALOG_DESKTOP_SHELL_CONTINUATION_CLASS = '';
 
-/** Space between toolbar and first product row. */
-export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-8';
+/** Space between toolbar and first product row (node 570:646, y=388 inside 20px artboard inset). */
+export const PRODUCTS_PAGE_CATALOG_TOP_PADDING_CLASS = 'pt-6 desktop:pt-[69px]';
+
+/** Content-only pages — tighter gap between hero curve and page title. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_CLASS = 'pt-3 sm:pt-4 desktop:pt-10';
+
+/** Legacy content-only catalog top padding — preserved for /contact. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_TOP_PADDING_LEGACY_CLASS =
+  'pt-6 desktop:pt-10';
 
 /** Inner content inset — fixed to match narrow-viewport spacing at every breakpoint. */
 export const PRODUCTS_PAGE_CONTENT_INSET_CLASS = 'px-6 sm:px-8';
 
-/** Bottom padding inside the catalog zone — tighter above overlapping footer on tablet/laptop. */
+/** Bottom padding inside the catalog zone — clears footer decoration on shop pages. */
 export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
-  'pb-10 md:pb-8 desktop:pb-16';
+  'pb-24 md:pb-32 desktop:pb-[180px]';
+
+/** Content-only hero pages — tighter gap before the overlapping footer decoration. */
+export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-24 md:pb-32 desktop:pb-28';
+
+/** Single product page — keep reviews above the footer with a small visual gap. */
+export const PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-24 md:pb-32 desktop:pb-40';
 
 /** @deprecated Mobile hero band is content-driven; kept for layout reference. */
 export const PRODUCTS_PAGE_MOBILE_HERO_BAND_HEIGHT_CLASS = 'h-[160px] sm:h-[180px]';

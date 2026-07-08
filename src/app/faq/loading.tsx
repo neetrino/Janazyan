@@ -1,4 +1,5 @@
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
+import { STOREFRONT_PAGE_CONTENT_TOP_PADDING_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import {
   FaqPageFooterSkeleton,
   FaqPageHeaderSkeleton,
@@ -11,7 +12,7 @@ export default function FaqLoading() {
     <ProductsHeroShell
       sectionAriaLabel="FAQ"
       catalog={
-        <div className="mx-auto max-w-3xl pb-12 pt-8 md:pt-12">
+        <div className={`mx-auto max-w-3xl pb-12 ${STOREFRONT_PAGE_CONTENT_TOP_PADDING_CLASS}`}>
           <FaqPageHeaderSkeleton />
           <FaqPageMainSkeleton />
           <FaqPageFooterSkeleton />

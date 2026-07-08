@@ -10,7 +10,6 @@ import { ProductsHeroShell } from '@/components/products/ProductsHeroShell';
 import { ProductsShopHeroToolbar } from '@/components/products/ProductsShopHeroToolbar';
 import { ProductsCatalogServer } from './ProductsCatalogServer';
 import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
-import { PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS } from './products-page-layout.constants';
 
 export const revalidate = 120;
 
@@ -48,7 +47,6 @@ export default async function ProductsPage({
 
   return (
     <ProductsHeroShell
-      mobileContentSurfaceClassName={PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS}
       activeCategorySlug={parsed.category}
       toolbar={
         <ProductsShopHeroToolbar

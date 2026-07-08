@@ -13,6 +13,7 @@ import {
   CATEGORY_PILL_CHEVRON,
   CATEGORY_PILL_CHEVRON_ACTIVE_CLASS,
   CATEGORY_PILL_CHEVRON_OPEN_CLASS,
+  CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS,
 } from './category-pill-dropdown.constants';
 import { useCategoryFilterDropdown } from './CategoryFilterDropdownContext';
 import { getCategoryPillLayoutClass } from './category-pill-layout.constants';
@@ -45,7 +46,7 @@ function CategoryFilterPillLink({
       aria-current={isActive ? 'page' : undefined}
       data-category-filter-slug={category.id}
       onClick={onNavigate}
-      className={`${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug)} ${getCategoryPillStateClass(isActive)}`}
+      className={`group ${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug)} ${getCategoryPillStateClass(isActive)}`}
     >
       <CategoryPillIcon title={category.title} slug={category.slug} isActive={isActive} />
       <span>{label}</span>
@@ -75,7 +76,7 @@ function CategoryFilterPillDropdown({
         }
         toggleCategory(category, triggerRef.current);
       }}
-      className={`${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug, true)} ${getCategoryPillStateClass(isActive)}`}
+      className={`group ${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug, true)} ${getCategoryPillStateClass(isActive)}`}
     >
       <CategoryPillIcon title={category.title} slug={category.slug} isActive={isActive} />
       <span>{label}</span>
@@ -85,7 +86,7 @@ function CategoryFilterPillDropdown({
         width={CATEGORY_PILL_CHEVRON.width}
         height={CATEGORY_PILL_CHEVRON.height}
         className={`shrink-0 ${CATEGORY_PILL_CHEVRON.className} ${
-          isActive ? CATEGORY_PILL_CHEVRON_ACTIVE_CLASS : ''
+          isActive ? CATEGORY_PILL_CHEVRON_ACTIVE_CLASS : CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS
         } ${isOpen ? CATEGORY_PILL_CHEVRON_OPEN_CLASS : ''}`}
         aria-hidden
       />

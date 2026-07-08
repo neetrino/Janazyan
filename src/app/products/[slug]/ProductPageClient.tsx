@@ -17,7 +17,6 @@ import type { Product } from './types';
 import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
 import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 import { CART_KEY } from '../../cart/constants';
-import { openCartDrawer } from '../../../lib/cart-drawer-events';
 import { applyOptimisticAddToSnapshot } from '../../../lib/cart/cart-optimistic';
 import { resolveCartCacheScope } from '../../../lib/cart/cart-snapshot-cache';
 import { dispatchCartUpdated } from '../../../lib/cart/cart-events';
@@ -219,7 +218,6 @@ export function ProductPageClient({
       }
 
       setShowMessage(`${t(language, 'product.addedToCart')} ${quantity} ${t(language, 'product.pcs')}`);
-      openCartDrawer();
     } catch {
       setShowMessage(t(language, 'product.errorAddingToCart'));
     } finally {

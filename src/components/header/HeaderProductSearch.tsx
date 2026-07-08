@@ -4,6 +4,9 @@ import { Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { SearchDropdown } from '../SearchDropdown';
+import {
+  SEARCH_DROPDOWN_DESKTOP_PANEL_WIDTH_CLASS,
+} from '../search-dropdown.constants';
 import { useInstantSearch, type InstantSearchResultItem } from '../hooks/useInstantSearch';
 import { useTranslation } from '../../lib/i18n-hooks';
 import { getStoredLanguage, type LanguageCode } from '../../lib/language';
@@ -126,7 +129,7 @@ export function HeaderProductSearch() {
       </button>
 
       {isPopupOpen ? (
-        <div className="absolute right-0 top-full z-[70] mt-2 w-[min(92vw,540px)] rounded-[24px] border border-white/70 bg-sky/25 p-2 shadow-[0_10px_30px_rgba(30,41,57,0.14)] backdrop-blur-md">
+        <div className={`absolute right-0 top-full z-[70] mt-2 ${SEARCH_DROPDOWN_DESKTOP_PANEL_WIDTH_CLASS} rounded-[24px] border border-white/70 bg-sky/25 p-2 shadow-[0_10px_30px_rgba(30,41,57,0.14)] backdrop-blur-md`}>
           <label htmlFor="header-product-search" className="sr-only">
             {t('common.ariaLabels.searchPlaceholder')}
           </label>

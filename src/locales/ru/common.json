@@ -17,6 +17,7 @@
     "close": "Закрыть"
   },
   "navigation": {
+    "back": "Назад",
     "home": "Главная",
     "products": "Товары",
     "categories": "Категории",
@@ -70,7 +71,7 @@
     "title": "Мое избранное",
     "empty": "Ваше избранное пусто",
     "emptyDescription": "Начните добавлять товары в избранное, чтобы сохранить их на потом.",
-    "totalCount": "Всего товаров в избранном",
+    "totalCount": "Всего товаров",
     "tableHeaders": {
       "productName": "Название товара",
       "unitPrice": "Цена за единицу",
@@ -167,7 +168,7 @@
     "removeFromCompare": "Удалить из сравнения",
     "outOfStock": "Нет в наличии",
     "search": "Поиск",
-    "searchPlaceholder": "Поиск товаров",
+    "searchPlaceholder": "Поиск",
     "openMenu": "Открыть меню навигации",
     "closeMenu": "Закрыть меню навигации",
     "instagram": "Instagram",

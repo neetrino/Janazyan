@@ -32,9 +32,9 @@ const CATALOG_SLOT_CARD_TOP_CLASS =
   'top-[33px] sm:top-[46px] md:top-[56px] desktop:top-[64px]';
 
 const RESPONSIVE_CATALOG_SLOT_SIZE =
-  'product-card-responsive-slot h-[213px] w-[144px] max-w-full sm:h-[296px] sm:w-[204px] md:h-[361px] md:w-[249px] desktop:h-[411px] desktop:w-[283px]';
+  'product-card-responsive-slot h-[213px] w-[144px] max-w-full sm:h-[296px] sm:w-[204px] md:h-[361px] md:w-[249px] desktop:h-[347px] desktop:w-[283px]';
 const RESPONSIVE_CATALOG_SLOT_CARD_TOP_CLASS =
-  'product-card-responsive-card-top top-[33px] sm:top-[46px] md:top-[56px] desktop:top-[64px]';
+  'product-card-responsive-card-top top-[33px] sm:top-[46px] md:top-[56px] desktop:top-0';
 
 const MOBILE_GRID_SLOT_SIZE = 'h-[213px] w-[144px] max-w-full';
 const MOBILE_GRID_SLOT_CARD_TOP_CLASS = 'top-[33px]';

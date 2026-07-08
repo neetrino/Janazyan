@@ -14,6 +14,12 @@ import { useTranslation } from '../../lib/i18n-client';
 import {
   STOREFRONT_PILL_INTERACTIVE_CLASS,
 } from '../../lib/ui/storefront-interactive-button-classes';
+import {
+  PRODUCTS_TOOLBAR_SORT_ALT_ICON,
+  PRODUCTS_TOOLBAR_SORT_CHEVRON,
+  PRODUCTS_TOOLBAR_SORT_CHEVRON_CLOSED_CLASS,
+  PRODUCTS_TOOLBAR_SORT_CHEVRON_OPEN_CLASS,
+} from './products-toolbar-icons.constants';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'name-asc' | 'name-desc';
 
@@ -179,23 +185,27 @@ export function ProductsToolbarControls() {
           onClick={() => setShowSortDropdown((open) => !open)}
           aria-expanded={showSortDropdown}
           aria-haspopup="listbox"
-          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1 desktop:gap-1.5 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} text-xs font-medium desktop:text-sm ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
+          aria-label={t('products.header.sortBy')}
+          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1.5 desktop:gap-2 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
         >
           <Image
-            src="/figma/shop-sort-filter-icon.svg"
+            src={PRODUCTS_TOOLBAR_SORT_ALT_ICON.src}
             alt=""
-            width={14}
-            height={16}
-            className="h-4 w-3.5 shrink-0 desktop:h-[18px] desktop:w-4"
+            width={PRODUCTS_TOOLBAR_SORT_ALT_ICON.width}
+            height={PRODUCTS_TOOLBAR_SORT_ALT_ICON.height}
+            className={PRODUCTS_TOOLBAR_SORT_ALT_ICON.className}
             aria-hidden
           />
-          <span>{t('products.header.sortBy')}</span>
           <Image
-            src="/figma/shop-sort-chevron.svg"
+            src={PRODUCTS_TOOLBAR_SORT_CHEVRON.src}
             alt=""
-            width={8}
-            height={13}
-            className={`h-[13px] w-2 shrink-0 desktop:h-[15px] desktop:w-2.5 transition-transform ${showSortDropdown ? 'rotate-90' : ''}`}
+            width={PRODUCTS_TOOLBAR_SORT_CHEVRON.width}
+            height={PRODUCTS_TOOLBAR_SORT_CHEVRON.height}
+            className={`${PRODUCTS_TOOLBAR_SORT_CHEVRON.className} ${
+              showSortDropdown
+                ? PRODUCTS_TOOLBAR_SORT_CHEVRON_OPEN_CLASS
+                : PRODUCTS_TOOLBAR_SORT_CHEVRON_CLOSED_CLASS
+            }`}
             aria-hidden
           />
         </button>
