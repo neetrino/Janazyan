@@ -11,10 +11,17 @@ export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
 export const PRODUCTS_PAGE_SHELL_CLASS =
   `relative w-full overflow-x-clip overflow-y-visible rounded-[28px] bg-white sm:rounded-[44px] desktop:rounded-t-[36px] desktop:rounded-bl-[44px] desktop:rounded-br-[44px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
 
-/** Sky gradient continuation under the footer decoration overlap (matches footer pull-up). */
-export const PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX = FOOTER_DESKTOP_DECORATION_BLEED_PX;
+/**
+ * Extra sky gradient below decoration overlap — fills the wedge where the shell
+ * bottom arc meets the footer rounded top corners on desktop.
+ */
+export const PRODUCTS_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX = 44;
 
-/** Footer decoration gradient is handled by `.products-catalog-desktop-footer-bleed` — no shell padding. */
+/** Total desktop footer-zone gradient height (decoration overlap + corner clearance). */
+export const PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX =
+  FOOTER_DESKTOP_DECORATION_BLEED_PX + PRODUCTS_CATALOG_BACKGROUND_FOOTER_EXTRA_BLEED_PX;
+
+/** Footer overlap zone — desktop SVG background extends by this amount (see globals.css). */
 export const PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS = '';
 
 /** Figma catalog desktop background SVG viewBox — short pages use this for min-height. */

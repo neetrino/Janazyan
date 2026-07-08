@@ -265,18 +265,13 @@ body {
 
   .products-catalog-desktop-background {
     --products-catalog-background-top-offset: 12px;
-    --products-catalog-background-footer-bleed: 147px;
+    left: 50%;
+    width: 100vw;
+    transform: translateX(-50%);
     top: var(--products-catalog-background-top-offset);
-    height: calc(100% + var(--products-catalog-background-top-offset));
-  }
-
-  .products-catalog-desktop-footer-bleed {
-    height: var(--products-catalog-background-footer-bleed);
-    background: linear-gradient(
-      180deg,
-      #c6ddf3 0%,
-      #d4e7f8 52%,
-      #e8f2fa 100%
+    height: calc(
+      100% + var(--products-catalog-background-top-offset) +
+        var(--products-catalog-background-footer-bleed, 147px)
     );
   }
 }

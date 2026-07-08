@@ -2,6 +2,7 @@
 
 import { useId, type CSSProperties, type ReactNode } from 'react';
 import {
+  PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
   PRODUCTS_CATALOG_BACKGROUND_PATH,
   PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT,
   PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
@@ -81,7 +82,14 @@ function ProductsHeroShellInner({
   const { topPaddingClass, bottomPaddingClass } = resolveCatalogSpacingClasses(toolbar);
 
   return (
-    <div className={`${PRODUCTS_PAGE_SHELL_CLASS} ${PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS} flex flex-col`}>
+    <div
+      className={`${PRODUCTS_PAGE_SHELL_CLASS} ${PRODUCTS_PAGE_SHELL_FOOTER_BLEED_CLASS} flex flex-col`}
+      style={
+        {
+          '--products-catalog-background-footer-bleed': `${PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX}px`,
+        } as CSSProperties
+      }
+    >
       <ProductsCatalogDesktopBackground />
       <Header embedded />
       <div
@@ -114,34 +122,28 @@ function ProductsCatalogDesktopBackground() {
   const gradientId = useId();
 
   return (
-    <>
-      <svg
-        aria-hidden
-        className="products-catalog-desktop-background pointer-events-none absolute inset-x-0 z-0 w-full"
-        viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
-        preserveAspectRatio="xMidYMin slice"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient
-            id={gradientId}
-            x1="205.703"
-            y1="137.062"
-            x2="1601.17"
-            y2="988.49"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop stopColor="#93B6E3" />
-            <stop offset="1" stopColor="#FCF8EC" />
-          </linearGradient>
-        </defs>
-        <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
-      </svg>
-      <div
-        aria-hidden
-        className="products-catalog-desktop-footer-bleed pointer-events-none absolute inset-x-0 bottom-0 z-0"
-      />
-    </>
+    <svg
+      aria-hidden
+      className="products-catalog-desktop-background pointer-events-none absolute z-0"
+      viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
+      preserveAspectRatio="xMidYMin slice"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient
+          id={gradientId}
+          x1="205.703"
+          y1="137.062"
+          x2="1601.17"
+          y2="988.49"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#93B6E3" />
+          <stop offset="1" stopColor="#FCF8EC" />
+        </linearGradient>
+      </defs>
+      <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
+    </svg>
   );
 }
 
