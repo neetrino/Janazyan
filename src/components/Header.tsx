@@ -15,6 +15,8 @@ import {
   resolveHeaderRowVerticalInsetPx,
   resolveHeaderStickyOverlapPx,
   HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS,
+  HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS,
+  HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS,
 } from './header/header-shell-shape.constants';
 import {
   PRODUCTS_PAGE_CONTENT_INSET_CLASS,
@@ -36,7 +38,6 @@ import {
 const STOREFRONT_HEADER_BG_CLASS = 'bg-sky-mist';
 
 const HEADER_STICKY_CLASS = 'sticky top-0';
-const HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS = 'desktop:max-[1649px]:-translate-y-4';
 
 type HeaderProps = {
   /** When true, only the overlay bar (parent supplies positioning shell). */
@@ -146,9 +147,9 @@ function HeaderOverlayBar({
   const { containerClassName, insetClassName, horizontalInsetLeftPx, horizontalInsetRightPx } =
     resolveHeaderContainerLayout(pathname);
   const compactScreenOffsetClass =
-    pathname === '/' || usesStorefrontHeroShell(pathname)
-      ? ''
-      : HEADER_NON_HOME_COMPACT_SCREEN_OFFSET_CLASS;
+    pathname === '/'
+      ? HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS
+      : HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS;
 
   return (
     <header

@@ -4,8 +4,17 @@ import {
   STOREFRONT_TABLET_DOWN_CLASS,
 } from './storefront-layout.constants';
 
-/** Safe-area + breathing room below status bar (home mobile). */
-export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-8';
+/** Home mobile header — flush with viewport top; clears notch/status bar only. */
+export const HOME_MOBILE_HEADER_TOP_INSET_CLASS = 'pt-[env(safe-area-inset-top,0px)]';
+
+/** Home mobile top bar — stays pinned to the viewport top while scrolling. */
+export const HOME_MOBILE_HEADER_STICKY_CLASS = 'sticky top-0';
+
+/** Sticky bar fill — matches MobileBackdrop sky band at the top edge. */
+export const HOME_MOBILE_HEADER_STICKY_BG_CLASS = 'bg-[#ecf5ff]';
+
+/** @deprecated Use {@link HOME_MOBILE_HEADER_TOP_INSET_CLASS}. */
+export const STOREFRONT_MOBILE_TOP_INSET_CLASS = HOME_MOBILE_HEADER_TOP_INSET_CLASS;
 
 /** Non-home mobile hero shell — tighter top inset than home. */
 export const STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS = 'pt-2';
