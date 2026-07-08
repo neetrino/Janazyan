@@ -1,17 +1,16 @@
+import { isStorefrontPage } from '../nav/is-storefront-page';
+
 /** Bottom clearance so catalog/content clears the overlapping footer shell on desktop. */
 export const STOREFRONT_FOOTER_CLEARANCE_BOTTOM_CLASS = 'min-[1650px]:pb-[220px]';
-
-/** Extra footer overlap on /contact — pulls footer closer to page content. */
-export const CONTACT_PAGE_FOOTER_EXTRA_UP_PULL_PX = 120;
 
 /** Default desktop footer shell overlap (see Footer.tsx). */
 export const FOOTER_DESKTOP_SHELL_UP_PULL_PX = 400;
 
-/** /products — footer sits below cards; no upward shell overlap. */
-export const PRODUCTS_PAGE_FOOTER_SHELL_UP_PULL_PX = 0;
+/** Catalog hero shell — footer sits below content; no upward shell overlap. */
+export const CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX = 0;
 
-/** /products — cancels desktop footer decoration bleed so no white gap remains. */
-export const PRODUCTS_PAGE_FOOTER_EXTRA_UP_PULL_PX = 147;
+/** Catalog hero shell — pulls footer decoration into the gradient (matches decoration top offset). */
+export const CATALOG_HERO_SHELL_FOOTER_EXTRA_UP_PULL_PX = 147;
 
 const HIDDEN_FOOTER_PREFIXES = ['/supersudo', '/admin', '/login', '/register'] as const;
 
@@ -22,39 +21,46 @@ export function shouldShowStorefrontFooter(pathname: string): boolean {
   );
 }
 
-/** /products — footer sits flush below catalog; no white gutter before the shell. */
-export const PRODUCTS_PAGE_FOOTER_COMPACT_TOP_MARGIN_CLASS = 'md:max-[1649px]:mt-0';
+/** Catalog hero shell — footer sits flush below content; no white gutter before the shell. */
+export const CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS = 'md:max-[1649px]:mt-0';
 
-function isProductsCatalogFooterRoute(pathname: string): boolean {
-  return pathname === '/products' || /^\/products\/[^/]+$/.test(pathname);
+/** @deprecated Use {@link CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX}. */
+export const PRODUCTS_PAGE_FOOTER_SHELL_UP_PULL_PX = CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX;
+
+/** @deprecated Use {@link CATALOG_HERO_SHELL_FOOTER_EXTRA_UP_PULL_PX}. */
+export const PRODUCTS_PAGE_FOOTER_EXTRA_UP_PULL_PX = CATALOG_HERO_SHELL_FOOTER_EXTRA_UP_PULL_PX;
+
+/** @deprecated Use {@link CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS}. */
+export const PRODUCTS_PAGE_FOOTER_COMPACT_TOP_MARGIN_CLASS =
+  CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS;
+
+/** All storefront pages except home — catalog shell + compact footer overlap (not 400px home overlap). */
+export function usesCatalogHeroShellFooterLayout(pathname: string): boolean {
+  return isStorefrontPage(pathname);
 }
 
-/** Desktop footer shell overlap — 0 on /products so cards are not covered. */
+/** Desktop footer shell overlap — 0 on catalog hero shell routes so content is not covered. */
 export function resolvePageFooterShellUpPullPx(pathname: string): number {
-  if (isProductsCatalogFooterRoute(pathname)) {
-    return PRODUCTS_PAGE_FOOTER_SHELL_UP_PULL_PX;
+  if (usesCatalogHeroShellFooterLayout(pathname)) {
+    return CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX;
   }
 
   return FOOTER_DESKTOP_SHELL_UP_PULL_PX;
 }
 
-/** Additional negative margin for footer shell — route-specific overlap tuning. */
+/** Additional negative margin for footer shell — catalog routes pull decoration into gradient. */
 export function resolvePageFooterExtraUpPull(pathname: string): number {
-  if (pathname === '/contact') {
-    return CONTACT_PAGE_FOOTER_EXTRA_UP_PULL_PX;
-  }
-
-  if (isProductsCatalogFooterRoute(pathname)) {
-    return PRODUCTS_PAGE_FOOTER_EXTRA_UP_PULL_PX;
+  if (usesCatalogHeroShellFooterLayout(pathname)) {
+    return CATALOG_HERO_SHELL_FOOTER_EXTRA_UP_PULL_PX;
   }
 
   return 0;
 }
 
-/** Compact footer top gap — catalog pages keep the sky gradient flush to the footer shell. */
+/** Compact footer top gap — catalog hero shell keeps the gradient flush to the footer. */
 export function resolvePageFooterCompactTopMarginClass(pathname: string): string {
-  if (isProductsCatalogFooterRoute(pathname)) {
-    return PRODUCTS_PAGE_FOOTER_COMPACT_TOP_MARGIN_CLASS;
+  if (usesCatalogHeroShellFooterLayout(pathname)) {
+    return CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS;
   }
 
   return '';
@@ -71,7 +77,7 @@ export function resolveStorefrontMainBottomPaddingClass(pathname: string): strin
     return '';
   }
 
-  if (isProductsCatalogFooterRoute(pathname)) {
+  if (usesCatalogHeroShellFooterLayout(pathname)) {
     return '';
   }
 
