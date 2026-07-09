@@ -1,6 +1,6 @@
 'use client';
 
-import { STOREFRONT_GLASS_ACTION_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
+import { STOREFRONT_SKY_ACTION_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import { formatDate, type Review } from './utils';
 
 interface ReviewItemProps {
@@ -48,7 +48,7 @@ export function ReviewItem({ review, currentUserId, onEdit }: ReviewItemProps) {
           <button
             type="button"
             onClick={() => onEdit(review)}
-            className={`ml-4 shrink-0 ${STOREFRONT_GLASS_ACTION_BUTTON_CLASS}`}
+            className={`ml-4 shrink-0 ${STOREFRONT_SKY_ACTION_BUTTON_CLASS}`}
           >
             Edit
           </button>
