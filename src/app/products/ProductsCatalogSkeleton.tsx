@@ -24,7 +24,7 @@ export function ProductsShopToolbarSkeleton() {
             {Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-20 shrink-0 animate-pulse rounded-full bg-white/50`}
+                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} w-20 shrink-0 animate-pulse bg-white/50 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
               />
             ))}
           </div>

@@ -1,83 +1,95 @@
 'use client';
 
 import { Card } from '@shop/ui';
-import Link from 'next/link';
 import { useTranslation } from '../../lib/i18n-client';
 
 /**
- * Returns page - displays return policy information
+ * Returns page - displays return and exchange policy information
  */
 export default function ReturnsPage() {
   const { t } = useTranslation();
   return (
-    <div className="max-w-4xl mx-auto py-4 lg:px-8 lg:py-12">
-      <h1 className="text-4xl font-bold text-gray-900 mb-6">{t('returns.title')}</h1>
-      
-      <div className="space-y-6">
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.returnPolicy.title')}</h2>
-          <p className="text-gray-600 mb-4">
-            {t('returns.returnPolicy.description')}
-          </p>
-        </Card>
+    <div className="policy-page">
+      <div className="policy-page-inner">
+        <h1 className="text-4xl font-bold text-gray-900">{t('returns.title')}</h1>
+        <p className="text-gray-600">
+          {t('returns.lastUpdated')}{' '}
+          {new Date().toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </p>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.returnConditions.title')}</h2>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>{t('returns.returnConditions.items.unworn')}</li>
-            <li>{t('returns.returnConditions.items.tags')}</li>
-            <li>{t('returns.returnConditions.items.saleable')}</li>
-            <li>{t('returns.returnConditions.items.proof')}</li>
-          </ul>
-        </Card>
+        <div className="mt-8 space-y-6">
+          <Card className="p-6">
+            <p className="text-gray-600">{t('returns.intro.p1')}</p>
+            <p className="text-gray-600">{t('returns.intro.p2')}</p>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.howToReturn.title')}</h2>
-          <ol className="list-decimal list-inside text-gray-600 space-y-2">
-            <li>{t('returns.howToReturn.steps.contact')}</li>
-            <li>{t('returns.howToReturn.steps.authorization')}</li>
-            <li>{t('returns.howToReturn.steps.package')}</li>
-            <li>{t('returns.howToReturn.steps.ship')}</li>
-            <li>{t('returns.howToReturn.steps.process')}</li>
-          </ol>
-        </Card>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.exchange.title')}</h2>
+            <p className="text-gray-600">{t('returns.exchange.p1')}</p>
+            <p className="text-gray-600">{t('returns.exchange.p2')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('returns.exchange.items.unused')}</li>
+              <li>{t('returns.exchange.items.unopened')}</li>
+              <li>{t('returns.exchange.items.packaging')}</li>
+              <li>{t('returns.exchange.items.saleable')}</li>
+              <li>{t('returns.exchange.items.seal')}</li>
+            </ul>
+            <p className="text-gray-600">{t('returns.exchange.p3')}</p>
+            <p className="text-gray-600">{t('returns.exchange.p4')}</p>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.refundProcess.title')}</h2>
-          <p className="text-gray-600 mb-4">
-            {t('returns.refundProcess.description')}
-          </p>
-        </Card>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.returns.title')}</h2>
+            <p className="text-gray-600">{t('returns.returns.p1')}</p>
+            <p className="text-gray-600">{t('returns.returns.p2')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('returns.returns.items.unused')}</li>
+              <li>{t('returns.returns.items.unopened')}</li>
+              <li>{t('returns.returns.items.undamaged')}</li>
+              <li>{t('returns.returns.items.packaging')}</li>
+              <li>{t('returns.returns.items.saleable')}</li>
+            </ul>
+            <p className="text-gray-600">{t('returns.returns.p3')}</p>
+            <p className="text-gray-600">{t('returns.returns.p4')}</p>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.nonReturnable.title')}</h2>
-          <ul className="list-disc list-inside text-gray-600 space-y-2">
-            <li>{t('returns.nonReturnable.items.personalized')}</li>
-            <li>{t('returns.nonReturnable.items.packaging')}</li>
-            <li>{t('returns.nonReturnable.items.damaged')}</li>
-            <li>{t('returns.nonReturnable.items.sale')}</li>
-          </ul>
-        </Card>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.refunds.title')}</h2>
+            <p className="text-gray-600">{t('returns.refunds.p1')}</p>
+            <p className="text-gray-600">{t('returns.refunds.p2')}</p>
+            <p className="text-gray-600">{t('returns.refunds.p3')}</p>
 
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('returns.needMoreInfo.title')}</h2>
-          <p className="text-gray-600 mb-4">
-            {t('returns.needMoreInfo.description1')}{' '}
-            <Link href="/delivery" className="text-blue-600 hover:underline">
-              {t('returns.needMoreInfo.deliveryLink')}
-            </Link>
-            .
-          </p>
-          <p className="text-gray-600">
-            {t('returns.needMoreInfo.description2')}{' '}
-            <Link href="/contact" className="text-blue-600 hover:underline">
-              {t('returns.needMoreInfo.contactLink')}
-            </Link>
-            .
-          </p>
-        </Card>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.cancellation.title')}</h2>
+            <p className="text-gray-600">{t('returns.cancellation.p1')}</p>
+            <p className="text-gray-600">{t('returns.cancellation.p2')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.nonEligible.title')}</h2>
+            <p className="text-gray-600">{t('returns.nonEligible.description')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('returns.nonEligible.items.opened')}</li>
+              <li>{t('returns.nonEligible.items.used')}</li>
+              <li>{t('returns.nonEligible.items.damaged')}</li>
+              <li>{t('returns.nonEligible.items.seal')}</li>
+              <li>{t('returns.nonEligible.items.custom')}</li>
+              <li>{t('returns.nonEligible.items.giftCards')}</li>
+            </ul>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.damaged.title')}</h2>
+            <p className="text-gray-600">{t('returns.damaged.p1')}</p>
+            <p className="text-gray-600">{t('returns.damaged.p2')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('returns.damaged.items.orderNumber')}</li>
+              <li>{t('returns.damaged.items.proof')}</li>
+              <li>{t('returns.damaged.items.photos')}</li>
+              <li>{t('returns.damaged.items.description')}</li>
+            </ul>
+            <p className="text-gray-600">{t('returns.damaged.p3')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('returns.reactions.title')}</h2>
+            <p className="text-gray-600">{t('returns.reactions.p1')}</p>
+            <p className="text-gray-600">{t('returns.reactions.p2')}</p>
+            <p className="text-gray-600">{t('returns.reactions.p3')}</p>
+          </Card>
+        </div>
       </div>
     </div>
   );
 }
-

@@ -1,71 +1,66 @@
 {
-  "title": "Delivery and Returns",
-  "methods": [
-    { "id": "standard", "enabled": true, "name": "Standard Delivery", "price": 2000, "freeAbove": 50000, "estimatedDays": 3, "locations": [] },
-    { "id": "express", "enabled": true, "name": "Express Delivery", "price": 5000, "freeAbove": 100000, "estimatedDays": 1, "locations": [] },
-    { "id": "pickup", "enabled": true, "name": "Store Pickup", "price": 0, "freeAbove": null, "estimatedDays": 0, "locations": [{ "name": "Main Store", "address": "Yerevan, Armenia", "workingHours": "Mon-Sat: 10:00-20:00" }] }
-  ],
-  "deliveryInformation": {
-    "title": "Delivery Information",
-    "freeDelivery": "Free Delivery",
-    "deliveryCost": "Delivery Cost: {price}",
-    "freeForOrdersAbove": "Free for orders above {amount}",
-    "estimatedDelivery": "Estimated Delivery: {days} {daysText}",
-    "day": "day",
-    "days": "days",
-    "pickupLocations": "Pickup Locations:"
+  "title": "Shipping and Delivery Terms",
+  "lastUpdated": "Last Updated:",
+  "intro": {
+    "p1": "Janazyan Projects is committed to ensuring that your order reaches you quickly, safely, and in proper packaging. As our product range includes care products for children, pregnant women, nursing mothers, and adults — including shampoos, body gels, SPF products, and other personal care items — we pay special attention to product storage, packaging, and protection against damage during delivery.",
+    "p2": "The main delivery terms are set out below."
   },
-  "returnPolicy": {
-    "title": "Return Policy",
-    "thirtyDayPolicy": {
-      "title": "30-Day Return Policy",
-      "description": "You have 30 days from the date of purchase to return items in their original condition with tags attached."
-    },
-    "returnConditions": {
-      "title": "Return Conditions",
-      "items": [
-        "Items must be unworn, unwashed and in original packaging",
-        "All tags and labels must be attached",
-        "Items must be in saleable condition",
-        "Proof of purchase required"
-      ]
-    },
-    "howToReturn": {
-      "title": "How to Return",
-      "steps": [
-        "Contact our customer service team to initiate a return",
-        "Get a return authorization number",
-        "Package items securely with return form",
-        "Ship the package to our return address",
-        "After receipt we will process your return within 5-7 business days"
-      ]
-    },
-    "refundProcess": {
-      "title": "Refund Process",
-      "description": "Refunds will be processed to the original payment method. Please allow 5-7 business days for the refund to appear on your account."
-    },
-    "nonReturnableItems": {
-      "title": "Non-Returnable Items",
-      "items": [
-        "Personalized or custom-made items",
-        "Items without original packaging",
-        "Items damaged due to misuse",
-        "Discounted items (unless defective)"
-      ]
+  "timeframes": {
+    "title": "1. Delivery Timeframes",
+    "p1": "Delivery timeframes depend on the size of the order, the delivery address, and the selected delivery method.",
+    "p2": "Orders are usually delivered within 1–3 business days in Yerevan and within 2–5 business days to other regions of the Republic of Armenia.",
+    "p3": "After the order is confirmed, our team may contact you, if necessary, to clarify the delivery details.",
+    "p4": "We will notify you in advance of any expected delays."
+  },
+  "options": {
+    "title": "2. Delivery Options",
+    "description": "We offer the following delivery options:",
+    "items": {
+      "standard": "Standard delivery — carried out through our partner delivery services.",
+      "express": "Express delivery — available for an additional fee depending on the delivery address."
     }
   },
-  "contact": {
-    "title": "Need Help?",
-    "description": "If you have questions about delivery or returns, please don't hesitate to contact us.",
-    "email": "Email:",
-    "phone": "Phone:",
-    "hours": "Business Hours:",
-    "hoursValue": "Monday - Friday, 9:00 - 18:00"
+  "fees": {
+    "title": "3. Delivery Fees",
+    "items": {
+      "free": "Delivery is free for purchases of AMD 15,000 or more.",
+      "yerevan": "For purchases below AMD 15,000, the delivery fee within Yerevan is AMD 1,000.",
+      "regions": "The delivery fee to other regions of the Republic of Armenia is AMD 1,000.",
+      "express": "An additional fee may apply to express delivery. The customer will be informed of this fee in advance."
+    }
+  },
+  "packaging": {
+    "title": "4. Packaging and Product Safety",
+    "p1": "All orders are packaged in a way that helps protect the products from damage or leakage during delivery.",
+    "p2": "Care products, including shampoos, body gels, SPF products, and other items, are dispatched sealed and in proper condition.",
+    "p3": "Please check the integrity of the packaging when receiving your order. If you notice any damage or leakage, please contact us immediately."
+  },
+  "delays": {
+    "title": "5. Possible Delays",
+    "description": "Despite our efforts, delivery may be delayed in certain cases due to the following reasons:",
+    "items": {
+      "weather": "adverse weather conditions;",
+      "transport": "transportation issues;",
+      "holidays": "public holidays or periods of high demand;",
+      "schedule": "changes to the delivery service’s operating schedule;",
+      "incomplete": "incomplete delivery address or contact information."
+    },
+    "footer": "In such cases, we will make every effort to inform you as quickly as possible and maintain transparent communication."
+  },
+  "incorrectData": {
+    "title": "6. Incorrect or Incomplete Information",
+    "p1": "When placing an order, please make sure that your name, phone number, and delivery address are entered correctly.",
+    "p2": "If delivery cannot be completed due to incorrect or incomplete information, the customer may be charged for repeat delivery."
+  },
+  "receiving": {
+    "title": "7. Receiving Your Order",
+    "description": "When receiving your order, please check:",
+    "items": {
+      "packaging": "whether the packaging is undamaged;",
+      "match": "whether the items received match your order;",
+      "quantity": "whether the quantity of the items is correct."
+    },
+    "p1": "If there is an issue with your order, please contact us as soon as possible, provide the order number, and attach photographs if there is any damage.",
+    "p2": "Janazyan Projects is committed to ensuring that every order reaches the customer reliably, carefully, and safely."
   }
 }
-
-
-
-
-
-

@@ -114,8 +114,8 @@ export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[
 export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
 export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 
-/** Figma toolbar pills — fully rounded capsule on both edges (nodes 269:907 / 269:919). */
-export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
+/** Shared toolbar pill + dropdown panel radius — matches Figma subcategory panel (node 486:366). */
+export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-[20px]';
 
 /** Shared toolbar control pill height — aligned with category pills. */
 export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10 desktop:h-12';
@@ -162,7 +162,7 @@ export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
 
 /** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  `inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} shrink-0 items-center justify-center rounded-full text-[11px] font-medium leading-[14px] tracking-[0.35px] whitespace-nowrap desktop:text-[13px] desktop:leading-4 desktop:tracking-[0.4px] ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
+  `inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} shrink-0 items-center justify-center ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} text-[11px] font-medium leading-[14px] tracking-[0.35px] whitespace-nowrap desktop:text-[13px] desktop:leading-4 desktop:tracking-[0.4px] ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
 
 /** Active category pill — dark ink slate with white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =

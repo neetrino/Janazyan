@@ -150,7 +150,7 @@ export function ProductsToolbarControls() {
         ref={sortPanelRef}
         role="listbox"
         aria-label={t('products.header.sortBy')}
-        className="fixed w-56 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+        className={`fixed w-56 overflow-hidden border border-gray-200 bg-white shadow-lg ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
         style={{
           top: dropdownPosition.top,
           right: dropdownPosition.right,

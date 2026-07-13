@@ -1,180 +1,84 @@
 'use client';
 
 import { Card } from '@shop/ui';
-import { useEffect, useState } from 'react';
 import { useTranslation } from '../../lib/i18n-client';
-import { getStoredLanguage } from '../../lib/language';
-import { loadTranslation } from '../../lib/i18n';
-import { formatPriceInCurrency } from '../../lib/currency';
 
+/**
+ * Delivery page - displays shipping and delivery conditions
+ */
 export default function DeliveryPage() {
   const { t } = useTranslation();
-  const [methods, setMethods] = useState<Array<{
-    id: string;
-    enabled: boolean;
-    name: string;
-    price: number;
-    freeAbove: number | null;
-    estimatedDays: number;
-    locations: Array<{ name: string; address: string; workingHours?: string }>;
-  }>>([]);
-
-  useEffect(() => {
-    const loadMethods = () => {
-      const lang = getStoredLanguage();
-      const deliveryData = loadTranslation(lang, 'delivery') as { methods?: typeof methods } | null;
-      setMethods(deliveryData?.methods ?? []);
-    };
-    loadMethods();
-    window.addEventListener('language-updated', loadMethods);
-    return () => window.removeEventListener('language-updated', loadMethods);
-  }, []);
-  
   return (
-    <div className="max-w-4xl mx-auto py-4 lg:px-8 lg:py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('delivery.title')}</h1>
-      
-      <div className="space-y-6">
-        {/* Delivery Information */}
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('delivery.deliveryInformation.title')}</h2>
-          <div className="space-y-4 text-gray-700">
-            {methods.map((method) => {
-              if (!method.enabled) return null;
-              const freeAbove = method.freeAbove
-                ? formatPriceInCurrency(method.freeAbove, 'AMD')
-                : null;
-              
-              return (
-                <div key={method.id}>
-                  <h3 className="font-semibold text-gray-900 mb-2">{method.name}</h3>
-                  <p className="text-gray-600">
-                    {method.price === 0 ? (
-                      t('delivery.deliveryInformation.freeDelivery')
-                    ) : (
-                      <>
-                        {t('delivery.deliveryInformation.deliveryCost').replace(
-                          '{price}',
-                          formatPriceInCurrency(method.price, 'AMD'),
-                        )}
-                        {freeAbove && ` (${t('delivery.deliveryInformation.freeForOrdersAbove').replace('{amount}', freeAbove)})`}
-                      </>
-                    )}
-                  </p>
-                  {method.estimatedDays > 0 && (
-                    <p className="text-sm text-gray-500 mt-1">
-                      {t('delivery.deliveryInformation.estimatedDelivery')
-                        .replace('{days}', method.estimatedDays.toString())
-                        .replace('{daysText}', method.estimatedDays === 1 ? t('delivery.deliveryInformation.day') : t('delivery.deliveryInformation.days'))}
-                    </p>
-                  )}
-                  {method.locations && method.locations.length > 0 && (
-                    <div className="mt-2 text-sm text-gray-600">
-                      <p className="font-medium mb-1">{t('delivery.deliveryInformation.pickupLocations')}</p>
-                      <ul className="list-disc list-inside space-y-1">
-                        {method.locations.map((location, idx) => (
-                          <li key={idx}>
-                            {location.name} - {location.address}
-                            {location.workingHours && (
-                              <span className="text-gray-500">
-                                {' '}({location.workingHours})
-                              </span>
-                            )}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </Card>
+    <div className="policy-page">
+      <div className="policy-page-inner">
+        <h1 className="text-4xl font-bold text-gray-900">{t('delivery.title')}</h1>
+        <p className="text-gray-600">
+          {t('delivery.lastUpdated')}{' '}
+          {new Date().toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          })}
+        </p>
 
-        {/* Return Policy */}
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('delivery.returnPolicy.title')}</h2>
-          <div className="space-y-4 text-gray-700">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('delivery.returnPolicy.thirtyDayPolicy.title')}</h3>
-              <p className="text-gray-600">
-                {t('delivery.returnPolicy.thirtyDayPolicy.description')}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('delivery.returnPolicy.returnConditions.title')}</h3>
-              <ul className="list-disc list-inside text-gray-600 space-y-1">
-                {(() => {
-                  const lang = getStoredLanguage();
-                  const deliveryData = loadTranslation(lang, 'delivery');
-                  const items = deliveryData?.returnPolicy?.returnConditions?.items || [];
-                  return Array.isArray(items) ? items.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  )) : null;
-                })()}
-              </ul>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('delivery.returnPolicy.howToReturn.title')}</h3>
-              <ol className="list-decimal list-inside text-gray-600 space-y-1">
-                {(() => {
-                  const lang = getStoredLanguage();
-                  const deliveryData = loadTranslation(lang, 'delivery');
-                  const steps = deliveryData?.returnPolicy?.howToReturn?.steps || [];
-                  return Array.isArray(steps) ? steps.map((step: string, idx: number) => (
-                    <li key={idx}>{step}</li>
-                  )) : null;
-                })()}
-              </ol>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('delivery.returnPolicy.refundProcess.title')}</h3>
-              <p className="text-gray-600">
-                {t('delivery.returnPolicy.refundProcess.description')}
-              </p>
-            </div>
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-2">{t('delivery.returnPolicy.nonReturnableItems.title')}</h3>
-              <ul className="list-disc list-inside text-gray-600 space-y-1">
-                {(() => {
-                  const lang = getStoredLanguage();
-                  const deliveryData = loadTranslation(lang, 'delivery');
-                  const items = deliveryData?.returnPolicy?.nonReturnableItems?.items || [];
-                  return Array.isArray(items) ? items.map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
-                  )) : null;
-                })()}
-              </ul>
-            </div>
-          </div>
-        </Card>
+        <div className="mt-8 space-y-6">
+          <Card className="p-6">
+            <p className="text-gray-600">{t('delivery.intro.p1')}</p>
+            <p className="text-gray-600">{t('delivery.intro.p2')}</p>
 
-        {/* Contact Information */}
-        <Card className="p-6">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">{t('delivery.contact.title')}</h2>
-          <p className="text-gray-600 mb-4">
-            {t('delivery.contact.description')}
-          </p>
-          <div className="space-y-2 text-gray-700">
-            <p>
-              <span className="font-semibold">{t('delivery.contact.email')}</span>{' '}
-              <a href="mailto:support@whiteshop.com" className="text-blue-600 hover:underline">
-                support@whiteshop.com
-              </a>
-            </p>
-            <p>
-              <span className="font-semibold">{t('delivery.contact.phone')}</span>{' '}
-              <a href="tel:+1234567890" className="text-blue-600 hover:underline">
-                +1 (234) 567-890
-              </a>
-            </p>
-            <p>
-              <span className="font-semibold">{t('delivery.contact.hours')}</span> {t('delivery.contact.hoursValue')}
-            </p>
-          </div>
-        </Card>
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.timeframes.title')}</h2>
+            <p className="text-gray-600">{t('delivery.timeframes.p1')}</p>
+            <p className="text-gray-600">{t('delivery.timeframes.p2')}</p>
+            <p className="text-gray-600">{t('delivery.timeframes.p3')}</p>
+            <p className="text-gray-600">{t('delivery.timeframes.p4')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.options.title')}</h2>
+            <p className="text-gray-600">{t('delivery.options.description')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('delivery.options.items.standard')}</li>
+              <li>{t('delivery.options.items.express')}</li>
+            </ul>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.fees.title')}</h2>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('delivery.fees.items.free')}</li>
+              <li>{t('delivery.fees.items.yerevan')}</li>
+              <li>{t('delivery.fees.items.regions')}</li>
+              <li>{t('delivery.fees.items.express')}</li>
+            </ul>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.packaging.title')}</h2>
+            <p className="text-gray-600">{t('delivery.packaging.p1')}</p>
+            <p className="text-gray-600">{t('delivery.packaging.p2')}</p>
+            <p className="text-gray-600">{t('delivery.packaging.p3')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.delays.title')}</h2>
+            <p className="text-gray-600">{t('delivery.delays.description')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('delivery.delays.items.weather')}</li>
+              <li>{t('delivery.delays.items.transport')}</li>
+              <li>{t('delivery.delays.items.holidays')}</li>
+              <li>{t('delivery.delays.items.schedule')}</li>
+              <li>{t('delivery.delays.items.incomplete')}</li>
+            </ul>
+            <p className="text-gray-600">{t('delivery.delays.footer')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.incorrectData.title')}</h2>
+            <p className="text-gray-600">{t('delivery.incorrectData.p1')}</p>
+            <p className="text-gray-600">{t('delivery.incorrectData.p2')}</p>
+
+            <h2 className="text-2xl font-semibold text-gray-900">{t('delivery.receiving.title')}</h2>
+            <p className="text-gray-600">{t('delivery.receiving.description')}</p>
+            <ul className="list-disc list-inside text-gray-600 ml-4">
+              <li>{t('delivery.receiving.items.packaging')}</li>
+              <li>{t('delivery.receiving.items.match')}</li>
+              <li>{t('delivery.receiving.items.quantity')}</li>
+            </ul>
+            <p className="text-gray-600">{t('delivery.receiving.p1')}</p>
+            <p className="text-gray-600">{t('delivery.receiving.p2')}</p>
+          </Card>
+        </div>
       </div>
     </div>
   );
 }
-

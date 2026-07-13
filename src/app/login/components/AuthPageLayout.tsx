@@ -15,6 +15,7 @@ import {
 } from './LoginHeroVisual';
 import {
   AUTH_MOBILE_CENTER_COLUMN_CLASS,
+  AUTH_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
   AUTH_PAGE_PHONE_ONLY_CLASS,
   AUTH_PAGE_TABLET_HERO_CLASS,
   LOGIN_CENTER_COLUMN_CLASS,
@@ -47,6 +48,7 @@ export function AuthPageLayout({
       compactHero
       mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
       mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
+      catalogBottomPaddingClassName={AUTH_PAGE_CATALOG_BOTTOM_PADDING_CLASS}
       catalog={
         <>
           <div className={AUTH_PAGE_PHONE_ONLY_CLASS}>

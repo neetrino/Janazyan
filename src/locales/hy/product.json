@@ -8,7 +8,7 @@
   "size": "Չափ",
   "quantity": "Քանակ",
   "addToCart": "Ավելացնել զամբյուղ",
-  "outOfStock": "Արտադրված",
+  "outOfStock": "Սպառված",
   "selectColor": "Խնդրում ենք ընտրել գույն",
   "selectSize": "Խնդրում ենք ընտրել չափ",
   "selectColorAndSize": "Խնդրում ենք ընտրել գույն և չափ",
@@ -22,7 +22,7 @@
   "compareListFull": "Համեմատման ցուցակը լի է",
   "errorAddingToCart": "Սխալ ավելացնելիս",
   "pcs": "հատ",
-  "outOfStockLabel": "Արտադրված",
+  "outOfStockLabel": "Սպառված",
   "noRelatedProducts": "Նմանատիպ ապրանքներ չգտնվեցին"
 }
 

@@ -367,6 +367,7 @@ class ProductsFindTransformService {
               (label) => label.value.toLowerCase() === outOfStockText.toLowerCase() ||
                          label.value.toLowerCase().includes('out of stock') ||
                          label.value.toLowerCase().includes('արտադրված') ||
+                         label.value.toLowerCase().includes('սպառված') ||
                          label.value.toLowerCase().includes('нет в наличии') ||
                          label.value.toLowerCase().includes('არ არის მარაგში')
             );

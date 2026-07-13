@@ -1,6 +1,8 @@
-/** Figma subcategory dropdown panel (node 486:366). */
+import { PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS } from '../../app/products/products-page-layout.constants';
+
+/** Figma subcategory dropdown panel (node 486:366) — same radius as toolbar filter pills. */
 export const CATEGORY_PILL_DROPDOWN_PANEL_CLASS =
-  'w-64 overflow-hidden rounded-[20px] bg-white py-[13px] pl-[19px] pr-4 shadow-[0_8px_24px_rgba(74,85,101,0.12)]';
+  `w-64 overflow-hidden ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} bg-white py-[13px] pl-[19px] pr-4 shadow-[0_8px_24px_rgba(74,85,101,0.12)]`;
 
 /** Figma subcategory list item (node 486:370). */
 export const CATEGORY_PILL_DROPDOWN_ITEM_CLASS =
