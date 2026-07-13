@@ -52,11 +52,19 @@ type HeaderContainerLayout = {
   horizontalInsetRightPx: number;
 };
 
-function usesEmbeddedHeroHeaderLayout(pathname: string): boolean {
-  return usesStorefrontHeroShell(pathname) || isProductDetailPage(pathname);
+/**
+ * Embedded overlay is only rendered from home / {@link ProductsHeroShell}.
+ * Catalog-theme routes (wishlist, compare, …) also use that shell via layout,
+ * so pathname alone is not enough — trust the `embedded` flag.
+ */
+function usesEmbeddedHeroHeaderLayout(pathname: string, embedded = false): boolean {
+  return embedded || usesStorefrontHeroShell(pathname) || isProductDetailPage(pathname);
 }
 
-function resolveHeaderContainerLayout(pathname: string): HeaderContainerLayout {
+function resolveHeaderContainerLayout(
+  pathname: string,
+  embedded = false,
+): HeaderContainerLayout {
   const isHomePage = pathname === '/';
 
   if (isHomePage) {
@@ -68,7 +76,7 @@ function resolveHeaderContainerLayout(pathname: string): HeaderContainerLayout {
     };
   }
 
-  if (usesEmbeddedHeroHeaderLayout(pathname)) {
+  if (usesEmbeddedHeroHeaderLayout(pathname, embedded)) {
     return {
       containerClassName: `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`,
       insetClassName: PRODUCTS_PAGE_CONTENT_INSET_CLASS,
@@ -99,7 +107,7 @@ function HeaderContentRow({
   horizontalInsetRightPx?: number;
 }) {
   const isHomePage = pathname === '/';
-  const usesHomeLikeEmbeddedHeader = isHomePage || usesEmbeddedHeroHeaderLayout(pathname);
+  const usesHomeLikeEmbeddedHeader = usesEmbeddedHeroHeaderLayout(pathname, embedded);
   const bandHeightPx = resolveHeaderBandHeightPx(isHomePage, embedded);
   const rowTopPx = usesHomeLikeEmbeddedHeader
     ? HEADER_HOME_EMBEDDED_ROW_TOP_PX
@@ -150,7 +158,7 @@ function HeaderOverlayBar({
   searchParams: URLSearchParams;
 }) {
   const { containerClassName, insetClassName, horizontalInsetLeftPx, horizontalInsetRightPx } =
-    resolveHeaderContainerLayout(pathname);
+    resolveHeaderContainerLayout(pathname, true);
   const compactScreenOffsetClass =
     pathname === '/'
       ? HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS
