@@ -8,6 +8,7 @@ import {
   writeJsonCache,
 } from '@/lib/cache/storefront-cache';
 import { dedupeInFlight } from '@/lib/cache/in-flight-dedup';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { getBaseWhere } from '@/lib/services/products-slug/product-query-where';
 
 export type PublishedProductRef = {
@@ -58,16 +59,16 @@ async function loadPublishedProductRefFromDb(
     select: REF_SELECT,
   });
 
-  if (!row && lang !== 'en') {
+  if (!row && lang !== DEFAULT_LANGUAGE) {
     row = await db.product.findFirst({
-      where: getBaseWhere(slug, 'en'),
+      where: getBaseWhere(slug, DEFAULT_LANGUAGE),
       select: REF_SELECT,
     });
     if (row) {
       return {
         id: row.id,
         primaryCategoryId: row.primaryCategoryId,
-        primaryCategorySlug: pickCategorySlug(row.categories, row.primaryCategoryId, 'en'),
+        primaryCategorySlug: pickCategorySlug(row.categories, row.primaryCategoryId, DEFAULT_LANGUAGE),
       };
     }
     return null;

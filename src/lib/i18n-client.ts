@@ -6,7 +6,7 @@
  */
 
 import { useMemo, useCallback, useState, useEffect } from 'react';
-import { type LanguageCode } from './language';
+import { DEFAULT_LANGUAGE, type LanguageCode } from './language';
 import { getStoredLanguage } from './language';
 import { t, getProductText, getAttributeLabel, clearTranslationCache, type ProductField } from './i18n';
 
@@ -23,7 +23,7 @@ const translations: Partial<Record<LanguageCode, any>> = {
 
 function resolveHydrationSafeLanguage(): LanguageCode {
   if (typeof window === 'undefined') {
-    return 'hy';
+    return DEFAULT_LANGUAGE;
   }
 
   const documentLang = document.documentElement.lang as LanguageCode;
@@ -31,7 +31,7 @@ function resolveHydrationSafeLanguage(): LanguageCode {
     return documentLang;
   }
 
-  return 'hy';
+  return DEFAULT_LANGUAGE;
 }
 
 /**
@@ -54,7 +54,7 @@ export function useTranslation() {
     // Update language on mount to ensure we have the latest from localStorage
     const updateLanguage = () => {
       const storedLang = getStoredLanguage();
-      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : 'hy';
+      const newLang: LanguageCode = (storedLang && storedLang in translations) ? storedLang : DEFAULT_LANGUAGE;
       setLang((currentLang) => {
         if (newLang !== currentLang) {
           // Clear translation cache when language changes

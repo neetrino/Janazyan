@@ -1,6 +1,7 @@
 import { buildProductQuery } from "./products-slug/product-query-builder";
 import { transformProduct } from "./products-slug/product-transformer";
 import { getProductDiscountSettings } from "./products-discount-settings.cache";
+import { DEFAULT_LANGUAGE } from '../language';
 
 /**
  * Service for fetching products by slug
@@ -9,7 +10,7 @@ class ProductsSlugService {
   /**
    * Get product by slug
    */
-  async findBySlug(slug: string, lang: string = "en") {
+  async findBySlug(slug: string, lang: string = DEFAULT_LANGUAGE) {
     const [product, discountSettings] = await Promise.all([
       buildProductQuery(slug, lang),
       getProductDiscountSettings(),

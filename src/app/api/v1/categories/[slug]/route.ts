@@ -5,6 +5,7 @@ import {
   readJsonCache,
   writeJsonCache,
 } from "@/lib/cache/storefront-cache";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { categoriesService } from "@/lib/services/categories.service";
 import { logger } from "@/lib/utils/logger";
 
@@ -14,7 +15,7 @@ export async function GET(
 ) {
   try {
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "en";
+    const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const { slug } = await params;
     const cacheKey = STOREFRONT_CACHE_KEYS.categoryBySlug(lang, slug);
 

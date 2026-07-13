@@ -3,6 +3,7 @@ import { db } from "@white-shop/db";
 import { logger } from "@/lib/utils/logger";
 import { createSyntheticCartItemId } from "@/lib/cart/cart-item-id";
 import { resolveCartProductImageUrl } from "@/lib/products/resolve-stored-product-image-url";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 interface GuestCartItemInput {
   productId: string;
@@ -80,7 +81,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as GuestCartRequestBody;
     const items = sanitizeItems(body.items);
-    const lang = typeof body.lang === "string" && body.lang.trim() ? body.lang : "en";
+    const lang = typeof body.lang === "string" && body.lang.trim() ? body.lang : DEFAULT_LANGUAGE;
 
     if (items.length === 0) {
       const empty: GuestCartResponse = {

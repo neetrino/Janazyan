@@ -1,8 +1,12 @@
 import type { Prisma } from "@white-shop/db";
+import { DEFAULT_LANGUAGE } from "@/lib/language";
 
-/** Locales loaded for a storefront request (requested + English fallback). */
+/** Locales loaded for a storefront request (requested + primary Armenian fallback). */
 export function localeCandidates(lang: string): string[] {
-  return lang === "en" ? ["en"] : [lang, "en"];
+  if (lang === DEFAULT_LANGUAGE) {
+    return [DEFAULT_LANGUAGE];
+  }
+  return [lang, DEFAULT_LANGUAGE];
 }
 
 function translationWhere(lang: string) {

@@ -1,4 +1,5 @@
 import { db } from "@white-shop/db";
+import { DEFAULT_LANGUAGE } from "../../language";
 import { logger } from "../../utils/logger";
 import { computeProductGalleryUrls } from "./product-gallery-urls";
 import { getBaseWhere } from "./product-query-where";
@@ -79,8 +80,8 @@ export async function findVisualBySlug(
 ): Promise<ProductVisualPayload | null> {
   try {
     let row = await fetchVisualRow(slug, lang);
-    if (!row && lang !== "en") {
-      row = await fetchVisualRow(slug, "en");
+    if (!row && lang !== DEFAULT_LANGUAGE) {
+      row = await fetchVisualRow(slug, DEFAULT_LANGUAGE);
     }
     if (!row) {
       return null;

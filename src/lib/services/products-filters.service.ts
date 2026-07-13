@@ -2,6 +2,7 @@ import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
 import { findCategoryIdsBySlug } from "./products-find-query/category-utils";
 import { ProductWithRelations } from "./products-find-query.service";
+import { DEFAULT_LANGUAGE } from '../language';
 
 class ProductsFiltersService {
   /**
@@ -83,7 +84,7 @@ class ProductsFiltersService {
         try {
           const allCategoryIds = await findCategoryIdsBySlug(
             filters.category,
-            filters.lang || "en",
+            filters.lang || DEFAULT_LANGUAGE,
           );
 
           if (allCategoryIds.length > 0) {
@@ -167,7 +168,7 @@ class ProductsFiltersService {
 
     // Use Map with lowercase key to merge colors with different cases
     // Store both count, canonical label, imageUrl and colors hex
-    const lang = filters.lang || 'en';
+    const lang = filters.lang || DEFAULT_LANGUAGE;
     const colorMap = new Map<string, { 
       count: number; 
       label: string; 

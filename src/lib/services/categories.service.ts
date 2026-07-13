@@ -4,12 +4,13 @@ import {
   getChildCategoryRows,
   getRootCategoryRows,
 } from "@/lib/categories/category-sibling-order";
+import { DEFAULT_LANGUAGE } from '../language';
 
 class CategoriesService {
   /**
    * Get category tree
    */
-  async getTree(lang: string = "en") {
+  async getTree(lang: string = DEFAULT_LANGUAGE) {
     if (!isDatabaseConnectionUrlConfigured()) {
       return { data: [] };
     }
@@ -118,7 +119,7 @@ class CategoriesService {
   /**
    * Get category by slug
    */
-  async findBySlug(slug: string, lang: string = "en") {
+  async findBySlug(slug: string, lang: string = DEFAULT_LANGUAGE) {
     const category = await db.category.findFirst({
       where: {
         translations: {

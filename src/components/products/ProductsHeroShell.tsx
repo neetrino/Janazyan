@@ -187,8 +187,6 @@ function ProductsHeroShellInner({
         {
           '--products-catalog-background-top-offset': `${PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX}px`,
           '--products-catalog-background-footer-bleed': `${background.footerBleedPx}px`,
-          '--products-catalog-background-viewbox-width': `${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH}`,
-          '--products-catalog-background-viewbox-height': `${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`,
         } as CSSProperties
       }
     >
@@ -235,10 +233,11 @@ function ProductsCatalogDesktopBackground({ background }: ProductsCatalogDesktop
   const gradientId = useId();
 
   return (
-    <>
+    <div
+      aria-hidden
+      className="products-catalog-desktop-background pointer-events-none absolute z-0"
+    >
       <svg
-        aria-hidden
-        className="products-catalog-desktop-background pointer-events-none absolute z-0"
         viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
         preserveAspectRatio="xMidYMin slice"
         xmlns="http://www.w3.org/2000/svg"
@@ -261,12 +260,7 @@ function ProductsCatalogDesktopBackground({ background }: ProductsCatalogDesktop
         </defs>
         <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
       </svg>
-      <div
-        aria-hidden
-        className="products-catalog-desktop-background-fill pointer-events-none absolute z-0"
-        style={{ backgroundColor: background.tailColor }}
-      />
-    </>
+    </div>
   );
 }
 

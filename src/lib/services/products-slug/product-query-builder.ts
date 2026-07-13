@@ -5,6 +5,7 @@ import { getPublishedProductRefCached } from "@/lib/products/published-product-r
 import { buildProductDetailsSelect } from "./product-query-select";
 import { getBaseWhere } from "./product-query-where";
 import type { ProductWithFullRelations } from "./types";
+import { DEFAULT_LANGUAGE } from '../../language';
 
 export { getBaseWhere } from "./product-query-where";
 
@@ -140,7 +141,7 @@ async function fetchWithoutAttributeValue(
  */
 export async function buildProductQuery(
   slug: string,
-  lang: string = "en",
+  lang: string = DEFAULT_LANGUAGE,
 ): Promise<ProductWithFullRelations | null> {
   const ref = await getPublishedProductRefCached(slug, lang);
   if (!ref) {

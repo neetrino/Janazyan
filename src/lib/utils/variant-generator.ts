@@ -1,5 +1,6 @@
 import { db } from "@white-shop/db";
 import { logger } from "./logger";
+import { DEFAULT_LANGUAGE } from '../language';
 
 /**
  * Generate all possible combinations of AttributeValues
@@ -88,7 +89,7 @@ export async function getProductAttributeValues(
 export async function findOrCreateAttributeValue(
   attributeKey: string,
   valueString: string,
-  locale: string = "en"
+  locale: string = DEFAULT_LANGUAGE
 ): Promise<string | null> {
   logger.debug('Finding/Creating AttributeValue', { attributeKey, valueString });
 

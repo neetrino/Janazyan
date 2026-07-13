@@ -7,6 +7,9 @@ export const LANGUAGES = {
 
 export type LanguageCode = keyof typeof LANGUAGES;
 
+/** Storefront primary / default locale when the user has not chosen one. */
+export const DEFAULT_LANGUAGE: LanguageCode = 'hy';
+
 export const LANGUAGE_STORAGE_KEY = 'shop_language';
 
 function parseLanguageCode(value: string | null | undefined): LanguageCode | null {
@@ -16,33 +19,13 @@ function parseLanguageCode(value: string | null | undefined): LanguageCode | nul
   return null;
 }
 
-function detectPreferredLanguageFromNavigator(): LanguageCode {
-  if (typeof navigator === 'undefined') {
-    return 'hy';
-  }
-
-  const candidates = Array.isArray(navigator.languages) && navigator.languages.length > 0
-    ? navigator.languages
-    : [navigator.language];
-
-  for (const candidate of candidates) {
-    const normalized = candidate.toLowerCase().split('-')[0];
-    const parsed = parseLanguageCode(normalized);
-    if (parsed) {
-      return parsed;
-    }
-  }
-
-  return 'hy';
-}
-
 export function getStoredLanguage(): LanguageCode {
-  if (typeof window === 'undefined') return 'hy';
+  if (typeof window === 'undefined') return DEFAULT_LANGUAGE;
   try {
     const stored = localStorage.getItem(LANGUAGE_STORAGE_KEY);
-    return parseLanguageCode(stored) ?? detectPreferredLanguageFromNavigator();
+    return parseLanguageCode(stored) ?? DEFAULT_LANGUAGE;
   } catch {
-    return detectPreferredLanguageFromNavigator();
+    return DEFAULT_LANGUAGE;
   }
 }
 
@@ -63,4 +46,3 @@ export function setStoredLanguage(language: LanguageCode, options?: { skipReload
     console.error('Failed to save language:', error);
   }
 }
-

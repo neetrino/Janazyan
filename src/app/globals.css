@@ -10,6 +10,7 @@
 html,
 body {
   min-height: 100%;
+  min-height: 100dvh;
   background: #ffffff;
 }
 
@@ -287,47 +288,29 @@ body {
     pointer-events: none;
   }
 
-  .products-hero-shell-canvas {
-    container-type: inline-size;
-  }
-
   /*
-   * Width-locked S-curve: SVG height never exceeds the viewBox aspect for 100vw,
-   * and never exceeds the shell (plus bleeds). `slice` + xMidYMin keeps scale =
-   * width/viewBoxWidth whenever the box is shorter than aspect — tall shells
-   * use the aspect height and the cream fill below instead of stretching.
+   * Catalog desktop backdrop — Safari-safe edge pinning.
+   *
+   * Avoided (Safari breaks these on content-sized parents / mixed overflow):
+   * - height: min(..., 100% + bleed) on the SVG itself
+   * - width: 100vw + translateX(-50%) with overflow-x-clip (Safari also clips Y)
+   * - overflow-x-clip + overflow-y-visible on the shell
+   *
+   * Pin a wrapper with top/bottom (Safari resolves this reliably). Stretch the
+   * SVG to 100% of that wrapper — positioning <svg> with top/bottom alone is
+   * flaky in WebKit. Width is 100% of the shell (not 100vw).
    */
   .products-catalog-desktop-background {
-    left: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
+    left: 0;
+    width: 100%;
     top: var(--products-catalog-background-top-offset, 24px);
-    height: min(
-      calc(
-        100vw * var(--products-catalog-background-viewbox-height, 1840) /
-          var(--products-catalog-background-viewbox-width, 1442)
-      ),
-      calc(
-        100% + var(--products-catalog-background-top-offset, 24px) +
-          var(--products-catalog-background-footer-bleed, 191px)
-      )
-    );
+    bottom: calc(-1 * var(--products-catalog-background-footer-bleed, 191px));
   }
 
-  /*
-   * Cream continuation when the shell is taller than the width-locked shape.
-   * On short shells the top sits past the bottom and the layer collapses.
-   */
-  .products-catalog-desktop-background-fill {
-    left: 50%;
-    width: 100vw;
-    transform: translateX(-50%);
-    top: calc(
-      var(--products-catalog-background-top-offset, 24px) +
-        100vw * var(--products-catalog-background-viewbox-height, 1840) /
-          var(--products-catalog-background-viewbox-width, 1442)
-    );
-    bottom: calc(-1 * var(--products-catalog-background-footer-bleed, 191px));
+  .products-catalog-desktop-background > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
   }
 }
 

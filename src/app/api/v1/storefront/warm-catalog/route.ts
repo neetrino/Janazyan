@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LANGUAGES, type LanguageCode } from '@/lib/language';
+import { DEFAULT_LANGUAGE, LANGUAGES, type LanguageCode } from '@/lib/language';
 import { warmDefaultProductsCatalogCache } from '@/lib/products/warm-products-catalog-cache';
 import { fetchProductsCatalog } from '@/lib/products/products-catalog-cache';
 import { DEFAULT_CATALOG_PAGE_SIZE } from '@/lib/products/catalog-page.constants';
@@ -10,7 +10,7 @@ function parseLang(value: string | null): LanguageCode {
   if (value && value in LANGUAGES) {
     return value as LanguageCode;
   }
-  return 'hy';
+  return DEFAULT_LANGUAGE;
 }
 
 /** Warms server cache and returns catalog JSON for client sessionStorage hydration. */

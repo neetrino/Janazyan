@@ -15,6 +15,7 @@ import { buildArcaReturnUrl, getArcaConfig } from "@/lib/payments/arca/config";
 import { convertPrice } from "@/lib/currency";
 import { getPublishedPartnerStoreById } from "./partner-stores.service";
 import type { PickupStoreAddress } from "@/lib/types/pickup-store";
+import { DEFAULT_LANGUAGE } from '../language';
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -303,7 +304,7 @@ class OrdersService {
         amountMinorUnits: toArcaAmountMinorUnits(amountInArcaCurrency, arcaConfig.currency),
         returnUrl,
         description: `Order #${orderAndPayment.order.number}`,
-        language: orderAndPayment.order.customerLocale || 'en',
+        language: orderAndPayment.order.customerLocale || DEFAULT_LANGUAGE,
       });
 
       await db.payment.update({

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '../../../../lib/api-client';
-import { getStoredLanguage } from '../../../../lib/language';
+import { getStoredLanguage, DEFAULT_LANGUAGE } from '../../../../lib/language';
 import { logger } from '@/lib/utils/logger';
 import { RESERVED_ROUTES } from '../types';
 import type { Product } from '../types';
@@ -62,8 +62,8 @@ export function useProductFetch({
       try {
         return await fetchProductForLang(slug, lang);
       } catch (second: unknown) {
-        if (isNotFoundError(second) && lang !== 'en') {
-          return fetchProductForLang(slug, 'en');
+        if (isNotFoundError(second) && lang !== DEFAULT_LANGUAGE) {
+          return fetchProductForLang(slug, DEFAULT_LANGUAGE);
         }
         throw second;
       }

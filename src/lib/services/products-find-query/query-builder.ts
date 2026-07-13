@@ -3,6 +3,7 @@ import { db } from "@white-shop/db";
 import { logger } from "../../utils/logger";
 import type { ProductFilters } from "./types";
 import { getCachedCategoryIdsBySlug } from "@/lib/categories/category-by-slug.cache";
+import { DEFAULT_LANGUAGE } from '../../language';
 
 /**
  * Build search filter for where clause
@@ -203,7 +204,7 @@ export async function buildWhereClause(
     search,
     ids,
     filter,
-    lang = "en",
+    lang = DEFAULT_LANGUAGE,
   } = filters;
 
   const bestsellerProductIds: string[] = [];

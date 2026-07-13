@@ -11,11 +11,13 @@ import { HEADER_HERO_SHELL_BAND_HEIGHT_PX } from '../../components/header/header
 /** Desktop catalog gradient inset from shell top — shared by all hero-shell pages. */
 export const PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX = 24;
 
-/** Same rounded shell as {@link HomeHero}; white backdrop keeps the header pill gap white. */
-export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
-
+/**
+ * Catalog shell — overflow must stay visible so the desktop SVG can bleed into
+ * the footer overlap. Do not use overflow-x-clip here: Safari forces overflow-y
+ * to clip as well, which cuts the background under the footer.
+ */
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  `relative w-full overflow-x-clip overflow-y-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
+  'relative w-full overflow-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px]';
 
 /**
  * Extra sky gradient below decoration overlap — fills the wedge where the shell

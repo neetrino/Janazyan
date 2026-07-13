@@ -3,6 +3,7 @@ import { productsFindQueryService } from "./products-find-query.service";
 import { productsFindFilterService } from "./products-find-filter.service";
 import { productsFindTransformService } from "./products-find-transform.service";
 import { getProductDiscountSettings } from "./products-discount-settings.cache";
+import { DEFAULT_LANGUAGE } from '../language';
 
 class ProductsFindService {
   /**
@@ -12,7 +13,7 @@ class ProductsFindService {
     const {
       page = 1,
       limit = 12,
-      lang = "en",
+      lang = DEFAULT_LANGUAGE,
     } = filters;
 
     // Step 1: Fetch products and discount settings in parallel (catalog hot path).
