@@ -1,8 +1,9 @@
 'use client';
 
 import Image from 'next/image';
-import { MapPin, Store } from 'lucide-react';
-import { useEffect, useRef } from 'react';
+import { ChevronDown, MapPin, Store } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { groupPartnerStoresByHierarchy } from '../group-partner-stores';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 
 type PartnerStoresDirectoryProps = {
@@ -71,6 +72,51 @@ function PartnerStoreDirectoryItem({
   );
 }
 
+function HierarchyToggle({
+  label,
+  open,
+  onToggle,
+  count,
+  nested = false,
+}: {
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+  count: number;
+  nested?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      className={[
+        'partner-stores-directory__group-toggle',
+        nested ? 'partner-stores-directory__group-toggle--nested' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      aria-expanded={open}
+      onClick={onToggle}
+    >
+      <span className="partner-stores-directory__group-leading">
+        <ChevronDown
+          className={[
+            'partner-stores-directory__group-chevron',
+            'partner-stores-directory__group-chevron--leading',
+            open ? 'partner-stores-directory__group-chevron--open' : '',
+          ]
+            .filter(Boolean)
+            .join(' ')}
+          aria-hidden
+        />
+        <span className="partner-stores-directory__group-label">{label}</span>
+      </span>
+      <span className="partner-stores-directory__group-meta">
+        <span className="partner-stores-directory__group-count">{count}</span>
+      </span>
+    </button>
+  );
+}
+
 export function PartnerStoresDirectory({
   stores,
   selectedStoreId,
@@ -80,6 +126,9 @@ export function PartnerStoresDirectory({
   embedded = false,
 }: PartnerStoresDirectoryProps) {
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const regions = useMemo(() => groupPartnerStoresByHierarchy(stores), [stores]);
+  const [openRegionIds, setOpenRegionIds] = useState<Set<string>>(new Set());
+  const [openAreaIds, setOpenAreaIds] = useState<Set<string>>(new Set());
 
   const setItemRef = (storeId: string, node: HTMLButtonElement | null) => {
     if (node) {
@@ -94,38 +143,109 @@ export function PartnerStoresDirectory({
       return;
     }
 
+    const selected = stores.find((store) => store.id === selectedStoreId);
+    if (selected) {
+      setOpenRegionIds((current) => new Set(current).add(selected.regionId));
+      if (selected.areaId) {
+        setOpenAreaIds((current) => new Set(current).add(selected.areaId!));
+      }
+    }
+
     itemRefs.current.get(selectedStoreId)?.scrollIntoView({
       block: 'nearest',
       behavior: 'smooth',
     });
-  }, [selectedStoreId]);
+  }, [selectedStoreId, stores]);
 
   if (stores.length === 0) {
     return null;
   }
 
+  const listClassName = embedded
+    ? 'partner-stores-directory__list partner-stores-directory__list--embedded'
+    : 'partner-stores-directory__list';
+
+  const toggleRegion = (regionId: string) => {
+    setOpenRegionIds((current) => {
+      const next = new Set(current);
+      if (next.has(regionId)) {
+        next.delete(regionId);
+      } else {
+        next.add(regionId);
+      }
+      return next;
+    });
+  };
+
+  const toggleArea = (areaId: string) => {
+    setOpenAreaIds((current) => {
+      const next = new Set(current);
+      if (next.has(areaId)) {
+        next.delete(areaId);
+      } else {
+        next.add(areaId);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="partner-stores-directory" aria-label={ariaLabel}>
-      <div
-        className={
-          embedded
-            ? 'partner-stores-directory__list partner-stores-directory__list--embedded'
-            : 'partner-stores-directory__list'
-        }
-        role="list"
-      >
-        {stores.map((store) => {
-          const isSelected = selectedStoreId === store.id;
+      <div className={listClassName} role="list">
+        {regions.map((region) => {
+          const regionOpen = openRegionIds.has(region.id);
+          const regionStoreCount =
+            region.stores.length + region.areas.reduce((sum, area) => sum + area.stores.length, 0);
 
           return (
-            <PartnerStoreDirectoryItem
-              key={store.id}
-              store={store}
-              isSelected={isSelected}
-              viewOnMapLabel={viewOnMapLabel}
-              onSelect={onSelect}
-              setItemRef={setItemRef}
-            />
+            <div key={region.id} className="partner-stores-directory__group" role="listitem">
+              <HierarchyToggle
+                label={region.name}
+                open={regionOpen}
+                onToggle={() => toggleRegion(region.id)}
+                count={regionStoreCount}
+              />
+              {regionOpen ? (
+                <div className="partner-stores-directory__group-body">
+                  {region.areas.map((area) => {
+                    const areaOpen = openAreaIds.has(area.id);
+                    return (
+                      <div key={area.id} className="partner-stores-directory__subgroup">
+                        <HierarchyToggle
+                          label={area.name}
+                          open={areaOpen}
+                          onToggle={() => toggleArea(area.id)}
+                          count={area.stores.length}
+                          nested
+                        />
+                        {areaOpen
+                          ? area.stores.map((store) => (
+                              <PartnerStoreDirectoryItem
+                                key={store.id}
+                                store={store}
+                                isSelected={selectedStoreId === store.id}
+                                viewOnMapLabel={viewOnMapLabel}
+                                onSelect={onSelect}
+                                setItemRef={setItemRef}
+                              />
+                            ))
+                          : null}
+                      </div>
+                    );
+                  })}
+                  {region.stores.map((store) => (
+                    <PartnerStoreDirectoryItem
+                      key={store.id}
+                      store={store}
+                      isSelected={selectedStoreId === store.id}
+                      viewOnMapLabel={viewOnMapLabel}
+                      onSelect={onSelect}
+                      setItemRef={setItemRef}
+                    />
+                  ))}
+                </div>
+              ) : null}
+            </div>
           );
         })}
       </div>

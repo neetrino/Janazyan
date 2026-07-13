@@ -14,6 +14,8 @@ import { adminProductsService } from "./admin/admin-products.service";
 import { adminAttributesService } from "./admin/admin-attributes.service";
 import { adminCouponsService } from "./admin/admin-coupons.service";
 import { adminPartnerStoresService } from "./admin/admin-partner-stores.service";
+import { adminPartnerStoreHierarchyService } from "./admin/admin-partner-store-hierarchy.service";
+import { adminPartnerStoresReorderService } from "./admin/admin-partner-stores-reorder.service";
 import { adminBlogService } from "./admin/admin-blog.service";
 import { adminFaqService } from "./admin/admin-faq.service";
 
@@ -92,6 +94,28 @@ class AdminService {
   createPartnerStore = adminPartnerStoresService.createPartnerStore.bind(adminPartnerStoresService);
   updatePartnerStore = adminPartnerStoresService.updatePartnerStore.bind(adminPartnerStoresService);
   deletePartnerStore = adminPartnerStoresService.deletePartnerStore.bind(adminPartnerStoresService);
+
+  createPartnerStoreRegion = adminPartnerStoreHierarchyService.createRegion.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  updatePartnerStoreRegion = adminPartnerStoreHierarchyService.updateRegion.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  deletePartnerStoreRegion = adminPartnerStoreHierarchyService.deleteRegion.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  createPartnerStoreArea = adminPartnerStoreHierarchyService.createArea.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  updatePartnerStoreArea = adminPartnerStoreHierarchyService.updateArea.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  deletePartnerStoreArea = adminPartnerStoreHierarchyService.deleteArea.bind(
+    adminPartnerStoreHierarchyService,
+  );
+  reorderPartnerStores = adminPartnerStoresReorderService.reorder.bind(
+    adminPartnerStoresReorderService,
+  );
 
   // Blog posts
   getBlogPosts = adminBlogService.getBlogPosts.bind(adminBlogService);

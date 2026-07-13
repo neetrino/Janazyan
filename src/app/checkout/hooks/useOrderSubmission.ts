@@ -1,4 +1,5 @@
 import { useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 import { apiClient } from '../../../lib/api-client';
 import { useTranslation } from '../../../lib/i18n-client';
 import { fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
@@ -27,8 +28,16 @@ export function useOrderSubmission({
 }: UseOrderSubmissionProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmittingRef = useRef(false);
 
   const submitOrder = async (data: CheckoutFormData, options?: SubmitOrderOptions) => {
+    if (isSubmittingRef.current) {
+      return;
+    }
+
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
     setError(null);
 
     try {
@@ -134,12 +143,10 @@ export function useOrderSubmission({
     } catch (err: unknown) {
       const error = err as { message?: string };
       setError(error.message || t('checkout.errors.failedToCreateOrder'));
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
     }
   };
 
-  return { submitOrder };
+  return { submitOrder, isSubmitting };
 }
-
-
-
-

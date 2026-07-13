@@ -8,6 +8,9 @@ const FALLBACK_LOCALE = 'en';
 type StoreRow = {
   id: string;
   slug: string;
+  regionId: string;
+  areaId: string | null;
+  position: number;
   logoUrl: string | null;
   lat: number;
   lng: number;
@@ -17,7 +20,27 @@ type StoreRow = {
     address: string;
     logoAlt: string | null;
   }>;
+  region: {
+    position: number;
+    translations: Array<{ locale: string; name: string }>;
+  };
+  area: {
+    position: number;
+    translations: Array<{ locale: string; name: string }>;
+  } | null;
 };
+
+function pickLocalizedName(
+  translations: Array<{ locale: string; name: string }>,
+  locale: string,
+): string {
+  return (
+    translations.find((t) => t.locale === locale)?.name ??
+    translations.find((t) => t.locale === FALLBACK_LOCALE)?.name ??
+    translations[0]?.name ??
+    ''
+  );
+}
 
 function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
   const translations = row.translations;
@@ -43,6 +66,13 @@ function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
     logoAlt: match.logoAlt ?? match.name,
     lat: coordinates.lat,
     lng: coordinates.lng,
+    regionId: row.regionId,
+    regionName: pickLocalizedName(row.region.translations, locale),
+    regionPosition: row.region.position,
+    areaId: row.areaId,
+    areaName: row.area ? pickLocalizedName(row.area.translations, locale) : null,
+    areaPosition: row.area?.position ?? null,
+    position: row.position,
   };
 }
 
@@ -58,16 +88,35 @@ export async function getPublishedPartnerStores(locale: string): Promise<Partner
     where: {
       deletedAt: null,
       published: true,
+      region: { deletedAt: null, published: true },
+      OR: [{ areaId: null }, { area: { deletedAt: null, published: true } }],
     },
     include: {
       translations: true,
+      region: { include: { translations: true } },
+      area: { include: { translations: true } },
     },
-    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    orderBy: [
+      { region: { position: 'asc' } },
+      { position: 'asc' },
+      { createdAt: 'asc' },
+    ],
   });
 
   return stores
     .map((row) => mapStoreRow(row, locale))
-    .filter((store): store is PartnerStore => store !== null);
+    .filter((store): store is PartnerStore => store !== null)
+    .sort((a, b) => {
+      if (a.regionPosition !== b.regionPosition) {
+        return a.regionPosition - b.regionPosition;
+      }
+      const areaA = a.areaPosition ?? -1;
+      const areaB = b.areaPosition ?? -1;
+      if (areaA !== areaB) {
+        return areaA - areaB;
+      }
+      return a.position - b.position;
+    });
 }
 
 /** Resolve a published partner store by id for checkout pickup validation. */
@@ -84,9 +133,13 @@ export async function getPublishedPartnerStoreById(
       id: storeId,
       deletedAt: null,
       published: true,
+      region: { deletedAt: null, published: true },
+      OR: [{ areaId: null }, { area: { deletedAt: null, published: true } }],
     },
     include: {
       translations: true,
+      region: { include: { translations: true } },
+      area: { include: { translations: true } },
     },
   });
 

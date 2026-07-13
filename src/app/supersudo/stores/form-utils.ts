@@ -1,8 +1,10 @@
 import { PARTNER_STORE_LOCALES } from '../../../features/stores/partner-store-locales';
 import type { AdminPartnerStore, PartnerStoreFormData } from './types';
 
-export function createEmptyFormData(): PartnerStoreFormData {
+export function createEmptyFormData(regionId = '', areaId = ''): PartnerStoreFormData {
   return {
+    regionId,
+    areaId,
     translations: PARTNER_STORE_LOCALES.map((locale) => ({
       locale,
       name: '',
@@ -17,6 +19,8 @@ export function formDataFromStore(store: AdminPartnerStore): PartnerStoreFormDat
   const byLocale = new Map(store.translations.map((t) => [t.locale, t]));
 
   return {
+    regionId: store.regionId,
+    areaId: store.areaId ?? '',
     translations: PARTNER_STORE_LOCALES.map((locale) => {
       const existing = byLocale.get(locale);
       return {
@@ -32,6 +36,8 @@ export function formDataFromStore(store: AdminPartnerStore): PartnerStoreFormDat
 
 export function parseFormPayload(formData: PartnerStoreFormData) {
   return {
+    regionId: formData.regionId,
+    areaId: formData.areaId.trim() || null,
     translations: formData.translations.map((translation) => ({
       ...translation,
       logoAlt: translation.name.trim() || undefined,

@@ -75,14 +75,13 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
+    setMapFocusRequest((count) => count + 1);
     if (options?.openMapModal) {
       setMapModalOpen(true);
-      setMapFocusRequest((count) => count + 1);
       return;
     }
     if (options?.scrollToMap) {
       scrollPartnerMapIntoView(mapSectionRef.current);
-      setMapFocusRequest((count) => count + 1);
     }
   }, []);
 

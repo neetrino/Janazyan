@@ -36,7 +36,7 @@ export const STOREFRONT_CACHE_KEYS = {
   blogPosts: (locale: string) => `blog:posts:${locale}`,
   blogPostBySlug: (locale: string, slug: string) => `blog:post:${locale}:${slug}`,
   faqPublished: (locale: string) => `faq:published:${locale}`,
-  partnerStores: (locale: string) => `partner-stores:${locale}`,
+  partnerStores: (locale: string) => `partner-stores:v3:${locale}`,
 } as const;
 
 /** Deterministic cache key fragment from URL search params (sorted keys). */

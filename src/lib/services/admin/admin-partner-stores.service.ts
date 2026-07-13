@@ -3,11 +3,19 @@ import { toSlug } from '@/lib/utils/slug';
 import { resolvePartnerStoreLogoUrl } from '@/lib/partner-stores/resolve-logo-url';
 import { resolvePartnerStoreCoordinatesFromAddress } from '@/lib/partner-stores/geocode-partner-store-address';
 import type { PartnerStoreTranslationInput } from '@/features/stores/partner-store-locales';
+import { adminPartnerStoreHierarchyService } from './admin-partner-store-hierarchy.service';
+import {
+  getPartnerStoreEnglishAddress,
+  validatePartnerStoreCoordinates,
+  validatePartnerStoreTranslations,
+} from './partner-store-validators';
 import { logger } from '@/lib/utils/logger';
 
 type AdminPartnerStoreRow = {
   id: string;
   slug: string;
+  regionId: string;
+  areaId: string | null;
   logoUrl: string | null;
   lat: number;
   lng: number;
@@ -28,6 +36,8 @@ function mapAdminStore(row: AdminPartnerStoreRow, displayLocale = 'en') {
   return {
     id: row.id,
     slug: row.slug,
+    regionId: row.regionId,
+    areaId: row.areaId,
     name: translation?.name ?? '',
     address: translation?.address ?? '',
     logoUrl: row.logoUrl,
@@ -72,73 +82,38 @@ async function generateUniqueSlug(baseName: string, excludeId?: string): Promise
   }
 }
 
-function validateTranslations(translations: PartnerStoreTranslationInput[]): void {
-  if (!translations.length) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'At least one translation is required',
-    };
-  }
-
-  const enTranslation = translations.find((t) => t.locale === 'en');
-  if (!enTranslation?.name.trim() || !enTranslation.address.trim()) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'English name and address are required',
-    };
-  }
-}
-
-function validateCoordinates(lat: number, lng: number): void {
-  if (!Number.isFinite(lat) || lat < -90 || lat > 90) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'Latitude must be between -90 and 90',
-    };
-  }
-  if (!Number.isFinite(lng) || lng < -180 || lng > 180) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'Longitude must be between -180 and 180',
-    };
-  }
-}
-
-function getEnglishAddress(translations: PartnerStoreTranslationInput[]): string {
-  return translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
-}
-
-async function resolveNextPartnerStorePosition(): Promise<number> {
+async function resolveNextPartnerStorePosition(
+  regionId: string,
+  areaId: string | null,
+): Promise<number> {
   const aggregate = await db.partnerStore.aggregate({
-    where: { deletedAt: null },
+    where: { deletedAt: null, regionId, areaId },
     _max: { position: true },
   });
-
   return (aggregate._max.position ?? -1) + 1;
 }
 
 class AdminPartnerStoresService {
   async getPartnerStores() {
-    const stores = await db.partnerStore.findMany({
-      where: { deletedAt: null },
-      include: { translations: true },
-      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-    });
+    const [stores, hierarchy] = await Promise.all([
+      db.partnerStore.findMany({
+        where: { deletedAt: null },
+        include: { translations: true },
+        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+      }),
+      adminPartnerStoreHierarchyService.listRegionsAndAreas(),
+    ]);
 
     return {
       data: stores.map((store) => mapAdminStore(store)),
+      regions: hierarchy.regions,
+      areas: hierarchy.areas,
     };
   }
 
   async createPartnerStore(data: {
+    regionId: string;
+    areaId?: string | null;
     translations: PartnerStoreTranslationInput[];
     logoUrl?: string;
     lat?: number;
@@ -146,24 +121,39 @@ class AdminPartnerStoresService {
     position?: number;
     published?: boolean;
   }) {
-    validateTranslations(data.translations);
+    if (!data.regionId?.trim()) {
+      throw {
+        status: 400,
+        type: 'https://api.shop.am/problems/validation-error',
+        title: 'Validation Error',
+        detail: 'Region is required',
+      };
+    }
 
-    const enAddress = getEnglishAddress(data.translations);
+    const areaId = data.areaId?.trim() || null;
+    await adminPartnerStoreHierarchyService.assertRegionAreaLink(data.regionId, areaId);
+    validatePartnerStoreTranslations(data.translations);
+
+    const enAddress = getPartnerStoreEnglishAddress(data.translations);
     const coordinates =
       data.lat !== undefined && data.lng !== undefined
         ? { lat: data.lat, lng: data.lng }
         : await resolvePartnerStoreCoordinatesFromAddress(enAddress);
-    validateCoordinates(coordinates.lat, coordinates.lng);
+    validatePartnerStoreCoordinates(coordinates.lat, coordinates.lng);
 
     const enName = data.translations.find((t) => t.locale === 'en')!.name.trim();
     const slug = await generateUniqueSlug(enName);
     const logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl);
     const position =
-      data.position !== undefined ? data.position : await resolveNextPartnerStorePosition();
+      data.position !== undefined
+        ? data.position
+        : await resolveNextPartnerStorePosition(data.regionId, areaId);
 
     const store = await db.partnerStore.create({
       data: {
         slug,
+        regionId: data.regionId,
+        areaId,
         logoUrl: logoUrl ?? undefined,
         lat: coordinates.lat,
         lng: coordinates.lng,
@@ -190,6 +180,8 @@ class AdminPartnerStoresService {
   async updatePartnerStore(
     storeId: string,
     data: {
+      regionId?: string;
+      areaId?: string | null;
       translations?: PartnerStoreTranslationInput[];
       logoUrl?: string | null;
       lat?: number;
@@ -213,16 +205,23 @@ class AdminPartnerStoresService {
     }
 
     if (data.translations) {
-      validateTranslations(data.translations);
+      validatePartnerStoreTranslations(data.translations);
     }
 
-    const enAddress = data.translations ? getEnglishAddress(data.translations) : '';
+    const nextRegionId = data.regionId ?? store.regionId;
+    const nextAreaId =
+      data.areaId !== undefined ? data.areaId?.trim() || null : store.areaId;
+    await adminPartnerStoreHierarchyService.assertRegionAreaLink(nextRegionId, nextAreaId);
+
+    const enAddress = data.translations ? getPartnerStoreEnglishAddress(data.translations) : '';
     const existingEnAddress =
       store.translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
     const shouldRefreshCoordinates =
       Boolean(data.translations) && enAddress !== existingEnAddress;
 
     const updateData: {
+      regionId?: string;
+      areaId?: string | null;
       logoUrl?: string | null;
       lat?: number;
       lng?: number;
@@ -230,16 +229,22 @@ class AdminPartnerStoresService {
       published?: boolean;
     } = {};
 
+    if (data.regionId !== undefined) {
+      updateData.regionId = data.regionId;
+    }
+    if (data.areaId !== undefined) {
+      updateData.areaId = nextAreaId;
+    }
     if (data.logoUrl !== undefined) {
       updateData.logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl ?? undefined);
     }
     if (shouldRefreshCoordinates) {
       const coordinates = await resolvePartnerStoreCoordinatesFromAddress(enAddress);
-      validateCoordinates(coordinates.lat, coordinates.lng);
+      validatePartnerStoreCoordinates(coordinates.lat, coordinates.lng);
       updateData.lat = coordinates.lat;
       updateData.lng = coordinates.lng;
     } else if (data.lat !== undefined || data.lng !== undefined) {
-      validateCoordinates(data.lat ?? store.lat, data.lng ?? store.lng);
+      validatePartnerStoreCoordinates(data.lat ?? store.lat, data.lng ?? store.lng);
       if (data.lat !== undefined) {
         updateData.lat = data.lat;
       }
@@ -255,10 +260,7 @@ class AdminPartnerStoresService {
     }
 
     if (Object.keys(updateData).length > 0) {
-      await db.partnerStore.update({
-        where: { id: storeId },
-        data: updateData,
-      });
+      await db.partnerStore.update({ where: { id: storeId }, data: updateData });
     }
 
     if (data.translations) {
@@ -267,12 +269,7 @@ class AdminPartnerStoresService {
           continue;
         }
         await db.partnerStoreTranslation.upsert({
-          where: {
-            storeId_locale: {
-              storeId,
-              locale: translation.locale,
-            },
-          },
+          where: { storeId_locale: { storeId, locale: translation.locale } },
           create: {
             storeId,
             locale: translation.locale,

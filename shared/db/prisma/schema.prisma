@@ -548,20 +548,90 @@ model PromoCodeUser {
 
 // ============================================
 // PARTNER STORE MODEL (public /stores page)
+// Hierarchy: Region → optional Area → Store (2 or 3 levels)
 // ============================================
+model PartnerStoreRegion {
+  id           String                            @id @default(cuid())
+  slug         String                            @unique
+  position     Int                               @default(0)
+  published    Boolean                           @default(true)
+  translations PartnerStoreRegionTranslation[]
+  areas        PartnerStoreArea[]
+  stores       PartnerStore[]
+  deletedAt    DateTime?
+  createdAt    DateTime                          @default(now())
+  updatedAt    DateTime                          @updatedAt
+
+  @@index([published])
+  @@index([deletedAt])
+  @@index([position])
+  @@map("partner_store_regions")
+}
+
+model PartnerStoreRegionTranslation {
+  id       String             @id @default(cuid())
+  regionId String
+  locale   String
+  name     String
+  region   PartnerStoreRegion @relation(fields: [regionId], references: [id], onDelete: Cascade)
+
+  @@unique([regionId, locale])
+  @@index([locale])
+  @@map("partner_store_region_translations")
+}
+
+model PartnerStoreArea {
+  id           String                          @id @default(cuid())
+  regionId     String
+  slug         String
+  position     Int                             @default(0)
+  published    Boolean                         @default(true)
+  translations PartnerStoreAreaTranslation[]
+  region       PartnerStoreRegion              @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  stores       PartnerStore[]
+  deletedAt    DateTime?
+  createdAt    DateTime                        @default(now())
+  updatedAt    DateTime                        @updatedAt
+
+  @@unique([regionId, slug])
+  @@index([regionId])
+  @@index([published])
+  @@index([deletedAt])
+  @@index([position])
+  @@map("partner_store_areas")
+}
+
+model PartnerStoreAreaTranslation {
+  id     String           @id @default(cuid())
+  areaId String
+  locale String
+  name   String
+  area   PartnerStoreArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@unique([areaId, locale])
+  @@index([locale])
+  @@map("partner_store_area_translations")
+}
+
 model PartnerStore {
   id           String                     @id @default(cuid())
   slug         String                     @unique
+  regionId     String
+  areaId       String?
   logoUrl      String?
   lat          Float
   lng          Float
   position     Int                        @default(0)
   published    Boolean                    @default(false)
   translations PartnerStoreTranslation[]
+  region       PartnerStoreRegion         @relation(fields: [regionId], references: [id], onDelete: Restrict)
+  area         PartnerStoreArea?          @relation(fields: [areaId], references: [id], onDelete: SetNull)
   deletedAt    DateTime?
   createdAt    DateTime                   @default(now())
   updatedAt    DateTime                   @updatedAt
 
+  @@index([regionId])
+  @@index([areaId])
   @@index([published])
   @@index([deletedAt])
   @@index([position])

@@ -22,3 +22,9 @@ export const MAP_TILE_MAX_ZOOM = 19;
 
 /** Below this width the store list stacks above the map (Tailwind `lg`). */
 export const STORES_MAP_SCROLL_BREAKPOINT_PX = 1023;
+
+/** Leaflet divIcon sizes — inactive markers stay compact; active stays prominent. */
+export const MAP_MARKER_SIZE_INACTIVE_PX = 16;
+export const MAP_MARKER_SIZE_ACTIVE_PX = 36;
+export const MAP_MARKER_SIZE_INACTIVE_MOBILE_PX = 14;
+export const MAP_MARKER_SIZE_ACTIVE_MOBILE_PX = 30;

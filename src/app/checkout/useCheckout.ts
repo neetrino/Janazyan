@@ -46,7 +46,7 @@ export function useCheckout() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     setValue,
     watch,
     getValues,
@@ -102,7 +102,7 @@ export function useCheckout() {
     orderSubtotalAmd,
   );
 
-  const { submitOrder } = useOrderSubmission({
+  const { submitOrder, isSubmitting } = useOrderSubmission({
     cart,
     isLoggedIn,
     deliveryPrice,

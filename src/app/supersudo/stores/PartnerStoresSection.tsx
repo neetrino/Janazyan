@@ -6,6 +6,7 @@ import {
   useMemo,
   useState,
   type ChangeEvent,
+  type DragEvent,
   type FormEvent,
 } from 'react';
 import { Button, Input } from '@shop/ui';
@@ -21,7 +22,25 @@ import {
 } from '@/lib/admin/admin-list-client-cache';
 import { createEmptyFormData, formDataFromStore, parseFormPayload } from './form-utils';
 import { PartnerStoreDrawer } from './PartnerStoreDrawer';
-import type { AdminPartnerStore, PartnerStoreFormData } from './types';
+import { PartnerStoresAdminTree } from './PartnerStoresAdminTree';
+import {
+  buildOrderedIdsFromDrop,
+  resolveDropBeforeId,
+  type PartnerStoreDragState,
+  type PartnerStoreDropIndicator,
+} from './partner-store-drag';
+import type {
+  AdminPartnerStore,
+  AdminPartnerStoreArea,
+  AdminPartnerStoreRegion,
+  PartnerStoreFormData,
+} from './types';
+
+type PartnerStoresAdminResponse = {
+  data: AdminPartnerStore[];
+  regions: AdminPartnerStoreRegion[];
+  areas: AdminPartnerStoreArea[];
+};
 
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -32,10 +51,18 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+function askName(message: string): string | null {
+  const value = window.prompt(message);
+  const trimmed = value?.trim() ?? '';
+  return trimmed.length > 0 ? trimmed : null;
+}
+
 export function PartnerStoresSection() {
   const { t } = useTranslation();
   const { confirm: confirmDialog } = useAdminDialogs();
   const [stores, setStores] = useState<AdminPartnerStore[]>([]);
+  const [regions, setRegions] = useState<AdminPartnerStoreRegion[]>([]);
+  const [areas, setAreas] = useState<AdminPartnerStoreArea[]>([]);
   const [loading, setLoading] = useState(true);
   const [showDrawer, setShowDrawer] = useState(false);
   const [editingStore, setEditingStore] = useState<AdminPartnerStore | null>(null);
@@ -43,6 +70,10 @@ export function PartnerStoresSection() {
   const [submitting, setSubmitting] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [expandedRegionIds, setExpandedRegionIds] = useState<Set<string>>(new Set());
+  const [reordering, setReordering] = useState(false);
+  const [dragState, setDragState] = useState<PartnerStoreDragState | null>(null);
+  const [dropIndicator, setDropIndicator] = useState<PartnerStoreDropIndicator | null>(null);
 
   useBodyScrollLock(showDrawer);
 
@@ -51,13 +82,16 @@ export function PartnerStoresSection() {
       setLoading(true);
       const response = await fetchAdminListCached(
         ADMIN_LIST_CACHE_KEYS.partnerStores,
-        () =>
-          apiClient.get<{ data: AdminPartnerStore[] }>('/api/v1/admin/partner-stores'),
+        () => apiClient.get<PartnerStoresAdminResponse>('/api/v1/admin/partner-stores'),
       );
       setStores(response.data ?? []);
+      setRegions(response.regions ?? []);
+      setAreas(response.areas ?? []);
     } catch (err) {
       console.error('Error fetching partner stores:', err);
       setStores([]);
+      setRegions([]);
+      setAreas([]);
     } finally {
       setLoading(false);
     }
@@ -67,22 +101,176 @@ export function PartnerStoresSection() {
     void fetchStores();
   }, [fetchStores]);
 
+  const regionNameById = useMemo(
+    () => new Map(regions.map((region) => [region.id, region.name])),
+    [regions],
+  );
+  const areaNameById = useMemo(
+    () => new Map(areas.map((area) => [area.id, area.name])),
+    [areas],
+  );
+
   const filteredStores = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) {
       return stores;
     }
-    return stores.filter(
-      (store) =>
+    return stores.filter((store) => {
+      const regionName = regionNameById.get(store.regionId)?.toLowerCase() ?? '';
+      const areaName = store.areaId
+        ? (areaNameById.get(store.areaId)?.toLowerCase() ?? '')
+        : '';
+      return (
         store.name.toLowerCase().includes(q) ||
         store.address.toLowerCase().includes(q) ||
-        store.slug.toLowerCase().includes(q),
-    );
-  }, [stores, searchQuery]);
+        store.slug.toLowerCase().includes(q) ||
+        regionName.includes(q) ||
+        areaName.includes(q)
+      );
+    });
+  }, [stores, searchQuery, regionNameById, areaNameById]);
 
-  const handleOpenAdd = () => {
+  const storesByRegion = useMemo(() => {
+    const map = new Map<string, AdminPartnerStore[]>();
+    for (const store of filteredStores) {
+      const list = map.get(store.regionId) ?? [];
+      list.push(store);
+      map.set(store.regionId, list);
+    }
+    for (const [regionId, list] of map) {
+      map.set(
+        regionId,
+        [...list].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
+      );
+    }
+    return map;
+  }, [filteredStores]);
+
+  const areasByRegion = useMemo(() => {
+    const map = new Map<string, AdminPartnerStoreArea[]>();
+    for (const area of areas) {
+      const list = map.get(area.regionId) ?? [];
+      list.push(area);
+      map.set(area.regionId, list);
+    }
+    for (const [regionId, list] of map) {
+      map.set(
+        regionId,
+        [...list].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
+      );
+    }
+    return map;
+  }, [areas]);
+
+  const reorderEnabled = searchQuery.trim().length === 0 && !reordering;
+
+  const persistReorder = useCallback(
+    async (payload: {
+      scope: 'region' | 'area' | 'store';
+      orderedIds: string[];
+      regionId?: string | null;
+      areaId?: string | null;
+    }) => {
+      setReordering(true);
+      try {
+        await apiClient.put('/api/v1/admin/partner-stores/reorder', payload);
+        invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
+        await fetchStores();
+      } catch (err) {
+        console.error('Error reordering partner stores:', err);
+        alert(t('admin.partnerStores.errorReordering'));
+      } finally {
+        setReordering(false);
+      }
+    },
+    [fetchStores, t],
+  );
+
+  const handleDragStart = useCallback((state: PartnerStoreDragState) => {
+    setDragState(state);
+    setDropIndicator(null);
+  }, []);
+
+  const handleDragEnd = useCallback(() => {
+    setDragState(null);
+    setDropIndicator(null);
+  }, []);
+
+  const handleDragOverItem = useCallback(
+    (params: {
+      event: DragEvent<HTMLElement>;
+      targetId: string;
+      scope: 'region' | 'area' | 'store';
+      regionId: string | null;
+      areaId: string | null;
+      siblingIds: string[];
+    }) => {
+      if (!dragState || dragState.scope !== params.scope) {
+        return;
+      }
+      if (dragState.id === params.targetId) {
+        return;
+      }
+      if (dragState.regionId !== params.regionId || dragState.areaId !== params.areaId) {
+        return;
+      }
+
+      params.event.preventDefault();
+      params.event.dataTransfer.dropEffect = 'move';
+
+      const bounds = params.event.currentTarget.getBoundingClientRect();
+      const insertBefore = params.event.clientY < bounds.top + bounds.height / 2;
+      const beforeId = resolveDropBeforeId(params.targetId, params.siblingIds, insertBefore);
+
+      setDropIndicator({
+        scope: params.scope,
+        regionId: params.regionId,
+        areaId: params.areaId,
+        beforeId,
+      });
+    },
+    [dragState],
+  );
+
+  const handleDropItem = useCallback(() => {
+    if (!dragState || !dropIndicator || dragState.scope !== dropIndicator.scope) {
+      handleDragEnd();
+      return;
+    }
+    if (
+      dragState.regionId !== dropIndicator.regionId ||
+      dragState.areaId !== dropIndicator.areaId
+    ) {
+      handleDragEnd();
+      return;
+    }
+
+    const orderedIds = buildOrderedIdsFromDrop(
+      dragState.siblingIds,
+      dragState.id,
+      dropIndicator.beforeId,
+    );
+    const unchanged =
+      !orderedIds ||
+      orderedIds.every((id, index) => id === dragState.siblingIds[index]);
+
+    handleDragEnd();
+
+    if (!orderedIds || unchanged) {
+      return;
+    }
+
+    void persistReorder({
+      scope: dragState.scope,
+      orderedIds,
+      regionId: dragState.regionId,
+      areaId: dragState.areaId,
+    });
+  }, [dragState, dropIndicator, handleDragEnd, persistReorder]);
+
+  const handleOpenAdd = (regionId = '', areaId = '') => {
     setEditingStore(null);
-    setFormData(createEmptyFormData());
+    setFormData(createEmptyFormData(regionId, areaId));
     setShowDrawer(true);
   };
 
@@ -103,7 +291,6 @@ export function PartnerStoresSection() {
     if (!file) {
       return;
     }
-
     try {
       setImageUploading(true);
       const base64 = await fileToBase64(file);
@@ -139,7 +326,6 @@ export function PartnerStoresSection() {
     if (!isConfirmed) {
       return;
     }
-
     try {
       await apiClient.delete(`/api/v1/admin/partner-stores/${store.id}`);
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
@@ -151,8 +337,56 @@ export function PartnerStoresSection() {
     }
   };
 
+  const handleAddRegion = async () => {
+    const name = askName(t('admin.partnerStores.regionNamePrompt'));
+    if (!name) {
+      return;
+    }
+    try {
+      await apiClient.post('/api/v1/admin/partner-store-regions', {
+        translations: [
+          { locale: 'en', name },
+          { locale: 'hy', name },
+          { locale: 'ru', name },
+        ],
+      });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
+      await fetchStores();
+    } catch (err) {
+      console.error('Error creating region:', err);
+      alert(t('admin.partnerStores.errorSavingRegion'));
+    }
+  };
+
+  const handleAddArea = async (regionId: string) => {
+    const name = askName(t('admin.partnerStores.areaNamePrompt'));
+    if (!name) {
+      return;
+    }
+    try {
+      await apiClient.post('/api/v1/admin/partner-store-areas', {
+        regionId,
+        translations: [
+          { locale: 'en', name },
+          { locale: 'hy', name },
+          { locale: 'ru', name },
+        ],
+      });
+      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
+      await fetchStores();
+      setExpandedRegionIds((current) => new Set(current).add(regionId));
+    } catch (err) {
+      console.error('Error creating area:', err);
+      alert(t('admin.partnerStores.errorSavingArea'));
+    }
+  };
+
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (!formData.regionId) {
+      alert(t('admin.partnerStores.regionRequired'));
+      return;
+    }
     const en = formData.translations.find((tr) => tr.locale === 'en');
     if (!en?.name.trim() || !en.address.trim()) {
       alert(t('admin.partnerStores.enRequired'));
@@ -180,6 +414,18 @@ export function PartnerStoresSection() {
     }
   };
 
+  const toggleRegion = (regionId: string) => {
+    setExpandedRegionIds((current) => {
+      const next = new Set(current);
+      if (next.has(regionId)) {
+        next.delete(regionId);
+      } else {
+        next.add(regionId);
+      }
+      return next;
+    });
+  };
+
   if (loading) {
     return (
       <div className="py-4 text-center">
@@ -191,12 +437,24 @@ export function PartnerStoresSection() {
 
   return (
     <>
-      <div className="mb-4 flex items-center justify-between">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xl font-semibold text-gray-900">{t('admin.partnerStores.title')}</h2>
-        <Button variant="primary" size="sm" onClick={handleOpenAdd}>
-          {t('admin.partnerStores.addNew')}
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" size="sm" onClick={() => void handleAddRegion()}>
+            {t('admin.partnerStores.addRegion')}
+          </Button>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => handleOpenAdd()}
+            disabled={regions.length === 0}
+          >
+            {t('admin.partnerStores.addNew')}
+          </Button>
+        </div>
       </div>
+
+      <p className="mb-4 text-sm text-gray-600">{t('admin.partnerStores.hierarchyHint')}</p>
 
       <div className="mb-4">
         <Input
@@ -208,59 +466,48 @@ export function PartnerStoresSection() {
         />
       </div>
 
-      {filteredStores.length === 0 ? (
-        <p className="py-2 text-sm text-gray-500">{t('admin.partnerStores.noStores')}</p>
+      {regions.length === 0 ? (
+        <p className="py-2 text-sm text-gray-500">{t('admin.partnerStores.noRegions')}</p>
       ) : (
-        <div className="space-y-3">
-          {filteredStores.map((store) => (
-            <div
-              key={store.id}
-              className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-gray-200 bg-white p-4"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                {store.logoUrl ? (
-                  <img
-                    src={store.logoUrl}
-                    alt={store.name}
-                    className="h-10 w-14 object-contain"
-                  />
-                ) : (
-                  <div className="flex h-10 w-14 items-center justify-center rounded-lg bg-gray-100 text-xs text-gray-400">
-                    —
-                  </div>
-                )}
-                <div className="min-w-0">
-                  <p className="font-medium text-gray-900">{store.name}</p>
-                  <p className="text-sm text-gray-600">{store.address}</p>
-                  <p className="text-xs text-gray-400">#{store.position}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={`rounded-full px-2 py-0.5 text-xs ${
-                    store.published ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  {store.published
-                    ? t('admin.partnerStores.published')
-                    : t('admin.partnerStores.draft')}
-                </span>
-                <Button variant="outline" size="sm" onClick={() => handleOpenEdit(store)}>
-                  {t('admin.partnerStores.edit')}
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => void handleDelete(store)}>
-                  {t('admin.partnerStores.delete')}
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
+        <PartnerStoresAdminTree
+          regions={regions}
+          areasByRegion={areasByRegion}
+          storesByRegion={storesByRegion}
+          expandedRegionIds={expandedRegionIds}
+          reordering={reordering}
+          reorderEnabled={reorderEnabled}
+          dragState={dragState}
+          dropIndicator={dropIndicator}
+          onToggleRegion={toggleRegion}
+          onAddArea={(regionId) => void handleAddArea(regionId)}
+          onAddStore={handleOpenAdd}
+          onEditStore={handleOpenEdit}
+          onDeleteStore={(store) => void handleDelete(store)}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragOverItem={handleDragOverItem}
+          onDropItem={handleDropItem}
+          labels={{
+            addArea: t('admin.partnerStores.addArea'),
+            addStoreHere: t('admin.partnerStores.addStoreHere'),
+            noStoresInArea: t('admin.partnerStores.noStoresInArea'),
+            directStores: t('admin.partnerStores.directStores'),
+            noStores: t('admin.partnerStores.noStores'),
+            published: t('admin.partnerStores.published'),
+            draft: t('admin.partnerStores.draft'),
+            edit: t('admin.partnerStores.edit'),
+            delete: t('admin.partnerStores.delete'),
+            dragToReorder: t('admin.partnerStores.dragToReorder'),
+          }}
+        />
       )}
 
       <PartnerStoreDrawer
         open={showDrawer}
         editingStore={editingStore}
         formData={formData}
+        regions={regions}
+        areas={areas}
         submitting={submitting}
         imageUploading={imageUploading}
         onClose={handleCloseDrawer}

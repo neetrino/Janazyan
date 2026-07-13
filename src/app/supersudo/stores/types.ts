@@ -3,6 +3,8 @@ import type { PartnerStoreTranslationInput } from '../../../features/stores/part
 export type AdminPartnerStore = {
   id: string;
   slug: string;
+  regionId: string;
+  areaId: string | null;
   name: string;
   address: string;
   logoUrl: string | null;
@@ -18,7 +20,28 @@ export type AdminPartnerStore = {
   }>;
 };
 
+export type AdminPartnerStoreRegion = {
+  id: string;
+  slug: string;
+  name: string;
+  position: number;
+  published: boolean;
+  translations: Array<{ locale: string; name: string }>;
+};
+
+export type AdminPartnerStoreArea = {
+  id: string;
+  regionId: string;
+  slug: string;
+  name: string;
+  position: number;
+  published: boolean;
+  translations: Array<{ locale: string; name: string }>;
+};
+
 export type PartnerStoreFormData = {
+  regionId: string;
+  areaId: string;
   translations: PartnerStoreTranslationInput[];
   logoUrl: string;
   published: 'published' | 'draft';

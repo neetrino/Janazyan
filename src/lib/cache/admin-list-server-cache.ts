@@ -7,7 +7,7 @@ export const ADMIN_LIST_SERVER_CACHE_TTL_SECONDS = 60;
 export const ADMIN_LIST_SERVER_CACHE_KEYS = {
   attributes: 'admin:list:attributes:v1',
   blogPosts: 'admin:list:blog-posts:v1',
-  partnerStores: 'admin:list:partner-stores:v1',
+  partnerStores: 'admin:list:partner-stores:v2',
   brands: 'admin:list:brands:v1',
   categories: 'admin:list:categories:v1',
 } as const;

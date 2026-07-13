@@ -11,6 +11,7 @@ import { CheckoutForm } from './CheckoutForm';
 import { OrderSummary } from './OrderSummary';
 import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
+import { CheckoutPlacingOrderOverlay } from './components/CheckoutPlacingOrderOverlay';
 import { useCheckout } from './useCheckout';
 import { CHECKOUT_FORM_ID } from './utils/scroll-to-checkout-error';
 
@@ -187,6 +188,8 @@ export function CheckoutPageClient() {
               onSubmit={onSubmit}
             />
           ) : null}
+
+          <CheckoutPlacingOrderOverlay open={isSubmitting} />
         </div>
       }
     />
