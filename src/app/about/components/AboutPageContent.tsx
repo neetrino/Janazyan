@@ -3,6 +3,7 @@
 import { useMemo } from 'react';
 import { loadTranslation } from '../../../lib/i18n';
 import { useTranslation } from '../../../lib/i18n-client';
+import type { LanguageCode } from '../../../lib/language';
 import {
   ABOUT_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
   ABOUT_PAGE_HERO_SHELL_PROPS,
@@ -20,7 +21,7 @@ type AboutCopy = {
 };
 
 function resolveAboutCopy(
-  lang: string,
+  lang: LanguageCode,
   titleFallback: string,
 ): AboutCopy {
   const about = loadTranslation(lang, 'about');

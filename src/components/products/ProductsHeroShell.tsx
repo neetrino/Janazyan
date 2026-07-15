@@ -66,6 +66,11 @@ type ProductsHeroShellProps = {
   compactContentSpacing?: boolean;
   /** Override catalog bottom spacing for route-specific footer handoff. */
   catalogBottomPaddingClassName?: string;
+  /**
+   * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
+   * like login/register so content does not leave a large empty band above the nav.
+   */
+  mobileFillViewport?: boolean;
   /** Route-specific desktop catalog background tuning; defaults to original /products art. */
   desktopBackgroundVariant?: DesktopBackgroundVariant;
   sectionAriaLabel?: string;
@@ -277,6 +282,7 @@ export function ProductsHeroShell({
   compactMobileTop,
   compactContentSpacing,
   catalogBottomPaddingClassName,
+  mobileFillViewport = true,
   desktopBackgroundVariant = 'default',
   sectionAriaLabel = 'Shop',
   activeCategorySlug,
@@ -299,6 +305,7 @@ export function ProductsHeroShell({
         contentInsetClassName={mobileContentInsetClassName}
         hideTopBar={hideMobileTopBar}
         compactMobileTop={resolvedCompactMobileTop}
+        fillViewport={mobileFillViewport}
         sectionAriaLabel={sectionAriaLabel}
       >
         {catalog}

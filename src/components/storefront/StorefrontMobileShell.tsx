@@ -26,6 +26,11 @@ type StorefrontMobileShellProps = {
   hideTopBar?: boolean;
   /** Tighter top spacing for pages without a toolbar row (stores, FAQ, blog). */
   compactMobileTop?: boolean;
+  /**
+   * When false, shell height follows content (no 100dvh stretch / grow).
+   * Auth login/register use this to avoid a large empty band above the bottom nav.
+   */
+  fillViewport?: boolean;
   sectionAriaLabel?: string;
 };
 
@@ -46,15 +51,19 @@ export function StorefrontMobileShell({
   contentInsetClassName = PRODUCTS_PAGE_CONTENT_INSET_CLASS,
   hideTopBar = false,
   compactMobileTop = false,
+  fillViewport = true,
   sectionAriaLabel = 'Page content',
 }: StorefrontMobileShellProps) {
   const showTopBar = !hideTopBar;
   const toolbarSlotClassName =
     toolbarClassName ?? STOREFRONT_MOBILE_IN_CARD_TOOLBAR_SLOT_CLASS;
-  const storefrontMobileBaseShellClass = `${STOREFRONT_MOBILE_SHELL_CLASS} min-h-[100dvh] flex flex-col`;
+  const storefrontMobileBaseShellClass = fillViewport
+    ? `${STOREFRONT_MOBILE_SHELL_CLASS} min-h-[100dvh] flex flex-col`
+    : `${STOREFRONT_MOBILE_SHELL_CLASS} flex flex-col`;
   const shellClassName = hideTopBar
     ? `${storefrontMobileBaseShellClass} ${STOREFRONT_MOBILE_PLAIN_SHELL_CLASS}`
     : storefrontMobileBaseShellClass;
+  const surfaceLayoutClass = fillViewport ? 'grow' : 'shrink-0';
 
   return (
     <section aria-label={sectionAriaLabel} className={shellClassName}>
@@ -73,7 +82,7 @@ export function StorefrontMobileShell({
           <MobileTopBar />
         </div>
       ) : null}
-      <div className={`grow ${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
+      <div className={`${surfaceLayoutClass} ${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
         {toolbar ? <div className={toolbarSlotClassName}>{toolbar}</div> : null}
         {children}
       </div>
