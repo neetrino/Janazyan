@@ -1,14 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getCachedPublishedBlogPosts } from '@/lib/blog/blog-posts-cache';
-import { LANGUAGES } from '@/lib/language';
-
-const DEFAULT_LOCALE = 'en';
+import { DEFAULT_LANGUAGE, LANGUAGES } from '@/lib/language';
 
 function parseLocale(value: string | null): string {
   if (value && value in LANGUAGES) {
     return value;
   }
-  return DEFAULT_LOCALE;
+  return DEFAULT_LANGUAGE;
 }
 
 /**

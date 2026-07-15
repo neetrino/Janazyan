@@ -1,64 +1,38 @@
-import { MAP_DEFAULT_CENTER } from '@/features/stores/constants';
+import {
+  normalizeGeocodeQuery,
+  type GeocodeCoordinates,
+  type PartnerStoreGeocodeQuery,
+} from './geocode-query';
+import {
+  resolveWithArcGis,
+  resolveWithNominatim,
+  resolveWithPhoton,
+} from './geocode-providers';
 
-const NOMINATIM_SEARCH_URL = 'https://nominatim.openstreetmap.org/search';
-const GEOCODE_USER_AGENT = 'JanazyanPartnerStores/1.0';
-const GEOCODE_TIMEOUT_MS = 8000;
-
-type NominatimSearchResult = {
-  lat: string;
-  lon: string;
-};
+export type { PartnerStoreGeocodeQuery } from './geocode-query';
 
 /**
- * Resolves map coordinates from a store address via OpenStreetMap Nominatim.
- * Falls back to the default Yerevan center when lookup fails.
+ * Resolves street-level map coordinates for a partner store address.
+ * Prefers ArcGIS (reliable for Armenian streets), then Nominatim / Photon.
+ * Returns null when lookup fails or only a city/district centroid is found.
  */
 export async function resolvePartnerStoreCoordinatesFromAddress(
-  address: string,
-): Promise<{ lat: number; lng: number }> {
-  const trimmed = address.trim();
-  if (!trimmed) {
-    return { ...MAP_DEFAULT_CENTER };
+  input: string | PartnerStoreGeocodeQuery,
+): Promise<GeocodeCoordinates | null> {
+  const query = normalizeGeocodeQuery(input);
+  if (!query) {
+    return null;
   }
 
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), GEOCODE_TIMEOUT_MS);
-
-  try {
-    const query = new URLSearchParams({
-      q: `${trimmed}, Armenia`,
-      format: 'json',
-      limit: '1',
-    });
-
-    const response = await fetch(`${NOMINATIM_SEARCH_URL}?${query}`, {
-      headers: {
-        'User-Agent': GEOCODE_USER_AGENT,
-        Accept: 'application/json',
-      },
-      signal: controller.signal,
-    });
-
-    if (!response.ok) {
-      return { ...MAP_DEFAULT_CENTER };
-    }
-
-    const results = (await response.json()) as NominatimSearchResult[];
-    const match = results[0];
-    if (!match) {
-      return { ...MAP_DEFAULT_CENTER };
-    }
-
-    const lat = Number.parseFloat(match.lat);
-    const lng = Number.parseFloat(match.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      return { ...MAP_DEFAULT_CENTER };
-    }
-
-    return { lat, lng };
-  } catch {
-    return { ...MAP_DEFAULT_CENTER };
-  } finally {
-    clearTimeout(timeout);
+  const arcgisCoordinates = await resolveWithArcGis(query);
+  if (arcgisCoordinates) {
+    return arcgisCoordinates;
   }
+
+  const nominatimCoordinates = await resolveWithNominatim(query);
+  if (nominatimCoordinates) {
+    return nominatimCoordinates;
+  }
+
+  return resolveWithPhoton(query);
 }

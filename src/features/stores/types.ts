@@ -9,6 +9,29 @@ export type PartnerStoreTranslation = {
 export type PartnerStore = PartnerStoreTranslation & {
   lat: number;
   lng: number;
+  regionId: string;
+  regionName: string;
+  regionPosition: number;
+  areaId: string | null;
+  areaName: string | null;
+  areaPosition: number | null;
+  position: number;
+};
+
+export type PartnerStoreAreaGroup = {
+  id: string;
+  name: string;
+  position: number;
+  stores: PartnerStore[];
+};
+
+export type PartnerStoreRegionGroup = {
+  id: string;
+  name: string;
+  position: number;
+  /** Direct stores when region uses 2-level hierarchy (no areas). */
+  stores: PartnerStore[];
+  areas: PartnerStoreAreaGroup[];
 };
 
 export type StoreSelectOptions = {
@@ -44,4 +67,3 @@ export type StoresTranslation = {
     contactUs: string;
   };
 };
-

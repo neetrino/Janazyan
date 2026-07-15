@@ -1,55 +1,66 @@
 {
-  "title": "Delivery Terms",
+  "title": "Shipping and Delivery Terms",
   "lastUpdated": "Last Updated:",
-  "overview": {
-    "title": "Overview",
-    "description": "These Delivery Terms explain how we process, ship and deliver your orders, including expected timelines, fees and responsibilities."
+  "intro": {
+    "p1": "Janazyan Projects is committed to ensuring that your order reaches you quickly, safely, and in proper packaging. As our product range includes care products for children, pregnant women, nursing mothers, and adults — including shampoos, body gels, SPF products, and other personal care items — we pay special attention to product storage, packaging, and protection against damage during delivery.",
+    "p2": "The main delivery terms are set out below."
   },
-  "shippingOptions": {
-    "title": "Shipping Options",
-    "description": "Available options are displayed at checkout and may include:",
-    "options": {
-      "standard": "Standard shipping with estimated timelines by region.",
-      "express": "Express shipping where supported.",
-      "pickup": "Store pickup or local courier (if available in your area)."
-    }
+  "timeframes": {
+    "title": "1. Delivery Timeframes",
+    "p1": "Delivery timeframes depend on the size of the order, the delivery address, and the selected delivery method.",
+    "p2": "Orders are usually delivered within 1–3 business days in Yerevan and within 2–5 business days to other regions of the Republic of Armenia.",
+    "p3": "After the order is confirmed, our team may contact you, if necessary, to clarify the delivery details.",
+    "p4": "We will notify you in advance of any expected delays."
   },
-  "processingTimes": {
-    "title": "Processing Times",
+  "options": {
+    "title": "2. Delivery Options",
+    "description": "We offer the following delivery options:",
     "items": {
-      "typical": "Orders are typically processed within 1–2 business days after payment confirmation.",
-      "weekends": "Orders placed on weekends or holidays are processed on the next business day.",
-      "preorder": "Pre-order items ship based on estimated availability shown at purchase."
+      "standard": "Standard delivery — carried out through our partner delivery services.",
+      "express": "Express delivery — available for an additional fee depending on the delivery address."
     }
   },
-  "deliveryTimeframes": {
-    "title": "Delivery Timeframes",
-    "description": "Estimated delivery times vary by destination and selected method. Tracking details are provided when the order ships. Actual delivery times may vary due to carrier capacity or local customs procedures."
-  },
-  "shippingFees": {
-    "title": "Shipping Fees and Duties",
+  "fees": {
+    "title": "3. Delivery Fees",
     "items": {
-      "costs": "Shipping costs are calculated at checkout based on destination and service level.",
-      "duties": "Import duties, taxes or brokerage fees may apply for international shipments and are the recipient's responsibility.",
-      "promotional": "Promotional free shipping offers apply only as stated in the promotion."
+      "free": "Delivery is free for purchases of AMD 15,000 or more.",
+      "yerevan": "For purchases below AMD 15,000, the delivery fee within Yerevan is AMD 1,000.",
+      "regions": "The delivery fee to other regions of the Republic of Armenia is AMD 1,000.",
+      "express": "An additional fee may apply to express delivery. The customer will be informed of this fee in advance."
     }
   },
-  "delaysDamageLoss": {
-    "title": "Delays, Damage or Loss",
+  "packaging": {
+    "title": "4. Packaging and Product Safety",
+    "p1": "All orders are packaged in a way that helps protect the products from damage or leakage during delivery.",
+    "p2": "Care products, including shampoos, body gels, SPF products, and other items, are dispatched sealed and in proper condition.",
+    "p3": "Please check the integrity of the packaging when receiving your order. If you notice any damage or leakage, please contact us immediately."
+  },
+  "delays": {
+    "title": "5. Possible Delays",
+    "description": "Despite our efforts, delivery may be delayed in certain cases due to the following reasons:",
     "items": {
-      "delays": "We are not responsible for delays caused by carriers, weather conditions or customs inspections.",
-      "damage": "Please inspect packages upon delivery and report visible damage to the carrier and our support team within 48 hours.",
-      "loss": "If a shipment is lost, contact us with your order number; we will coordinate with the carrier to resolve the issue."
-    }
+      "weather": "adverse weather conditions;",
+      "transport": "transportation issues;",
+      "holidays": "public holidays or periods of high demand;",
+      "schedule": "changes to the delivery service’s operating schedule;",
+      "incomplete": "incomplete delivery address or contact information."
+    },
+    "footer": "In such cases, we will make every effort to inform you as quickly as possible and maintain transparent communication."
   },
-  "contact": {
-    "title": "Contact Us",
-    "description": "For shipping questions or special handling requests, contact us at"
+  "incorrectData": {
+    "title": "6. Incorrect or Incomplete Information",
+    "p1": "When placing an order, please make sure that your name, phone number, and delivery address are entered correctly.",
+    "p2": "If delivery cannot be completed due to incorrect or incomplete information, the customer may be charged for repeat delivery."
+  },
+  "receiving": {
+    "title": "7. Receiving Your Order",
+    "description": "When receiving your order, please check:",
+    "items": {
+      "packaging": "whether the packaging is undamaged;",
+      "match": "whether the items received match your order;",
+      "quantity": "whether the quantity of the items is correct."
+    },
+    "p1": "If there is an issue with your order, please contact us as soon as possible, provide the order number, and attach photographs if there is any damage.",
+    "p2": "Janazyan Projects is committed to ensuring that every order reaches the customer reliably, carefully, and safely."
   }
 }
-
-
-
-
-
-

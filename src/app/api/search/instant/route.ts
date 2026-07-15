@@ -3,6 +3,7 @@ import type { Prisma } from '@white-shop/db';
 import { db } from '@white-shop/db';
 import { extractMediaUrl } from '@/lib/utils/extractMediaUrl';
 import { processImageUrl } from '@/lib/utils/image-utils';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 const DEFAULT_LIMIT = 8;
 const MAX_LIMIT = 20;
@@ -59,7 +60,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const q = searchParams.get('q')?.trim();
-    const lang = searchParams.get('lang') || 'en';
+    const lang = searchParams.get('lang') || DEFAULT_LANGUAGE;
     const limit = Math.min(
       parseInt(searchParams.get('limit') || String(DEFAULT_LIMIT), 10) || DEFAULT_LIMIT,
       MAX_LIMIT

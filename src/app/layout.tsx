@@ -75,16 +75,33 @@ function resolveMetadataBase(): URL {
   return new URL('http://localhost:3000');
 }
 
+const SITE_TITLE = 'Janazyan Projects';
+const SITE_DESCRIPTION =
+  'Գիտելիքի վրա հիմնված խնամք երեխաների և ողջ ընտանիքի համար։';
+
 export const metadata: Metadata = {
   metadataBase: resolveMetadataBase(),
-  title: 'Janazyan',
-  description:
-    'Baby & family skincare crafted with love, safety and your family comfort in mind.',
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+    siteName: SITE_TITLE,
+    type: 'website',
+    locale: 'hy_AM',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
   viewportFit: 'cover',
 };
 
@@ -107,11 +124,11 @@ export default function RootLayout({
         mirageExpanded.variable,
       ].join(' ')}
     >
-      <body className="font-body text-ink-800 antialiased min-h-full">
+      <body className="font-body text-ink-800 antialiased min-h-dvh">
         <Suspense fallback={null}>
           <ClientProviders>
             <StorefrontBackground />
-            <div className="flex min-h-screen flex-col">
+            <div className="flex min-h-dvh flex-col">
               <ConditionalHeader />
               <StorefrontMain>{children}</StorefrontMain>
               <Footer />

@@ -1,7 +1,15 @@
 const ADMIN_PATH_PREFIXES = ['/supersudo', '/admin'] as const;
 
+function normalizePathname(pathname: string): string {
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    return pathname.slice(0, -1);
+  }
+  return pathname;
+}
+
 export function isAdminPath(pathname: string): boolean {
-  return ADMIN_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  const normalizedPathname = normalizePathname(pathname);
+  return ADMIN_PATH_PREFIXES.some((prefix) => normalizedPathname.startsWith(prefix));
 }
 
 /** Public storefront routes (excludes home and admin). */
@@ -11,12 +19,12 @@ export function isStorefrontPage(pathname: string): boolean {
 
 /** Shop listing — plain white surface (no sky header band or catalog gradient). */
 export function isProductsListingPage(pathname: string): boolean {
-  return pathname === '/products';
+  return normalizePathname(pathname) === '/products';
 }
 
 /** Single product PDP — `/products/[slug]`. */
 export function isProductDetailPage(pathname: string): boolean {
-  return /^\/products\/[^/]+$/.test(pathname);
+  return /^\/products\/[^/]+$/.test(normalizePathname(pathname));
 }
 
 /** Mobile catalog gradient surface — shop listing and PDP. */
@@ -26,7 +34,7 @@ export function usesCatalogMobileSurface(pathname: string): boolean {
 
 /** Order confirmation / detail — `/orders/[number]`. */
 export function isOrderDetailPage(pathname: string): boolean {
-  return /^\/orders\/[^/]+$/.test(pathname);
+  return /^\/orders\/[^/]+$/.test(normalizePathname(pathname));
 }
 
 /** Profile area — `/profile`. */

@@ -75,7 +75,7 @@ export const ADMIN_LIST_CACHE_KEYS = {
   brands: 'admin:list:brands',
   attributes: 'admin:list:attributes',
   blogPosts: 'admin:list:blog-posts',
-  partnerStores: 'admin:list:partner-stores',
+  partnerStores: 'admin:list:partner-stores:v2',
   faqCategories: 'admin:faq:categories',
   faqItems: 'admin:faq:items',
   settings: 'admin:settings:main',

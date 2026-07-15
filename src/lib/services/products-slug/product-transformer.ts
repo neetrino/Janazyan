@@ -8,6 +8,7 @@ import { logger } from "../../utils/logger";
 import { getProductDiscountSettings, type ProductDiscountSettings } from "../products-discount-settings.cache";
 import { getOutOfStockLabel } from "./utils";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
+import { DEFAULT_LANGUAGE } from '../../language';
 
 /**
  * Calculate actual discount with priority: productDiscount > categoryDiscount > brandDiscount > globalDiscount
@@ -113,6 +114,7 @@ function transformLabels(
       (label: { value: string }) => label.value.toLowerCase() === outOfStockText.toLowerCase() ||
                  label.value.toLowerCase().includes('out of stock') ||
                  label.value.toLowerCase().includes('արտադրված') ||
+                 label.value.toLowerCase().includes('սպառված') ||
                  label.value.toLowerCase().includes('нет в наличии') ||
                  label.value.toLowerCase().includes('არ არის მარაგში')
     );
@@ -279,7 +281,7 @@ function transformProductAttributes(
  */
 export async function transformProduct(
   product: ProductWithFullRelations,
-  lang: string = "en",
+  lang: string = DEFAULT_LANGUAGE,
   discountSettings?: ProductDiscountSettings,
 ) {
   // Get translations

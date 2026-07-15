@@ -4,6 +4,7 @@ export type CategoryPillIconKey =
   | 'hair'
   | 'body'
   | 'kids'
+  | 'mothers'
   | 'women'
   | 'men'
   | 'accessories'
@@ -52,6 +53,12 @@ const CATEGORY_PILL_ICONS: Record<
     width: 16,
     height: 16,
   },
+  mothers: {
+    src: '/figma/icon.svg',
+    className: 'h-4 w-[10px] desktop:h-5 desktop:w-3',
+    width: 10,
+    height: 16,
+  },
   women: {
     src: '/figma/filter-women-icon.svg',
     className: 'h-3.5 w-3.5 desktop:h-4 desktop:w-4',
@@ -76,6 +83,19 @@ const FACE_KEYWORDS = ['face', 'դեմք', 'лицо', 'դիմ'];
 const HAIR_KEYWORDS = ['hair', 'մազ', 'волос'];
 const BODY_KEYWORDS = ['body', 'body care', 'մարմին', 'մարմն', 'тело', 'adult'];
 const KIDS_KEYWORDS = ['kids', 'kid', 'baby', 'child', 'մանկ', 'дет', 'երեխ'];
+const MOTHERS_KEYWORDS = [
+  'pregnan',
+  'pregnancy',
+  'nursing',
+  'breastfeed',
+  'lactat',
+  'հղի',
+  'կերակր',
+  'կրծքով',
+  'կկ',
+  'беремен',
+  'кормящ',
+];
 const WOMEN_KEYWORDS = ['women', 'woman', 'female', 'կանայ', 'жен'];
 const MEN_KEYWORDS = ['men', 'man', 'male', 'տղամարդ', 'муж'];
 const ACCESSORIES_KEYWORDS = ['accessor', 'աքսեսուար', 'аксессуар', 'bag'];
@@ -90,6 +110,9 @@ export function resolveCategoryPillIconKey(slug: string, title: string): Categor
 
   const haystack = `${slug} ${title}`.toLowerCase();
 
+  if (MOTHERS_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
+    return 'mothers';
+  }
   if (WOMEN_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
     return 'women';
   }

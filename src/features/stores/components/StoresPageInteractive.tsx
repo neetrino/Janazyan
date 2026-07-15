@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { MIRAGE_PAGE_SUBHEADING_CLASS } from '../../../components/home/mirage-heading-styles';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { STOREFRONT_TABLET_DOWN_CLASS } from '../../../lib/layout/storefront-layout.constants';
 import { getStoredLanguage } from '../../../lib/language';
@@ -75,14 +74,13 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
+    setMapFocusRequest((count) => count + 1);
     if (options?.openMapModal) {
       setMapModalOpen(true);
-      setMapFocusRequest((count) => count + 1);
       return;
     }
     if (options?.scrollToMap) {
       scrollPartnerMapIntoView(mapSectionRef.current);
-      setMapFocusRequest((count) => count + 1);
     }
   }, []);
 
@@ -136,11 +134,8 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
           <div ref={mapSectionRef} className="scroll-mt-28">
             <div className="partner-stores-map-section lg:sticky lg:top-28">
-              <div className="partner-stores-map-section__header">
-                <h2 className={MIRAGE_PAGE_SUBHEADING_CLASS}>
-                  {copy.map.title}
-                </h2>
-                <p className={`partner-stores-map-section__subtitle ${STOREFRONT_TABLET_DOWN_CLASS}`}>
+              <div className={`partner-stores-map-section__header ${STOREFRONT_TABLET_DOWN_CLASS}`}>
+                <p className="partner-stores-map-section__subtitle">
                   {copy.map.hint}
                 </p>
               </div>

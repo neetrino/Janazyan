@@ -1,52 +1,77 @@
 {
-  "title": "Returns and Refunds",
-  "returnPolicy": {
-    "title": "30-Day Return Policy",
-    "description": "You have 30 days from the date of purchase to return items in their original condition with tags attached."
+  "title": "Return and Exchange Policy",
+  "lastUpdated": "Last Updated:",
+  "intro": {
+    "p1": "At Janazyan Projects, it is important to us that every customer is satisfied with their purchase and receives safe, high-quality care products in proper condition. If an issue arises with your order, we are ready to help you arrange an exchange or return.",
+    "p2": "Because our range includes care products for children, pregnant women, nursing mothers, and adults — including shampoos, body washes, SPF products, and other cosmetics — we pay particular attention to hygiene and safety requirements throughout the return and exchange process."
   },
-  "returnConditions": {
-    "title": "Return Conditions",
+  "exchange": {
+    "title": "1. Exchange",
+    "p1": "Purchased products may be exchanged within 14 days from the date the order is received.",
+    "p2": "An exchange is available only if the product:",
     "items": {
-      "unworn": "Items must be unworn, unwashed and in original packaging",
-      "tags": "All tags and labels must be attached",
-      "saleable": "Items must be in saleable condition",
-      "proof": "Proof of purchase required"
-    }
+      "unused": "has not been used;",
+      "unopened": "has not been opened;",
+      "packaging": "is in complete and undamaged packaging;",
+      "saleable": "has retained its saleable condition;",
+      "seal": "retains its protective film, cap, or factory seal, if originally provided."
+    },
+    "p3": "Proof of purchase must be provided for an exchange, such as a cash register receipt, electronic invoice, or order confirmation.",
+    "p4": "If an incorrect product has been delivered to the customer, we will arrange an exchange for the correct product at no additional cost."
   },
-  "howToReturn": {
-    "title": "How to Return",
-    "steps": {
-      "contact": "Contact our customer service team to initiate a return",
-      "authorization": "Get a return authorization number",
-      "package": "Package items securely with return form",
-      "ship": "Ship the package to our return address",
-      "process": "After receipt we will process your refund within 5-7 business days"
-    }
-  },
-  "refundProcess": {
-    "title": "Refund Process",
-    "description": "Refunds will be processed to the original payment method. Please allow 5-7 business days for the refund to appear on your account."
-  },
-  "nonReturnable": {
-    "title": "Non-Returnable Items",
+  "returns": {
+    "title": "2. Returns",
+    "p1": "Purchased products may be returned within 14 days from the date the order is received, provided that they meet the return conditions.",
+    "p2": "A return is available only if the product:",
     "items": {
-      "personalized": "Personalized or custom-made items",
-      "packaging": "Items without original packaging",
-      "damaged": "Items damaged due to misuse",
-      "sale": "Sale items (unless defective)"
+      "unused": "has not been used;",
+      "unopened": "has not been opened;",
+      "undamaged": "is not damaged;",
+      "packaging": "is in its complete original packaging;",
+      "saleable": "has retained its original saleable condition."
+    },
+    "p3": "Proof of purchase must be provided for a return, such as a cash register receipt, electronic invoice, or order confirmation.",
+    "p4": "Opened or used care products, as well as products with damaged packaging, are not eligible for return for hygiene and safety reasons, except where there is a manufacturing defect or an incorrect product was delivered by us."
+  },
+  "refunds": {
+    "title": "3. Refunds",
+    "p1": "If the returned product meets the conditions stated above, the refund will be issued using the same payment method used for the original purchase.",
+    "p2": "For card payments, a refund may take up to 7 business days, depending on the bank’s procedures.",
+    "p3": "Delivery fees are non-refundable, except where we delivered an incorrect product or the product was damaged due to our actions or those of the delivery service."
+  },
+  "cancellation": {
+    "title": "4. Order Cancellation",
+    "p1": "An order may be canceled before it is handed over for delivery.",
+    "p2": "If the order has already been transferred to the delivery service or delivered to the customer, it cannot be canceled. In that case, the return or exchange conditions may apply, provided that the product meets the requirements stated above."
+  },
+  "nonEligible": {
+    "title": "5. Products Not Eligible for Return or Exchange",
+    "description": "The following products are not eligible for return or exchange:",
+    "items": {
+      "opened": "opened care products;",
+      "used": "used products;",
+      "damaged": "products with damaged packaging;",
+      "seal": "products from which the protective film has been removed or the factory seal has been broken;",
+      "custom": "custom orders or special sets assembled according to the customer’s individual request;",
+      "giftCards": "gift cards, if offered for sale."
     }
   },
-  "needMoreInfo": {
-    "title": "Need More Information?",
-    "description1": "For detailed delivery and return information, visit our",
-    "deliveryLink": "Delivery and Returns page",
-    "description2": "If you have questions, please",
-    "contactLink": "contact our support team"
+  "damaged": {
+    "title": "6. Damaged or Incorrectly Delivered Products",
+    "p1": "If you receive a product in damaged condition, the packaging is damaged, there is leakage, or an incorrect product is included in the order, please contact us as soon as possible.",
+    "p2": "To help us review the issue promptly, please provide:",
+    "items": {
+      "orderNumber": "the order number;",
+      "proof": "proof of purchase;",
+      "photos": "photos of the product and its packaging;",
+      "description": "a brief description of the issue."
+    },
+    "p3": "In such cases, we will review the situation and offer the most appropriate solution: a product exchange, a return, or another mutually agreed option."
+  },
+  "reactions": {
+    "title": "7. Individual Reactions During Use",
+    "p1": "The effects of care products may vary depending on individual skin characteristics. If you experience discomfort, irritation, or an allergic reaction during use, we recommend discontinuing use of the product and consulting a specialist if necessary.",
+    "p2": "A used product is not eligible for return or exchange unless it has a manufacturing defect or there is an issue related to delivery.",
+    "p3": "Janazyan Projects values the trust of every customer and is ready to provide support with any questions, ensuring honest, clear, and responsible communication."
   }
 }
-
-
-
-
-
-

@@ -1,6 +1,7 @@
 import { Prisma } from "@white-shop/db";
 import { db } from "@white-shop/db";
 import { flattenCategoryTree, type CategoryTreeNode } from "@/lib/categories/category-tree";
+import { DEFAULT_LANGUAGE } from "@/lib/language";
 import { processImageUrl } from "@/lib/utils/image-utils";
 import { categoriesService } from "./categories.service";
 
@@ -18,8 +19,8 @@ type TranslationRow = { locale: string; slug: string; title: string };
 function pickTranslation(rows: TranslationRow[], lang: string): TranslationRow | null {
   const preferred = rows.find((r) => r.locale === lang);
   if (preferred) return preferred;
-  const en = rows.find((r) => r.locale === "en");
-  if (en) return en;
+  const primary = rows.find((r) => r.locale === DEFAULT_LANGUAGE);
+  if (primary) return primary;
   return rows[0] ?? null;
 }
 
@@ -57,7 +58,7 @@ export async function getCategoryNavigationPreviews(
       media: true,
       translations: {
         select: { locale: true, slug: true, title: true },
-        where: { locale: { in: [lang, "en"] } },
+        where: { locale: { in: [lang, DEFAULT_LANGUAGE] } },
       },
     },
   });
@@ -105,7 +106,7 @@ export async function getCategoryNavigationPreviews(
   const translations = await db.productTranslation.findMany({
     where: {
       productId: { in: productIds },
-      locale: { in: [lang, "en"] },
+      locale: { in: [lang, DEFAULT_LANGUAGE] },
     },
     select: { productId: true, locale: true, slug: true, title: true },
   });

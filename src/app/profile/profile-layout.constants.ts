@@ -124,7 +124,9 @@ export const PROFILE_SPINNER_CLASS =
 export const PROFILE_DEFAULT_BADGE_CLASS =
   'rounded-md bg-sky/25 px-2 py-1 text-xs font-medium text-sky-deep';
 
-export const PROFILE_ASIDE_BORDER_CLASS = 'md:border-r md:border-sky-mist/60';
+/** Desktop profile sidebar — wide enough for email/phone chips without wrapping. */
+export const PROFILE_ASIDE_CLASS =
+  'w-full shrink-0 md:sticky md:top-24 md:w-80 md:self-start md:pr-8 md:border-r md:border-sky-mist/60 lg:w-96';
 
 /** Mobile sheet — above MobileBottomNav (z-70) when portaled to body. */
 export const PROFILE_MOBILE_SHEET_OVERLAY_Z_CLASS = 'z-[120]';

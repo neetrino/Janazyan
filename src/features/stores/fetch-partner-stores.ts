@@ -24,7 +24,7 @@ function buildStoresFromLocale(
   const list = storesData.partnerStores ?? [];
 
   return list
-    .map((store) => {
+    .map((store): PartnerStore | null => {
       const coords = coordinates[store.id];
       if (!coords) {
         return null;
@@ -33,6 +33,13 @@ function buildStoresFromLocale(
         ...store,
         lat: coords.lat,
         lng: coords.lng,
+        regionId: 'legacy-static',
+        regionName: 'Stores',
+        regionPosition: 0,
+        areaId: null as string | null,
+        areaName: null as string | null,
+        areaPosition: null as number | null,
+        position: 0,
       };
     })
     .filter((store): store is PartnerStore => store !== null);
@@ -47,7 +54,9 @@ type PartnerStoresApiResponse = {
  */
 export async function fetchPartnerStores(locale: LanguageCode): Promise<PartnerStore[]> {
   try {
-    const response = await fetch(`/api/v1/partner-stores?locale=${locale}`);
+    const response = await fetch(`/api/v1/partner-stores?locale=${locale}`, {
+      cache: 'no-store',
+    });
     if (response.ok) {
       const payload = (await response.json()) as PartnerStoresApiResponse;
       if (payload.data?.length > 0) {

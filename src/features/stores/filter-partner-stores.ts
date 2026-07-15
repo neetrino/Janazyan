@@ -11,6 +11,8 @@ export function filterPartnerStores(stores: PartnerStore[], query: string): Part
   return stores.filter(
     (store) =>
       store.name.toLowerCase().includes(normalizedQuery) ||
-      store.address.toLowerCase().includes(normalizedQuery),
+      store.address.toLowerCase().includes(normalizedQuery) ||
+      store.regionName.toLowerCase().includes(normalizedQuery) ||
+      (store.areaName?.toLowerCase().includes(normalizedQuery) ?? false),
   );
 }

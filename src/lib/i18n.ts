@@ -4,7 +4,7 @@
  * For client-side React hooks, see i18n-client.ts
  */
 
-import { type LanguageCode } from './language';
+import { DEFAULT_LANGUAGE, type LanguageCode } from './language';
 import { getStoredLanguage } from './language';
 
 // Pre-load all translations at build time for optimal performance
@@ -259,9 +259,9 @@ export function t(lang: LanguageCode | undefined, path: string): string {
   // Try to load translation for the requested language
   let translationObj = loadTranslation(lang, namespace);
   
-  // Fallback to English if translation not found
-  if (!translationObj && lang !== 'en') {
-    translationObj = loadTranslation('en', namespace);
+  // Fallback to primary locale (Armenian) if translation not found
+  if (!translationObj && lang !== DEFAULT_LANGUAGE) {
+    translationObj = loadTranslation(DEFAULT_LANGUAGE, namespace);
   }
 
   if (!translationObj) {
@@ -271,11 +271,11 @@ export function t(lang: LanguageCode | undefined, path: string): string {
   // Navigate through nested keys
   let value = getNestedValue(translationObj, keys);
 
-  // If value not found in requested language, try English fallback
-  if (value === null && lang !== 'en') {
-    const enTranslationObj = loadTranslation('en', namespace);
-    if (enTranslationObj) {
-      value = getNestedValue(enTranslationObj, keys);
+  // If value not found in requested language, try primary locale fallback
+  if (value === null && lang !== DEFAULT_LANGUAGE) {
+    const primaryTranslationObj = loadTranslation(DEFAULT_LANGUAGE, namespace);
+    if (primaryTranslationObj) {
+      value = getNestedValue(primaryTranslationObj, keys);
     }
   }
 
@@ -335,9 +335,9 @@ export function getProductText(
     // Try to load products for the requested language
     let products = loadTranslation(lang, 'products');
     
-    // Fallback to English if not found
-    if ((!products || typeof products !== 'object') && lang !== 'en') {
-      products = loadTranslation('en', 'products');
+    // Fallback to primary locale if not found
+    if ((!products || typeof products !== 'object') && lang !== DEFAULT_LANGUAGE) {
+      products = loadTranslation(DEFAULT_LANGUAGE, 'products');
     }
 
     if (!products || typeof products !== 'object') {
@@ -347,13 +347,13 @@ export function getProductText(
     // Get product data
     const product = products[productId];
     if (!product || typeof product !== 'object') {
-      // Try English fallback
-      if (lang !== 'en') {
-        const enProducts = loadTranslation('en', 'products');
-        if (enProducts && typeof enProducts === 'object' && productId in enProducts) {
-          const enProduct = enProducts[productId];
-          if (enProduct && typeof enProduct === 'object' && field in enProduct) {
-            const value = enProduct[field];
+      // Try primary locale fallback
+      if (lang !== DEFAULT_LANGUAGE) {
+        const primaryProducts = loadTranslation(DEFAULT_LANGUAGE, 'products');
+        if (primaryProducts && typeof primaryProducts === 'object' && productId in primaryProducts) {
+          const primaryProduct = primaryProducts[productId];
+          if (primaryProduct && typeof primaryProduct === 'object' && field in primaryProduct) {
+            const value = primaryProduct[field];
             return typeof value === 'string' ? value : '';
           }
         }
@@ -369,13 +369,13 @@ export function getProductText(
       }
     }
 
-    // Fallback to English
-    if (lang !== 'en') {
-      const enProducts = loadTranslation('en', 'products');
-      if (enProducts && typeof enProducts === 'object' && productId in enProducts) {
-        const enProduct = enProducts[productId];
-        if (enProduct && typeof enProduct === 'object' && field in enProduct) {
-          const value = enProduct[field];
+    // Fallback to primary locale
+    if (lang !== DEFAULT_LANGUAGE) {
+      const primaryProducts = loadTranslation(DEFAULT_LANGUAGE, 'products');
+      if (primaryProducts && typeof primaryProducts === 'object' && productId in primaryProducts) {
+        const primaryProduct = primaryProducts[productId];
+        if (primaryProduct && typeof primaryProduct === 'object' && field in primaryProduct) {
+          const value = primaryProduct[field];
           return typeof value === 'string' ? value : '';
         }
       }
@@ -395,7 +395,7 @@ export function getProductText(
  * Reads from attributes.json for the given language
  * 
  * Features:
- * - Automatic fallback to English
+ * - Automatic fallback to primary locale (Armenian)
  * - Returns original value if label not found (graceful degradation)
  * 
  * @param lang - Language code (optional, uses stored language if not provided)
@@ -425,9 +425,9 @@ export function getAttributeLabel(
     // Try to load attributes for the requested language
     let attributes = loadTranslation(lang, 'attributes');
     
-    // Fallback to English if not found
-    if ((!attributes || typeof attributes !== 'object') && lang !== 'en') {
-      attributes = loadTranslation('en', 'attributes');
+    // Fallback to primary locale if not found
+    if ((!attributes || typeof attributes !== 'object') && lang !== DEFAULT_LANGUAGE) {
+      attributes = loadTranslation(DEFAULT_LANGUAGE, 'attributes');
     }
 
     if (!attributes || typeof attributes !== 'object') {
@@ -454,20 +454,20 @@ export function getAttributeLabel(
       }
     }
 
-    // Fallback to English
-    if (lang !== 'en') {
-      const enAttributes = loadTranslation('en', 'attributes');
-      if (enAttributes && typeof enAttributes === 'object' && type in enAttributes) {
-        const enTypeObj = enAttributes[type];
-        if (enTypeObj && typeof enTypeObj === 'object') {
-          if (normalizedValue in enTypeObj) {
-            const label = enTypeObj[normalizedValue];
+    // Fallback to primary locale
+    if (lang !== DEFAULT_LANGUAGE) {
+      const primaryAttributes = loadTranslation(DEFAULT_LANGUAGE, 'attributes');
+      if (primaryAttributes && typeof primaryAttributes === 'object' && type in primaryAttributes) {
+        const primaryTypeObj = primaryAttributes[type];
+        if (primaryTypeObj && typeof primaryTypeObj === 'object') {
+          if (normalizedValue in primaryTypeObj) {
+            const label = primaryTypeObj[normalizedValue];
             if (typeof label === 'string') {
               return label;
             }
           }
           // Try case-insensitive match
-          for (const [key, label] of Object.entries(enTypeObj)) {
+          for (const [key, label] of Object.entries(primaryTypeObj)) {
             if (key.toLowerCase() === normalizedValue && typeof label === 'string') {
               return label;
             }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { LANGUAGES, type LanguageCode } from '@/lib/language';
+import { DEFAULT_LANGUAGE, LANGUAGES, type LanguageCode } from '@/lib/language';
 import { DEFAULT_CATALOG_PAGE_SIZE } from '@/lib/products/catalog-page.constants';
 import { getProductsCatalogFromRedisOrDb } from '@/lib/cache/products-catalog-redis-cache';
 import { apiRouteErrorResponse, buildApiRouteErrorContext } from '@/lib/http/api-route-errors';
@@ -12,7 +12,7 @@ function parseLang(value: string | null): LanguageCode {
   if (value && value in LANGUAGES) {
     return value as LanguageCode;
   }
-  return 'hy';
+  return DEFAULT_LANGUAGE;
 }
 
 function parsePositiveInt(value: string | null, fallback: number): number {

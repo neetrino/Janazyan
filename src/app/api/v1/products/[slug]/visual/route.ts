@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProductVisualCached } from '@/lib/products/load-product-visual-cached';
 import { logger } from '@/lib/utils/logger';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get('lang') || 'en';
+    const lang = searchParams.get('lang') || DEFAULT_LANGUAGE;
     const { slug } = await params;
     const body = await getProductVisualCached(slug, lang);
 

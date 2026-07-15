@@ -12,50 +12,7 @@
   "searchNoResults": "Համապատասխան խանութ չի գտնվել",
   "getDirections": "Ստանալ ուղղություն",
   "viewOnMap": "Տեսնել քարտեզում",
-  "partnerStores": [
-    {
-      "id": "sas-abovyan",
-      "name": "SAS Supermarket",
-      "address": "Աբովյան 34, Երևան",
-      "logo": "/stores/logos/sas.svg",
-      "logoAlt": "SAS Supermarket լոգո"
-    },
-    {
-      "id": "yerevan-city-komitas",
-      "name": "Yerevan City",
-      "address": "Կոմիտաս 22, Երևան",
-      "logo": "/stores/logos/yerevan-city.svg",
-      "logoAlt": "Yerevan City լոգո"
-    },
-    {
-      "id": "grand-hold-arshakunyats",
-      "name": "Grand Hold",
-      "address": "70, Arshakunyats p., Երևան",
-      "logo": "/stores/logos/grand-hold.svg",
-      "logoAlt": "Grand Hold լոգո"
-    },
-    {
-      "id": "medium-amiryan",
-      "name": "Medium Supermarket",
-      "address": "Ամիրյան 32, Երևան",
-      "logo": "/stores/logos/medium.svg",
-      "logoAlt": "Medium Supermarket լոգո"
-    },
-    {
-      "id": "spar-mashtots",
-      "name": "SPAR",
-      "address": "Մաշտոց 45, Երևան",
-      "logo": "/stores/logos/spar.svg",
-      "logoAlt": "SPAR լոգո"
-    },
-    {
-      "id": "sas-baghramyan",
-      "name": "SAS Supermarket",
-      "address": "Բաղրամյան 24, Երևան",
-      "logo": "/stores/logos/sas.svg",
-      "logoAlt": "SAS Supermarket լոգո"
-    }
-  ],
+  "partnerStores": [],
   "cantFind": {
     "title": "Չե՞ք կարող գտնել այն, ինչ փնտրում եք",
     "description": "Կապ հաստատեք մեզ հետ, և մենք կօգնենք գտնել հարկավոր ապրանքը կամ մոտակա խանութը։",

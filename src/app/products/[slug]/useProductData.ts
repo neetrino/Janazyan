@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import type { LanguageCode } from '../../../lib/language';
-import { getStoredLanguage } from '../../../lib/language';
+import { DEFAULT_LANGUAGE, getStoredLanguage } from '../../../lib/language';
 import { apiClient } from '../../../lib/api-client';
 import type { CurrencyCode } from '../../../lib/currency';
 import { useCurrency } from '../../../components/hooks/useCurrency';
@@ -143,18 +143,18 @@ export function useProductData({
           params: { lang: currentLang },
         });
       } catch (error: any) {
-        // If 404 and not English, try fallback to English
-        if (error?.status === 404 && currentLang !== 'en') {
+        // If 404 and not primary locale, try Armenian fallback
+        if (error?.status === 404 && currentLang !== DEFAULT_LANGUAGE) {
           try {
             data = await apiClient.get<Product>(`/api/v1/products/${slug}`, {
-              params: { lang: 'en' },
+              params: { lang: DEFAULT_LANGUAGE },
             });
           } catch (fallbackError) {
-            // If English also fails, throw the original error
+            // If primary locale also fails, throw the original error
             throw error;
           }
         } else {
-          // Re-throw if it's not a 404 or if we're already trying English
+          // Re-throw if it's not a 404 or if we're already on primary locale
           throw error;
         }
       }

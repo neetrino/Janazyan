@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { DEFAULT_LANGUAGE } from '../../lib/language';
 
 export interface InstantSearchResultItem {
   id: string;
@@ -24,7 +25,7 @@ export function useInstantSearch(options: UseInstantSearchOptions = {}) {
     debounceMs = 200,
     minQueryLength = 1,
     maxResults = 8,
-    lang = 'en',
+    lang = DEFAULT_LANGUAGE,
   } = options;
 
   const [query, setQuery] = useState('');

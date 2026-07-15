@@ -9,6 +9,7 @@ import { ReviewSummary } from './ProductReviews/ReviewSummary';
 import { ReviewForm } from './ProductReviews/ReviewForm';
 import { ReviewList } from './ProductReviews/ReviewList';
 import { ProductReviewsLoading } from './ProductReviews/ProductReviewsLoading';
+import { MIRAGE_PAGE_HEADING_CLASS } from './home/mirage-heading-styles';
 
 import type { Review } from './ProductReviews/utils';
 
@@ -78,57 +79,62 @@ export function ProductReviews({
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 border-t border-gray-200">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">
+    <section className="py-10 font-body">
+      <div className="rounded-2xl p-5 sm:p-8">
+        <div className="mb-8">
+          <h2 className={`mb-2 ${MIRAGE_PAGE_HEADING_CLASS}`}>
           {t('common.reviews.title')}
-        </h2>
+          </h2>
+          <p className="text-sm text-gray-600">
+            {t('common.reviews.reviews')} {reviews.length}
+          </p>
 
-        {/* Rating Summary */}
-        <ReviewSummary reviews={reviews} />
+          {/* Rating Summary */}
+          <ReviewSummary reviews={reviews} />
 
-        {/* Write Review Button */}
-        {!showForm && (
-          <button
-            type="button"
-            onClick={handleShowForm}
-            className={`mb-8 ${PDP_WRITE_REVIEW_BUTTON_CLASS}`}
-          >
-            {t('common.reviews.writeReview')}
-          </button>
-        )}
+          {/* Write Review Button */}
+          {!showForm && reviews.length > 0 && (
+            <button
+              type="button"
+              onClick={handleShowForm}
+              className={`mb-8 ${PDP_WRITE_REVIEW_BUTTON_CLASS}`}
+            >
+              {t('common.reviews.writeReview')}
+            </button>
+          )}
 
-        {/* Review Form */}
-        {showForm && (
-          <ReviewForm
-            rating={rating}
-            hoveredRating={hoveredRating}
-            comment={comment}
-            submitting={submitting}
-            editingReviewId={editingReviewId}
-            onRatingChange={setRating}
-            onHover={setHoveredRating}
-            onCommentChange={setComment}
-            onSubmit={editingReviewId ? handleUpdateReview : handleSubmit}
-            onCancel={editingReviewId ? handleCancelEdit : () => {
-              setShowForm(false);
-              setRating(0);
-              setComment('');
-            }}
-          />
-        )}
+          {/* Review Form */}
+          {showForm && (
+            <ReviewForm
+              rating={rating}
+              hoveredRating={hoveredRating}
+              comment={comment}
+              submitting={submitting}
+              editingReviewId={editingReviewId}
+              onRatingChange={setRating}
+              onHover={setHoveredRating}
+              onCommentChange={setComment}
+              onSubmit={editingReviewId ? handleUpdateReview : handleSubmit}
+              onCancel={editingReviewId ? handleCancelEdit : () => {
+                setShowForm(false);
+                setRating(0);
+                setComment('');
+              }}
+            />
+          )}
+        </div>
+
+        {/* Reviews List */}
+        <ReviewList
+          reviews={reviews}
+          currentUserId={user?.id}
+          showForm={showForm}
+          onEditReview={handleEditReview}
+          onShowForm={handleShowForm}
+          onLoginRequired={handleLoginRequired}
+        />
       </div>
-
-      {/* Reviews List */}
-      <ReviewList
-        reviews={reviews}
-        currentUserId={user?.id}
-        showForm={showForm}
-        onEditReview={handleEditReview}
-        onShowForm={handleShowForm}
-        onLoginRequired={handleLoginRequired}
-      />
-    </div>
+    </section>
   );
 }
 

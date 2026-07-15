@@ -13,11 +13,13 @@ export const HOME_MOBILE_HEADER_STICKY_CLASS = 'sticky top-0';
 /** Sticky bar fill — matches MobileBackdrop sky band at the top edge. */
 export const HOME_MOBILE_HEADER_STICKY_BG_CLASS = 'bg-[#ecf5ff]';
 
-/** Safe-area + breathing room below status bar (home mobile). */
+/** Safe-area + breathing room below status bar — shared by home and all storefront mobile shells. */
 export const STOREFRONT_MOBILE_TOP_INSET_CLASS = 'pt-8';
 
-/** Non-home mobile hero shell — tighter top inset than home. */
-export const STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS = 'pt-2';
+/**
+ * @deprecated Use {@link STOREFRONT_MOBILE_TOP_INSET_CLASS} — kept so header Y stays identical across pages.
+ */
+export const STOREFRONT_MOBILE_HERO_SHELL_TOP_INSET_CLASS = STOREFRONT_MOBILE_TOP_INSET_CLASS;
 
 /** Mobile header chrome — above content cards so search dropdown is never covered. */
 export const STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS = 'z-30';
@@ -32,8 +34,8 @@ export const STOREFRONT_MOBILE_BOTTOM_NAV_HEIGHT_PX = 88;
 export const STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS =
   'pb-[calc(88px+env(safe-area-inset-bottom,0px))]';
 
-/** Non-home mobile backdrop — white curve starts below top bar (home hero uses top-24). */
-export const STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS = 'top-32';
+/** Non-home mobile backdrop — white curve aligns with home (`top-24`) so header→content gap stays stable. */
+export const STOREFRONT_MOBILE_BACKDROP_WHITE_TOP_CLASS = 'top-24';
 
 /** Content-only pages (no toolbar) — shorter sky band below the search row. */
 export const STOREFRONT_MOBILE_CONTENT_ONLY_BACKDROP_WHITE_TOP_CLASS = 'top-24';

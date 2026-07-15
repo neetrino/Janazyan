@@ -7,6 +7,7 @@ import {
   writeJsonCache,
 } from '@/lib/cache/storefront-cache';
 import { dedupeInFlight } from '@/lib/cache/in-flight-dedup';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { productsSlugService } from '@/lib/services/products-slug.service';
 import type { Product } from '@/app/products/[slug]/types';
 
@@ -23,8 +24,8 @@ async function loadProductFromDb(slug: string, lang: string): Promise<Product> {
   try {
     return (await productsSlugService.findBySlug(slug, lang)) as Product;
   } catch (first: unknown) {
-    if (isNotFoundError(first) && lang !== 'en') {
-      return (await productsSlugService.findBySlug(slug, 'en')) as Product;
+    if (isNotFoundError(first) && lang !== DEFAULT_LANGUAGE) {
+      return (await productsSlugService.findBySlug(slug, DEFAULT_LANGUAGE)) as Product;
     }
     throw first;
   }

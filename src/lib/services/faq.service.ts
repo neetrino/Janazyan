@@ -1,7 +1,6 @@
 import { db } from '@white-shop/db';
 import type { FaqSection } from '@/features/faq/types';
-
-const DEFAULT_LOCALE = 'en';
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 function pickTranslation<T extends { locale: string }>(
   translations: T[],
@@ -9,7 +8,7 @@ function pickTranslation<T extends { locale: string }>(
 ): T | undefined {
   return (
     translations.find((t) => t.locale === locale) ??
-    translations.find((t) => t.locale === DEFAULT_LOCALE) ??
+    translations.find((t) => t.locale === DEFAULT_LANGUAGE) ??
     translations[0]
   );
 }
@@ -18,7 +17,7 @@ function pickTranslation<T extends { locale: string }>(
  * Published FAQ sections with questions for the public /faq page.
  */
 export async function getPublishedFaq(locale: string): Promise<FaqSection[]> {
-  const localeFilter = { locale: { in: [locale, DEFAULT_LOCALE] } };
+  const localeFilter = { locale: { in: [locale, DEFAULT_LANGUAGE] } };
 
   const categories = await db.faqCategory.findMany({
     where: { published: true, deletedAt: null },

@@ -1,5 +1,5 @@
-import { CheckoutPageSkeleton } from './CheckoutPageSkeleton';
+import { BrandCenteredPageLoader } from '../../components/BrandCenteredPageLoader';
 
 export default function CheckoutLoading() {
-  return <CheckoutPageSkeleton />;
+  return <BrandCenteredPageLoader />;
 }

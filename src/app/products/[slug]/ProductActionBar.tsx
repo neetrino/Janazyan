@@ -9,6 +9,10 @@ import {
   PDP_ACTION_STACK_CLASS,
   PDP_ADD_TO_CART_CLASS,
   PDP_GLASS_ICON_BUTTON_CLASS,
+  PDP_MOBILE_ADD_TO_CART_CLASS,
+  PDP_MOBILE_CART_ROW_CLASS,
+  PDP_MOBILE_CONTROLS_ROW_CLASS,
+  PDP_SKY_PILL_BUTTON_CLASS,
   PDP_WISHLIST_HEART_ACTIVE_CLASS,
   PDP_QTY_GLASS_CAPSULE_CLASS,
   PDP_QTY_STEP_BUTTON_CLASS,
@@ -36,6 +40,19 @@ type WishlistButtonProps = Pick<
   'language' | 'isInWishlist' | 'onAddToWishlist'
 >;
 
+type QuantityControlsProps = Pick<
+  ProductActionBarProps,
+  'language' | 'quantity' | 'maxQuantity' | 'onQuantityAdjust'
+>;
+
+type AddToCartButtonProps = {
+  label: string;
+  canAddToCart: boolean;
+  isAddingToCart: boolean;
+  onAddToCart: () => Promise<void>;
+  className: string;
+};
+
 function WishlistButton({
   language,
   isInWishlist,
@@ -52,6 +69,56 @@ function WishlistButton({
         className={isInWishlist ? PDP_WISHLIST_HEART_ACTIVE_CLASS : 'text-white'}
         fill={isInWishlist ? 'currentColor' : 'none'}
       />
+    </button>
+  );
+}
+
+function QuantityControls({
+  language,
+  quantity,
+  maxQuantity,
+  onQuantityAdjust,
+}: QuantityControlsProps) {
+  return (
+    <div className={PDP_QTY_GLASS_CAPSULE_CLASS}>
+      <button
+        type="button"
+        onClick={() => onQuantityAdjust(-1)}
+        disabled={quantity <= 1}
+        className={PDP_QTY_STEP_BUTTON_CLASS}
+        aria-label={t(language, 'common.ariaLabels.decreaseQuantity')}
+      >
+        −
+      </button>
+      <span className={PDP_QTY_VALUE_CLASS}>{quantity}</span>
+      <button
+        type="button"
+        onClick={() => onQuantityAdjust(1)}
+        disabled={quantity >= maxQuantity}
+        className={PDP_QTY_STEP_BUTTON_CLASS}
+        aria-label={t(language, 'common.ariaLabels.increaseQuantity')}
+      >
+        +
+      </button>
+    </div>
+  );
+}
+
+function AddToCartButton({
+  label,
+  canAddToCart,
+  isAddingToCart,
+  onAddToCart,
+  className,
+}: AddToCartButtonProps) {
+  return (
+    <button
+      type="button"
+      disabled={!canAddToCart || isAddingToCart}
+      className={className}
+      onClick={onAddToCart}
+    >
+      {label}
     </button>
   );
 }
@@ -80,7 +147,7 @@ function resolveAddToCartLabel({
 }
 
 /**
- * PDP action row — water-glass qty capsule + separate black add-to-cart pill.
+ * PDP actions — desktop one row; mobile: cart + wishlist on top, qty below.
  */
 export function ProductActionBar({
   language,
@@ -109,42 +176,47 @@ export function ProductActionBar({
   return (
     <div className={PDP_ACTION_STACK_CLASS}>
       <div className={PDP_ACTION_ROW_CLASS}>
-        <div className={PDP_QTY_GLASS_CAPSULE_CLASS}>
-          <button
-            type="button"
-            onClick={() => onQuantityAdjust(-1)}
-            disabled={quantity <= 1}
-            className={PDP_QTY_STEP_BUTTON_CLASS}
-            aria-label={t(language, 'common.ariaLabels.decreaseQuantity')}
-          >
-            −
-          </button>
-          <span className={PDP_QTY_VALUE_CLASS}>{quantity}</span>
-          <button
-            type="button"
-            onClick={() => onQuantityAdjust(1)}
-            disabled={quantity >= maxQuantity}
-            className={PDP_QTY_STEP_BUTTON_CLASS}
-            aria-label={t(language, 'common.ariaLabels.increaseQuantity')}
-          >
-            +
-          </button>
-        </div>
-        <button
-          type="button"
-          disabled={!canAddToCart || isAddingToCart}
+        <QuantityControls
+          language={language}
+          quantity={quantity}
+          maxQuantity={maxQuantity}
+          onQuantityAdjust={onQuantityAdjust}
+        />
+        <AddToCartButton
+          label={addToCartLabel}
+          canAddToCart={canAddToCart}
+          isAddingToCart={isAddingToCart}
+          onAddToCart={onAddToCart}
           className={PDP_ADD_TO_CART_CLASS}
-          onClick={onAddToCart}
-        >
-          {addToCartLabel}
-        </button>
-        <div className="flex shrink-0 items-center">
-          <WishlistButton
-            language={language}
-            isInWishlist={isInWishlist}
-            onAddToWishlist={onAddToWishlist}
-          />
-        </div>
+        />
+        <WishlistButton
+          language={language}
+          isInWishlist={isInWishlist}
+          onAddToWishlist={onAddToWishlist}
+        />
+      </div>
+
+      <div className={PDP_MOBILE_CART_ROW_CLASS}>
+        <AddToCartButton
+          label={addToCartLabel}
+          canAddToCart={canAddToCart}
+          isAddingToCart={isAddingToCart}
+          onAddToCart={onAddToCart}
+          className={`${PDP_MOBILE_ADD_TO_CART_CLASS} ${PDP_SKY_PILL_BUTTON_CLASS}`}
+        />
+        <WishlistButton
+          language={language}
+          isInWishlist={isInWishlist}
+          onAddToWishlist={onAddToWishlist}
+        />
+      </div>
+      <div className={PDP_MOBILE_CONTROLS_ROW_CLASS}>
+        <QuantityControls
+          language={language}
+          quantity={quantity}
+          maxQuantity={maxQuantity}
+          onQuantityAdjust={onQuantityAdjust}
+        />
       </div>
     </div>
   );

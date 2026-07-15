@@ -9,12 +9,19 @@ import {
   AdminFormSectionLabel,
   AdminSideDrawer,
 } from '../components/AdminSideDrawer';
-import type { AdminPartnerStore, PartnerStoreFormData } from './types';
+import type {
+  AdminPartnerStore,
+  AdminPartnerStoreArea,
+  AdminPartnerStoreRegion,
+  PartnerStoreFormData,
+} from './types';
 
 interface PartnerStoreDrawerProps {
   open: boolean;
   editingStore: AdminPartnerStore | null;
   formData: PartnerStoreFormData;
+  regions: AdminPartnerStoreRegion[];
+  areas: AdminPartnerStoreArea[];
   submitting: boolean;
   imageUploading: boolean;
   onClose: () => void;
@@ -28,6 +35,8 @@ export function PartnerStoreDrawer({
   open,
   editingStore,
   formData,
+  regions,
+  areas,
   submitting,
   imageUploading,
   onClose,
@@ -48,6 +57,8 @@ export function PartnerStoreDrawer({
   const activeTranslationIndex = formData.translations.findIndex(
     (translation) => translation.locale === activeLocale,
   );
+
+  const areasForRegion = areas.filter((area) => area.regionId === formData.regionId);
 
   const updateActiveTranslation = (field: 'name' | 'address', value: string) => {
     if (activeTranslationIndex < 0) {
@@ -137,6 +148,51 @@ export function PartnerStoreDrawer({
 
         <section className="space-y-4">
           <AdminFormSectionLabel>{t('admin.faq.commonSection')}</AdminFormSectionLabel>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              {t('admin.partnerStores.region')} *
+            </label>
+            <select
+              value={formData.regionId}
+              onChange={(e) =>
+                onFormChange({
+                  ...formData,
+                  regionId: e.target.value,
+                  areaId: '',
+                })
+              }
+              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
+              required
+            >
+              <option value="">{t('admin.partnerStores.selectRegion')}</option>
+              {regions.map((region) => (
+                <option key={region.id} value={region.id}>
+                  {region.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              {t('admin.partnerStores.areaOptional')}
+            </label>
+            <select
+              value={formData.areaId}
+              onChange={(e) => onFormChange({ ...formData, areaId: e.target.value })}
+              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
+              disabled={!formData.regionId}
+            >
+              <option value="">{t('admin.partnerStores.noAreaTwoLevel')}</option>
+              {areasForRegion.map((area) => (
+                <option key={area.id} value={area.id}>
+                  {area.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-xs text-gray-500">{t('admin.partnerStores.areaHint')}</p>
+          </div>
 
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">

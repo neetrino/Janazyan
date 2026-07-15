@@ -8,15 +8,13 @@ import {
   STOREFRONT_CACHE_TTL,
   writeJsonCache,
 } from '@/lib/cache/storefront-cache';
-import { LANGUAGES, type LanguageCode } from '@/lib/language';
-
-const DEFAULT_LOCALE = 'en';
+import { DEFAULT_LANGUAGE, LANGUAGES, type LanguageCode } from '@/lib/language';
 
 function parseLocale(value: string | null): string {
   if (value && value in LANGUAGES) {
     return value;
   }
-  return DEFAULT_LOCALE;
+  return DEFAULT_LANGUAGE;
 }
 
 /**

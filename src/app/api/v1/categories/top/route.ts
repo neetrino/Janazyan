@@ -4,13 +4,14 @@ import { db } from "@white-shop/db";
 import { apiRouteErrorResponse, buildApiRouteErrorContext } from "@/lib/http/api-route-errors";
 import { cacheService } from "@/lib/services/cache.service";
 import { processImageUrl } from "@/lib/utils/image-utils";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 const CACHE_TTL = 300; // 5 minutes
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "en";
+    const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const limitParam = parseInt(searchParams.get("limit") || "5", 10);
     const limit = Math.min(limitParam, 20);
 

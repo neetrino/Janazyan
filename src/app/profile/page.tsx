@@ -16,7 +16,7 @@ import { ProfileDeleteAccount } from './ProfileDeleteAccount';
 import { OrderDetailsModal } from './OrderDetailsModal';
 import type { ProfileTab, ProfileTabConfig } from './types';
 import {
-  PROFILE_ASIDE_BORDER_CLASS,
+  PROFILE_ASIDE_CLASS,
   PROFILE_BODY_TEXT_CLASS,
   PROFILE_DESKTOP_MAIN_SURFACE_CLASS,
   PROFILE_ERROR_ALERT_CLASS,
@@ -271,7 +271,7 @@ function ProfilePageContent() {
       </ProfileMobilePage>
       <div className="mx-auto hidden max-w-7xl px-3 py-8 sm:px-6 desktop:block desktop:px-8">
         <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-10 lg:gap-12">
-          <aside className={`w-full shrink-0 md:sticky md:top-24 md:w-64 md:self-start md:pr-8 lg:w-72 ${PROFILE_ASIDE_BORDER_CLASS}`}>
+          <aside className={PROFILE_ASIDE_CLASS}>
             <ProfileHeader profile={profile} tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} onLogout={logout} t={t} />
           </aside>
           <main className="min-w-0 flex-1">

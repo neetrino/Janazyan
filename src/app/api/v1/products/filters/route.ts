@@ -6,6 +6,7 @@ import {
   stableSearchParamsKey,
   writeJsonCache,
 } from "@/lib/cache/storefront-cache";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { productsService } from "@/lib/services/products.service";
 import { logger } from "@/lib/utils/logger";
 
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
     const filters = {
       category: searchParams.get("category") || undefined,
       search: searchParams.get("search") || undefined,
-      lang: searchParams.get("lang") || "en",
+      lang: searchParams.get("lang") || DEFAULT_LANGUAGE,
     };
 
     const cacheKey = STOREFRONT_CACHE_KEYS.productsFilters(stableSearchParamsKey(searchParams));

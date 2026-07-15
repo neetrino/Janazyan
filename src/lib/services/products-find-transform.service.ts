@@ -3,6 +3,7 @@ import { processImageUrl } from "../utils/image-utils";
 import { sanitizeStoredProductImageUrl } from "../products/resolve-stored-product-image-url";
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
+import { DEFAULT_LANGUAGE } from '../language';
 import {
   getProductDiscountSettings,
   type ProductDiscountSettings,
@@ -11,7 +12,7 @@ import {
 /**
  * Get "Out of Stock" translation for a given language
  */
-const getOutOfStockLabel = (lang: string = "en"): string => {
+const getOutOfStockLabel = (lang: string = DEFAULT_LANGUAGE): string => {
   const langKey = lang as keyof typeof translations;
   const translation = translations[langKey] || translations.en;
   return translation.stock.outOfStock;
@@ -239,7 +240,7 @@ class ProductsFindTransformService {
    */
   async transformProducts(
     products: ProductWithRelations[],
-    lang: string = "en",
+    lang: string = DEFAULT_LANGUAGE,
     options?: TransformOptions
   ): Promise<ProductListItem[]> {
     const { globalDiscount, categoryDiscounts, brandDiscounts } =
@@ -366,6 +367,7 @@ class ProductsFindTransformService {
               (label) => label.value.toLowerCase() === outOfStockText.toLowerCase() ||
                          label.value.toLowerCase().includes('out of stock') ||
                          label.value.toLowerCase().includes('արտադրված') ||
+                         label.value.toLowerCase().includes('սպառված') ||
                          label.value.toLowerCase().includes('нет в наличии') ||
                          label.value.toLowerCase().includes('არ არის მარაგში')
             );

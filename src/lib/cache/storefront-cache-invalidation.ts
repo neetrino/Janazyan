@@ -82,4 +82,5 @@ export async function invalidateFaqCaches(): Promise<void> {
 /** After partner store create/update/delete (admin). */
 export async function invalidatePartnerStoresCaches(): Promise<void> {
   await cacheService.deletePattern('partner-stores:*');
+  await cacheService.deletePattern('partner-stores:v2:*');
 }

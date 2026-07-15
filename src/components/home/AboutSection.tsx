@@ -15,9 +15,10 @@ import {
 
 const ABOUT_IMAGE = '/figma/about-hero.webp';
 
-/** Extra space below desktop about content before footer overlap. */
-const ABOUT_DESKTOP_FOOTER_GAP_PX = 80;
-const ABOUT_DESKTOP_HEIGHT_PX = 1017;
+/** Extra space below desktop about content before footer. */
+const ABOUT_DESKTOP_FOOTER_GAP_PX = 36;
+/** Design height — slight padding below bottle (~916px), less empty white than before. */
+const ABOUT_DESKTOP_HEIGHT_PX = 980;
 const ABOUT_DESKTOP_TOTAL_HEIGHT_PX = ABOUT_DESKTOP_HEIGHT_PX + ABOUT_DESKTOP_FOOTER_GAP_PX;
 
 const ABOUT_BG_STYLE: CSSProperties = {

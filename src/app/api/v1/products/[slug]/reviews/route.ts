@@ -5,6 +5,7 @@ import { productsService } from "@/lib/services/products.service";
 import { invalidateProductReviewsCaches } from "@/lib/cache/storefront-cache";
 import { getProductReviewsBySlugCached } from "@/lib/products/load-product-reviews-cached";
 import { logger } from "@/lib/utils/logger";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 export const dynamic = "force-dynamic";
 
@@ -21,7 +22,7 @@ export async function GET(
   try {
     const { slug } = await params;
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "en";
+    const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const myReview = searchParams.get("my") === "true";
     
     logger.debug('📝 [REVIEWS API] GET request for product slug:', slug, { myReview });
@@ -116,7 +117,7 @@ export async function POST(
 
     const { slug } = await params;
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "en";
+    const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const body = await req.json();
 
     logger.debug('📝 [REVIEWS API] POST request:', { slug, userId: user.id, rating: body.rating });

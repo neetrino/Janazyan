@@ -5,7 +5,6 @@ import {
   PDP_GALLERY_MAIN_IMAGE_INSET_CLASS,
   PDP_GALLERY_MAIN_PANEL_CLASS,
   PDP_GALLERY_MAIN_PADDING_CLASS,
-  PDP_GALLERY_THUMB_WIDTH_CLASS,
 } from './product-gallery.constants';
 import {
   PDP_ACTION_ROW_CLASS,
@@ -82,24 +81,10 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
     >
       <div className="max-w-7xl mx-auto py-4 lg:px-8 lg:py-12 min-h-[min(100dvh,720px)]">
         <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-start">
-          <div className="flex items-start gap-5 lg:gap-6">
-            <div className={`flex shrink-0 flex-col gap-3 ${PDP_GALLERY_THUMB_WIDTH_CLASS}`} aria-hidden>
-              {thumbsToRender.map((thumbSrc, index) => (
-                <div
-                  key={`${thumbSrc}-${index}`}
-                  className="aspect-square w-full overflow-hidden rounded-[20px] border border-sky-mist/80 bg-white"
-                >
-                  <img
-                    src={thumbSrc}
-                    alt=""
-                    className="h-full w-full object-contain p-2"
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="min-w-0 flex-1">
+          <div className="space-y-4">
+            <div className="min-w-0">
               <div
-                className={`${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS} w-full max-w-[560px] mx-auto lg:mx-0`}
+                className={`${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS} overflow-visible`}
                 aria-hidden
               >
                 <div className={PDP_GALLERY_MAIN_IMAGE_INSET_CLASS}>
@@ -107,14 +92,35 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                     <img
                       src={snapshot?.image ?? ''}
                       alt=""
-                      className="h-full w-full object-contain"
+                      className="h-full w-full -translate-y-10 object-contain object-[center_42%] sm:-translate-y-16"
                     />
                   ) : null}
                   <div
                     className={`absolute inset-0 ${
-                      hasSnapshotImage ? 'bg-white/5' : 'animate-pulse bg-sky-mist/60'
+                      hasSnapshotImage ? 'bg-sky-mist/35' : 'animate-pulse bg-sky-mist/60'
                     }`}
                   />
+                </div>
+                <div className="absolute inset-x-0 bottom-3 z-20 px-3 sm:bottom-4 sm:px-5">
+                  <div className="grid grid-cols-7 gap-2 sm:gap-3">
+                    {thumbsToRender.slice(0, 7).map((thumbSrc, index) => (
+                      <div
+                        key={`${thumbSrc}-${index}`}
+                        className="relative flex h-14 items-center justify-center overflow-hidden rounded-lg bg-transparent sm:h-16"
+                      >
+                        <img
+                          src={thumbSrc}
+                          alt=""
+                          className={`h-full w-auto max-w-full object-contain ${
+                            index === 0 ? 'opacity-100' : 'opacity-70'
+                          }`}
+                        />
+                        {index === 0 ? (
+                          <span className="absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-ink-700" />
+                        ) : null}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -156,7 +162,17 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                     <div className="mb-8 min-h-[72px] rounded-lg bg-sky-mist/45" aria-hidden />
                   )}
                   {shouldReserveVariantSpace ? (
-                    <div className="mb-8 lg:min-h-[188px]" aria-hidden />
+                    <div
+                      className="mb-8 rounded-2xl border border-white/35 bg-white/12 p-4 lg:min-h-[188px]"
+                      aria-hidden
+                    >
+                      <div className="space-y-3">
+                        <div className="h-4 w-28 rounded bg-white/45" />
+                        <div className="h-11 w-full rounded-xl bg-white/35" />
+                        <div className="h-4 w-24 rounded bg-white/45" />
+                        <div className="h-11 w-full rounded-xl bg-white/35" />
+                      </div>
+                    </div>
                   ) : null}
                 </div>
                 <div className="pt-0 lg:-translate-y-[6px]">
@@ -173,7 +189,7 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                       </div>
                       <button
                         type="button"
-                        className={`${PDP_ADD_TO_CART_CLASS} cursor-default pointer-events-none !bg-primary !text-white`}
+                        className={`${PDP_ADD_TO_CART_CLASS} cursor-default pointer-events-none`}
                         aria-disabled="true"
                       >
                         Add To Cart

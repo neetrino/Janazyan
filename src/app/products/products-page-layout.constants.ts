@@ -1,7 +1,6 @@
 import {
   STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS,
   STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS,
-  STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
 import { STOREFRONT_SIDE_PADDING_NEG_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { STOREFRONT_PILL_INTERACTIVE_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
@@ -11,11 +10,13 @@ import { HEADER_HERO_SHELL_BAND_HEIGHT_PX } from '../../components/header/header
 /** Desktop catalog gradient inset from shell top — shared by all hero-shell pages. */
 export const PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX = 24;
 
-/** Same rounded shell as {@link HomeHero}; white backdrop keeps the header pill gap white. */
-export const PRODUCTS_PAGE_SHELL_CONTAINER_CLASS = 'products-hero-shell-canvas';
-
+/**
+ * Catalog shell — overflow must stay visible so the desktop SVG can bleed into
+ * the footer overlap. Do not use overflow-x-clip here: Safari forces overflow-y
+ * to clip as well, which cuts the background under the footer.
+ */
 export const PRODUCTS_PAGE_SHELL_CLASS =
-  `relative w-full overflow-x-clip overflow-y-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px] ${PRODUCTS_PAGE_SHELL_CONTAINER_CLASS}`;
+  'relative w-full overflow-visible rounded-t-[28px] bg-white sm:rounded-t-[44px] desktop:rounded-t-[36px]';
 
 /**
  * Extra sky gradient below decoration overlap — fills the wedge where the shell
@@ -112,8 +113,8 @@ export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[
 export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
 export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 
-/** Figma toolbar pills — fully rounded capsule on both edges (nodes 269:907 / 269:919). */
-export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
+/** Shared toolbar pill + dropdown panel radius — matches Figma subcategory panel (node 486:366). */
+export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-[20px]';
 
 /** Shared toolbar control pill height — aligned with category pills. */
 export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10 desktop:h-12';
@@ -129,30 +130,35 @@ export const PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS = 'gap-1.5 desktop:gap-2.5';
 export const PRODUCTS_PAGE_TOOLBAR_ROW_CLASS =
   `flex flex-row items-center ${PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS}`;
 
-/** Outer shop toolbar wrapper — extra top inset on tablet/laptop mobile shell. */
-export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1 pt-16 sm:pt-20 desktop:pt-0';
+/** Outer shop toolbar wrapper — desktop offset comes from the hero shell, not here. */
+export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1';
 
-/** Mobile toolbar slot — full-bleed category row below search (cancels shell side padding). */
-export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mt-9 sm:mt-11';
+/**
+ * Mobile shop — category pills sit inside the white catalog card (no extra gap above the curve).
+ */
+export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mb-4';
 
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS =
   `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
 
-/** Horizontal inset for first/last pill while the scroll track stays full-bleed on mobile. */
-export const PRODUCTS_PAGE_CATEGORY_ROW_EDGE_INSET_CLASS =
-  'px-[clamp(24px,3.2vw,36px)] scroll-px-[clamp(24px,3.2vw,36px)] desktop:px-0 desktop:scroll-px-0';
+/** Gap between search row and the white catalog card on mobile shop. */
+export const PRODUCTS_PAGE_MOBILE_CATALOG_TOP_MARGIN_CLASS = 'mt-8';
+
+/** Leading/trailing scroll spacers — keep first/last pills fully visible (not clipped by row padding). */
+export const PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS =
+  'w-[clamp(24px,3.2vw,36px)] shrink-0 desktop:w-0';
 
 /** Category pills occupy remaining toolbar width; full width on mobile (no sort slot). */
 export const PRODUCTS_PAGE_CATEGORY_SCROLL_SHELL_CLASS =
-  'min-w-0 w-full max-w-none flex-1 overflow-hidden';
+  'min-w-0 w-full max-w-none flex-1';
 
 /** Category filter pills row — Figma "categories" frame (node 269:894). */
 export const PRODUCTS_PAGE_CATEGORY_ROW_CLASS =
-  `flex w-full max-w-none items-center gap-1.5 desktop:gap-2.5 overflow-x-auto scrollbar-hide ${PRODUCTS_PAGE_CATEGORY_ROW_EDGE_INSET_CLASS}`;
+  'flex w-full max-w-none items-center gap-1.5 desktop:gap-2.5 overflow-x-auto overscroll-none touch-pan-x scrollbar-hide';
 
-/** Right-edge fade when category row overflows — matches hero band on desktop, white on tablet/laptop. */
+/** Right-edge fade — desktop hero only; on mobile it covers half-pills while scrolling. */
 export const PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS =
-  'pointer-events-none absolute inset-y-0 right-0 z-10 w-8 bg-gradient-to-l from-white/95 to-transparent desktop:w-10 desktop:from-[#C9DDF0]';
+  'pointer-events-none absolute inset-y-0 right-0 z-10 hidden w-10 bg-gradient-to-l from-[#C9DDF0] to-transparent desktop:block';
 
 /** Shop hero breadcrumb — Figma node 269:900. */
 export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
@@ -160,7 +166,7 @@ export const PRODUCTS_PAGE_SHOP_BREADCRUMB_CLASS =
 
 /** Shared category pill shape/typography — Figma buttons (node 269:895 …). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_CLASS =
-  `inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} shrink-0 items-center justify-center rounded-full text-[11px] font-medium leading-[14px] tracking-[0.35px] whitespace-nowrap desktop:text-[13px] desktop:leading-4 desktop:tracking-[0.4px] ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
+  `inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} shrink-0 items-center justify-center ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} text-[11px] font-medium leading-[14px] tracking-[0.35px] whitespace-nowrap desktop:text-[13px] desktop:leading-4 desktop:tracking-[0.4px] ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;
 
 /** Active category pill — dark ink slate with white ring (node 269:895). */
 export const PRODUCTS_PAGE_CATEGORY_PILL_ACTIVE_CLASS =
@@ -189,7 +195,7 @@ export const PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS =
 
 /** Mobile catalog — full-bleed gradient, white at top fading to shop sky blue. */
 export const PRODUCTS_PAGE_MOBILE_CATALOG_SURFACE_CLASS =
-  `relative z-10 ${STOREFRONT_MOBILE_CONTENT_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile pt-6 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
+  `relative z-10 ${PRODUCTS_PAGE_MOBILE_CATALOG_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-products-catalog-mobile pt-5 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${PRODUCTS_PAGE_MOBILE_CATALOG_BOTTOM_PADDING_CLASS}`;
 
 /** Content-only mobile catalog — tighter top spacing (stores, about, FAQ, blog). */
 export const PRODUCTS_PAGE_MOBILE_CONTENT_ONLY_CATALOG_SURFACE_CLASS =

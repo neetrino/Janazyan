@@ -29,8 +29,8 @@ export function ReviewList({
 
   if (reviews.length === 0) {
     return (
-      <div className="py-6 text-center">
-        <p className="text-gray-600 mb-4">
+      <div className="py-10 text-center">
+        <p className="mb-4 text-gray-600">
           {t('common.reviews.noReviews')}
         </p>
         {!showForm && (
@@ -47,7 +47,7 @@ export function ReviewList({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {reviews.map((review) => (
         <ReviewItem
           key={review.id}

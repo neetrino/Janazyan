@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { apiRouteErrorResponse, buildApiRouteErrorContext } from "@/lib/http/api-route-errors";
 import { productsService } from "@/lib/services/products.service";
 import { cacheService } from "@/lib/services/cache.service";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 const PRODUCTS_CACHE_TTL = 120; // 2 minutes
 const FEATURED_CACHE_TTL = 600; // 10 minutes for home featured tabs (new/bestseller/featured)
@@ -45,7 +46,7 @@ export async function GET(req: NextRequest) {
         searchParams.get("limit") ? parseInt(searchParams.get("limit")!) : 12,
         200
       ),
-      lang: searchParams.get("lang") || "en",
+      lang: searchParams.get("lang") || DEFAULT_LANGUAGE,
     };
 
     const cacheKey = buildProductsCacheKey(searchParams);

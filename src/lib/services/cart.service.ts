@@ -10,12 +10,13 @@ import { getProductDiscountSettings } from "./products-discount-settings.cache";
 import { CART_WITH_ITEMS_INCLUDE } from "./cart/cart-query.constants";
 import { buildCartViewResponse } from "./cart/format-cart-response";
 import { logger } from "../utils/logger";
+import { DEFAULT_LANGUAGE } from '../language';
 
 const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
 class CartService {
   /** Get or create user's cart (Redis view cache + slim DB read on miss). */
-  async getCart(userId: string, locale: string = "en"): Promise<CartViewResponse> {
+  async getCart(userId: string, locale: string = DEFAULT_LANGUAGE): Promise<CartViewResponse> {
     return getCartViewCached(userId, locale, (id, lang) =>
       this.loadCartViewFromDb(id, lang),
     );
@@ -60,7 +61,7 @@ class CartService {
   async addItem(
     userId: string,
     data: { variantId: string; productId: string; quantity?: number },
-    locale: string = "en"
+    locale: string = DEFAULT_LANGUAGE
   ) {
     const { variantId, productId, quantity = 1 } = data;
 

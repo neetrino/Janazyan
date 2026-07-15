@@ -80,11 +80,18 @@ export const LOGIN_HERO_RIGHT_FLIP_CLASS = '-scale-y-100 rotate-180';
 
 /** Center stack — heading + form; below right decoration overlap. */
 export const LOGIN_CENTER_COLUMN_CLASS =
-  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-12 pt-[65px] desktop:pt-[105px]';
+  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-8 pt-[65px] desktop:pt-[105px]';
 
 /** Mobile auth — centered column with white form card (no hero art). */
 export const AUTH_MOBILE_CENTER_COLUMN_CLASS =
-  'mx-auto flex w-full max-w-[509px] flex-col items-center px-3 pb-12 pt-6 sm:px-4';
+  'mx-auto flex w-full max-w-[509px] flex-col items-center px-3 pb-8 pt-6 sm:px-4';
+
+/**
+ * Catalog bottom padding before footer — tighter than default content-only pages
+ * (same idea as home about→footer gap).
+ */
+export const AUTH_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
+  'pb-14 md:pb-20 desktop:pb-16';
 
 /** Phone only — simple centered form without hero artboard. */
 export const AUTH_PAGE_PHONE_ONLY_CLASS = 'md:hidden';

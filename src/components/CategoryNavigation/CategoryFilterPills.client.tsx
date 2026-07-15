@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import {
   PRODUCTS_PAGE_CATEGORY_ROW_CLASS,
+  PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS,
   PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS,
 } from '../../app/products/products-page-layout.constants';
 import type { CategoryTreeNode } from '../../lib/categories/category-tree';
@@ -84,13 +85,31 @@ export function CategoryFilterPills({
     }
 
     const activePill = row.querySelector<HTMLElement>('[aria-current="page"]');
-    activePill?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+    if (!activePill) {
+      return;
+    }
+
+    // Horizontal-only — avoid scrollIntoView, which can shift the page vertically.
+    const rowRect = row.getBoundingClientRect();
+    const pillRect = activePill.getBoundingClientRect();
+    const overflowLeft = pillRect.left - rowRect.left;
+    const overflowRight = pillRect.right - rowRect.right;
+
+    if (overflowLeft < 0) {
+      row.scrollBy({ left: overflowLeft, behavior: 'smooth' });
+      return;
+    }
+
+    if (overflowRight > 0) {
+      row.scrollBy({ left: overflowRight, behavior: 'smooth' });
+    }
   }, [activeCategorySlug, categories]);
 
   return (
     <div className="relative">
       {showRightFade ? <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS} /> : null}
       <div ref={rowRef} className={PRODUCTS_PAGE_CATEGORY_ROW_CLASS} data-category-filter-row>
+        <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS} />
         {categories.map((category) => {
           const isActive = isShopToolbarCategoryActive(category, activeCategorySlug);
 
@@ -104,6 +123,7 @@ export function CategoryFilterPills({
             />
           );
         })}
+        <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS} />
       </div>
     </div>
   );

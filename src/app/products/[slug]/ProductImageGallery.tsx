@@ -12,10 +12,6 @@ import {
   PDP_GALLERY_MAIN_IMAGE_INSET_CLASS,
   PDP_GALLERY_MAIN_PANEL_CLASS,
   PDP_GALLERY_MAIN_PADDING_CLASS,
-  PDP_GALLERY_THUMB_TILE_ACTIVE_CLASS,
-  PDP_GALLERY_THUMB_TILE_CLASS,
-  PDP_GALLERY_THUMB_TILE_INACTIVE_CLASS,
-  PDP_GALLERY_THUMB_WIDTH_CLASS,
   PDP_GALLERY_ZOOM_BUTTON_CLASS,
 } from "./product-gallery.constants";
 
@@ -34,7 +30,7 @@ interface ProductImageGalleryProps {
   mainImagePriority?: boolean;
 }
 
-const THUMBNAILS_PER_VIEW = 3;
+const THUMBNAILS_PER_VIEW = 7;
 
 export function ProductImageGallery({
   images,
@@ -75,118 +71,11 @@ export function ProductImageGallery({
 
   return (
     <>
-      <div className="flex items-start gap-5 lg:gap-6">
-        {/* Left Column - Thumbnails (Vertical) - Show 3 at a time, scrollable */}
-        <div className={`flex shrink-0 flex-col gap-3 ${PDP_GALLERY_THUMB_WIDTH_CLASS}`}>
-          <div className="flex flex-1 flex-col gap-3 overflow-hidden">
-            {visibleThumbnails.map((image, index) => {
-              const actualIndex = thumbnailStartIndex + index;
-              const isActive = actualIndex === currentImageIndex;
-              return (
-                <button 
-                  key={actualIndex}
-                  onClick={() => onImageIndexChange(actualIndex)}
-                  className={`${PDP_GALLERY_THUMB_TILE_CLASS} ${
-                    isActive
-                      ? PDP_GALLERY_THUMB_TILE_ACTIVE_CLASS
-                      : PDP_GALLERY_THUMB_TILE_INACTIVE_CLASS
-                  }`}
-                >
-                  {failedIndices.has(actualIndex) ? (
-                    <ProductImagePlaceholder className="h-full w-full" aria-label="" />
-                  ) : (
-                    <img
-                      src={image}
-                      alt=""
-                      className="h-full w-full object-contain p-2 transition-transform duration-300"
-                      loading="lazy"
-                      decoding="async"
-                      onError={() => markFailed(actualIndex)}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-          
-          {/* Navigation Arrows - Scroll thumbnails */}
-          {images.length > THUMBNAILS_PER_VIEW && (
-            <div className="flex flex-row gap-1.5 justify-center">
-              <button 
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  // Scroll thumbnails up
-                  const newStart = Math.max(0, thumbnailStartIndex - 1);
-                  onThumbnailStartIndexChange(newStart);
-                  // Also update current image if needed
-                  if (currentImageIndex > newStart + THUMBNAILS_PER_VIEW - 1) {
-                    onImageIndexChange(newStart + THUMBNAILS_PER_VIEW - 1);
-                  } else if (currentImageIndex < newStart) {
-                    onImageIndexChange(newStart);
-                  }
-                }}
-                disabled={thumbnailStartIndex <= 0}
-                className="flex size-9 items-center justify-center rounded-[12px] border border-sky-mist bg-white text-ink-700 transition-all duration-200 hover:border-sky-deep/30 hover:bg-sky-mist/30 hover:shadow-[0_2px_8px_rgba(147,182,227,0.2)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-sky-mist disabled:hover:bg-white disabled:hover:shadow-none"
-                aria-label={t(language, 'common.ariaLabels.previousThumbnail')}
-              >
-                <svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2.5} 
-                    d="M5 15l7-7 7 7" 
-                  />
-                </svg>
-              </button>
-              <button 
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  // Scroll thumbnails down
-                  const newStart = Math.min(images.length - THUMBNAILS_PER_VIEW, thumbnailStartIndex + 1);
-                  onThumbnailStartIndexChange(newStart);
-                  // Also update current image if needed
-                  if (currentImageIndex < newStart) {
-                    onImageIndexChange(newStart);
-                  } else if (currentImageIndex > newStart + THUMBNAILS_PER_VIEW - 1) {
-                    onImageIndexChange(newStart + THUMBNAILS_PER_VIEW - 1);
-                  }
-                }}
-                disabled={thumbnailStartIndex >= images.length - THUMBNAILS_PER_VIEW}
-                className="flex size-9 items-center justify-center rounded-[12px] border border-sky-mist bg-white text-ink-700 transition-all duration-200 hover:border-sky-deep/30 hover:bg-sky-mist/30 hover:shadow-[0_2px_8px_rgba(147,182,227,0.2)] disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:border-sky-mist disabled:hover:bg-white disabled:hover:shadow-none"
-                aria-label={t(language, 'common.ariaLabels.nextThumbnail')}
-              >
-                <svg 
-                  className="w-4 h-4" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24"
-                >
-                  <path 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
-                    strokeWidth={2.5} 
-                    d="M19 9l-7 7-7-7" 
-                  />
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-        
-        {/* Right Column - Main Image */}
-        <div className="min-w-0 flex-1">
+      <div className="space-y-4">
+        <div className="min-w-0">
           <div
             data-product-fly-origin
-            className={`group ${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS}`}
+            className={`group overflow-visible ${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS}`}
           >
           <div className={PDP_GALLERY_MAIN_IMAGE_INSET_CLASS}>
           {images.length > 0 && !mainImageFailed && currentSrc ? (
@@ -194,7 +83,7 @@ export function ProductImageGallery({
               src={currentSrc}
               alt={product.title}
               fill
-              className="object-contain transition-transform duration-500 group-hover:scale-[1.03]"
+              className="object-contain object-[center_42%] -translate-y-10 transition-transform duration-500 group-hover:scale-[1.03] sm:-translate-y-16"
               sizes={PDP_MAIN_IMAGE_SIZES}
               priority={mainImagePriority}
               unoptimized
@@ -218,7 +107,7 @@ export function ProductImageGallery({
           {product.labels && <ProductLabels labels={product.labels} variant="pdp" />}
           
           {/* Control Buttons - Bottom left */}
-          <div className="absolute bottom-5 left-5 z-10 flex flex-col gap-3">
+          <div className="absolute bottom-20 left-5 z-10 flex flex-col gap-3 sm:bottom-24">
             {/* Fullscreen Button */}
             <button 
               onClick={() => setShowZoom(true)} 
@@ -227,6 +116,93 @@ export function ProductImageGallery({
             >
               <Maximize2 className="size-5" strokeWidth={2.25} />
             </button>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-3 z-20 px-3 sm:bottom-4 sm:px-5">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {images.length > THUMBNAILS_PER_VIEW && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const newStart = Math.max(0, thumbnailStartIndex - 1);
+                    onThumbnailStartIndexChange(newStart);
+                    if (currentImageIndex > newStart + THUMBNAILS_PER_VIEW - 1) {
+                      onImageIndexChange(newStart + THUMBNAILS_PER_VIEW - 1);
+                    } else if (currentImageIndex < newStart) {
+                      onImageIndexChange(newStart);
+                    }
+                  }}
+                  disabled={thumbnailStartIndex <= 0}
+                  className="flex size-8 shrink-0 items-center justify-center text-ink-700 transition-opacity duration-200 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-30 sm:size-9"
+                  aria-label={t(language, 'common.ariaLabels.previousThumbnail')}
+                >
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M15 5l-7 7 7 7" />
+                  </svg>
+                </button>
+              )}
+
+              <div className="grid flex-1 grid-cols-7 gap-2 sm:gap-3">
+                {visibleThumbnails.map((image, index) => {
+                  const actualIndex = thumbnailStartIndex + index;
+                  const isActive = actualIndex === currentImageIndex;
+                  return (
+                    <button
+                      key={actualIndex}
+                      onClick={() => onImageIndexChange(actualIndex)}
+                      className="relative flex h-14 items-center justify-center overflow-hidden rounded-lg bg-transparent sm:h-16"
+                      aria-pressed={isActive}
+                    >
+                      {failedIndices.has(actualIndex) ? (
+                        <ProductImagePlaceholder className="h-full w-full" aria-label="" />
+                      ) : (
+                        <img
+                          src={image}
+                          alt=""
+                          className={`h-full w-auto max-w-full object-contain transition-opacity duration-200 ${
+                            isActive ? "opacity-100" : "opacity-70 hover:opacity-100"
+                          }`}
+                          loading="lazy"
+                          decoding="async"
+                          onError={() => markFailed(actualIndex)}
+                        />
+                      )}
+                      <span
+                        className={`absolute bottom-0 left-1/2 h-0.5 w-8 -translate-x-1/2 rounded-full bg-ink-700 transition-opacity ${
+                          isActive ? "opacity-100" : "opacity-0"
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+
+              {images.length > THUMBNAILS_PER_VIEW && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const newStart = Math.min(images.length - THUMBNAILS_PER_VIEW, thumbnailStartIndex + 1);
+                    onThumbnailStartIndexChange(newStart);
+                    if (currentImageIndex < newStart) {
+                      onImageIndexChange(newStart);
+                    } else if (currentImageIndex > newStart + THUMBNAILS_PER_VIEW - 1) {
+                      onImageIndexChange(newStart + THUMBNAILS_PER_VIEW - 1);
+                    }
+                  }}
+                  disabled={thumbnailStartIndex >= images.length - THUMBNAILS_PER_VIEW}
+                  className="flex size-8 shrink-0 items-center justify-center text-ink-700 transition-opacity duration-200 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-30 sm:size-9"
+                  aria-label={t(language, 'common.ariaLabels.nextThumbnail')}
+                >
+                  <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.25} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              )}
+            </div>
           </div>
           </div>
         </div>

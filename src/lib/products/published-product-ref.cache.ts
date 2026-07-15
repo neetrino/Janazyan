@@ -8,7 +8,10 @@ import {
   writeJsonCache,
 } from '@/lib/cache/storefront-cache';
 import { dedupeInFlight } from '@/lib/cache/in-flight-dedup';
-import { getBaseWhere } from '@/lib/services/products-slug/product-query-where';
+import {
+  getBaseWhere,
+  getBaseWhereAnyLocale,
+} from '@/lib/services/products-slug/product-query-where';
 
 export type PublishedProductRef = {
   id: string;
@@ -58,19 +61,12 @@ async function loadPublishedProductRefFromDb(
     select: REF_SELECT,
   });
 
-  if (!row && lang !== 'en') {
+  // Catalog may link an en-only slug while the storefront language is hy (or vice versa).
+  if (!row) {
     row = await db.product.findFirst({
-      where: getBaseWhere(slug, 'en'),
+      where: getBaseWhereAnyLocale(slug),
       select: REF_SELECT,
     });
-    if (row) {
-      return {
-        id: row.id,
-        primaryCategoryId: row.primaryCategoryId,
-        primaryCategorySlug: pickCategorySlug(row.categories, row.primaryCategoryId, 'en'),
-      };
-    }
-    return null;
   }
 
   if (!row) {

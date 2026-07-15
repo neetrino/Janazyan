@@ -24,6 +24,9 @@ export function shouldShowStorefrontFooter(pathname: string): boolean {
 /** Catalog hero shell — footer sits flush below content; no white gutter before the shell. */
 export const CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS = 'md:max-[1649px]:mt-0';
 
+/** Home — tighter gap above compact footer. */
+export const HOME_FOOTER_COMPACT_TOP_MARGIN_CLASS = 'md:max-[1649px]:mt-12';
+
 /** @deprecated Use {@link CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX}. */
 export const PRODUCTS_PAGE_FOOTER_SHELL_UP_PULL_PX = CATALOG_HERO_SHELL_FOOTER_SHELL_UP_PULL_PX;
 
@@ -59,6 +62,10 @@ export function resolvePageFooterExtraUpPull(pathname: string): number {
 
 /** Compact footer top gap — catalog hero shell keeps the gradient flush to the footer. */
 export function resolvePageFooterCompactTopMarginClass(pathname: string): string {
+  if (pathname === '/') {
+    return HOME_FOOTER_COMPACT_TOP_MARGIN_CLASS;
+  }
+
   if (usesCatalogHeroShellFooterLayout(pathname)) {
     return CATALOG_HERO_SHELL_FOOTER_COMPACT_TOP_MARGIN_CLASS;
   }

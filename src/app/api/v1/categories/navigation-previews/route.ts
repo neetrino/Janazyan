@@ -5,12 +5,13 @@ import {
   readJsonCache,
   writeJsonCache,
 } from "@/lib/cache/storefront-cache";
+import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { getCategoryNavigationPreviews } from "@/lib/services/categories-navigation-previews.service";
 
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const lang = searchParams.get("lang") || "en";
+    const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const cacheKey = STOREFRONT_CACHE_KEYS.navigationPreviews(lang);
 
     const cached = await readJsonCache<{ data: unknown }>(cacheKey);

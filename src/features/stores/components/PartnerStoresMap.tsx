@@ -2,7 +2,7 @@
 
 import 'leaflet/dist/leaflet.css';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { CAROUSEL_MOBILE_BREAKPOINT_PX } from '../carousel-constants';
 import type {
   DivIcon,
@@ -15,12 +15,16 @@ import {
   MAP_DEFAULT_ZOOM_MOBILE,
   MAP_HEIGHT_MOBILE_PX,
   MAP_HEIGHT_PX,
+  MAP_MARKER_SIZE_ACTIVE_MOBILE_PX,
+  MAP_MARKER_SIZE_ACTIVE_PX,
+  MAP_MARKER_SIZE_INACTIVE_MOBILE_PX,
+  MAP_MARKER_SIZE_INACTIVE_PX,
   MAP_SELECTED_ZOOM,
   MAP_SELECTED_ZOOM_MOBILE,
   MAP_TILE_MAX_ZOOM,
   MAP_TILE_URL,
 } from '../constants';
-import { normalizePartnerStoreCoordinates } from '../coordinates';
+import { resolvePartnerStoreMapPositions } from '../map-marker-positions';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 import { getDirectionsUrl } from '../get-directions-url';
 import { useStoresMobileViewport } from '../use-stores-mobile-viewport';
@@ -45,12 +49,26 @@ function focusMapOnCoordinates(
   zoom: number,
 ): void {
   map.invalidateSize();
+  map.stop();
+
   const { x, y } = map.getSize();
-  if (x > 0 && y > 0) {
-    map.flyTo(latLng, zoom, { duration: 0.8 });
+  if (x <= 0 || y <= 0) {
+    map.setView(latLng, zoom, { animate: false });
     return;
   }
-  map.setView(latLng, zoom);
+
+  const current = map.getCenter();
+  const samePoint =
+    Math.abs(current.lat - latLng[0]) < 0.00001 &&
+    Math.abs(current.lng - latLng[1]) < 0.00001 &&
+    Math.abs(map.getZoom() - zoom) < 0.01;
+
+  if (samePoint) {
+    map.panTo(latLng, { animate: true, duration: 0.25 });
+    return;
+  }
+
+  map.flyTo(latLng, zoom, { duration: 0.75 });
 }
 
 function createMarkerIcon(
@@ -60,11 +78,11 @@ function createMarkerIcon(
 ): DivIcon {
   const size = compact
     ? isSelected
-      ? 30
-      : 24
+      ? MAP_MARKER_SIZE_ACTIVE_MOBILE_PX
+      : MAP_MARKER_SIZE_INACTIVE_MOBILE_PX
     : isSelected
-      ? 36
-      : 28;
+      ? MAP_MARKER_SIZE_ACTIVE_PX
+      : MAP_MARKER_SIZE_INACTIVE_PX;
 
   return L.divIcon({
     className: '',
@@ -102,31 +120,6 @@ export function PartnerStoresMap({
 
   const onStoreSelectRef = useRef(onStoreSelect);
   onStoreSelectRef.current = onStoreSelect;
-
-  const focusSelectedStore = useCallback(() => {
-    const map = mapRef.current;
-    if (!map || !selectedStoreId) {
-      return;
-    }
-
-    const selectedStore = stores.find((store) => store.id === selectedStoreId);
-    if (!selectedStore) {
-      return;
-    }
-
-    const coordinates = normalizePartnerStoreCoordinates(
-      selectedStore.lat,
-      selectedStore.lng,
-    );
-    if (!coordinates) {
-      return;
-    }
-
-    focusMapOnCoordinates(map, [coordinates.lat, coordinates.lng], selectedZoom);
-
-    const marker = markersRef.current.get(selectedStoreId);
-    marker?.openPopup();
-  }, [selectedStoreId, selectedZoom, stores]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -193,11 +186,13 @@ export function PartnerStoresMap({
       return;
     }
 
+    const positions = resolvePartnerStoreMapPositions(stores);
+
     markersRef.current.forEach((marker) => marker.remove());
     markersRef.current.clear();
 
     stores.forEach((store) => {
-      const coordinates = normalizePartnerStoreCoordinates(store.lat, store.lng);
+      const coordinates = positions.get(store.id);
       if (!coordinates) {
         return;
       }
@@ -205,6 +200,7 @@ export function PartnerStoresMap({
       const isSelected = store.id === selectedStoreId;
       const marker = L.marker([coordinates.lat, coordinates.lng], {
         icon: createMarkerIcon(L, isSelected, isMobile),
+        zIndexOffset: isSelected ? 1000 : 0,
       });
 
       marker.bindPopup(
@@ -222,14 +218,38 @@ export function PartnerStoresMap({
       marker.addTo(map);
       markersRef.current.set(store.id, marker);
     });
-  }, [stores, selectedStoreId, getDirectionsLabel, isMobile, mapReady]);
 
-  useEffect(() => {
-    if (!mapReady) {
+    if (!selectedStoreId) {
       return;
     }
-    focusSelectedStore();
-  }, [focusSelectedStore, mapFocusRequest, mapReady, selectedStoreId]);
+
+    const selectedPosition = positions.get(selectedStoreId);
+    if (!selectedPosition) {
+      return;
+    }
+
+    const currentZoom = map.getZoom();
+    const targetZoom = Number.isFinite(currentZoom)
+      ? Math.max(currentZoom, selectedZoom)
+      : selectedZoom;
+
+    focusMapOnCoordinates(
+      map,
+      [selectedPosition.lat, selectedPosition.lng],
+      targetZoom,
+    );
+
+    const selectedMarker = markersRef.current.get(selectedStoreId);
+    selectedMarker?.openPopup();
+  }, [
+    stores,
+    selectedStoreId,
+    getDirectionsLabel,
+    isMobile,
+    mapReady,
+    mapFocusRequest,
+    selectedZoom,
+  ]);
 
   return (
     <div
