@@ -46,6 +46,7 @@ export function AuthPageLayout({
     <ProductsHeroShell
       sectionAriaLabel={sectionAriaLabel}
       compactHero
+      mobileFillViewport={false}
       mobileContentSurfaceClassName={AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS}
       mobileContentInsetClassName={AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS}
       catalogBottomPaddingClassName={AUTH_PAGE_CATALOG_BOTTOM_PADDING_CLASS}
@@ -73,7 +74,7 @@ export function AuthPageLayout({
                     </div>
                   </div>
 
-                  <div className={LOGIN_CENTER_COLUMN_CLASS}>
+                  <div className={LOGIN_CENTER_COLUMN_CLASS} data-auth-page-measure="">
                     <header className={LOGIN_HEADING_STACK_CLASS}>
                       <h1 className={MIRAGE_CONTACT_HEADING_CLASS}>{title}</h1>
                       <p className={LOGIN_SUBTITLE_CLASS}>{subtitle}</p>

@@ -216,14 +216,12 @@ body {
   @media (max-width: 1299px) {
     .auth-page-scale-viewport {
       width: 100cqw;
-      overflow-x: clip;
-      overflow-y: visible;
+      overflow: clip;
       height: calc(var(--auth-artboard-height) * 1px * (100cqw / (var(--auth-artboard-width) * 1px)));
     }
 
     .auth-page-scale-artboard {
       width: calc(var(--auth-artboard-width) * 1px);
-      min-height: calc(var(--auth-artboard-height) * 1px);
       transform: scale(calc(100cqw / (var(--auth-artboard-width) * 1px)));
       transform-origin: top left;
     }

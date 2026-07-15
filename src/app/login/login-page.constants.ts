@@ -4,7 +4,8 @@ import { STOREFRONT_CONTENT_MAX_WIDTH_PX } from '../../lib/layout/storefront-lay
 
 /** Fixed artboard for tablet/mobile scale — same coordinates as desktop layout. */
 export const AUTH_PAGE_ARTBOARD_WIDTH_PX = STOREFRONT_CONTENT_MAX_WIDTH_PX;
-export const AUTH_PAGE_ARTBOARD_HEIGHT_PX = 828;
+/** Initial artboard height fallback before content measurement (ResizeObserver). */
+export const AUTH_PAGE_ARTBOARD_HEIGHT_PX = 680;
 
 export const AUTH_PAGE_SCALE_HOST_CLASS = 'auth-page-scale-host @container relative w-full';
 export const AUTH_PAGE_SCALE_VIEWPORT_CLASS = 'auth-page-scale-viewport relative mx-auto w-full';
@@ -51,11 +52,11 @@ export const LOGIN_SECTION_DESKTOP_BLEED_CLASS =
   'desktop:relative desktop:-mt-[122px] desktop:-mb-8 desktop:py-0 desktop:overflow-visible desktop:rounded-tl-[36px]';
 
 /** Section root — isolated stacking context for hero vs content layers. */
-export const LOGIN_SECTION_STACK_CLASS = 'relative isolate min-h-[828px]';
+export const LOGIN_SECTION_STACK_CLASS = 'relative isolate';
 
 /** Left hero column — absolute, behind interactive content. */
 export const LOGIN_HERO_LEFT_COLUMN_CLASS =
-  'pointer-events-none absolute inset-y-0 left-0 z-0 h-[828px]';
+  'pointer-events-none absolute inset-y-0 left-0 z-0 h-full min-h-[680px]';
 
 /** Left clip wrapper — viewport bleed on desktop only; fixed left edge when scaled. */
 export const LOGIN_HERO_LEFT_CLIP_CLASS =
@@ -80,18 +81,21 @@ export const LOGIN_HERO_RIGHT_FLIP_CLASS = '-scale-y-100 rotate-180';
 
 /** Center stack — heading + form; below right decoration overlap. */
 export const LOGIN_CENTER_COLUMN_CLASS =
-  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-8 pt-[65px] desktop:pt-[105px]';
+  'relative z-10 mx-auto flex w-full max-w-[583px] flex-col items-center px-1 pb-4 pt-[65px] desktop:pt-[105px]';
+
+/** Marker for artboard height measurement (in-flow content only; heroes are absolute). */
+export const AUTH_PAGE_MEASURE_ATTR = 'data-auth-page-measure';
 
 /** Mobile auth — centered column with white form card (no hero art). */
 export const AUTH_MOBILE_CENTER_COLUMN_CLASS =
-  'mx-auto flex w-full max-w-[509px] flex-col items-center px-3 pb-8 pt-6 sm:px-4';
+  'mx-auto flex w-full max-w-[509px] flex-col items-center px-3 pb-4 pt-6 sm:px-4';
 
 /**
  * Catalog bottom padding before footer — tighter than default content-only pages
  * (same idea as home about→footer gap).
  */
 export const AUTH_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
-  'pb-14 md:pb-20 desktop:pb-16';
+  'pb-6 md:pb-8 desktop:pb-8';
 
 /** Phone only — simple centered form without hero artboard. */
 export const AUTH_PAGE_PHONE_ONLY_CLASS = 'md:hidden';
