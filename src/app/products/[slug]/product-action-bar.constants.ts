@@ -26,7 +26,7 @@ export const PDP_SKY_SURFACE_HOVER_CLASS =
 export const PDP_QTY_GLASS_CAPSULE_CLASS = `inline-flex h-14 shrink-0 items-center gap-0.5 rounded-full px-2 ${PDP_SKY_SURFACE_CLASS}`;
 
 export const PDP_QTY_STEP_BUTTON_CLASS =
-  'flex size-11 items-center justify-center rounded-full text-[26px] font-medium leading-none text-white transition-all duration-200 active:bg-white/50 disabled:cursor-not-allowed disabled:opacity-35';
+  'flex size-11 items-center justify-center rounded-full text-[18px] font-medium leading-none text-white transition-all duration-200 active:bg-white/50 disabled:cursor-not-allowed disabled:opacity-35';
 
 export const PDP_QTY_VALUE_CLASS =
   'min-w-[2.25rem] px-1 text-center text-lg font-semibold tabular-nums text-white';
@@ -48,8 +48,8 @@ export const PDP_BLACK_PILL_BUTTON_CLASS =
 export const PDP_SKY_PILL_BUTTON_CLASS =
   'inline-flex items-center justify-center rounded-full bg-sky-deep text-white transition-all duration-200 hover:bg-sky-deep hover:shadow-[0_6px_22px_rgba(147,182,227,0.34)] active:scale-[0.98]';
 
-/** Black pill CTA — separate from quantity glass capsule. */
-export const PDP_ADD_TO_CART_CLASS = `flex h-14 flex-1 px-4 text-sm font-bold uppercase tracking-wide disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:hover:bg-neutral-300 disabled:hover:shadow-none disabled:active:scale-100 ${PDP_BLACK_PILL_BUTTON_CLASS}`;
+/** Sky pill CTA — aligned with primary PDP action colors. */
+export const PDP_ADD_TO_CART_CLASS = `flex h-14 flex-1 whitespace-nowrap px-4 text-sm font-bold uppercase tracking-wide disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:hover:bg-neutral-300 disabled:hover:shadow-none disabled:active:scale-100 ${PDP_SKY_PILL_BUTTON_CLASS}`;
 
 /** Glass pill label — dark text only, surface stays water-glass. */
 export const PDP_GLASS_PILL_TEXT_CLASS = 'text-ink-800 hover:text-sky-deep';

@@ -16,13 +16,13 @@ export function ReviewItem({ review, currentUserId, onEdit }: ReviewItemProps) {
   const isOwnReview = currentUserId && review.userId === currentUserId;
 
   return (
-    <div className="border-b border-gray-200 pb-6 last:border-b-0">
-      <div className="flex items-start justify-between mb-2">
+    <article className="rounded-xl p-4 sm:p-5">
+      <div className="mb-3 flex items-start justify-between gap-3">
         <div className="flex-1">
-          <div className="font-semibold text-gray-900 mb-1">
+          <div className="mb-1 text-base font-semibold text-gray-900">
             {review.userName}
           </div>
-          <div className="flex items-center gap-2 mb-2">
+          <div className="mb-2 flex items-center gap-2">
             <div className="flex items-center gap-1">
               {[1, 2, 3, 4, 5].map((star) => (
                 <svg
@@ -39,7 +39,7 @@ export function ReviewItem({ review, currentUserId, onEdit }: ReviewItemProps) {
                 </svg>
               ))}
             </div>
-            <span className="text-sm text-gray-500">
+            <span className="text-xs text-gray-500 sm:text-sm">
               {formatDate(review.createdAt)}
             </span>
           </div>
@@ -54,8 +54,10 @@ export function ReviewItem({ review, currentUserId, onEdit }: ReviewItemProps) {
           </button>
         )}
       </div>
-      <p className="text-gray-700 whitespace-pre-wrap">{review.comment}</p>
-    </div>
+      <p className="whitespace-pre-wrap text-sm leading-6 text-gray-700 sm:text-base">
+        {review.comment}
+      </p>
+    </article>
   );
 }
 

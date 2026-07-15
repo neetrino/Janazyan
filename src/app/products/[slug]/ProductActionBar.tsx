@@ -80,7 +80,7 @@ function resolveAddToCartLabel({
 }
 
 /**
- * PDP action row — water-glass qty capsule + separate black add-to-cart pill.
+ * PDP action row — water-glass qty capsule + sky add-to-cart pill.
  */
 export function ProductActionBar({
   language,

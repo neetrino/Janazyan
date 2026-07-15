@@ -112,8 +112,6 @@ export function RelatedProducts({
 
     handleTouchEnd,
 
-    handleWheel,
-
   } = useCarousel({ itemCount: products.length, visibleItems: visibleCards });
 
 
@@ -199,7 +197,7 @@ export function RelatedProducts({
 
             ref={carouselRef}
 
-            className="relative w-full cursor-grab overflow-hidden select-none active:cursor-grabbing"
+            className="relative w-full cursor-grab overflow-hidden select-none touch-pan-y active:cursor-grabbing"
 
             onMouseDown={handleMouseDown}
 
@@ -214,8 +212,6 @@ export function RelatedProducts({
             onTouchMove={handleTouchMove}
 
             onTouchEnd={handleTouchEnd}
-
-            onWheel={handleWheel}
 
           >
 

@@ -6,24 +6,31 @@ interface UseCarouselProps {
   itemCount: number;
   visibleItems: number;
   autoRotateInterval?: number;
+  autoRotate?: boolean;
 }
 
 /**
  * Hook for managing carousel state and interactions
  */
-export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000 }: UseCarouselProps) {
+export function useCarousel({
+  itemCount,
+  visibleItems,
+  autoRotateInterval = 5000,
+  autoRotate = false,
+}: UseCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
   const [hasMoved, setHasMoved] = useState(false);
+  const [startY, setStartY] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
+  const startIndexRef = useRef(0);
 
   const maxIndex = Math.max(0, itemCount - visibleItems);
 
   // Auto-rotate carousel
   useEffect(() => {
-    if (itemCount <= visibleItems || isDragging) return;
+    if (!autoRotate || itemCount <= visibleItems || isDragging) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => {
@@ -32,7 +39,7 @@ export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000
     }, autoRotateInterval);
 
     return () => clearInterval(interval);
-  }, [itemCount, visibleItems, isDragging, maxIndex, autoRotateInterval]);
+  }, [autoRotate, itemCount, visibleItems, isDragging, maxIndex, autoRotateInterval]);
 
   // Adjust currentIndex when visibleItems changes
   useEffect(() => {
@@ -62,21 +69,22 @@ export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000
     setHasMoved(false);
     setIsDragging(true);
     setStartX(e.pageX - carouselRef.current.offsetLeft);
-    setScrollLeft(currentIndex);
+    startIndexRef.current = currentIndex;
   };
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
     if (!isDragging || !carouselRef.current) return;
     const x = e.pageX - carouselRef.current.offsetLeft;
-    const deltaX = Math.abs(x - startX);
+    const deltaX = x - startX;
+    const distance = Math.abs(deltaX);
     
     // Only consider it dragging if mouse moved more than 5px
-    if (deltaX > 5) {
+    if (distance > 5) {
       setHasMoved(true);
       e.preventDefault();
-      const walk = (x - startX) * 2; // Scroll speed multiplier
-      const cardWidth = 100 / visibleItems;
-      const newIndex = Math.round((scrollLeft - walk / (carouselRef.current.offsetWidth / 100)) / cardWidth);
+      const slideWidth = carouselRef.current.offsetWidth / visibleItems;
+      const indexShift = Math.round(deltaX / slideWidth);
+      const newIndex = startIndexRef.current - indexShift;
       const clampedIndex = Math.max(0, Math.min(maxIndex, newIndex));
       setCurrentIndex(clampedIndex);
     }
@@ -99,20 +107,24 @@ export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000
     setHasMoved(false);
     setIsDragging(true);
     setStartX(e.touches[0].pageX - carouselRef.current.offsetLeft);
-    setScrollLeft(currentIndex);
+    setStartY(e.touches[0].pageY);
+    startIndexRef.current = currentIndex;
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
     if (!isDragging || !carouselRef.current) return;
     const x = e.touches[0].pageX - carouselRef.current.offsetLeft;
-    const deltaX = Math.abs(x - startX);
+    const deltaX = x - startX;
+    const deltaY = e.touches[0].pageY - startY;
+    const distance = Math.abs(deltaX);
     
     // Only consider it dragging if touch moved more than 5px
-    if (deltaX > 5) {
+    if (distance > 5 && Math.abs(deltaX) > Math.abs(deltaY)) {
       setHasMoved(true);
-      const walk = (x - startX) * 2;
-      const cardWidth = 100 / visibleItems;
-      const newIndex = Math.round((scrollLeft - walk / (carouselRef.current.offsetWidth / 100)) / cardWidth);
+      e.preventDefault();
+      const slideWidth = carouselRef.current.offsetWidth / visibleItems;
+      const indexShift = Math.round(deltaX / slideWidth);
+      const newIndex = startIndexRef.current - indexShift;
       const clampedIndex = Math.max(0, Math.min(maxIndex, newIndex));
       setCurrentIndex(clampedIndex);
     }
@@ -129,16 +141,6 @@ export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000
     }
   };
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    if (e.deltaY === 0) return;
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 1 : -1;
-    setCurrentIndex((prevIndex) => {
-      const newIndex = prevIndex + delta;
-      return Math.max(0, Math.min(maxIndex, newIndex));
-    });
-  };
-
   return {
     currentIndex,
     isDragging,
@@ -153,7 +155,6 @@ export function useCarousel({ itemCount, visibleItems, autoRotateInterval = 5000
     handleTouchStart,
     handleTouchMove,
     handleTouchEnd,
-    handleWheel,
   };
 }
 

@@ -34,4 +34,4 @@ export const fetchProductPageReviewsBySlug = cache(
   async (slug: string, lang: string): Promise<Review[]> =>
     getCachedProductReviews(slug, lang),
 );
-
+
