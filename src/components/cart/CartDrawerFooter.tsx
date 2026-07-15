@@ -39,7 +39,7 @@ export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
   );
 
   return (
-    <footer className="shrink-0 border-t border-gray-200 bg-white px-5 py-5">
+    <footer className="shrink-0 border-t border-gray-200 bg-white px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px)+2.25rem)] md:py-5">
       <div className="space-y-2 text-sm text-gray-600">
         <div className="flex justify-between gap-3">
           <span>{t('common.cart.subtotal')}</span>

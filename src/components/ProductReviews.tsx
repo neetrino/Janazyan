@@ -9,6 +9,7 @@ import { ReviewSummary } from './ProductReviews/ReviewSummary';
 import { ReviewForm } from './ProductReviews/ReviewForm';
 import { ReviewList } from './ProductReviews/ReviewList';
 import { ProductReviewsLoading } from './ProductReviews/ProductReviewsLoading';
+import { MIRAGE_PAGE_HEADING_CLASS } from './home/mirage-heading-styles';
 
 import type { Review } from './ProductReviews/utils';
 
@@ -78,10 +79,10 @@ export function ProductReviews({
   };
 
   return (
-    <section className="py-10">
+    <section className="py-10 font-body">
       <div className="rounded-2xl p-5 sm:p-8">
         <div className="mb-8">
-          <h2 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">
+          <h2 className={`mb-2 ${MIRAGE_PAGE_HEADING_CLASS}`}>
           {t('common.reviews.title')}
           </h2>
           <p className="text-sm text-gray-600">

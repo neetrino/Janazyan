@@ -22,6 +22,16 @@ import {
 import { registerPendingCartAdd } from '../../lib/cart/cart-pending-add';
 import { playCartFlyAnimation } from '../../lib/cart-fly-animation';
 
+const MOBILE_FLY_DISABLE_MEDIA_QUERY = '(max-width: 767px)';
+
+function shouldSkipCartFlyAnimation(): boolean {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.matchMedia?.(MOBILE_FLY_DISABLE_MEDIA_QUERY).matches ?? false;
+}
+
 interface ProductDetails {
   id: string;
   slug: string;
@@ -94,10 +104,12 @@ export function useAddToCart({
       fly?.origin ??
       (fly?.clickTarget instanceof HTMLElement ? fly.clickTarget : null);
 
-    playCartFlyAnimation({
-      fromElement: flyTrigger,
-      imageUrl: fly?.imageUrl ?? productImage ?? null,
-    });
+    if (!shouldSkipCartFlyAnimation()) {
+      playCartFlyAnimation({
+        fromElement: flyTrigger,
+        imageUrl: fly?.imageUrl ?? productImage ?? null,
+      });
+    }
 
     const scope = resolveCartCacheScope(isLoggedIn, user?.id);
     const imageForLine = fly?.imageUrl ?? productImage ?? null;

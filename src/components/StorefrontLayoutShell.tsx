@@ -38,9 +38,10 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
   const mainBottomPaddingClass = resolveStorefrontMainBottomPaddingClass(pathname);
 
   const usesHeroSurface = heroShellPage || useCatalogTheme;
+  const mainSurfaceClass = usesHeroSurface ? 'desktop:bg-white' : '';
 
   return (
-    <main className={`relative flex-1 w-full ${usesHeroSurface ? 'desktop:bg-white' : ''}`}>
+    <main className={`relative flex-1 w-full ${mainSurfaceClass}`}>
       {heroShellPage ? (
         <div className={`relative z-10 w-full ${mainBottomPaddingClass}`}>{children}</div>
       ) : useCatalogTheme ? (

@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { ProductsHeroShell } from '../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_INNER_CLASS } from '../../lib/layout/account-pages-layout.constants';
 import { CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS, CHECKOUT_PAGE_TITLE_CLASS } from './checkout-layout.constants';
@@ -23,6 +24,10 @@ const CheckoutModals = dynamic(
 export function CheckoutPageClient() {
   const router = useRouter();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }, []);
 
   const {
     cart,

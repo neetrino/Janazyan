@@ -84,7 +84,7 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
           <div className="space-y-4">
             <div className="min-w-0">
               <div
-                className={`${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS} w-full max-w-[560px] mx-auto overflow-visible lg:mx-0`}
+                className={`${PDP_GALLERY_MAIN_PANEL_CLASS} ${PDP_GALLERY_MAIN_PADDING_CLASS} overflow-visible`}
                 aria-hidden
               >
                 <div className={PDP_GALLERY_MAIN_IMAGE_INSET_CLASS}>
@@ -97,7 +97,7 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                   ) : null}
                   <div
                     className={`absolute inset-0 ${
-                      hasSnapshotImage ? 'bg-white/5' : 'animate-pulse bg-sky-mist/60'
+                      hasSnapshotImage ? 'bg-sky-mist/35' : 'animate-pulse bg-sky-mist/60'
                     }`}
                   />
                 </div>
@@ -162,7 +162,17 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                     <div className="mb-8 min-h-[72px] rounded-lg bg-sky-mist/45" aria-hidden />
                   )}
                   {shouldReserveVariantSpace ? (
-                    <div className="mb-8 lg:min-h-[188px]" aria-hidden />
+                    <div
+                      className="mb-8 rounded-2xl border border-white/35 bg-white/12 p-4 lg:min-h-[188px]"
+                      aria-hidden
+                    >
+                      <div className="space-y-3">
+                        <div className="h-4 w-28 rounded bg-white/45" />
+                        <div className="h-11 w-full rounded-xl bg-white/35" />
+                        <div className="h-4 w-24 rounded bg-white/45" />
+                        <div className="h-11 w-full rounded-xl bg-white/35" />
+                      </div>
+                    </div>
                   ) : null}
                 </div>
                 <div className="pt-0 lg:-translate-y-[6px]">

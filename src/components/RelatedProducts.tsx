@@ -19,6 +19,7 @@ import { FeaturedProductCardSlot } from './home/FeaturedProductCardSlot';
 import { mapToHomeFeaturedProduct } from '../lib/home/map-to-home-featured-product';
 
 import { CarouselDots } from './RelatedProducts/CarouselDots';
+import { MIRAGE_PAGE_HEADING_CLASS } from './home/mirage-heading-styles';
 
 import type { RelatedCardPayload } from '@/lib/services/products-slug/product-related-transform';
 
@@ -152,11 +153,11 @@ export function RelatedProducts({
 
   return (
 
-    <section className="mt-24 w-full border-t border-gray-200 py-12">
+    <section className="mt-24 w-full border-t border-gray-200 py-12 font-body">
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        <h2 className="mb-10 whitespace-nowrap text-2xl font-bold text-gray-900 sm:text-3xl">
+        <h2 className={`mb-10 whitespace-nowrap ${MIRAGE_PAGE_HEADING_CLASS}`}>
 
           {t(language, 'product.related_products_title')}
 
