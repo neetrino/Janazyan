@@ -16,6 +16,10 @@ export const MIRAGE_PAGE_SUBHEADING_CLASS = `${MIRAGE_DISPLAY_BASE} ${MIRAGE_LIN
 /** Contact page hero title — Figma node 496:458 (Mirage 85px). */
 export const MIRAGE_CONTACT_HEADING_CLASS = `${MIRAGE_DISPLAY_BASE} leading-[0.9] text-[clamp(42px,5.9vw,85px)]`;
 
+/** About page title — Figma node 598:631 (Mirage 85px / 90px line). */
+export const MIRAGE_ABOUT_PAGE_HEADING_CLASS =
+  `${MIRAGE_DISPLAY_BASE} leading-[0.75] text-[clamp(42px,5.9vw,85px)] desktop:leading-[90px]`;
+
 export const MIRAGE_SECTION_HEADING_CREAM_CLASS =
   'font-mirage font-normal text-cream tracking-[-0.4492px] leading-[0.652] text-[clamp(34px,5vw,66px)]';
 

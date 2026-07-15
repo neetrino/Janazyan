@@ -13,3 +13,16 @@ export function getBaseWhere(slug: string, lang: string) {
     deletedAt: null,
   };
 }
+
+/**
+ * Published product by slug in any locale (admin may publish only one translation).
+ */
+export function getBaseWhereAnyLocale(slug: string) {
+  return {
+    translations: {
+      some: { slug },
+    },
+    published: true,
+    deletedAt: null,
+  };
+}

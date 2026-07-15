@@ -1,12 +1,17 @@
 import type { Prisma } from "@white-shop/db";
-import { DEFAULT_LANGUAGE } from "@/lib/language";
+import { LANGUAGES, type LanguageCode } from "@/lib/language";
 
-/** Locales loaded for a storefront request (requested + primary Armenian fallback). */
+const STOREFRONT_LOCALES = Object.keys(LANGUAGES) as LanguageCode[];
+
+/**
+ * Locales loaded for a storefront request.
+ * Prefer the requested locale first; include others so en-only (etc.) products still render.
+ */
 export function localeCandidates(lang: string): string[] {
-  if (lang === DEFAULT_LANGUAGE) {
-    return [DEFAULT_LANGUAGE];
-  }
-  return [lang, DEFAULT_LANGUAGE];
+  const preferred = STOREFRONT_LOCALES.includes(lang as LanguageCode)
+    ? (lang as LanguageCode)
+    : STOREFRONT_LOCALES[0];
+  return [preferred, ...STOREFRONT_LOCALES.filter((locale) => locale !== preferred)];
 }
 
 function translationWhere(lang: string) {

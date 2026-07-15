@@ -2,9 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { getCategoryProductsHref } from '../../lib/categories/category-products-href';
-import { useEffect, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { MobileBackdrop } from '../storefront/MobileBackdrop';
 import { MobileTopBar } from './MobileTopBar';
 import {
@@ -17,38 +15,38 @@ import {
 } from './mirage-heading-styles';
 import { useHomeCategoryPosters, useHomeWhyCards } from './use-home-i18n';
 import { useTranslation } from '../../lib/i18n-client';
-import { STOREFRONT_HORIZONTAL_GUTTER_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
+import {
+  STOREFRONT_HORIZONTAL_GUTTER_CLASS,
+  STOREFRONT_SIDE_PADDING_NEG_CLASS,
+  STOREFRONT_TABLET_DOWN_CLASS,
+} from '../../lib/layout/storefront-layout.constants';
 import {
   HOME_MOBILE_GRADIENT_BOTTOM_PADDING_CLASS,
   STOREFRONT_MOBILE_TOP_INSET_CLASS,
   STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
+import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 import { MobileOurStoresBanner } from './MobileOurStoresBanner';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
 
-type MobileFilterKey = 'face' | 'hair' | 'body' | 'kids' | 'sun';
-
-const MOBILE_FILTER_KEYS: ReadonlyArray<{
-  key: MobileFilterKey;
-  iconSrc?: string;
-  iconClassName?: string;
-}> = [
-  { key: 'face', iconSrc: '/figma/filter-face-icon.svg', iconClassName: 'h-4 w-4' },
-  { key: 'hair', iconSrc: '/figma/filter-hair-icon.svg', iconClassName: 'h-4 w-4' },
-  { key: 'body', iconSrc: '/figma/filter-body-icon.svg', iconClassName: 'h-4 w-4' },
-  { key: 'kids', iconSrc: '/figma/filter-kids-icon.svg', iconClassName: 'h-5 w-5' },
-  { key: 'sun' },
-];
+/** Full-bleed category pills — cancels page gutter so the row is not clipped on the sides. */
+const HOME_MOBILE_CATEGORY_FILTERS_SLOT_CLASS =
+  `mt-5 ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
 
 type HomeMobileFigmaProps = {
   featuredSlot: ReactNode;
+  /** Server-rendered `/products`-style category pills (DB tree). */
+  categoryFiltersSlot: ReactNode;
 };
 
 type WhyCardView = WhyCardConfig & WhyCardText;
 const MOBILE_HERO_CTA_ARROW_SIZE_PX = 12;
 
-export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
+export function HomeMobileFigma({
+  featuredSlot,
+  categoryFiltersSlot,
+}: HomeMobileFigmaProps) {
   const categoryPosters = useHomeCategoryPosters();
   const whyCards = useHomeWhyCards().slice(0, 3);
   const hairCategory = categoryPosters.find((item) => item.id === 'hair');
@@ -56,10 +54,16 @@ export function HomeMobileFigma({ featuredSlot }: HomeMobileFigmaProps) {
   return (
     <section className={`relative ${STOREFRONT_TABLET_DOWN_CLASS}`}>
       <MobileBackdrop />
-      <div className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}>
+      <div
+        className={`relative ${STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS} ${STOREFRONT_MOBILE_TOP_INSET_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`}
+      >
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
-        <MobileFilterTabs />
+        <CategoryFilterDropdownProvider>
+          <div className={HOME_MOBILE_CATEGORY_FILTERS_SLOT_CLASS}>
+            {categoryFiltersSlot}
+          </div>
+        </CategoryFilterDropdownProvider>
         <MobileCategoryGrid
           categoryIds={[...CATEGORY_FIGMA_GRID_IDS]}
           categoryPosters={categoryPosters}
@@ -134,45 +138,6 @@ function MobileHeroCtaArrowIcon() {
         strokeLinejoin="round"
       />
     </svg>
-  );
-}
-
-function MobileFilterTabs() {
-  const { t } = useTranslation();
-  const router = useRouter();
-
-  useEffect(() => {
-    for (const filter of MOBILE_FILTER_KEYS) {
-      router.prefetch(getCategoryProductsHref(filter.key));
-    }
-  }, [router]);
-
-  return (
-    <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-      {MOBILE_FILTER_KEYS.map((filter, index) => (
-        <Link
-          key={filter.key}
-          href={getCategoryProductsHref(filter.key)}
-          className={[
-            'shrink-0 inline-flex items-center gap-1.5 rounded-full px-4 py-3 text-[12px] font-medium leading-none transition-opacity hover:opacity-90',
-            index === 0 ? 'bg-ink-500 text-white' : 'bg-sky text-white',
-          ].join(' ')}
-        >
-          {filter.iconSrc ? (
-            <span className={`relative block ${filter.iconClassName ?? 'h-4 w-4'}`}>
-              <Image
-                src={filter.iconSrc}
-                alt=""
-                fill
-                sizes="20px"
-                className="object-contain"
-              />
-            </span>
-          ) : null}
-          {t(`home.mobile.filters.${filter.key}`)}
-        </Link>
-      ))}
-    </div>
   );
 }
 
