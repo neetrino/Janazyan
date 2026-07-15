@@ -1,5 +1,6 @@
 import { db } from '@white-shop/db';
 import { toSlug } from '@/lib/utils/slug';
+import { MAP_DEFAULT_CENTER } from '@/features/stores/constants';
 import { resolvePartnerStoreLogoUrl } from '@/lib/partner-stores/resolve-logo-url';
 import { resolvePartnerStoreCoordinatesFromAddress } from '@/lib/partner-stores/geocode-partner-store-address';
 import type { PartnerStoreTranslationInput } from '@/features/stores/partner-store-locales';
@@ -10,6 +11,9 @@ import {
   validatePartnerStoreTranslations,
 } from './partner-store-validators';
 import { logger } from '@/lib/utils/logger';
+
+const YEREVAN_GEOCODE_MAX_DISTANCE_KM = 18;
+const REGION_GEOCODE_MAX_DISTANCE_KM = 60;
 
 type AdminPartnerStoreRow = {
   id: string;
@@ -93,6 +97,51 @@ async function resolveNextPartnerStorePosition(
   return (aggregate._max.position ?? -1) + 1;
 }
 
+function ensureResolvedCoordinates(
+  coordinates: { lat: number; lng: number } | null,
+): { lat: number; lng: number } {
+  if (coordinates) {
+    return coordinates;
+  }
+
+  throw {
+    status: 400,
+    type: 'https://api.shop.am/problems/validation-error',
+    title: 'Validation Error',
+    detail: 'Could not resolve coordinates from address. Set map coordinates manually.',
+  };
+}
+
+async function resolveGeocodePlaceContext(
+  regionId: string,
+  areaId: string | null,
+): Promise<{ regionName: string | null; areaName: string | null }> {
+  const [region, area] = await Promise.all([
+    db.partnerStoreRegion.findUnique({
+      where: { id: regionId },
+      include: { translations: true },
+    }),
+    areaId
+      ? db.partnerStoreArea.findUnique({
+          where: { id: areaId },
+          include: { translations: true },
+        })
+      : Promise.resolve(null),
+  ]);
+
+  const pickEnName = (
+    translations: Array<{ locale: string; name: string }> | undefined,
+  ): string | null =>
+    translations?.find((translation) => translation.locale === 'en')?.name ??
+    translations?.[0]?.name ??
+    null;
+
+  return {
+    regionName: pickEnName(region?.translations),
+    areaName: pickEnName(area?.translations ?? undefined),
+  };
+}
+
 class AdminPartnerStoresService {
   async getPartnerStores() {
     const [stores, hierarchy] = await Promise.all([
@@ -135,10 +184,22 @@ class AdminPartnerStoresService {
     validatePartnerStoreTranslations(data.translations);
 
     const enAddress = getPartnerStoreEnglishAddress(data.translations);
+    const placeContext = await resolveGeocodePlaceContext(data.regionId, areaId);
+    const isYerevan = placeContext.regionName === 'Yerevan';
     const coordinates =
       data.lat !== undefined && data.lng !== undefined
         ? { lat: data.lat, lng: data.lng }
-        : await resolvePartnerStoreCoordinatesFromAddress(enAddress);
+        : ensureResolvedCoordinates(
+            await resolvePartnerStoreCoordinatesFromAddress({
+              address: enAddress,
+              regionName: placeContext.regionName,
+              areaName: placeContext.areaName,
+              anchor: isYerevan ? { ...MAP_DEFAULT_CENTER } : null,
+              maxDistanceKm: isYerevan
+                ? YEREVAN_GEOCODE_MAX_DISTANCE_KM
+                : REGION_GEOCODE_MAX_DISTANCE_KM,
+            }),
+          );
     validatePartnerStoreCoordinates(coordinates.lat, coordinates.lng);
 
     const enName = data.translations.find((t) => t.locale === 'en')!.name.trim();
@@ -239,7 +300,19 @@ class AdminPartnerStoresService {
       updateData.logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl ?? undefined);
     }
     if (shouldRefreshCoordinates) {
-      const coordinates = await resolvePartnerStoreCoordinatesFromAddress(enAddress);
+      const placeContext = await resolveGeocodePlaceContext(nextRegionId, nextAreaId);
+      const isYerevan = placeContext.regionName === 'Yerevan';
+      const coordinates = ensureResolvedCoordinates(
+        await resolvePartnerStoreCoordinatesFromAddress({
+          address: enAddress,
+          regionName: placeContext.regionName,
+          areaName: placeContext.areaName,
+          anchor: isYerevan ? { ...MAP_DEFAULT_CENTER } : null,
+          maxDistanceKm: isYerevan
+            ? YEREVAN_GEOCODE_MAX_DISTANCE_KM
+            : REGION_GEOCODE_MAX_DISTANCE_KM,
+        }),
+      );
       validatePartnerStoreCoordinates(coordinates.lat, coordinates.lng);
       updateData.lat = coordinates.lat;
       updateData.lng = coordinates.lng;

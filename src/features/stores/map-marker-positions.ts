@@ -1,10 +1,20 @@
 import type { PartnerStore } from './types';
 import { normalizePartnerStoreCoordinates } from './coordinates';
+import { PARTNER_STORE_COORDINATES } from './partner-store-coordinates';
 
 /** Degrees of separation between overlapping store markers (~11–15m). */
 const OVERLAP_OFFSET_STEP_DEG = 0.00012;
 
 type LatLng = { lat: number; lng: number };
+
+function resolveStoreCoordinates(store: PartnerStore): LatLng | null {
+  const normalizedCoordinates = normalizePartnerStoreCoordinates(store.lat, store.lng);
+  if (normalizedCoordinates) {
+    return normalizedCoordinates;
+  }
+
+  return PARTNER_STORE_COORDINATES[store.id] ?? null;
+}
 
 /**
  * Assigns distinct map positions when multiple stores share identical coordinates.
@@ -17,7 +27,7 @@ export function resolvePartnerStoreMapPositions(
   const groups = new Map<string, PartnerStore[]>();
 
   for (const store of stores) {
-    const coordinates = normalizePartnerStoreCoordinates(store.lat, store.lng);
+    const coordinates = resolveStoreCoordinates(store);
     if (!coordinates) {
       continue;
     }
@@ -29,7 +39,7 @@ export function resolvePartnerStoreMapPositions(
   }
 
   for (const group of groups.values()) {
-    const base = normalizePartnerStoreCoordinates(group[0].lat, group[0].lng);
+    const base = resolveStoreCoordinates(group[0]);
     if (!base) {
       continue;
     }

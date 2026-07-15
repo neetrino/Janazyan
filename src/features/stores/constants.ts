@@ -1,3 +1,6 @@
+/** Shared storefront logo for all partner store list/card surfaces. */
+export const PARTNER_STORE_DEFAULT_LOGO = '/mage_shop.svg';
+
 /** Default map center — Yerevan. */
 export const MAP_DEFAULT_CENTER = {
   lat: 40.1772,
@@ -24,7 +27,7 @@ export const MAP_TILE_MAX_ZOOM = 19;
 export const STORES_MAP_SCROLL_BREAKPOINT_PX = 1023;
 
 /** Leaflet divIcon sizes — inactive markers stay compact; active stays prominent. */
-export const MAP_MARKER_SIZE_INACTIVE_PX = 16;
-export const MAP_MARKER_SIZE_ACTIVE_PX = 36;
-export const MAP_MARKER_SIZE_INACTIVE_MOBILE_PX = 14;
-export const MAP_MARKER_SIZE_ACTIVE_MOBILE_PX = 30;
+export const MAP_MARKER_SIZE_INACTIVE_PX = 12;
+export const MAP_MARKER_SIZE_ACTIVE_PX = 24;
+export const MAP_MARKER_SIZE_INACTIVE_MOBILE_PX = 10;
+export const MAP_MARKER_SIZE_ACTIVE_MOBILE_PX = 20;

@@ -134,8 +134,8 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
 
           <div ref={mapSectionRef} className="scroll-mt-28">
             <div className="partner-stores-map-section lg:sticky lg:top-28">
-              <div className="partner-stores-map-section__header">
-                <p className={`partner-stores-map-section__subtitle ${STOREFRONT_TABLET_DOWN_CLASS}`}>
+              <div className={`partner-stores-map-section__header ${STOREFRONT_TABLET_DOWN_CLASS}`}>
+                <p className="partner-stores-map-section__subtitle">
                   {copy.map.hint}
                 </p>
               </div>

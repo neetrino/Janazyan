@@ -228,10 +228,15 @@ export function PartnerStoresMap({
       return;
     }
 
+    const currentZoom = map.getZoom();
+    const targetZoom = Number.isFinite(currentZoom)
+      ? Math.max(currentZoom, selectedZoom)
+      : selectedZoom;
+
     focusMapOnCoordinates(
       map,
       [selectedPosition.lat, selectedPosition.lng],
-      selectedZoom,
+      targetZoom,
     );
 
     const selectedMarker = markersRef.current.get(selectedStoreId);

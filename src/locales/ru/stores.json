@@ -12,50 +12,7 @@
   "searchNoResults": "Подходящие магазины не найдены",
   "getDirections": "Проложить маршрут",
   "viewOnMap": "Показать на карте",
-  "partnerStores": [
-    {
-      "id": "sas-abovyan",
-      "name": "SAS Supermarket",
-      "address": "ул. Абовяна 34, Ереван",
-      "logo": "/stores/logos/sas.svg",
-      "logoAlt": "Логотип SAS Supermarket"
-    },
-    {
-      "id": "yerevan-city-komitas",
-      "name": "Yerevan City",
-      "address": "пр. Комитаса 22, Ереван",
-      "logo": "/stores/logos/yerevan-city.svg",
-      "logoAlt": "Логотип Yerevan City"
-    },
-    {
-      "id": "grand-hold-arshakunyats",
-      "name": "Grand Hold",
-      "address": "пр. Аршакунятс 70, Ереван",
-      "logo": "/stores/logos/grand-hold.svg",
-      "logoAlt": "Логотип Grand Hold"
-    },
-    {
-      "id": "medium-amiryan",
-      "name": "Medium Supermarket",
-      "address": "ул. Амираяна 32, Ереван",
-      "logo": "/stores/logos/medium.svg",
-      "logoAlt": "Логотип Medium Supermarket"
-    },
-    {
-      "id": "spar-mashtots",
-      "name": "SPAR",
-      "address": "пр. Маштоца 45, Ереван",
-      "logo": "/stores/logos/spar.svg",
-      "logoAlt": "Логотип SPAR"
-    },
-    {
-      "id": "sas-baghramyan",
-      "name": "SAS Supermarket",
-      "address": "пр. Баграмяна 24, Ереван",
-      "logo": "/stores/logos/sas.svg",
-      "logoAlt": "Логотип SAS Supermarket"
-    }
-  ],
+  "partnerStores": [],
   "cantFind": {
     "title": "Не можете найти то, что ищете?",
     "description": "Свяжитесь с нами — мы поможем найти нужный товар или ближайший магазин.",

@@ -1000,12 +1000,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
-  background: rgb(147 182 227 / 0.18);
-  border: 1.5px solid rgb(147 182 227 / 0.72);
+  width: 12px;
+  height: 12px;
+  background: rgb(95 129 175 / 0.28);
+  border: 1.5px solid rgb(83 120 166 / 0.92);
   border-radius: 9999px;
-  box-shadow: 0 2px 6px rgb(0 0 0 / 0.12);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.16);
   transition:
     width 0.2s ease,
     height 0.2s ease,
@@ -1014,25 +1014,25 @@ body {
 }
 
 .partner-store-marker--selected {
-  width: 36px;
-  height: 36px;
-  background: rgb(147 182 227 / 0.42);
-  border: 2px solid #93b6e3;
-  box-shadow: 0 8px 18px rgb(147 182 227 / 0.42);
+  width: 24px;
+  height: 24px;
+  background: rgb(95 129 175 / 0.52);
+  border: 2px solid #4f79ad;
+  box-shadow: 0 6px 14px rgb(79 121 173 / 0.42);
 }
 
 .partner-store-marker-dot {
   display: block;
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
   border-radius: 9999px;
-  background: #93b6e3;
+  background: #4f79ad;
 }
 
 .partner-store-marker--selected .partner-store-marker-dot {
-  width: 16px;
-  height: 16px;
-  background: #6f97cb;
+  width: 10px;
+  height: 10px;
+  background: #355a88;
 }
 
 .partner-store-popup-name {
