@@ -23,6 +23,9 @@ export const ABOUT_ARTBOARD_WIDTH_PX = 1440;
 export const ABOUT_ARTBOARD_ORIGIN_Y_PX = 138;
 export const ABOUT_ARTBOARD_HEIGHT_PX = 1146;
 
+/** Extra scaled space below the cream composition before the compact footer. */
+export const ABOUT_ARTBOARD_FOOTER_GAP_PX = 64;
+
 export const ABOUT_SHAMPOO_IMAGE_SRC = '/figma/about-page-shampoo.webp';
 export const ABOUT_CREAM_IMAGE_SRC = '/figma/about-page-cream.webp';
 
@@ -55,7 +58,7 @@ export const ABOUT_BODY_RIGHT_WIDTH_PX = 764;
 
 /** Pull section into hero band — same idea as contact. */
 export const ABOUT_SECTION_DESKTOP_BLEED_CLASS =
-  'desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] desktop:-mb-8 desktop:pt-0 desktop:pb-0 desktop:overflow-visible';
+  'desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] desktop:pt-0 desktop:pb-0 desktop:overflow-visible';
 
 export const ABOUT_COPY_CLASS =
   'text-base font-normal leading-6 tracking-[-0.3125px] text-black/47';
@@ -66,5 +69,6 @@ export const ABOUT_MOBILE_SECTION_CLASS =
 export const ABOUT_MOBILE_IMAGE_CLASS =
   'relative mx-auto w-full max-w-[420px] overflow-hidden';
 
+/** Compact footer pulls decoration up — reserve clearance on laptop/tablet desktop. */
 export const ABOUT_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
-  'pb-24 md:pb-32 desktop:pb-16';
+  'pb-24 md:pb-32 desktop:max-[1649px]:pb-52 desktop:min-[1650px]:pb-16';

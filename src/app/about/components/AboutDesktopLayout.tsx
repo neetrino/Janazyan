@@ -4,6 +4,7 @@ import type { CSSProperties } from 'react';
 import Image from 'next/image';
 import { MIRAGE_ABOUT_PAGE_HEADING_CLASS } from '../../../components/home/mirage-heading-styles';
 import {
+  ABOUT_ARTBOARD_FOOTER_GAP_PX,
   ABOUT_ARTBOARD_HEIGHT_PX,
   ABOUT_ARTBOARD_WIDTH_PX,
   ABOUT_BODY_LEFT_LEFT_PX,
@@ -45,13 +46,14 @@ export function AboutDesktopLayout({
   bodyRight,
 }: AboutDesktopLayoutProps) {
   const scaleExpression = `calc(100cqw / ${ABOUT_ARTBOARD_WIDTH_PX}px)`;
+  const artboardTotalHeightPx = ABOUT_ARTBOARD_HEIGHT_PX + ABOUT_ARTBOARD_FOOTER_GAP_PX;
 
   return (
     <div className="@container relative w-full">
       <div
         className="relative flex w-full justify-center overflow-visible"
         style={{
-          height: `calc(${ABOUT_ARTBOARD_HEIGHT_PX}px * ${scaleExpression})`,
+          height: `calc(${artboardTotalHeightPx}px * ${scaleExpression})`,
         }}
       >
         <div
@@ -59,7 +61,7 @@ export function AboutDesktopLayout({
           style={
             {
               width: ABOUT_ARTBOARD_WIDTH_PX,
-              height: ABOUT_ARTBOARD_HEIGHT_PX,
+              height: artboardTotalHeightPx,
               transform: `scale(${scaleExpression})`,
             } as CSSProperties
           }
