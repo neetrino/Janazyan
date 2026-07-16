@@ -9,6 +9,12 @@ import { sanitizeHtml } from '../../../lib/utils/sanitize';
 import { ProductAttributesSelector } from './ProductAttributesSelector';
 import { ProductRatingSummary } from './ProductRatingSummary';
 import { ProductActionBar } from './ProductActionBar';
+import {
+  PDP_DESCRIPTION_SLOT_CLASS,
+  PDP_INFO_ACTIONS_WRAPPER_CLASS,
+  PDP_INFO_COLUMN_CLASS,
+  PDP_VARIANT_SLOT_CLASS,
+} from './product-info-layout.constants';
 import type { Product, ProductVariant } from './types';
 
 interface ProductInfoAndActionsProps {
@@ -50,9 +56,6 @@ interface ProductInfoAndActionsProps {
   getRequiredAttributesMessage: () => string;
 }
 
-const PDP_INFO_COLUMN_CLASS = 'flex h-full flex-col pt-0 lg:min-h-[526px]';
-const PDP_INFO_ACTIONS_WRAPPER_CLASS = 'mt-auto pt-0 lg:-translate-y-[10px]';
-
 export function ProductInfoAndActions({
   product,
   price,
@@ -93,7 +96,7 @@ export function ProductInfoAndActions({
 }: ProductInfoAndActionsProps) {
   return (
     <div className={PDP_INFO_COLUMN_CLASS}>
-      <div className="flex-1">
+      <div className="flex-1 min-h-0">
         {product.brand && (
           <div className="mb-2 flex items-center gap-2">
             {(product.brand.logo || product.brand.logoUrl) ? (
@@ -140,14 +143,14 @@ export function ProductInfoAndActions({
           </div>
         </div>
         <div
-          className="mb-8 min-h-[72px] text-gray-600 prose prose-sm lg:line-clamp-3"
+          className={`${PDP_DESCRIPTION_SLOT_CLASS} text-gray-600 prose prose-sm lg:line-clamp-3`}
           dangerouslySetInnerHTML={{
             __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || ''),
           }}
         />
 
         {/* Attributes Section */}
-        <div className="mb-8 lg:min-h-[188px] lg:max-h-[188px] lg:overflow-y-auto" data-product-variant-selectors>
+        <div className={PDP_VARIANT_SLOT_CLASS} data-product-variant-selectors>
           <ProductAttributesSelector
             product={product}
             attributeGroups={attributeGroups}

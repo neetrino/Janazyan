@@ -2,14 +2,6 @@
 
 import { useId, type CSSProperties, type ReactNode } from 'react';
 import {
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET,
-  PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR,
   PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
   PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1,
   PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2,
@@ -46,8 +38,6 @@ import { STOREFRONT_DESKTOP_ONLY_CLASS } from '../../lib/layout/storefront-layou
 import { STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS, STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
 import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 
-type DesktopBackgroundVariant = 'default' | 'productDetail';
-
 type ProductsHeroShellProps = {
   /** Omitted on content-only pages (e.g. /about) — hero band keeps the same height. */
   toolbar?: ReactNode;
@@ -71,37 +61,9 @@ type ProductsHeroShellProps = {
    * like login/register so content does not leave a large empty band above the nav.
    */
   mobileFillViewport?: boolean;
-  /** Route-specific desktop catalog background tuning; defaults to original /products art. */
-  desktopBackgroundVariant?: DesktopBackgroundVariant;
   sectionAriaLabel?: string;
   activeCategorySlug?: string;
 };
-
-function resolveDesktopBackgroundSettings(variant: DesktopBackgroundVariant) {
-  if (variant === 'productDetail') {
-    return {
-      footerBleedPx: PRODUCT_DETAIL_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
-      gradientX1: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X1,
-      gradientY1: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y1,
-      gradientX2: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_X2,
-      gradientY2: PRODUCT_DETAIL_CATALOG_BACKGROUND_GRADIENT_Y2,
-      midColor: PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_COLOR,
-      midOffset: PRODUCT_DETAIL_CATALOG_BACKGROUND_MID_OFFSET,
-      tailColor: PRODUCT_DETAIL_CATALOG_BACKGROUND_TAIL_COLOR,
-    };
-  }
-
-  return {
-    footerBleedPx: PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX,
-    gradientX1: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1,
-    gradientY1: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1,
-    gradientX2: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2,
-    gradientY2: PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2,
-    midColor: null,
-    midOffset: null,
-    tailColor: PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR,
-  };
-}
 
 function resolveHeroToolbarOffsetClass(
   toolbar: ReactNode | undefined,
@@ -171,7 +133,6 @@ function ProductsHeroShellInner({
   compactHero = false,
   compactContentSpacing = true,
   catalogBottomPaddingClassName,
-  desktopBackgroundVariant = 'default',
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -183,7 +144,6 @@ function ProductsHeroShellInner({
     compactContentSpacing,
   );
   const resolvedBottomPaddingClass = catalogBottomPaddingClassName ?? bottomPaddingClass;
-  const background = resolveDesktopBackgroundSettings(desktopBackgroundVariant);
 
   return (
     <div
@@ -191,11 +151,11 @@ function ProductsHeroShellInner({
       style={
         {
           '--products-catalog-background-top-offset': `${PRODUCTS_CATALOG_BACKGROUND_TOP_OFFSET_PX}px`,
-          '--products-catalog-background-footer-bleed': `${background.footerBleedPx}px`,
+          '--products-catalog-background-footer-bleed': `${PRODUCTS_CATALOG_BACKGROUND_FOOTER_BLEED_PX}px`,
         } as CSSProperties
       }
     >
-      <ProductsCatalogDesktopBackground background={background} />
+      <ProductsCatalogDesktopBackground />
       <Header embedded />
       <div
         className="relative z-10 shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
@@ -230,11 +190,7 @@ function ProductsHeroShellInner({
   );
 }
 
-type ProductsCatalogDesktopBackgroundProps = {
-  background: ReturnType<typeof resolveDesktopBackgroundSettings>;
-};
-
-function ProductsCatalogDesktopBackground({ background }: ProductsCatalogDesktopBackgroundProps) {
+function ProductsCatalogDesktopBackground() {
   const gradientId = useId();
 
   return (
@@ -250,17 +206,14 @@ function ProductsCatalogDesktopBackground({ background }: ProductsCatalogDesktop
         <defs>
           <linearGradient
             id={gradientId}
-            x1={background.gradientX1}
-            y1={background.gradientY1}
-            x2={background.gradientX2}
-            y2={background.gradientY2}
+            x1={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1}
+            y1={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1}
+            x2={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2}
+            y2={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2}
             gradientUnits="userSpaceOnUse"
           >
             <stop stopColor="#93B6E3" />
-            {background.midOffset !== null && background.midColor !== null ? (
-              <stop offset={background.midOffset} stopColor={background.midColor} />
-            ) : null}
-            <stop offset="1" stopColor={background.tailColor} />
+            <stop offset="1" stopColor={PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR} />
           </linearGradient>
         </defs>
         <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
@@ -283,7 +236,6 @@ export function ProductsHeroShell({
   compactContentSpacing,
   catalogBottomPaddingClassName,
   mobileFillViewport = true,
-  desktopBackgroundVariant = 'default',
   sectionAriaLabel = 'Shop',
   activeCategorySlug,
 }: ProductsHeroShellProps) {
@@ -322,7 +274,6 @@ export function ProductsHeroShell({
             compactHero={compactHero}
             compactContentSpacing={resolvedCompactContentSpacing}
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
-            desktopBackgroundVariant={desktopBackgroundVariant}
           />
         </section>
       </div>

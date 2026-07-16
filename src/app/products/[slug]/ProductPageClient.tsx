@@ -10,7 +10,10 @@ import type { LanguageCode } from '../../../lib/language';
 import type { Review } from '../../../components/ProductReviews/utils';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfoAndActions } from './ProductInfoAndActions';
-import { ProductPageShell } from './ProductPageShell';
+import {
+  PDP_STAGE_GRID_CLASS,
+} from './product-info-layout.constants';
+import { ProductPageShellInstant } from './ProductPageShellInstant';
 import { useProductPage } from './useProductPage';
 import { playCartFlyAnimation } from '../../../lib/cart-fly-animation';
 import type { Product } from './types';
@@ -28,13 +31,13 @@ const RelatedProducts = dynamic(
     loading: () => (
       <section className="mt-24 w-full border-t border-gray-200 py-12" aria-hidden>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 h-9 w-64 animate-pulse rounded-lg bg-gray-200" />
+          <div className="mb-10 h-9 w-64" />
         </div>
         <div className="grid w-full grid-cols-2 justify-items-center gap-x-1 gap-y-10 px-4 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-[238px] w-[164px] max-w-full animate-pulse rounded-lg bg-gray-200 sm:h-[347px] sm:w-[283px]"
+              className="h-[238px] w-[164px] max-w-full rounded-lg bg-white/40 sm:h-[347px] sm:w-[283px]"
             />
           ))}
         </div>
@@ -48,8 +51,8 @@ const ProductReviews = dynamic(
   {
     loading: () => (
       <div className="mx-auto max-w-7xl border-t border-gray-200 px-4 py-12 sm:px-6 lg:px-8">
-        <div className="mb-6 h-9 w-48 animate-pulse rounded-lg bg-gray-200" />
-        <div className="h-24 animate-pulse rounded-lg bg-gray-100" />
+        <div className="mb-6 h-9 w-48" />
+        <div className="h-24 rounded-lg bg-white/40" />
       </div>
     ),
   },
@@ -227,7 +230,7 @@ export function ProductPageClient({
   };
 
   if (loading && !product) {
-    return <ProductPageShell />;
+    return <ProductPageShellInstant />;
   }
 
   if (notFound && !product) {
@@ -255,7 +258,7 @@ export function ProductPageClient({
   return (
     <>
       <div className="max-w-7xl mx-auto py-4 lg:px-8 lg:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-start">
+        <div className={PDP_STAGE_GRID_CLASS}>
           <ProductImageGallery
             images={images}
             product={product}
@@ -268,6 +271,7 @@ export function ProductPageClient({
             mainImagePriority={currentImageIndex === 0}
           />
 
+          <div className="flex h-full min-h-0 flex-col">
           <ProductInfoAndActions
             product={product}
             price={price}
@@ -306,6 +310,7 @@ export function ProductPageClient({
             getOptionValue={getOptionValue}
             getRequiredAttributesMessage={getRequiredAttributesMessage}
           />
+          </div>
         </div>
       </div>
 
