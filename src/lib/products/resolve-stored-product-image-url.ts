@@ -8,9 +8,11 @@ function localPublicFileExists(publicPath: string): boolean {
     return false;
   }
 
-  // Lazy require keeps `fs` out of the client bundle.
-  const { existsSync } = require('fs') as typeof import('fs');
-  const path = require('path') as typeof import('path');
+  // Lazy load keeps `fs`/`path` out of the client bundle (this module is shared).
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- Node-only, sync check
+  const { existsSync } = require('node:fs') as typeof import('node:fs');
+  // eslint-disable-next-line @typescript-eslint/no-require-imports -- Node-only, sync check
+  const path = require('node:path') as typeof import('node:path');
   const filePath = path.join(process.cwd(), 'public', publicPath.slice(1));
   return existsSync(filePath);
 }
