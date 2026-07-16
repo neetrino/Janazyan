@@ -138,24 +138,57 @@ export function PartnerStoresDirectory({
     itemRefs.current.delete(storeId);
   };
 
+  /** Expand the hierarchy that contains the selected store (e.g. after a map pin click). */
   useEffect(() => {
     if (!selectedStoreId) {
       return;
     }
 
     const selected = stores.find((store) => store.id === selectedStoreId);
-    if (selected) {
-      setOpenRegionIds((current) => new Set(current).add(selected.regionId));
-      if (selected.areaId) {
-        setOpenAreaIds((current) => new Set(current).add(selected.areaId!));
-      }
+    if (!selected) {
+      return;
     }
 
-    itemRefs.current.get(selectedStoreId)?.scrollIntoView({
-      block: 'nearest',
-      behavior: 'smooth',
-    });
+    setOpenRegionIds(new Set([selected.regionId]));
+    setOpenAreaIds(selected.areaId ? new Set([selected.areaId]) : new Set());
   }, [selectedStoreId, stores]);
+
+  /** Scroll after expand commits so the row exists in the DOM. */
+  useEffect(() => {
+    if (!selectedStoreId) {
+      return;
+    }
+
+    const selected = stores.find((store) => store.id === selectedStoreId);
+    if (!selected) {
+      return;
+    }
+
+    if (!openRegionIds.has(selected.regionId)) {
+      return;
+    }
+    if (selected.areaId && !openAreaIds.has(selected.areaId)) {
+      return;
+    }
+
+    let cancelled = false;
+    const frameId = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (cancelled) {
+          return;
+        }
+        itemRefs.current.get(selectedStoreId)?.scrollIntoView({
+          block: 'nearest',
+          behavior: 'smooth',
+        });
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [selectedStoreId, stores, openRegionIds, openAreaIds]);
 
   if (stores.length === 0) {
     return null;

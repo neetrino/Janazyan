@@ -15,6 +15,13 @@ import {
   PDP_QTY_VALUE_CLASS,
   PDP_REVIEWS_BUTTON_CLASS,
 } from './product-action-bar.constants';
+import {
+  PDP_DESCRIPTION_SLOT_CLASS,
+  PDP_INFO_ACTIONS_WRAPPER_CLASS,
+  PDP_INFO_COLUMN_CLASS,
+  PDP_STAGE_GRID_CLASS,
+  PDP_VARIANT_SLOT_CLASS,
+} from './product-info-layout.constants';
 import { Heart } from 'lucide-react';
 import type { ProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 import { formatPrice } from '@/lib/currency';
@@ -65,7 +72,6 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
   const snapshotRating = Math.max(0, Math.min(5, snapshot?.averageRating ?? 5));
   const snapshotReviewsCount = Math.max(0, snapshot?.reviewsCount ?? 0);
   const snapshotDescription = snapshot?.descriptionPreview?.trim() ?? '';
-  const shouldReserveVariantSpace = snapshot?.hasVariantSelectors !== false;
   const hasSnapshotPricing =
     Boolean(snapshot?.originalPrice && snapshot.originalPrice > snapshot.price) ||
     Boolean(snapshot?.compareAtPrice && snapshot.compareAtPrice > snapshot.price);
@@ -80,7 +86,7 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
       aria-label="Product loading"
     >
       <div className="max-w-7xl mx-auto py-4 lg:px-8 lg:py-12 min-h-[min(100dvh,720px)]">
-        <div className="grid grid-cols-1 lg:grid-cols-[55%_45%] gap-12 items-start">
+        <div className={PDP_STAGE_GRID_CLASS}>
           <div className="space-y-4">
             <div className="min-w-0">
               <div
@@ -94,12 +100,9 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                       alt=""
                       className="h-full w-full -translate-y-10 object-contain object-[center_42%] sm:-translate-y-16"
                     />
-                  ) : null}
-                  <div
-                    className={`absolute inset-0 ${
-                      hasSnapshotImage ? 'bg-sky-mist/35' : 'animate-pulse bg-sky-mist/60'
-                    }`}
-                  />
+                  ) : (
+                    <div className="h-full w-full" aria-hidden />
+                  )}
                 </div>
                 <div className="absolute inset-x-0 bottom-3 z-20 px-3 sm:bottom-4 sm:px-5">
                   <div className="grid grid-cols-7 gap-2 sm:gap-3">
@@ -125,14 +128,14 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
               </div>
             </div>
           </div>
-          <div>
+          <div className="flex h-full min-h-0 flex-col">
             {snapshot ? (
               <div
-                className="flex h-full flex-col pt-0 lg:min-h-[526px]"
+                className={PDP_INFO_COLUMN_CLASS}
                 aria-busy="true"
                 aria-label="Product snapshot loading"
               >
-                <div className="flex-1">
+                <div className="min-h-0 flex-1">
                   <p className="mb-2 line-clamp-2 text-4xl font-bold text-gray-900">
                     {snapshot.title}
                   </p>
@@ -155,27 +158,16 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
                     ) : null}
                   </div>
                   {snapshotDescription ? (
-                    <p className="mb-8 min-h-[72px] line-clamp-3 text-sm text-gray-600">
+                    <p className={`${PDP_DESCRIPTION_SLOT_CLASS} line-clamp-3 text-sm text-gray-600`}>
                       {snapshotDescription}
                     </p>
                   ) : (
-                    <div className="mb-8 min-h-[72px] rounded-lg bg-sky-mist/45" aria-hidden />
+                    <div className={PDP_DESCRIPTION_SLOT_CLASS} aria-hidden />
                   )}
-                  {shouldReserveVariantSpace ? (
-                    <div
-                      className="mb-8 rounded-2xl border border-white/35 bg-white/12 p-4 lg:min-h-[188px]"
-                      aria-hidden
-                    >
-                      <div className="space-y-3">
-                        <div className="h-4 w-28 rounded bg-white/45" />
-                        <div className="h-11 w-full rounded-xl bg-white/35" />
-                        <div className="h-4 w-24 rounded bg-white/45" />
-                        <div className="h-11 w-full rounded-xl bg-white/35" />
-                      </div>
-                    </div>
-                  ) : null}
+                  {/* Invisible slot — same height as hydrated variants; no white flash. */}
+                  <div className={PDP_VARIANT_SLOT_CLASS} aria-hidden />
                 </div>
-                <div className="pt-0 lg:-translate-y-[6px]">
+                <div className={PDP_INFO_ACTIONS_WRAPPER_CLASS}>
                   <div className="flex flex-col gap-4 lg:gap-0">
                     <div className={PDP_ACTION_ROW_CLASS}>
                       <div className={PDP_QTY_GLASS_CAPSULE_CLASS}>
@@ -211,20 +203,20 @@ export function ProductPageShell({ snapshot = null }: ProductPageShellProps) {
       </div>
       <section className="mt-24 w-full border-t border-gray-200 py-12" aria-hidden>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-10 h-9 w-64 animate-pulse rounded-lg bg-sky-mist/60" />
+          <div className="mb-10 h-9 w-64" />
         </div>
         <div className="grid w-full grid-cols-2 justify-items-center gap-x-1 gap-y-10 px-4 sm:gap-x-12 sm:px-6 lg:grid-cols-3 lg:px-8 xl:grid-cols-4 xl:gap-x-10">
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-[238px] w-[164px] max-w-full animate-pulse rounded-lg bg-sky-mist/60 sm:h-[347px] sm:w-[283px]"
+              className="h-[238px] w-[164px] max-w-full rounded-lg bg-white/40 sm:h-[347px] sm:w-[283px]"
             />
           ))}
         </div>
       </section>
       <div className="mx-auto max-w-7xl border-t border-gray-200 px-4 py-12 sm:px-6 lg:px-8" aria-hidden>
-        <div className="mb-6 h-9 w-48 animate-pulse rounded-lg bg-sky-mist/60" />
-        <div className="h-24 animate-pulse rounded-lg bg-sky-mist/45" />
+        <div className="mb-6 h-9 w-48" />
+        <div className="h-24 rounded-lg bg-white/40" />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 /** PDP main hero image container — transparent panel with large radius (Figma PDP). */
 export const PDP_GALLERY_MAIN_PANEL_CLASS =
-  'relative aspect-square overflow-hidden rounded-[28px] border border-white/35 bg-white/10 shadow-soft lg:rounded-[36px]';
+  'relative aspect-square overflow-hidden rounded-[28px] border border-white/45 bg-sky-mist/40 shadow-soft lg:rounded-[36px]';
 
 /** Inner wrapper fills the padded hero panel so the main image can use `fill`. */
 export const PDP_GALLERY_MAIN_IMAGE_INSET_CLASS =
