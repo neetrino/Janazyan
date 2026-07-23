@@ -12,6 +12,9 @@ export function createEmptyFormData(regionId = '', areaId = ''): PartnerStoreFor
     })),
     logoUrl: '',
     published: 'published',
+    lat: null,
+    lng: null,
+    coordinatesSource: 'none',
   };
 }
 
@@ -31,11 +34,22 @@ export function formDataFromStore(store: AdminPartnerStore): PartnerStoreFormDat
     }),
     logoUrl: store.logoUrl ?? '',
     published: store.published ? 'published' : 'draft',
+    lat: store.lat,
+    lng: store.lng,
+    coordinatesSource: 'existing',
   };
 }
 
 export function parseFormPayload(formData: PartnerStoreFormData) {
-  return {
+  const payload: {
+    regionId: string;
+    areaId: string | null;
+    translations: PartnerStoreFormData['translations'];
+    logoUrl: string | undefined;
+    published: boolean;
+    lat?: number;
+    lng?: number;
+  } = {
     regionId: formData.regionId,
     areaId: formData.areaId.trim() || null,
     translations: formData.translations.map((translation) => ({
@@ -45,4 +59,15 @@ export function parseFormPayload(formData: PartnerStoreFormData) {
     logoUrl: formData.logoUrl.trim() || undefined,
     published: formData.published === 'published',
   };
+
+  if (
+    formData.coordinatesSource === 'map' &&
+    formData.lat !== null &&
+    formData.lng !== null
+  ) {
+    payload.lat = formData.lat;
+    payload.lng = formData.lng;
+  }
+
+  return payload;
 }

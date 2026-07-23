@@ -279,6 +279,10 @@ class AdminPartnerStoresService {
       store.translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
     const shouldRefreshCoordinates =
       Boolean(data.translations) && enAddress !== existingEnAddress;
+    const explicitLat = data.lat;
+    const explicitLng = data.lng;
+    const hasExplicitCoordinates =
+      explicitLat !== undefined && explicitLng !== undefined;
 
     const updateData: {
       regionId?: string;
@@ -299,7 +303,12 @@ class AdminPartnerStoresService {
     if (data.logoUrl !== undefined) {
       updateData.logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl ?? undefined);
     }
-    if (shouldRefreshCoordinates) {
+    // Manual map pin wins over address geocode when both are present.
+    if (hasExplicitCoordinates) {
+      validatePartnerStoreCoordinates(explicitLat, explicitLng);
+      updateData.lat = explicitLat;
+      updateData.lng = explicitLng;
+    } else if (shouldRefreshCoordinates) {
       const placeContext = await resolveGeocodePlaceContext(nextRegionId, nextAreaId);
       const isYerevan = placeContext.regionName === 'Yerevan';
       const coordinates = ensureResolvedCoordinates(
