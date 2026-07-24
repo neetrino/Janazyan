@@ -344,21 +344,24 @@ body {
    * - width: 100vw + translateX(-50%) with overflow-x-clip (Safari also clips Y)
    * - overflow-x-clip + overflow-y-visible on the shell
    *
-   * Pin a wrapper with top/bottom (Safari resolves this reliably). Stretch the
-   * SVG to 100% of that wrapper — positioning <svg> with top/bottom alone is
-   * flaky in WebKit. Width is 100% of the shell (not 100vw).
+   * Pin a wrapper with top/bottom (Safari resolves this reliably). Keep the SVG
+   * at its Figma aspect ratio so tab/content height changes do not stretch the
+   * artwork vertically — the white shell shows through below the fixed shape.
    */
   .products-catalog-desktop-background {
     left: 0;
     width: 100%;
     top: var(--products-catalog-background-top-offset, 24px);
     bottom: calc(-1 * var(--products-catalog-background-footer-bleed, 191px));
+    overflow: hidden;
   }
 
   .products-catalog-desktop-background > svg {
     display: block;
     width: 100%;
-    height: 100%;
+    height: auto;
+    aspect-ratio: var(--products-catalog-background-aspect-width, 1442) /
+      var(--products-catalog-background-aspect-height, 1840);
   }
 }
 

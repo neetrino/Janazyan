@@ -1,11 +1,10 @@
 import { useState, useRef } from 'react';
-import type { Brand, Category, Attribute, Variant, ProductLabel, GeneratedVariant } from '../types';
+import type { Category, Attribute, Variant, ProductLabel, GeneratedVariant } from '../types';
 import type { CurrencyCode } from '@/lib/currency';
 
 export function useProductFormState() {
   const [loading, setLoading] = useState(false);
   const [loadingProduct, setLoadingProduct] = useState(false);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [attributes, setAttributes] = useState<Attribute[]>([]);
   const [formData, setFormData] = useState({
@@ -24,7 +23,6 @@ export function useProductFormState() {
     labels: [] as ProductLabel[],
   });
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [brandsExpanded, setBrandsExpanded] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const variantImageInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
   const attributesDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -32,9 +30,7 @@ export function useProductFormState() {
   const [colorImageTarget, setColorImageTarget] = useState<{ variantId: string; colorValue: string } | null>(null);
   const [imageUploadLoading, setImageUploadLoading] = useState(false);
   const [imageUploadError, setImageUploadError] = useState<string | null>(null);
-  const [newBrandName, setNewBrandName] = useState('');
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [useNewBrand, setUseNewBrand] = useState(false);
   const [useNewCategory, setUseNewCategory] = useState(false);
   const [newColorName, setNewColorName] = useState('');
   const [newSizeName, setNewSizeName] = useState('');
@@ -57,49 +53,33 @@ export function useProductFormState() {
   const [hasVariantsToLoad, setHasVariantsToLoad] = useState(false);
 
   return {
-    // Loading states
     loading,
     setLoading,
     loadingProduct,
     setLoadingProduct,
-    // Data states
-    brands,
-    setBrands,
     categories,
     setCategories,
     attributes,
     setAttributes,
-    // Form data
     formData,
     setFormData,
-    // UI states
     categoriesExpanded,
     setCategoriesExpanded,
-    brandsExpanded,
-    setBrandsExpanded,
     attributesDropdownOpen,
     setAttributesDropdownOpen,
-    // Refs
     fileInputRef,
     variantImageInputRefs,
     attributesDropdownRef,
-    // Image states
     colorImageTarget,
     setColorImageTarget,
     imageUploadLoading,
     setImageUploadLoading,
     imageUploadError,
     setImageUploadError,
-    // New entity states
-    newBrandName,
-    setNewBrandName,
     newCategoryName,
     setNewCategoryName,
-    useNewBrand,
-    setUseNewBrand,
     useNewCategory,
     setUseNewCategory,
-    // Color/Size management
     newColorName,
     setNewColorName,
     newSizeName,
@@ -112,14 +92,12 @@ export function useProductFormState() {
     setColorMessage,
     sizeMessage,
     setSizeMessage,
-    // Currency and product type
     defaultCurrency,
     setDefaultCurrency,
     productType,
     setProductType,
     simpleProductData,
     setSimpleProductData,
-    // Variant builder states
     selectedAttributesForVariants,
     setSelectedAttributesForVariants,
     selectedAttributeValueIds,
@@ -132,4 +110,3 @@ export function useProductFormState() {
     setHasVariantsToLoad,
   };
 }
-

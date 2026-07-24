@@ -48,7 +48,8 @@ function isDrawerNestedProductTabVisible(
 }
 
 /**
- * Renders a mobile-friendly admin hamburger menu that mirrors the desktop sidebar.
+ * Mobile admin hamburger menu (below lg). Tabs are limited by the caller
+ * (Analytics + Orders only on mobile).
  */
 export function AdminMenuDrawer({ tabs, currentPath }: AdminMenuDrawerProps) {
   const { t } = useTranslation();

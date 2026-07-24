@@ -28,9 +28,7 @@ interface UseProductEditModeProps {
   defaultCurrency: CurrencyCode;
   setLoadingProduct: (loading: boolean) => void;
   setFormData: (updater: (prev: any) => any) => void;
-  setUseNewBrand: (use: boolean) => void;
   setUseNewCategory: (use: boolean) => void;
-  setNewBrandName: (name: string) => void;
   setNewCategoryName: (name: string) => void;
   setHasVariantsToLoad: (has: boolean) => void;
   setProductType: (type: 'simple' | 'variable') => void;
@@ -45,9 +43,7 @@ export function useProductEditMode({
   defaultCurrency,
   setLoadingProduct,
   setFormData,
-  setUseNewBrand,
   setUseNewCategory,
-  setNewBrandName,
   setNewCategoryName,
   setHasVariantsToLoad,
   setProductType,
@@ -185,9 +181,7 @@ export function useProductEditMode({
             ...formData,
           }));
 
-          setUseNewBrand(false);
           setUseNewCategory(false);
-          setNewBrandName('');
           setNewCategoryName('');
 
           if (product.variants && product.variants.length > 0) {
@@ -293,9 +287,7 @@ export function useProductEditMode({
     defaultCurrency,
     setLoadingProduct,
     setFormData,
-    setUseNewBrand,
     setUseNewCategory,
-    setNewBrandName,
     setNewCategoryName,
     setHasVariantsToLoad,
     setProductType,

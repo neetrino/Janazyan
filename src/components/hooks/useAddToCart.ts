@@ -12,6 +12,7 @@ import { CART_KEY } from '../../app/cart/constants';
 import { applyOptimisticAddToSnapshot } from '../../lib/cart/cart-optimistic';
 import {
   patchCartLineIdInSnapshot,
+  readCartSnapshot,
   resolveCartCacheScope,
 } from '../../lib/cart/cart-snapshot-cache';
 import { dispatchCartUpdated } from '../../lib/cart/cart-events';
@@ -257,11 +258,14 @@ export function useAddToCart({
 
       if (scope && response.item?.id) {
         patchCartLineIdInSnapshot(scope, productId, variantId, response.item.id);
-      }
-
-      const itemsCount = response.cartSummary?.itemsCount;
-      if (typeof itemsCount === 'number') {
-        dispatchCartUpdated({ itemsCount, fromMutation: true });
+        // Re-broadcast from snapshot so badge stays aligned with drawer (not API-only count).
+        const snapshot = readCartSnapshot(scope);
+        if (snapshot) {
+          dispatchCartUpdated({
+            itemsCount: snapshot.itemsCount,
+            fromMutation: true,
+          });
+        }
       }
 
       confirmCartMutation(true, user?.id ?? null, t);

@@ -180,22 +180,11 @@ export function ProductPageClient({
     });
     setIsAddingToCart(true);
     try {
-      if (!isLoggedIn) {
-        const stored = localStorage.getItem(CART_KEY);
-        const cart = stored ? JSON.parse(stored) : [];
-        const existing = cart.find(
-          (i: unknown): i is { variantId: string; quantity: number; productId?: string; productSlug?: string } =>
-            typeof i === 'object' && i !== null && 'variantId' in i && i.variantId === currentVariant.id,
-        );
-        if (existing) existing.quantity += quantity;
-        else cart.push({ productId: product.id, productSlug: product.slug, variantId: currentVariant.id, quantity });
-        localStorage.setItem(CART_KEY, JSON.stringify(cart));
-      } else {
-        await apiClient.post('/api/v1/cart/items', { productId: product.id, variantId: currentVariant.id, quantity });
-      }
-
       const scope = resolveCartCacheScope(isLoggedIn, user?.id ?? null);
-      if (scope) {
+      const pushOptimistic = () => {
+        if (!scope) {
+          return;
+        }
         const imageForLine = images[currentImageIndex] ?? images[0] ?? null;
         const optimisticCart = applyOptimisticAddToSnapshot(
           scope,
@@ -211,13 +200,29 @@ export function ProductPageClient({
           isLoggedIn ? `user-cart-${user?.id ?? 'pending'}` : 'guest-cart',
         );
         dispatchCartUpdated({ itemsCount: optimisticCart.itemsCount, fromMutation: true });
-      }
+      };
 
-      const revalidateT = (key: string) => t(language, key);
-      if (isLoggedIn) {
-        confirmCartMutation(true, user?.id ?? null, revalidateT);
+      if (!isLoggedIn) {
+        const stored = localStorage.getItem(CART_KEY);
+        const cart = stored ? JSON.parse(stored) : [];
+        const existing = cart.find(
+          (i: unknown): i is { variantId: string; quantity: number; productId?: string; productSlug?: string } =>
+            typeof i === 'object' && i !== null && 'variantId' in i && i.variantId === currentVariant.id,
+        );
+        if (existing) existing.quantity += quantity;
+        else cart.push({ productId: product.id, productSlug: product.slug, variantId: currentVariant.id, quantity });
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+        pushOptimistic();
+        scheduleCartRevalidate(false, null, (key: string) => t(language, key), { force: true });
       } else {
-        scheduleCartRevalidate(false, null, revalidateT, { force: true });
+        // Optimistic first so badge/drawer share one snapshot before the API round-trip.
+        pushOptimistic();
+        await apiClient.post('/api/v1/cart/items', {
+          productId: product.id,
+          variantId: currentVariant.id,
+          quantity,
+        });
+        confirmCartMutation(true, user?.id ?? null, (key: string) => t(language, key));
       }
 
       setShowMessage(`${t(language, 'product.addedToCart')} ${quantity} ${t(language, 'product.pcs')}`);

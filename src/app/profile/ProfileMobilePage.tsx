@@ -8,6 +8,7 @@ import {
   PROFILE_MOBILE_CARD_CLASS,
   PROFILE_MOBILE_OUTER_CLASS,
 } from '../../lib/layout/account-pages-layout.constants';
+import { STOREFRONT_DESKTOP_MIN_WIDTH_PX } from '../../lib/layout/storefront-layout.constants';
 import {
   PROFILE_DELETE_MOBILE_ROW_CLASS,
   PROFILE_DELETE_MOBILE_ROW_ICON_CLASS,
@@ -53,7 +54,7 @@ function ProfileMobileSheet({
 }) {
   return (
     <div
-      className={`fixed inset-0 ${PROFILE_MOBILE_SHEET_OVERLAY_Z_CLASS} flex flex-col bg-cream/95`}
+      className={`fixed inset-0 ${PROFILE_MOBILE_SHEET_OVERLAY_Z_CLASS} flex flex-col bg-cream/95 desktop:hidden`}
       role="dialog"
       aria-modal="true"
       aria-label={activeTabLabel}
@@ -99,11 +100,31 @@ export function ProfileMobilePage({
   }, []);
 
   useEffect(() => {
-    if (!isSheetOpen) return;
+    if (!isSheetOpen) {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      return;
+    }
+
+    const mediaQuery = window.matchMedia(
+      `(max-width: ${STOREFRONT_DESKTOP_MIN_WIDTH_PX - 1}px)`,
+    );
+    if (!mediaQuery.matches) {
+      document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
+      return;
+    }
+
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
     const previousOverflow = document.body.style.overflow;
+    const previousPaddingRight = document.body.style.paddingRight;
     document.body.style.overflow = 'hidden';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.paddingRight = previousPaddingRight;
     };
   }, [isSheetOpen]);
 
@@ -138,11 +159,8 @@ export function ProfileMobilePage({
                 <span className={PROFILE_MOBILE_ROW_ICON_CLASS}>
                   <Home className="h-5 w-5" strokeWidth={1.75} />
                 </span>
-                Home
+                {dashboardTab.label}
               </span>
-              <svg className={PROFILE_MOBILE_CHEVRON_CLASS} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-              </svg>
             </button>
           )}
           {otherTabs
@@ -190,6 +208,10 @@ export function ProfileMobilePage({
           </button>
         </div>
       </div>
+
+      {!isSheetOpen && activeTab === 'dashboard' ? (
+        <div className="mt-4 px-1 pb-[calc(88px+env(safe-area-inset-bottom,0px))]">{children}</div>
+      ) : null}
 
       {isMounted && sheet ? createPortal(sheet, document.body) : null}
     </div>

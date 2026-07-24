@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-client';
+import { STOREFRONT_DESKTOP_MIN_WIDTH_PX } from '../../lib/layout/storefront-layout.constants';
 import { useProfilePage } from './useProfilePage';
 import { ProfileHeader } from './ProfileHeader';
 import { ProfileMobilePage } from './ProfileMobilePage';
@@ -82,10 +83,24 @@ function ProfilePageContent() {
   const [isMobileSheetOpen, setIsMobileSheetOpen] = useState(false);
 
   useEffect(() => {
-    const tab = searchParams.get('tab');
-    if (tab && tab !== 'dashboard') {
-      setIsMobileSheetOpen(true);
-    }
+    const mediaQuery = window.matchMedia(
+      `(max-width: ${STOREFRONT_DESKTOP_MIN_WIDTH_PX - 1}px)`,
+    );
+
+    const syncSheetFromUrl = () => {
+      const tab = searchParams.get('tab');
+      if (mediaQuery.matches && tab && tab !== 'dashboard') {
+        setIsMobileSheetOpen(true);
+        return;
+      }
+      setIsMobileSheetOpen(false);
+    };
+
+    syncSheetFromUrl();
+    mediaQuery.addEventListener('change', syncSheetFromUrl);
+    return () => {
+      mediaQuery.removeEventListener('change', syncSheetFromUrl);
+    };
   }, [searchParams]);
 
   if (authLoading || loading) {
@@ -255,7 +270,7 @@ function ProfilePageContent() {
         activeTab={activeTab}
         onTabSelect={(tab) => {
           handleTabChange(tab);
-          setIsMobileSheetOpen(true);
+          setIsMobileSheetOpen(tab !== 'dashboard');
         }}
         onLogout={logout}
         t={t}

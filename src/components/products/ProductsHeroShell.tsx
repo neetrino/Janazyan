@@ -197,10 +197,16 @@ function ProductsCatalogDesktopBackground() {
     <div
       aria-hidden
       className="products-catalog-desktop-background pointer-events-none absolute z-0"
+      style={
+        {
+          '--products-catalog-background-aspect-width': PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
+          '--products-catalog-background-aspect-height': PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT,
+        } as CSSProperties
+      }
     >
       <svg
         viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
-        preserveAspectRatio="xMidYMin slice"
+        preserveAspectRatio="xMidYMin meet"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>

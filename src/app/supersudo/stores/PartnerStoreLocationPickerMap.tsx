@@ -119,7 +119,6 @@ export function PartnerStoreLocationPickerMap({
       setMapReady(false);
     };
     // Initial center/zoom only — pin sync happens in the effect below.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount once
   }, []);
 
   useEffect(() => {

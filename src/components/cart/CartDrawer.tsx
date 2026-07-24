@@ -6,6 +6,7 @@ import { handleRemoveItem, handleUpdateQuantity } from '../../app/cart/cart-hand
 import type { Cart } from '../../app/cart/types';
 import { parseCartUpdatedDetail } from '../../lib/cart/cart-events';
 import { hydrateCartFromLocal } from '../../lib/cart/cart-hydrate';
+import { resolveCartItemsCount } from '../../lib/cart/resolve-cart-items-count';
 import {
   clearCartSnapshotMemory,
   isCartSnapshotFresh,
@@ -242,8 +243,7 @@ export function CartDrawer() {
     );
   };
 
-  const itemCount =
-    cart?.itemsCount ?? cart?.items?.reduce((sum, item) => sum + item.quantity, 0) ?? 0;
+  const itemCount = resolveCartItemsCount(cart);
   const hasItems = (cart?.items?.length ?? 0) > 0;
 
   return (

@@ -127,6 +127,7 @@
     "cartEmpty": "Cart is empty",
     "failedToLoadCart": "Failed to load cart",
     "failedToCreateOrder": "Failed to create order. Please try again.",
+    "insufficientStock": "Not enough stock available. Please update your cart and try again.",
     "promoCodeRequired": "Promo code is required",
     "invalidPromoCode": "Invalid promo code",
     "countryRequired": "Country is required for delivery",

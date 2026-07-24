@@ -27,7 +27,6 @@ interface UseProductFormHandlersProps {
   };
   setFormData: (updater: (prev: any) => any) => void;
   setLoading: (loading: boolean) => void;
-  setBrands: (updater: (prev: any[]) => any[]) => void;
   setCategories: (updater: (prev: any[]) => any[]) => void;
   productType: 'simple' | 'variable';
   simpleProductData: {
@@ -40,8 +39,6 @@ interface UseProductFormHandlersProps {
   generatedVariants: GeneratedVariant[];
   attributes: Attribute[];
   defaultCurrency: CurrencyCode;
-  useNewBrand: boolean;
-  newBrandName: string;
   useNewCategory: boolean;
   newCategoryName: string;
   isEditMode: boolean;
@@ -55,7 +52,6 @@ export function useProductFormHandlers({
   formData,
   setFormData,
   setLoading,
-  setBrands,
   setCategories,
   productType,
   simpleProductData,
@@ -63,8 +59,6 @@ export function useProductFormHandlers({
   generatedVariants,
   attributes,
   defaultCurrency,
-  useNewBrand,
-  newBrandName,
   useNewCategory,
   newCategoryName,
   isEditMode,
@@ -84,11 +78,8 @@ export function useProductFormHandlers({
   
   const { createBrandAndCategory } = useBrandAndCategoryCreation({
     formData,
-    useNewBrand,
-    newBrandName,
     useNewCategory,
     newCategoryName,
-    setBrands,
     setCategories,
     setLoading,
   });
