@@ -5,9 +5,11 @@ import type { AdminMenuItem } from '../../components/AdminMenuDrawer';
  *
  * ԿԱՐԵՎՈՐ.
  * - Մենյուի բոլոր կետերը centrally պահում ենք այստեղ, որ բոլոր admin էջերում նույնը լինի։
+ * - Desktop sidebar shows the full list; mobile (below lg) only Orders + Analytics
+ *   (see `admin-mobile.constants.ts`).
  * - "Discounts" label-ը նույնն է ամեն տեղ, ուղիղ տանում է `/supersudo/quick-settings` էջ։
  * - "Delivery" կետը միշտ առկա է, այդ թվում Analytics և Filter by Price էջերում sidebar-ում։
- * 
+ *
  * Note: This function returns menu items with translated labels.
  * Use getAdminMenuTabs(t) in client components where t is from useTranslation().
  */

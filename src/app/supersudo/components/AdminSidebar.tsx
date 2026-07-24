@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { AdminMenuDrawer } from '../../../components/AdminMenuDrawer';
 import { BrandLogoLink } from '../../../components/BrandLogoLink';
 import { useTranslation } from '../../../lib/i18n-client';
+import { isMobileAdminMenuId } from '../admin-mobile.constants';
 import { getAdminMenuTABS } from '../admin-menu.config';
 import {
   ADMIN_SIDEBAR_ASIDE,
@@ -50,6 +51,10 @@ export function AdminSidebar() {
   const { t } = useTranslation();
   const pathname = usePathname() ?? '/supersudo';
   const adminTabs = useMemo(() => getAdminMenuTABS(t), [t]);
+  const mobileAdminTabs = useMemo(
+    () => adminTabs.filter((tab) => isMobileAdminMenuId(tab.id)),
+    [adminTabs],
+  );
   const { collapsed } = useAdminSidebarCollapse();
   const [productsNestedExpanded, toggleProductsNested] = useAdminProductsSubnavExpanded(pathname);
 
@@ -60,7 +65,7 @@ export function AdminSidebar() {
       <div className={ADMIN_SIDEBAR_MOBILE_DRAWER_WRAP}>
         <div className="flex items-center justify-between gap-3">
           <BrandLogoLink className="min-w-0 shrink" />
-          <AdminMenuDrawer tabs={adminTabs} currentPath={pathname} />
+          <AdminMenuDrawer tabs={mobileAdminTabs} currentPath={pathname} />
         </div>
       </div>
       <aside className={`${ADMIN_SIDEBAR_ASIDE} ${asideWidthClass}`}>

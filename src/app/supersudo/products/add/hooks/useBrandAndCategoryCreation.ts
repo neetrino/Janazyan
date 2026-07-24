@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api-client';
 import { useTranslation } from '@/lib/i18n-client';
-import type { Brand, Category } from '../types';
+import type { Category } from '../types';
 import { logger } from "@/lib/utils/logger";
 
 interface UseBrandAndCategoryCreationProps {
@@ -8,22 +8,16 @@ interface UseBrandAndCategoryCreationProps {
     brandIds: string[];
     primaryCategoryId: string;
   };
-  useNewBrand: boolean;
-  newBrandName: string;
   useNewCategory: boolean;
   newCategoryName: string;
-  setBrands: (updater: (prev: Brand[]) => Brand[]) => void;
   setCategories: (updater: (prev: Category[]) => Category[]) => void;
   setLoading: (loading: boolean) => void;
 }
 
 export function useBrandAndCategoryCreation({
   formData,
-  useNewBrand,
-  newBrandName,
   useNewCategory,
   newCategoryName,
-  setBrands,
   setCategories,
   setLoading,
 }: UseBrandAndCategoryCreationProps) {
@@ -39,30 +33,6 @@ export function useBrandAndCategoryCreation({
     const finalBrandIds = [...formData.brandIds];
     let finalPrimaryCategoryId = formData.primaryCategoryId;
 
-    // Create new brand if provided
-    if (useNewBrand && newBrandName.trim()) {
-      try {
-        logger.debug('🏷️ [ADMIN] Creating new brand:', newBrandName);
-        const brandResponse = await apiClient.post<{ data: Brand }>('/api/v1/admin/brands', {
-          name: newBrandName.trim(),
-          locale: 'en',
-        });
-        if (brandResponse.data) {
-          if (!finalBrandIds.includes(brandResponse.data.id)) {
-            finalBrandIds.push(brandResponse.data.id);
-          }
-          setBrands((prev) => [...prev, brandResponse.data]);
-          logger.debug('✅ [ADMIN] Brand created:', brandResponse.data.id);
-          creationMessages.push(t('admin.products.add.brandCreatedSuccess').replace('{name}', newBrandName.trim()));
-        }
-      } catch (err: any) {
-        console.error('❌ [ADMIN] Error creating brand:', err);
-        setLoading(false);
-        return { finalBrandIds, finalPrimaryCategoryId, creationMessages, error: true };
-      }
-    }
-
-    // Create new category if provided
     if (useNewCategory && newCategoryName.trim()) {
       try {
         logger.debug('📁 [ADMIN] Creating new category:', newCategoryName);
@@ -79,7 +49,7 @@ export function useBrandAndCategoryCreation({
             t('admin.products.add.categoryCreatedSuccess').replace('{name}', newCategoryName.trim())
           );
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('❌ [ADMIN] Error creating category:', err);
         setLoading(false);
         return { finalBrandIds, finalPrimaryCategoryId, creationMessages, error: true };
@@ -91,9 +61,3 @@ export function useBrandAndCategoryCreation({
 
   return { createBrandAndCategory };
 }
-
-
-
-
-
-

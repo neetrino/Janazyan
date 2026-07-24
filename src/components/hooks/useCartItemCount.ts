@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import type { Cart } from '../../app/cart/types';
 import { useAuth } from '../../lib/auth/AuthContext';
 import {
   readCartSnapshot,
@@ -9,80 +8,69 @@ import {
 } from '../../lib/cart/cart-snapshot-cache';
 import { isCartSnapshotFresh } from '../../lib/cart/cart-snapshot-cache';
 import { parseCartUpdatedDetail } from '../../lib/cart/cart-events';
+import { resolveCartItemsCount } from '../../lib/cart/resolve-cart-items-count';
 import { getGuestCartItemCount } from '../../lib/storageCounts';
 import { fetchLoggedInCart } from '../../app/cart/cart-fetcher';
 
 const CART_COUNT_CAP = 99;
 
-function resolveItemsCount(cart: Cart | null | undefined): number {
-  if (!cart) {
-    return 0;
-  }
-  if (typeof cart.itemsCount === 'number' && cart.itemsCount >= 0) {
-    return cart.itemsCount;
-  }
-  if (!cart.items?.length) {
-    return 0;
-  }
-  return cart.items.reduce((sum, item) => sum + item.quantity, 0);
-}
-
 /**
  * Live cart line-item count for header badges; listens to `cart-updated` and `auth-updated`.
+ * Uses the same snapshot source as CartDrawer so badge and drawer stay in sync.
  */
 export function useCartItemCount(): number {
   const { isLoggedIn, user } = useAuth();
   const [count, setCount] = useState(0);
 
-  const applyCachedCount = useCallback(() => {
+  /** @returns true when a snapshot existed and count was applied from it */
+  const applyCachedCount = useCallback((): boolean => {
     const scope = resolveCartCacheScope(isLoggedIn, user?.id);
     if (!scope) {
-      return;
+      return false;
     }
     const cached = readCartSnapshot(scope);
-    if (cached) {
-      setCount(resolveItemsCount(cached));
-      return;
+    if (!cached) {
+      return false;
     }
-    setCount(0);
+    setCount(resolveCartItemsCount(cached));
+    return true;
   }, [isLoggedIn, user?.id]);
 
   const refreshGuest = useCallback(() => {
-    const scope = resolveCartCacheScope(false, null);
-    const cached = scope ? readCartSnapshot(scope) : null;
-    if (cached) {
-      setCount(resolveItemsCount(cached));
+    if (applyCachedCount()) {
       return;
     }
     setCount(getGuestCartItemCount());
-  }, []);
+  }, [applyCachedCount]);
 
   const refreshLoggedIn = useCallback(async (skipNetworkIfFresh = false) => {
     const scope = resolveCartCacheScope(true, user?.id);
     if (skipNetworkIfFresh && scope && isCartSnapshotFresh(scope)) {
-      applyCachedCount();
+      if (!applyCachedCount()) {
+        setCount(0);
+      }
       return;
     }
 
     try {
       const cart = await fetchLoggedInCart();
-      const snapshot = scope ? readCartSnapshot(scope) : null;
-      if (snapshot) {
-        setCount(resolveItemsCount(snapshot));
+      if (applyCachedCount()) {
         return;
       }
-      setCount(resolveItemsCount(cart));
+      setCount(resolveCartItemsCount(cart));
     } catch {
-      if (!scope || !readCartSnapshot(scope)) {
+      if (!applyCachedCount()) {
         setCount(0);
       }
     }
   }, [user?.id, applyCachedCount]);
 
   const refresh = useCallback(() => {
-    applyCachedCount();
     if (isLoggedIn) {
       const scope = resolveCartCacheScope(true, user?.id);
+      if (!applyCachedCount()) {
+        setCount(0);
+      }
       void refreshLoggedIn(Boolean(scope && isCartSnapshotFresh(scope)));
       return;
     }
@@ -96,16 +84,15 @@ export function useCartItemCount(): number {
   useEffect(() => {
     const handleCartUpdated = (event: Event) => {
       const detail = parseCartUpdatedDetail(event);
+      // Same source as CartDrawer — never apply event itemsCount over a live snapshot.
+      if (applyCachedCount()) {
+        return;
+      }
       if (typeof detail?.itemsCount === 'number') {
         setCount(detail.itemsCount);
         return;
       }
       if (detail?.fromMutation || detail?.fromSync || detail?.skipRevalidate) {
-        if (typeof detail.itemsCount === 'number') {
-          setCount(detail.itemsCount);
-        } else {
-          applyCachedCount();
-        }
         return;
       }
       refresh();
@@ -121,7 +108,7 @@ export function useCartItemCount(): number {
       window.removeEventListener('cart-updated', handleCartUpdated);
       window.removeEventListener('auth-updated', handleAuthUpdated);
     };
-  }, [refresh]);
+  }, [refresh, applyCachedCount]);
 
   return count;
 }

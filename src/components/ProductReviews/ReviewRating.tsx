@@ -47,7 +47,7 @@ export function ReviewRating({
                 className={`${sizeClass} transition-colors ${
                   isActive
                     ? 'text-yellow-400'
-                    : 'text-gray-300'
+                    : 'text-gray-500'
                 }`}
                 fill="currentColor"
                 viewBox="0 0 20 20"
@@ -64,7 +64,7 @@ export function ReviewRating({
             className={`${sizeClass} ${
               isActive
                 ? 'text-yellow-400'
-                : 'text-gray-300'
+                : 'text-gray-500'
             }`}
             fill="currentColor"
             viewBox="0 0 20 20"

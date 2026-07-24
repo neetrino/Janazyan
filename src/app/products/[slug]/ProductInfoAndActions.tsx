@@ -220,7 +220,7 @@ export function ProductInfoAndActions({
           getRequiredAttributesMessage={getRequiredAttributesMessage}
         />
       </div>
-      {showMessage && <div className="mt-4 p-4 bg-gray-900 text-white rounded-md shadow-lg">{showMessage}</div>}
+      {showMessage && <div className="mt-4 rounded-full bg-sky-deep p-4 text-white shadow-lg">{showMessage}</div>}
     </div>
   );
 }

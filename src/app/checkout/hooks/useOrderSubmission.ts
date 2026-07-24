@@ -1,6 +1,8 @@
 import { useRouter } from 'next/navigation';
 import { useRef, useState } from 'react';
 import { apiClient } from '../../../lib/api-client';
+import { isInsufficientStockProblem } from '../../../lib/api-client/error-handler';
+import { ApiError } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
 import { fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
 import { isOptimisticUserCartId } from '../../../lib/cart/cart-item-id';
@@ -8,6 +10,16 @@ import { markOrderCartClearOnSuccess } from '../../../lib/cart/order-success-car
 import { clearGuestCart } from '../checkoutUtils';
 import { saveGuestOrderAccess } from '../utils/guest-order-access';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
+
+function resolveCheckoutSubmitError(err: unknown, t: (key: string) => string): string {
+  if (err instanceof ApiError && isInsufficientStockProblem(err.data)) {
+    return t('checkout.errors.insufficientStock');
+  }
+  if (err instanceof Error && err.message.trim()) {
+    return err.message;
+  }
+  return t('checkout.errors.failedToCreateOrder');
+}
 
 interface UseOrderSubmissionProps {
   cart: Cart | null;
@@ -141,8 +153,7 @@ export function useOrderSubmission({
 
       router.push(`/orders/${response.order.number}`);
     } catch (err: unknown) {
-      const error = err as { message?: string };
-      setError(error.message || t('checkout.errors.failedToCreateOrder'));
+      setError(resolveCheckoutSubmitError(err, t));
       isSubmittingRef.current = false;
       setIsSubmitting(false);
     }

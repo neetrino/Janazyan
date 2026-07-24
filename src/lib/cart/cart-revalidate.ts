@@ -13,6 +13,7 @@ import {
   getCartMutationEpoch,
   isCartMutationEpochCurrent,
 } from './cart-mutation';
+import { resolveCartItemsCount } from './resolve-cart-items-count';
 import {
   isCartSnapshotFresh,
   readCartSnapshot,
@@ -30,13 +31,8 @@ export function invalidateCartRevalidateInflight(): void {
 }
 
 function dispatchCartSynced(cart: Cart | null): void {
-  const itemsCount =
-    cart?.itemsCount ??
-    cart?.items.reduce((sum, item) => sum + item.quantity, 0) ??
-    0;
-
   dispatchCartUpdated({
-    itemsCount,
+    itemsCount: resolveCartItemsCount(cart),
     skipRevalidate: true,
     fromSync: true,
   });
@@ -104,7 +100,12 @@ async function runRevalidate(
       const snapshotSignature = buildCartLineSignature(snapshot);
       const serverSignature = buildCartLineSignature(cart);
       if (snapshotSignature !== serverSignature) {
-        return snapshot;
+        // Keep optimistic snapshot only when it is ahead (in-flight adds).
+        // If snapshot is behind the server, adopt server so badge/drawer stay correct.
+        if (resolveCartItemsCount(snapshot) > resolveCartItemsCount(cart)) {
+          dispatchCartSynced(snapshot);
+          return snapshot;
+        }
       }
       writeCartSnapshot(scope, cart, { source: 'network' });
     }
