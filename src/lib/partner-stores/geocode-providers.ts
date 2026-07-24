@@ -5,16 +5,18 @@ import {
   type GeocodeCoordinates,
   type PartnerStoreGeocodeQuery,
 } from './geocode-query';
+import {
+  GEOCODE_TIMEOUT_MS,
+  GEOCODE_USER_AGENT,
+  withNominatimRateLimit,
+} from './geocode-nominatim-queue';
 
 const ARCGIS_GEOCODE_URL =
   'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates';
 const NOMINATIM_SEARCH_URL = 'https://nominatim.openstreetmap.org/search';
 const PHOTON_SEARCH_URL = 'https://photon.komoot.io/api';
-const GEOCODE_USER_AGENT = 'JanazyanPartnerStores/1.0 (partner-stores map)';
-const GEOCODE_TIMEOUT_MS = 8000;
 const ARCGIS_MIN_SCORE = 80;
 const ARCGIS_FALLBACK_MIN_SCORE = 70;
-const NOMINATIM_MIN_INTERVAL_MS = 1100;
 
 const STREET_LEVEL_ADDR_TYPES = new Set([
   'PointAddress',
@@ -48,9 +50,6 @@ type PhotonResponse = {
     properties?: { type?: string; osm_key?: string };
   }>;
 };
-
-let nominatimQueue: Promise<void> = Promise.resolve();
-let lastNominatimAt = 0;
 
 async function fetchWithTimeout(input: string): Promise<Response | null> {
   const controller = new AbortController();
@@ -127,22 +126,6 @@ export async function resolveWithArcGis(
   }
 
   return null;
-}
-
-async function withNominatimRateLimit<T>(operation: () => Promise<T>): Promise<T> {
-  const run = nominatimQueue.then(async () => {
-    const waitMs = Math.max(0, NOMINATIM_MIN_INTERVAL_MS - (Date.now() - lastNominatimAt));
-    if (waitMs > 0) {
-      await new Promise((resolve) => setTimeout(resolve, waitMs));
-    }
-    lastNominatimAt = Date.now();
-    return operation();
-  });
-  nominatimQueue = run.then(
-    () => undefined,
-    () => undefined,
-  );
-  return run;
 }
 
 function isStreetLevelNominatimResult(result: NominatimSearchResult): boolean {

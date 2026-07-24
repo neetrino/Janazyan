@@ -39,10 +39,17 @@ export type AdminPartnerStoreArea = {
   translations: Array<{ locale: string; name: string }>;
 };
 
+/** How store map coordinates were set in the admin form. */
+export type PartnerStoreCoordinatesSource = 'none' | 'existing' | 'map';
+
 export type PartnerStoreFormData = {
   regionId: string;
   areaId: string;
   translations: PartnerStoreTranslationInput[];
   logoUrl: string;
   published: 'published' | 'draft';
+  lat: number | null;
+  lng: number | null;
+  /** Only `'map'` is sent to the API so address geocode still runs when pin was not touched. */
+  coordinatesSource: PartnerStoreCoordinatesSource;
 };

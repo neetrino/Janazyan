@@ -2,6 +2,7 @@
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Button, Input } from '@shop/ui';
+import { apiClient } from '../../../lib/api-client';
 import { PARTNER_STORE_LOCALES } from '../../../features/stores/partner-store-locales';
 import { LANGUAGES } from '../../../lib/language';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -9,12 +10,28 @@ import {
   AdminFormSectionLabel,
   AdminSideDrawer,
 } from '../components/AdminSideDrawer';
+import { matchPartnerStoreHierarchy } from './match-location-hierarchy';
+import { PartnerStoreLocationPickerModal } from './PartnerStoreLocationPickerModal';
 import type {
   AdminPartnerStore,
   AdminPartnerStoreArea,
   AdminPartnerStoreRegion,
   PartnerStoreFormData,
 } from './types';
+
+type ReverseGeocodeResponse = {
+  data: {
+    regionCandidates: string[];
+    regionFallbackCandidates: string[];
+    areaCandidates: string[];
+    displayName: string | null;
+    addresses: {
+      en: string | null;
+      hy: string | null;
+      ru: string | null;
+    };
+  };
+};
 
 interface PartnerStoreDrawerProps {
   open: boolean;
@@ -47,10 +64,12 @@ export function PartnerStoreDrawer({
 }: PartnerStoreDrawerProps) {
   const { t } = useTranslation();
   const [activeLocale, setActiveLocale] = useState<(typeof PARTNER_STORE_LOCALES)[number]>('en');
+  const [mapPickerOpen, setMapPickerOpen] = useState(false);
 
   useEffect(() => {
     if (open) {
       setActiveLocale('en');
+      setMapPickerOpen(false);
     }
   }, [open, editingStore?.id]);
 
@@ -141,6 +160,29 @@ export function PartnerStoreDrawer({
                   value={formData.translations[activeTranslationIndex].address}
                   onChange={(e) => updateActiveTranslation('address', e.target.value)}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setMapPickerOpen(true)}
+                >
+                  {t('admin.partnerStores.pickOnMap')}
+                </Button>
+                {formData.lat !== null && formData.lng !== null ? (
+                  <p className="text-xs text-gray-500">
+                    {t('admin.partnerStores.latitude')}: {formData.lat.toFixed(6)},{' '}
+                    {t('admin.partnerStores.longitude')}: {formData.lng.toFixed(6)}
+                    {formData.coordinatesSource === 'map'
+                      ? ` · ${t('admin.partnerStores.locationFromMap')}`
+                      : ''}
+                  </p>
+                ) : (
+                  <p className="text-xs text-gray-500">
+                    {t('admin.partnerStores.locationAutoHint')}
+                  </p>
+                )}
               </div>
             </>
           ) : null}
@@ -248,6 +290,61 @@ export function PartnerStoreDrawer({
           </label>
         </section>
       </form>
+
+      <PartnerStoreLocationPickerModal
+        isOpen={mapPickerOpen}
+        initialLat={formData.lat}
+        initialLng={formData.lng}
+        onClose={() => setMapPickerOpen(false)}
+        onConfirm={async (coordinates) => {
+          let nextRegionId = formData.regionId;
+          let nextAreaId = formData.areaId;
+          let nextTranslations = formData.translations;
+
+          try {
+            const response = await apiClient.post<ReverseGeocodeResponse>(
+              '/api/v1/admin/partner-stores/reverse-geocode',
+              { lat: coordinates.lat, lng: coordinates.lng },
+            );
+            const matched = matchPartnerStoreHierarchy({
+              regionCandidates: response.data.regionCandidates,
+              regionFallbackCandidates: response.data.regionFallbackCandidates,
+              areaCandidates: response.data.areaCandidates,
+              regions,
+              areas,
+            });
+            if (matched.regionId) {
+              nextRegionId = matched.regionId;
+              nextAreaId = matched.areaId ?? '';
+            }
+
+            const resolvedAddresses = response.data.addresses;
+            if (resolvedAddresses.en || resolvedAddresses.hy || resolvedAddresses.ru) {
+              nextTranslations = formData.translations.map((translation) => {
+                const fromMap =
+                  resolvedAddresses[translation.locale] ?? resolvedAddresses.en ?? null;
+                if (!fromMap) {
+                  return translation;
+                }
+                return { ...translation, address: fromMap };
+              });
+            }
+          } catch (error) {
+            console.error('Failed to resolve place from map pin:', error);
+          }
+
+          onFormChange({
+            ...formData,
+            lat: coordinates.lat,
+            lng: coordinates.lng,
+            coordinatesSource: 'map',
+            regionId: nextRegionId,
+            areaId: nextAreaId,
+            translations: nextTranslations,
+          });
+          setMapPickerOpen(false);
+        }}
+      />
     </AdminSideDrawer>
   );
 }
