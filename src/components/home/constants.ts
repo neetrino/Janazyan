@@ -94,7 +94,7 @@ export type WhyCardConfig = {
 };
 
 export const WHY_CARD_CONFIG: ReadonlyArray<WhyCardConfig> = [
-  { cardKey: '01', number: '96', numberColor: '#f5c8ce' },
+  { cardKey: '01', number: '98', numberColor: '#f5c8ce' },
   { cardKey: '02', number: '5+', numberColor: '#bcd4ec' },
   { cardKey: '03', number: '28', numberColor: '#d6dfc2' },
   { cardKey: '04', number: '0', numberColor: '#f3e2be' },

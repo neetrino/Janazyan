@@ -1,10 +1,13 @@
 import Image from 'next/image';
 import type { ReactElement } from 'react';
-import {
-  CATEGORY_PILL_ICON_ACTIVE_CLASS,
-  CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS,
-} from './category-pill-dropdown.constants';
 import { getCategoryPillIcon, resolveCategoryPillIconKey } from './category-pill-icons';
+
+/** Active pill — invert sky-deep SVG assets to white on dark background. */
+const CATEGORY_PILL_ICON_ACTIVE_CLASS = 'brightness-0 invert';
+
+/** Inactive pill hover — match active dark surface (requires `group` on the pill). */
+const CATEGORY_PILL_ICON_INACTIVE_HOVER_CLASS =
+  'group-hover:brightness-0 group-hover:invert';
 
 type CategoryPillIconProps = {
   title: string;

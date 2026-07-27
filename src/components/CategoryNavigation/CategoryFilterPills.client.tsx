@@ -57,7 +57,7 @@ function useCategoryRowScrollFade(rowRef: React.RefObject<HTMLDivElement | null>
   return showRightFade;
 }
 
-/** Figma category filter row with expandable subcategory menus (node 269:894 / 486:355). */
+/** Figma category filter row — flat pills, parent filters include descendants (node 269:894). */
 export function CategoryFilterPills({
   categories,
   activeCategorySlug,

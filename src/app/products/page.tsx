@@ -47,7 +47,6 @@ export default async function ProductsPage({
 
   return (
     <ProductsHeroShell
-      activeCategorySlug={parsed.category}
       toolbar={
         <ProductsShopHeroToolbar
           language={language}
