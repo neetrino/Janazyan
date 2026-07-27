@@ -9,7 +9,7 @@ import {
 import { ProductsHeroShell } from '@/components/products/ProductsHeroShell';
 import { ProductsShopHeroToolbar } from '@/components/products/ProductsShopHeroToolbar';
 import { ProductsCatalogServer } from './ProductsCatalogServer';
-import { ProductsCatalogMainSkeleton } from './ProductsCatalogSkeleton';
+import { ProductsCatalogLoadingGate } from './ProductsCatalogLoadingGate';
 
 export const revalidate = 120;
 
@@ -33,6 +33,7 @@ export async function generateMetadata({
 
 /**
  * Shop catalog — shell + toolbar on server; products stream via RSC Suspense.
+ * Suspense fallback reads the client catalog cache so filters feel instant.
  */
 export default async function ProductsPage({
   searchParams,
@@ -54,7 +55,13 @@ export default async function ProductsPage({
         />
       }
       catalog={
-        <Suspense fallback={<ProductsCatalogMainSkeleton />}>
+        <Suspense
+          fallback={
+            <Suspense fallback={null}>
+              <ProductsCatalogLoadingGate />
+            </Suspense>
+          }
+        >
           <ProductsCatalogServer parsed={parsed} raw={raw} language={language} />
         </Suspense>
       }

@@ -16,6 +16,7 @@ type CategoryFilterPillProps = {
   category: CategoryTreeNode;
   label: string;
   isActive: boolean;
+  onPrefetch?: () => void;
 };
 
 function getCategoryPillStateClass(isActive: boolean): string {
@@ -33,13 +34,17 @@ export function CategoryFilterPill({
   category,
   label,
   isActive,
+  onPrefetch,
 }: CategoryFilterPillProps): ReactElement {
   return (
     <Link
       href={href}
       scroll={false}
+      prefetch
       aria-current={isActive ? 'page' : undefined}
       data-category-filter-slug={category.id}
+      onMouseEnter={onPrefetch}
+      onFocus={onPrefetch}
       className={`group ${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug)} ${getCategoryPillStateClass(isActive)}`}
     >
       <CategoryPillIcon title={category.title} slug={category.slug} isActive={isActive} />
