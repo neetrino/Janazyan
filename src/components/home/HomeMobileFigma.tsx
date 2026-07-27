@@ -25,7 +25,6 @@ import {
   STOREFRONT_MOBILE_TOP_INSET_CLASS,
   STOREFRONT_MOBILE_HEADER_CHROME_Z_INDEX_CLASS,
 } from '../../lib/layout/storefront-mobile-layout.constants';
-import { CategoryFilterDropdownProvider } from '../CategoryNavigation/CategoryFilterDropdownContext';
 import { MobileOurStoresBanner } from './MobileOurStoresBanner';
 import type { WhyCardConfig } from './constants';
 import type { WhyCardText } from './use-home-i18n';
@@ -59,11 +58,9 @@ export function HomeMobileFigma({
       >
         <MobileTopBar />
         <MobileHeroCard heroTitle={hairCategory?.title ?? ['', '']} />
-        <CategoryFilterDropdownProvider>
-          <div className={HOME_MOBILE_CATEGORY_FILTERS_SLOT_CLASS}>
-            {categoryFiltersSlot}
-          </div>
-        </CategoryFilterDropdownProvider>
+        <div className={HOME_MOBILE_CATEGORY_FILTERS_SLOT_CLASS}>
+          {categoryFiltersSlot}
+        </div>
         <MobileCategoryGrid
           categoryIds={[...CATEGORY_FIGMA_GRID_IDS]}
           categoryPosters={categoryPosters}

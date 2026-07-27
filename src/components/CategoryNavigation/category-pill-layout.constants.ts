@@ -11,13 +11,9 @@ const CATEGORY_PILL_LAYOUT_BY_SLUG: Record<ShopCategoryFilterSlug, string> = {
 };
 
 /** Tailwind layout classes for a category filter pill. */
-export function getCategoryPillLayoutClass(slug: string, hasChildren = false): string {
+export function getCategoryPillLayoutClass(slug: string): string {
   if (slug in CATEGORY_PILL_LAYOUT_BY_SLUG) {
     return CATEGORY_PILL_LAYOUT_BY_SLUG[slug as ShopCategoryFilterSlug];
-  }
-
-  if (hasChildren) {
-    return 'gap-1.5 px-2 py-1.5 desktop:gap-2 desktop:px-3 desktop:py-2';
   }
 
   return 'gap-1.5 px-2 py-1.5 desktop:gap-2 desktop:px-3 desktop:py-2';

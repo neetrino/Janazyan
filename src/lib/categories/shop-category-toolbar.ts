@@ -19,6 +19,7 @@ function buildAllToolbarCategory(language: LanguageCode): CategoryTreeNode {
 
 /**
  * Shop toolbar strip — published root categories from the database + "All".
+ * Subcategories are not listed; selecting a root filters that category and all descendants.
  */
 export async function getShopCategoryToolbarStrip(
   language: LanguageCode,
@@ -47,8 +48,4 @@ export function isShopToolbarCategoryActive(
   return category.children.some((child) =>
     isCategoryFilterParamActive(child, activeCategorySlug, { allowShopSlugFromTitle: false }),
   );
-}
-
-export function getShopSubcategoryHref(category: CategoryTreeNode): string {
-  return getCategoryTreeNodeHref(category, { allowShopSlugFromTitle: false });
 }

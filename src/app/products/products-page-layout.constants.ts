@@ -100,7 +100,7 @@ export const PRODUCTS_PAGE_MOBILE_TOOLBAR_TOP_OFFSET_CLASS = 'pt-[120px] sm:pt-[
 export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
 export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 
-/** Shared toolbar pill + dropdown panel radius — matches Figma subcategory panel (node 486:366). */
+/** Shared toolbar pill radius — Figma category filters (node 269:894). */
 export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-[20px]';
 
 /** Shared toolbar control pill height — aligned with category pills. */

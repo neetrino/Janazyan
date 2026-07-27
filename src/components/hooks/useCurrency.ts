@@ -3,15 +3,20 @@
 import { useState, useEffect } from 'react';
 import { getStoredCurrency, initializeCurrencyRates, type CurrencyCode } from '../../lib/currency';
 
+/** Matches SSR + first client paint; localStorage syncs after mount (avoids hydration mismatch). */
+const SSR_SAFE_CURRENCY: CurrencyCode = 'AMD';
+
 /**
  * Hook for managing currency state
  * @returns Current currency code
  */
 export function useCurrency() {
-  const [currency, setCurrency] = useState<CurrencyCode>(() => getStoredCurrency());
+  const [currency, setCurrency] = useState<CurrencyCode>(SSR_SAFE_CURRENCY);
   const [, setRatesRefreshTick] = useState(0);
 
   useEffect(() => {
+    setCurrency(getStoredCurrency());
+
     const handleCurrencyUpdate = () => {
       setCurrency(getStoredCurrency());
     };

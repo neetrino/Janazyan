@@ -58,7 +58,7 @@ export const ABOUT_BODY_RIGHT_WIDTH_PX = 764;
 
 /** Pull section into hero band — same idea as contact. */
 export const ABOUT_SECTION_DESKTOP_BLEED_CLASS =
-  'desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] desktop:pt-0 desktop:pb-0 desktop:overflow-visible';
+  'desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] desktop:pt-0 desktop:pb-0';
 
 export const ABOUT_COPY_CLASS =
   'text-base font-normal leading-6 tracking-[-0.3125px] text-black/47';

@@ -1,7 +1,7 @@
 {
   "hero": {
     "title": "JANAZYAN",
-    "description": "Premium children's care products created with love, safety, and your child's comfort in mind.",
+    "description": "Premium care products for children and adults, created with love. Thoughtfully designed for your safety and that of your little ones",
     "kidsLabel": "Kids",
     "buyNow": "Shop Now",
     "learnMore": "Learn More",
@@ -75,25 +75,25 @@
         "index": "№ 01",
         "titleA": "Natural",
         "titleB": "ingredients",
-        "description": "96% plant-based ingredients from certified suppliers."
+        "description": "98% plant-based ingredients from certified suppliers."
       },
       "02": {
         "index": "№ 02",
         "titleA": "For the",
         "titleB": "whole family",
-        "description": "Formulas for skin from 3 months to 80 years."
+        "description": "From 0 to 99 years"
       },
       "03": {
         "index": "№ 03",
         "titleA": "Dermatologist",
         "titleB": "tested",
-        "description": "Independent labs, clinical results in 28 days."
+        "description": "State laboratory tested and GOST standardized"
       },
       "04": {
         "index": "№ 04",
         "titleA": "Cruelty",
         "titleB": "Free",
-        "description": "We never test on animals — Leaping Bunny certified."
+        "description": "Natural ingredients and safe, recyclable HDPE containers"
       }
     }
   },
