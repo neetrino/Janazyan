@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { HeroArrowButtonIcon } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
-import { HERO_SLIDES } from './hero-slides';
+import { HERO_SLIDE_AUTOPLAY_MS, HERO_SLIDES } from './hero-slides';
 import {
   HOME_HERO_TITLE_DESKTOP_CLASS,
   HOME_HERO_TITLE_MOBILE_CLASS,
@@ -190,6 +190,15 @@ export function HomeHero() {
   const goToPreviousSlide = useCallback(() => {
     setSlideIndex((current) => (current - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
   }, []);
+
+  useEffect(() => {
+    if (draggingSlideId !== null) {
+      return;
+    }
+
+    const timerId = window.setInterval(goToNextSlide, HERO_SLIDE_AUTOPLAY_MS);
+    return () => window.clearInterval(timerId);
+  }, [draggingSlideId, goToNextSlide]);
 
   const activeAnimationClass =
     activeSlide.id === 'kids-care'

@@ -1,6 +1,13 @@
 'use client';
 
-import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type MutableRefObject,
+} from 'react';
 import type { LanguageCode } from '@/lib/language';
 import type { ProductsCatalogCacheResponse } from '@/lib/cache/products-catalog-cache.types';
 import {
@@ -21,34 +28,73 @@ type UseProductsCatalogResult = {
 };
 
 type UseProductsCatalogOptions = {
-  /** SSR payload — skips client fetch on mount when present. */
+  /** SSR payload — used only while it matches the current filter key. */
   initialCatalog?: ProductsCatalogCacheResponse | null;
 };
+
+function catalogsMatchCurrentKey(
+  initialCatalog: ProductsCatalogCacheResponse | null,
+  cacheKey: string,
+  initialKeyRef: MutableRefObject<string | null>,
+  prevInitialRef: MutableRefObject<ProductsCatalogCacheResponse | null>,
+): ProductsCatalogCacheResponse | null {
+  if (!initialCatalog) {
+    return null;
+  }
+
+  if (initialCatalog !== prevInitialRef.current) {
+    initialKeyRef.current = cacheKey;
+    prevInitialRef.current = initialCatalog;
+  }
+
+  if (initialKeyRef.current !== cacheKey) {
+    return null;
+  }
+
+  return initialCatalog;
+}
 
 export function useProductsCatalog(
   parsed: ParsedCatalogParams,
   language: LanguageCode,
   options?: UseProductsCatalogOptions,
 ): UseProductsCatalogResult {
-  const initialCatalog = options?.initialCatalog ?? null;
+  const initialCatalogProp = options?.initialCatalog ?? null;
   const cacheKey = buildCatalogClientCacheKey(parsed, language);
+  const initialKeyRef = useRef<string | null>(null);
+  const prevInitialRef = useRef<ProductsCatalogCacheResponse | null>(null);
+
+  const matchingInitial = catalogsMatchCurrentKey(
+    initialCatalogProp,
+    cacheKey,
+    initialKeyRef,
+    prevInitialRef,
+  );
 
   const cached = useSyncExternalStore(
     subscribeCatalogClientCache,
-    () => initialCatalog ?? readCatalogClientCacheEntry(cacheKey),
-    () => initialCatalog,
+    () => matchingInitial ?? readCatalogClientCacheEntry(cacheKey),
+    () => matchingInitial,
   );
 
   const [meta, setMeta] = useState<ProductsCatalogCacheResponse['meta'] | null>(
-    initialCatalog?.meta ?? cached?.meta ?? null,
+    matchingInitial?.meta ?? cached?.meta ?? null,
   );
   const [error, setError] = useState<Error | null>(null);
-  const [isFetching, setIsFetching] = useState(!initialCatalog && !cached);
+  const [isFetching, setIsFetching] = useState(!matchingInitial && !cached);
 
   useEffect(() => {
-    if (initialCatalog) {
-      writeCatalogClientCache(cacheKey, initialCatalog);
-      setMeta(initialCatalog.meta);
+    if (matchingInitial) {
+      writeCatalogClientCache(cacheKey, matchingInitial);
+      setMeta(matchingInitial.meta);
+      setError(null);
+      setIsFetching(false);
+      return;
+    }
+
+    const existing = readCatalogClientCacheEntry(cacheKey);
+    if (existing) {
+      setMeta(existing.meta);
       setError(null);
       setIsFetching(false);
       return;
@@ -58,7 +104,15 @@ export function useProductsCatalog(
     setError(null);
     setIsFetching(true);
 
-    void fetchStorefrontCatalog(parsed, language)
+    void fetchStorefrontCatalog(
+      {
+        page: parsed.page,
+        perPage: parsed.perPage,
+        search: parsed.search,
+        category: parsed.category,
+      },
+      language,
+    )
       .then((response) => {
         if (cancelled) {
           return;
@@ -80,9 +134,17 @@ export function useProductsCatalog(
     return () => {
       cancelled = true;
     };
-  }, [cacheKey, initialCatalog, language, parsed.category, parsed.page, parsed.perPage, parsed.search]);
+  }, [
+    cacheKey,
+    language,
+    matchingInitial,
+    parsed.page,
+    parsed.perPage,
+    parsed.search,
+    parsed.category,
+  ]);
 
-  const catalogData = initialCatalog ?? cached;
+  const catalogData = matchingInitial ?? cached ?? readCatalogClientCacheEntry(cacheKey);
 
   const products = useMemo(
     () => (catalogData ? normalizeCatalogProducts(catalogData, parsed.sort) : []),

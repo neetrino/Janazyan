@@ -51,13 +51,13 @@ export function AboutDesktopLayout({
   return (
     <div className="@container relative w-full">
       <div
-        className="relative flex w-full justify-center overflow-visible"
+        className="relative w-full overflow-x-clip"
         style={{
           height: `calc(${artboardTotalHeightPx}px * ${scaleExpression})`,
         }}
       >
         <div
-          className="relative shrink-0 origin-top"
+          className="relative origin-top-left"
           style={
             {
               width: ABOUT_ARTBOARD_WIDTH_PX,
