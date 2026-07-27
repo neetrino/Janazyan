@@ -1,13 +1,6 @@
 'use client';
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type MutableRefObject,
-} from 'react';
+import { useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import type { LanguageCode } from '@/lib/language';
 import type { ProductsCatalogCacheResponse } from '@/lib/cache/products-catalog-cache.types';
 import {
@@ -28,65 +21,37 @@ type UseProductsCatalogResult = {
 };
 
 type UseProductsCatalogOptions = {
-  /** SSR payload — used only while it matches the current filter key. */
+  /**
+   * SSR payload for the current filter key only.
+   * Callers must pass null when URL filters no longer match the server payload.
+   */
   initialCatalog?: ProductsCatalogCacheResponse | null;
 };
-
-function catalogsMatchCurrentKey(
-  initialCatalog: ProductsCatalogCacheResponse | null,
-  cacheKey: string,
-  initialKeyRef: MutableRefObject<string | null>,
-  prevInitialRef: MutableRefObject<ProductsCatalogCacheResponse | null>,
-): ProductsCatalogCacheResponse | null {
-  if (!initialCatalog) {
-    return null;
-  }
-
-  if (initialCatalog !== prevInitialRef.current) {
-    initialKeyRef.current = cacheKey;
-    prevInitialRef.current = initialCatalog;
-  }
-
-  if (initialKeyRef.current !== cacheKey) {
-    return null;
-  }
-
-  return initialCatalog;
-}
 
 export function useProductsCatalog(
   parsed: ParsedCatalogParams,
   language: LanguageCode,
   options?: UseProductsCatalogOptions,
 ): UseProductsCatalogResult {
-  const initialCatalogProp = options?.initialCatalog ?? null;
+  const initialCatalog = options?.initialCatalog ?? null;
   const cacheKey = buildCatalogClientCacheKey(parsed, language);
-  const initialKeyRef = useRef<string | null>(null);
-  const prevInitialRef = useRef<ProductsCatalogCacheResponse | null>(null);
-
-  const matchingInitial = catalogsMatchCurrentKey(
-    initialCatalogProp,
-    cacheKey,
-    initialKeyRef,
-    prevInitialRef,
-  );
 
   const cached = useSyncExternalStore(
     subscribeCatalogClientCache,
-    () => matchingInitial ?? readCatalogClientCacheEntry(cacheKey),
-    () => matchingInitial,
+    () => initialCatalog ?? readCatalogClientCacheEntry(cacheKey),
+    () => initialCatalog,
   );
 
   const [meta, setMeta] = useState<ProductsCatalogCacheResponse['meta'] | null>(
-    matchingInitial?.meta ?? cached?.meta ?? null,
+    initialCatalog?.meta ?? cached?.meta ?? null,
   );
   const [error, setError] = useState<Error | null>(null);
-  const [isFetching, setIsFetching] = useState(!matchingInitial && !cached);
+  const [isFetching, setIsFetching] = useState(!initialCatalog && !cached);
 
   useEffect(() => {
-    if (matchingInitial) {
-      writeCatalogClientCache(cacheKey, matchingInitial);
-      setMeta(matchingInitial.meta);
+    if (initialCatalog) {
+      writeCatalogClientCache(cacheKey, initialCatalog);
+      setMeta(initialCatalog.meta);
       setError(null);
       setIsFetching(false);
       return;
@@ -136,15 +101,15 @@ export function useProductsCatalog(
     };
   }, [
     cacheKey,
+    initialCatalog,
     language,
-    matchingInitial,
+    parsed.category,
     parsed.page,
     parsed.perPage,
     parsed.search,
-    parsed.category,
   ]);
 
-  const catalogData = matchingInitial ?? cached ?? readCatalogClientCacheEntry(cacheKey);
+  const catalogData = initialCatalog ?? cached;
 
   const products = useMemo(
     () => (catalogData ? normalizeCatalogProducts(catalogData, parsed.sort) : []),
