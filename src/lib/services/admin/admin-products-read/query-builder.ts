@@ -15,18 +15,22 @@ export function buildProductWhereClause(filters: ProductFilters): Prisma.Product
   if (filters.search) {
     orConditions.push(
       {
-        slug: {
-          contains: filters.search,
-          mode: "insensitive",
-        },
-      },
-      {
         translations: {
           some: {
-            title: {
-              contains: filters.search,
-              mode: "insensitive",
-            },
+            OR: [
+              {
+                title: {
+                  contains: filters.search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                slug: {
+                  contains: filters.search,
+                  mode: "insensitive",
+                },
+              },
+            ],
           },
         },
       },
