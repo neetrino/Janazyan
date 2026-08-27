@@ -29,7 +29,10 @@ export function OrderDetailsSummary({
     [orderDetails.customer?.firstName, orderDetails.customer?.lastName]
       .filter((part): part is string => Boolean(part?.trim()))
       .join(' ')
-      .trim() || t('admin.orders.unknownCustomer');
+      .trim() ||
+    orderDetails.customerEmail ||
+    orderDetails.customerPhone ||
+    t('admin.orders.unknownCustomer');
 
   return (
     <Card className="p-4 md:p-6">

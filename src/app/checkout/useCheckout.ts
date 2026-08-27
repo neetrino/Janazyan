@@ -105,8 +105,10 @@ export function useCheckout() {
   const { submitOrder, isSubmitting } = useOrderSubmission({
     cart,
     isLoggedIn,
+    userId: user?.id,
     deliveryPrice,
     setError: setCheckoutError,
+    setCart,
   });
 
   const applyPromoCode = async () => {

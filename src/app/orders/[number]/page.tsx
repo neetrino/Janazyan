@@ -11,6 +11,7 @@ import {
   shouldClearCartOnOrderPage,
 } from '../../../lib/cart/order-success-cart-clear';
 import { readGuestOrderAccess } from '../../checkout/utils/guest-order-access';
+import { resetBodyScrollLock } from '../../../lib/dom/body-scroll-lock';
 import { ProductsHeroShell } from '../../../components/products/ProductsHeroShell';
 import { ACCOUNT_PAGE_HERO_SHELL_MOBILE_PROPS } from '../../../lib/layout/account-pages-layout.constants';
 import { LoadingState } from './components/LoadingState';
@@ -74,6 +75,10 @@ export default function OrderPage() {
   useEffect(() => {
     void fetchOrder();
   }, [fetchOrder]);
+
+  useEffect(() => {
+    resetBodyScrollLock();
+  }, []);
 
   useEffect(() => {
     if (!shouldClearCartOnOrderPage(orderNumber, paymentStatus)) {

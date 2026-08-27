@@ -31,6 +31,7 @@ import {
   HEADER_PILL_BORDER_RADIUS_PX,
   HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
+import { HEADER_LOGO_IMAGE_CROP_STYLE, HEADER_LOGO_SRC } from './header-logo.constants';
 import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 
@@ -44,8 +45,6 @@ function useHeaderNavLinks() {
         : t(`common.navigation.${link.labelKey}`),
   }));
 }
-
-const HEADER_LOGO_SRC = '/figma/header-logo.webp';
 
 type HeaderBrandClusterProps = {
   pathname: string;
@@ -68,14 +67,22 @@ function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
         className="relative block overflow-hidden"
         style={{ width: logoWidthPx, height: logoHeightPx }}
       >
-        <Image
-          src={HEADER_LOGO_SRC}
-          alt="Janazyan"
-          fill
-          priority
-          sizes="72px"
-          className="object-contain object-left"
-        />
+        {isHomePage ? (
+          <Image
+            src={HEADER_LOGO_SRC}
+            alt="Janazyan"
+            fill
+            priority
+            sizes={`${HEADER_LOGO_WIDTH_PX}px`}
+            className="object-contain object-left"
+          />
+        ) : (
+          <img
+            src={HEADER_LOGO_SRC}
+            alt="Janazyan"
+            style={HEADER_LOGO_IMAGE_CROP_STYLE}
+          />
+        )}
       </span>
     </Link>
   );

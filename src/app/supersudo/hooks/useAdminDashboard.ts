@@ -31,6 +31,10 @@ interface RecentOrder {
   status: string;
   paymentStatus: string;
   total: number;
+  subtotal?: number;
+  discountAmount?: number;
+  shippingAmount?: number;
+  taxAmount?: number;
   currency: string;
   customerEmail?: string;
   customerPhone?: string;

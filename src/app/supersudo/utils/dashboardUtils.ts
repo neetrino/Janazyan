@@ -5,9 +5,17 @@
 import { CURRENCIES, formatPriceInCurrency, type CurrencyCode } from '../../../lib/currency';
 
 /**
- * Formats currency amount
+ * Formats an amount already stored in AMD (order totals, dashboard revenue).
+ * Do not use formatPrice here — that treats the value as USD and multiplies by rate.
  */
-export function formatCurrency(amount: number, currency: string = 'USD'): string {
+export function formatDashboardAmdAmount(amount: number): string {
+  return formatPriceInCurrency(amount, 'AMD');
+}
+
+/**
+ * Formats currency amount that is already in the given currency (no conversion).
+ */
+export function formatCurrency(amount: number, currency: string = 'AMD'): string {
   if (currency in CURRENCIES) {
     return formatPriceInCurrency(amount, currency as CurrencyCode);
   }

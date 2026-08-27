@@ -1,8 +1,8 @@
 import { db } from "@white-shop/db";
-
-const COMPLETED_ORDER_WHERE = {
-  OR: [{ status: "completed" }, { paymentStatus: "paid" }],
-};
+import {
+  DASHBOARD_REVENUE_ORDER_WHERE,
+  resolveOrderTotalAmd,
+} from "@/lib/orders/resolve-order-total-amd";
 
 /**
  * Get dashboard stats
@@ -26,12 +26,22 @@ export async function getStats() {
     },
   });
   const pendingOrders = await db.order.count({ where: { status: "pending" } });
-  const revenueAgg = await db.order.aggregate({
-    where: COMPLETED_ORDER_WHERE,
-    _sum: { total: true },
+  const revenueOrders = await db.order.findMany({
+    where: DASHBOARD_REVENUE_ORDER_WHERE,
+    select: {
+      total: true,
+      subtotal: true,
+      discountAmount: true,
+      shippingAmount: true,
+      taxAmount: true,
+    },
   });
+  const totalRevenue = revenueOrders.reduce(
+    (sum, order) => sum + resolveOrderTotalAmd(order),
+    0,
+  );
   const currencySample = await db.order.findFirst({
-    where: COMPLETED_ORDER_WHERE,
+    where: DASHBOARD_REVENUE_ORDER_WHERE,
     select: { currency: true },
     orderBy: { createdAt: "desc" },
   });
@@ -50,7 +60,7 @@ export async function getStats() {
       pending: pendingOrders,
     },
     revenue: {
-      total: revenueAgg._sum?.total ?? 0,
+      total: totalRevenue,
       currency: currencySample?.currency || "AMD",
     },
   };

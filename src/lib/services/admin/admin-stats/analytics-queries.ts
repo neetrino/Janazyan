@@ -1,11 +1,45 @@
 import { db } from '@white-shop/db';
 import { sanitizeStoredProductImageUrl } from '@/lib/products/resolve-stored-product-image-url';
+import {
+  DASHBOARD_REVENUE_ORDER_WHERE,
+  resolveOrderTotalAmd,
+  type OrderAmountFields,
+} from '@/lib/orders/resolve-order-total-amd';
 
 type DateRange = { start: Date; end: Date };
 
 const ORDER_DATE_FILTER = (range: DateRange) => ({
   createdAt: { gte: range.start, lte: range.end },
 });
+
+const ORDER_AMOUNT_SELECT = {
+  total: true,
+  subtotal: true,
+  discountAmount: true,
+  shippingAmount: true,
+  taxAmount: true,
+  status: true,
+  paymentStatus: true,
+} as const;
+
+function isRevenueEligible(order: {
+  status: string;
+  paymentStatus: string;
+}): boolean {
+  return (
+    order.status === 'completed' ||
+    order.paymentStatus === 'paid'
+  );
+}
+
+function sumRevenueAmd(orders: Array<OrderAmountFields & { status: string; paymentStatus: string }>): number {
+  return orders.reduce((sum, order) => {
+    if (!isRevenueEligible(order)) {
+      return sum;
+    }
+    return sum + resolveOrderTotalAmd(order);
+  }, 0);
+}
 
 function extractImageFromMedia(media: unknown[] | undefined): string | null {
   if (!Array.isArray(media) || media.length === 0) {
@@ -27,15 +61,15 @@ function extractImageFromMedia(media: unknown[] | undefined): string | null {
 export async function fetchAnalyticsOrderSummary(range: DateRange) {
   const where = ORDER_DATE_FILTER(range);
 
-  const [totalOrders, paidOrders, pendingOrders, completedOrders, revenue] =
+  const [totalOrders, paidOrders, pendingOrders, completedOrders, revenueOrders] =
     await Promise.all([
       db.order.count({ where }),
       db.order.count({ where: { ...where, paymentStatus: 'paid' } }),
       db.order.count({ where: { ...where, status: 'pending' } }),
       db.order.count({ where: { ...where, status: 'completed' } }),
-      db.order.aggregate({
-        where: { ...where, paymentStatus: 'paid' },
-        _sum: { total: true },
+      db.order.findMany({
+        where: { ...where, ...DASHBOARD_REVENUE_ORDER_WHERE },
+        select: ORDER_AMOUNT_SELECT,
       }),
     ]);
 
@@ -44,14 +78,14 @@ export async function fetchAnalyticsOrderSummary(range: DateRange) {
     paidOrders,
     pendingOrders,
     completedOrders,
-    totalRevenue: revenue._sum.total ?? 0,
+    totalRevenue: sumRevenueAmd(revenueOrders),
   };
 }
 
 export async function fetchAnalyticsOrdersByDay(range: DateRange) {
   const orders = await db.order.findMany({
     where: ORDER_DATE_FILTER(range),
-    select: { createdAt: true, paymentStatus: true, total: true },
+    select: { createdAt: true, ...ORDER_AMOUNT_SELECT },
   });
 
   const ordersByDayMap = new Map<string, { count: number; revenue: number }>();
@@ -60,8 +94,8 @@ export async function fetchAnalyticsOrdersByDay(range: DateRange) {
     const dateKey = order.createdAt.toISOString().split('T')[0];
     const existing = ordersByDayMap.get(dateKey) ?? { count: 0, revenue: 0 };
     existing.count += 1;
-    if (order.paymentStatus === 'paid') {
-      existing.revenue += order.total;
+    if (isRevenueEligible(order)) {
+      existing.revenue += resolveOrderTotalAmd(order);
     }
     ordersByDayMap.set(dateKey, existing);
   });

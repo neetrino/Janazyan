@@ -7,8 +7,6 @@ import type { Category } from '../types';
 interface ProductFiltersProps {
   search: string;
   setSearch: (search: string) => void;
-  skuSearch: string;
-  setSkuSearch: (sku: string) => void;
   selectedCategories: Set<string>;
   setSelectedCategories: (categories: Set<string> | ((prev: Set<string>) => Set<string>)) => void;
   categories: Category[];
@@ -24,8 +22,6 @@ interface ProductFiltersProps {
 export function ProductFilters({
   search,
   setSearch,
-  skuSearch,
-  setSkuSearch,
   selectedCategories,
   setSelectedCategories,
   categories,
@@ -41,45 +37,23 @@ export function ProductFilters({
 
   return (
     <div className="space-y-4 mb-6">
-      {/* Search Fields */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            {t('admin.products.searchByTitleOrSlug')}
-          </label>
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSearch(e as any);
-              }
-            }}
-            placeholder={t('admin.products.searchPlaceholder')}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          />
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1.5">
-            {t('admin.products.searchBySku')}
-          </label>
-          <input
-            type="text"
-            value={skuSearch}
-            onChange={(e) => setSkuSearch(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                handleSearch(e as FormEvent);
-              }
-            }}
-            placeholder={t('admin.products.skuPlaceholder')}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-          />
-        </div>
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+          {t('admin.products.searchByTitleOrSlug')}
+        </label>
+        <input
+          type="text"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSearch(e as unknown as FormEvent);
+            }
+          }}
+          placeholder={t('admin.products.searchPlaceholder')}
+          className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+        />
       </div>
 
       {/* Filters */}

@@ -25,6 +25,11 @@ export function registerPendingCartAdd(
   });
 }
 
+/** True while at least one authenticated add-to-cart request is in flight. */
+export function hasPendingCartAdds(): boolean {
+  return pendingAdds.size > 0;
+}
+
 /**
  * Waits for a matching in-flight add-to-cart mutation, if one exists.
  */

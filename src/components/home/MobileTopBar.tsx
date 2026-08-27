@@ -21,9 +21,9 @@ import {
   type InstantSearchResultItem,
 } from '../hooks/useInstantSearch';
 import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
+import { HEADER_LOGO_IMAGE_CROP_STYLE, HEADER_LOGO_SRC } from '../header/header-logo.constants';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
-const MOBILE_TOP_BAR_LOGO_SRC = '/figma/header-logo.webp';
 const MOBILE_TOP_BAR_LOGO_WIDTH_PX = 55;
 const MOBILE_TOP_BAR_LOGO_HEIGHT_PX = 44;
 
@@ -119,9 +119,9 @@ export function MobileTopBar() {
           }}
         >
           <img
-            src={MOBILE_TOP_BAR_LOGO_SRC}
+            src={HEADER_LOGO_SRC}
             alt="Janazyan"
-            className="absolute h-[213.14%] left-[-31.71%] max-w-none top-[-53.44%] w-[170.73%]"
+            style={HEADER_LOGO_IMAGE_CROP_STYLE}
           />
         </span>
       </Link>

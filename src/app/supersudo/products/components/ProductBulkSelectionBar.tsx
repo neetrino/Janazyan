@@ -15,8 +15,10 @@ export function ProductBulkSelectionBar({
   bulkDeleting,
 }: ProductBulkSelectionBarProps) {
   const { t } = useTranslation();
-  const hasSelection = selectedCount > 0;
-  const deleteDisabled = !hasSelection || bulkDeleting;
+
+  if (selectedCount === 0) {
+    return null;
+  }
 
   return (
     <Card className="mb-6 w-full min-w-0 p-4">
@@ -29,7 +31,7 @@ export function ProductBulkSelectionBar({
           type="button"
           className="shrink-0"
           onClick={onBulkDelete}
-          disabled={deleteDisabled}
+          disabled={bulkDeleting}
         >
           {bulkDeleting ? t('admin.products.deleting') : t('admin.products.deleteSelected')}
         </Button>

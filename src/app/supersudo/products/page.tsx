@@ -30,8 +30,6 @@ export default function ProductsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
-  const [skuInput, setSkuInput] = useState('');
-  const [appliedSku, setAppliedSku] = useState('');
   const [stockFilter, setStockFilter] = useState<'all' | 'inStock' | 'outOfStock'>('all');
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<ProductsResponse['meta'] | null>(null);
@@ -136,7 +134,6 @@ export default function ProductsPage() {
     page,
     appliedSearch,
     categoryFilterKey,
-    appliedSku,
     stockFilter,
     sortParamForApi,
   ]);
@@ -155,10 +152,6 @@ export default function ProductsPage() {
 
       if (selectedCategories.size > 0) {
         params.category = Array.from(selectedCategories).join(',');
-      }
-
-      if (appliedSku.trim()) {
-        params.sku = appliedSku.trim();
       }
 
       if (sortBy && sortBy.startsWith('createdAt')) {
@@ -293,7 +286,6 @@ export default function ProductsPage() {
 
   const applySearchFilters = () => {
     setAppliedSearch(searchInput.trim());
-    setAppliedSku(skuInput.trim());
     setPage(1);
   };
 
@@ -316,8 +308,6 @@ export default function ProductsPage() {
   const handleClearFilters = () => {
     setSearchInput('');
     setAppliedSearch('');
-    setSkuInput('');
-    setAppliedSku('');
     setSelectedCategories(new Set());
     setStockFilter('all');
     setPage(1);
@@ -342,7 +332,7 @@ export default function ProductsPage() {
 
   return (
     <>
-      {(appliedSearch || selectedCategories.size > 0 || appliedSku || stockFilter !== 'all') && (
+      {(appliedSearch || selectedCategories.size > 0 || stockFilter !== 'all') && (
         <div className="mb-6 flex justify-end">
           <button
             type="button"
@@ -360,8 +350,6 @@ export default function ProductsPage() {
             <ProductFilters
               search={searchInput}
               setSearch={setSearchInput}
-              skuSearch={skuInput}
-              setSkuSearch={setSkuInput}
               selectedCategories={selectedCategories}
               setSelectedCategories={setSelectedCategories}
               categories={categories}

@@ -1,4 +1,5 @@
 import type { Prisma } from "@white-shop/db";
+import { resolveOrderCustomerContact } from "@/lib/orders/customer-contact";
 
 /**
  * Format order for list response
@@ -17,6 +18,8 @@ export function formatOrderForList(order: {
   currency: string | null;
   customerEmail: string | null;
   customerPhone: string | null;
+  shippingAddress?: Prisma.JsonValue | null;
+  billingAddress?: Prisma.JsonValue | null;
   createdAt: Date;
   items?: Array<unknown>;
   _count?: { items: number };
@@ -28,9 +31,7 @@ export function formatOrderForList(order: {
     phone: string | null;
   } | null;
 }) {
-  const customer = order.user || null;
-  const firstName = customer?.firstName || '';
-  const lastName = customer?.lastName || '';
+  const contact = resolveOrderCustomerContact(order);
 
   return {
     id: order.id,
@@ -44,11 +45,11 @@ export function formatOrderForList(order: {
     shippingAmount: order.shippingAmount,
     taxAmount: order.taxAmount,
     currency: order.currency || 'AMD',
-    customerEmail: customer?.email || order.customerEmail || '',
-    customerPhone: customer?.phone || order.customerPhone || '',
-    customerFirstName: firstName,
-    customerLastName: lastName,
-    customerId: customer?.id || null,
+    customerEmail: contact.email,
+    customerPhone: contact.phone,
+    customerFirstName: contact.firstName,
+    customerLastName: contact.lastName,
+    customerId: contact.customerId,
     itemsCount:
       order._count?.items ??
       (Array.isArray(order.items) ? order.items.length : 0),
@@ -240,9 +241,13 @@ export function formatOrderForDetail(order: {
   }>;
 }) {
   const user = order.user;
+  const contact = resolveOrderCustomerContact(order);
   const payments = Array.isArray(order.payments) ? order.payments : [];
   const primaryPayment = payments[0] || null;
   const formattedItems = order.items.map(formatOrderItem);
+  const hasCustomerInfo =
+    Boolean(user) ||
+    Boolean(contact.firstName || contact.lastName || contact.email || contact.phone);
 
   return {
     id: order.id,
@@ -260,8 +265,8 @@ export function formatOrderForDetail(order: {
       total: Number(order.total || 0),
       currency: order.currency || "AMD",
     },
-    customerEmail: order.customerEmail || user?.email || undefined,
-    customerPhone: order.customerPhone || user?.phone || undefined,
+    customerEmail: contact.email || undefined,
+    customerPhone: contact.phone || undefined,
     billingAddress: order.billingAddress || null,
     shippingAddress: order.shippingAddress || null,
     shippingMethod: order.shippingMethod || null,
@@ -281,13 +286,13 @@ export function formatOrderForDetail(order: {
           cardBrand: primaryPayment.cardBrand,
         }
       : null,
-    customer: user
+    customer: hasCustomerInfo
       ? {
-          id: user.id,
-          email: user.email,
-          phone: user.phone,
-          firstName: user.firstName,
-          lastName: user.lastName,
+          id: user?.id ?? "",
+          email: contact.email || null,
+          phone: contact.phone || null,
+          firstName: contact.firstName || null,
+          lastName: contact.lastName || null,
         }
       : null,
     createdAt: order.createdAt.toISOString(),

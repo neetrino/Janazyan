@@ -15,6 +15,7 @@ import { buildArcaReturnUrl, getArcaConfig } from "@/lib/payments/arca/config";
 import { convertPrice } from "@/lib/currency";
 import { getPublishedPartnerStoreById } from "./partner-stores.service";
 import type { PickupStoreAddress } from "@/lib/types/pickup-store";
+import { buildCheckoutBillingAddress } from "@/lib/orders/customer-contact";
 import { DEFAULT_LANGUAGE } from '../language';
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
@@ -115,6 +116,8 @@ class OrdersService {
     paymentMethod: string;
     shippingMethod: string;
     shippingAddress: CheckoutData['shippingAddress'] | PickupStoreAddress | null | undefined;
+    firstName?: string;
+    lastName?: string;
     email: string;
     phone: string;
     subtotal: number;
@@ -131,6 +134,8 @@ class OrdersService {
       paymentMethod,
       shippingMethod,
       shippingAddress,
+      firstName,
+      lastName,
       email,
       phone,
       subtotal,
@@ -172,6 +177,16 @@ class OrdersService {
         }
 
         const orderNumber = await allocateNextOrderNumber(tx);
+        const serializedShippingAddress = shippingAddress
+          ? JSON.parse(JSON.stringify(shippingAddress))
+          : null;
+        const billingAddress = buildCheckoutBillingAddress({
+          firstName,
+          lastName,
+          email,
+          phone,
+          shippingAddress: serializedShippingAddress,
+        });
         const newOrder = await tx.order.create({
           data: {
             number: orderNumber,
@@ -189,8 +204,8 @@ class OrdersService {
             customerPhone: phone,
             customerLocale: 'en',
             shippingMethod,
-            shippingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
-            billingAddress: shippingAddress ? JSON.parse(JSON.stringify(shippingAddress)) : null,
+            shippingAddress: serializedShippingAddress,
+            billingAddress: billingAddress ? JSON.parse(JSON.stringify(billingAddress)) : null,
             items: {
               create: cartItems.map((item) => ({
                 variantId: item.variantId,
@@ -371,6 +386,8 @@ class OrdersService {
       const {
         cartId,
         items: guestItems,
+        firstName,
+        lastName,
         email,
         phone,
         shippingMethod = 'pickup',
@@ -660,6 +677,8 @@ class OrdersService {
         paymentMethod,
         shippingMethod,
         shippingAddress: resolvedShippingAddress,
+        firstName,
+        lastName,
         email,
         phone,
         subtotal,

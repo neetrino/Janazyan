@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { BrandCenteredLoaderMark } from '../../../components/BrandCenteredLoaderMark';
+import { resetBodyScrollLock, useBodyScrollLock } from '../../../lib/dom/body-scroll-lock';
 import {
   BRAND_CENTERED_LOADER_OVERLAY_CLASS,
   BRAND_CENTERED_LOADER_PANEL_CLASS,
@@ -21,18 +22,13 @@ export function CheckoutPlacingOrderOverlay({ open }: CheckoutPlacingOrderOverla
     setMounted(true);
   }, []);
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
     return () => {
-      document.body.style.overflow = previousOverflow;
+      resetBodyScrollLock();
     };
-  }, [open]);
+  }, []);
 
   if (!mounted || !open) {
     return null;

@@ -327,7 +327,13 @@ export async function fetchCart(
   );
 
   if (cart === null || isCartEmpty(cart)) {
-    return scope ? readCartSnapshot(scope) : cart;
+    if (scope && !shouldApplyNetworkCart(scope, fetchStartedAt, mutationEpochAtStart)) {
+      const snapshot = readCartSnapshot(scope);
+      if (snapshot && !isCartEmpty(snapshot)) {
+        return snapshot;
+      }
+    }
+    return cart;
   }
 
   return cart;
