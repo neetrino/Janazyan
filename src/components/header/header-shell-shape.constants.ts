@@ -163,9 +163,11 @@ export function resolveHeaderStickyOverlapPx(bandHeightPx: number): number {
 }
 
 /** Figma logo frame inside the header cluster (node 368:626). */
-export const HEADER_LOGO_WIDTH_PX = 72;
-export const HEADER_LOGO_HEIGHT_PX = 61;
+export const HEADER_LOGO_WIDTH_PX = 85;
+export const HEADER_LOGO_HEIGHT_PX = HEADER_PILL_HEIGHT_PX;
 
 /** Compact logo — fits nav pill vertical padding on hero-shell pages. */
 export const HEADER_LOGO_COMPACT_HEIGHT_PX = HEADER_PILL_HEIGHT_PX - HEADER_NAV_PILL_PADDING_Y_PX * 2;
-export const HEADER_LOGO_COMPACT_WIDTH_PX = Math.round((72 * HEADER_LOGO_COMPACT_HEIGHT_PX) / 61);
+export const HEADER_LOGO_COMPACT_WIDTH_PX = Math.round(
+  (HEADER_LOGO_WIDTH_PX * HEADER_LOGO_COMPACT_HEIGHT_PX) / HEADER_LOGO_HEIGHT_PX,
+);

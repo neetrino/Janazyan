@@ -5,10 +5,10 @@ import type { AdminMenuItem } from '../../components/AdminMenuDrawer';
  *
  * ԿԱՐԵՎՈՐ.
  * - Մենյուի բոլոր կետերը centrally պահում ենք այստեղ, որ բոլոր admin էջերում նույնը լինի։
- * - Desktop sidebar shows the full list; mobile (below lg) only Orders + Analytics
+ * - Desktop sidebar shows the full list; mobile (below lg) only Orders
  *   (see `admin-mobile.constants.ts`).
  * - "Discounts" label-ը նույնն է ամեն տեղ, ուղիղ տանում է `/supersudo/quick-settings` էջ։
- * - "Delivery" կետը միշտ առկա է, այդ թվում Analytics և Filter by Price էջերում sidebar-ում։
+ * - "Delivery" կետը միշտ առկա է sidebar-ում։
  *
  * Note: This function returns menu items with translated labels.
  * Use getAdminMenuTabs(t) in client components where t is from useTranslation().
@@ -152,21 +152,6 @@ export function getAdminMenuTABS(t: (path: string) => string): AdminMenuItem[] {
           strokeLinejoin="round"
           strokeWidth={2}
           d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-        />
-      </svg>
-    ),
-  },
-  {
-    id: 'analytics',
-    label: t('admin.menu.analytics'),
-    path: '/supersudo/analytics',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
         />
       </svg>
     ),

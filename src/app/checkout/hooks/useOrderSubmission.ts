@@ -4,9 +4,10 @@ import { apiClient } from '../../../lib/api-client';
 import { isInsufficientStockProblem } from '../../../lib/api-client/error-handler';
 import { ApiError } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
-import { fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
-import { isOptimisticUserCartId } from '../../../lib/cart/cart-item-id';
+import { fetchCart, fetchLoggedInCart } from '../../../app/cart/cart-fetcher';
+import { dispatchCartUpdated } from '../../../lib/cart/cart-events';
 import { markOrderCartClearOnSuccess } from '../../../lib/cart/order-success-cart-clear';
+import { resetBodyScrollLock } from '../../../lib/dom/body-scroll-lock';
 import { clearGuestCart } from '../checkoutUtils';
 import { saveGuestOrderAccess } from '../utils/guest-order-access';
 import type { CheckoutFormData, Cart, CartItem } from '../types';
@@ -14,6 +15,12 @@ import type { CheckoutFormData, Cart, CartItem } from '../types';
 function resolveCheckoutSubmitError(err: unknown, t: (key: string) => string): string {
   if (err instanceof ApiError && isInsufficientStockProblem(err.data)) {
     return t('checkout.errors.insufficientStock');
+  }
+  if (err instanceof ApiError && err.data && typeof err.data === 'object') {
+    const title = 'title' in err.data ? String(err.data.title) : '';
+    if (title === 'Cart is empty') {
+      return t('checkout.errors.cartEmpty');
+    }
   }
   if (err instanceof Error && err.message.trim()) {
     return err.message;
@@ -24,8 +31,10 @@ function resolveCheckoutSubmitError(err: unknown, t: (key: string) => string): s
 interface UseOrderSubmissionProps {
   cart: Cart | null;
   isLoggedIn: boolean;
+  userId: string | null | undefined;
   deliveryPrice: number | null;
   setError: (error: string | null) => void;
+  setCart: (cart: Cart | null) => void;
 }
 
 type SubmitOrderOptions = {
@@ -35,13 +44,27 @@ type SubmitOrderOptions = {
 export function useOrderSubmission({
   cart,
   isLoggedIn,
+  userId,
   deliveryPrice,
   setError,
+  setCart,
 }: UseOrderSubmissionProps) {
   const router = useRouter();
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const isSubmittingRef = useRef(false);
+
+  const syncEmptyCheckoutCart = async () => {
+    const freshCart = await fetchCart(isLoggedIn, t, userId, {
+      forceFresh: true,
+    });
+    setCart(freshCart);
+    dispatchCartUpdated({
+      itemsCount: freshCart?.itemsCount ?? 0,
+      fromSync: true,
+      skipRevalidate: true,
+    });
+  };
 
   const submitOrder = async (data: CheckoutFormData, options?: SubmitOrderOptions) => {
     if (isSubmittingRef.current) {
@@ -59,9 +82,10 @@ export function useOrderSubmission({
 
       let checkoutCart = cart;
 
-      if (isLoggedIn && isOptimisticUserCartId(cart.id)) {
-        const freshCart = await fetchLoggedInCart();
+      if (isLoggedIn) {
+        const freshCart = await fetchLoggedInCart(true);
         if (!freshCart || freshCart.items.length === 0) {
+          await syncEmptyCheckoutCart();
           throw new Error(t('checkout.errors.cartEmpty'));
         }
         checkoutCart = freshCart;
@@ -151,8 +175,18 @@ export function useOrderSubmission({
         saveGuestOrderAccess(response.order.number, data.email, data.phone);
       }
 
+      resetBodyScrollLock();
       router.push(`/orders/${response.order.number}`);
     } catch (err: unknown) {
+      if (
+        err instanceof ApiError &&
+        err.data &&
+        typeof err.data === 'object' &&
+        'title' in err.data &&
+        err.data.title === 'Cart is empty'
+      ) {
+        await syncEmptyCheckoutCart();
+      }
       setError(resolveCheckoutSubmitError(err, t));
       isSubmittingRef.current = false;
       setIsSubmitting(false);

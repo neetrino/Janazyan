@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useBodyScrollLock } from '../../lib/dom/body-scroll-lock';
 import { handleRemoveItem, handleUpdateQuantity } from '../../app/cart/cart-handlers';
 import type { Cart } from '../../app/cart/types';
 import { parseCartUpdatedDetail } from '../../lib/cart/cart-events';
@@ -34,6 +36,7 @@ const CART_DRAWER_TRANSITION_MS = 300;
  * Right-side cart drawer — stays mounted; opens from cache without blocking on API.
  */
 export function CartDrawer() {
+  const pathname = usePathname();
   const { isLoggedIn, user } = useAuth();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -119,12 +122,12 @@ export function CartDrawer() {
     };
   }, [open]);
 
+  useBodyScrollLock(open);
+
   useEffect(() => {
     if (!open) {
       return;
     }
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
 
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -134,10 +137,13 @@ export function CartDrawer() {
     window.addEventListener('keydown', handleEscape);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener('keydown', handleEscape);
     };
   }, [open]);
+
+  useEffect(() => {
+    closeCartDrawer();
+  }, [pathname]);
 
   useEffect(() => {
     const handleCartUpdate = (event: Event) => {

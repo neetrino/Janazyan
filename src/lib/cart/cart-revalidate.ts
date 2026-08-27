@@ -8,6 +8,7 @@ import {
   getRevalidateInflight,
   releaseRevalidateInflight,
 } from './cart-inflight';
+import { hasPendingCartAdds } from './cart-pending-add';
 import { dispatchCartUpdated } from './cart-events';
 import {
   getCartMutationEpoch,
@@ -100,9 +101,11 @@ async function runRevalidate(
       const snapshotSignature = buildCartLineSignature(snapshot);
       const serverSignature = buildCartLineSignature(cart);
       if (snapshotSignature !== serverSignature) {
-        // Keep optimistic snapshot only when it is ahead (in-flight adds).
-        // If snapshot is behind the server, adopt server so badge/drawer stay correct.
-        if (resolveCartItemsCount(snapshot) > resolveCartItemsCount(cart)) {
+        // Keep optimistic snapshot only while add requests are still in flight.
+        if (
+          resolveCartItemsCount(snapshot) > resolveCartItemsCount(cart) &&
+          hasPendingCartAdds()
+        ) {
           dispatchCartSynced(snapshot);
           return snapshot;
         }

@@ -3,6 +3,7 @@
 import { ADMIN_TABLE_CHECKBOX, ADMIN_TABLE_TD_CHECK } from '../../constants/admin-table-classes';
 import { useTranslation } from '../../../../lib/i18n-client';
 import { convertPrice, CurrencyCode } from '../../../../lib/currency';
+import { resolveOrderMerchandiseAmd } from '../../../../lib/orders/resolve-order-total-amd';
 import { getStatusColor, getPaymentStatusColor } from '../utils/orderUtils';
 import type { Order } from '../useOrders';
 
@@ -36,21 +37,17 @@ export function OrderRow({
 
   const customerName =
     [order.customerFirstName, order.customerLastName].filter(Boolean).join(' ') ||
+    order.customerEmail ||
+    order.customerPhone ||
     t('admin.orders.unknownCustomer');
   const rowDetailsLabel = t('admin.orders.viewOrderDetails');
 
   const calculateTotalWithoutShipping = () => {
-    if (order.subtotal !== undefined && order.discountAmount !== undefined && order.taxAmount !== undefined) {
-      const subtotalAMD = convertPrice(order.subtotal, 'USD', 'AMD');
-      const discountAMD = convertPrice(order.discountAmount, 'USD', 'AMD');
-      const taxAMD = convertPrice(order.taxAmount, 'USD', 'AMD');
-      const totalWithoutShippingAMD = subtotalAMD - discountAMD + taxAMD;
-      return formatCurrency(totalWithoutShippingAMD, order.currency, 'AMD');
-    }
-    const totalAMD = convertPrice(order.total, 'USD', 'AMD');
-    const shippingAMD = order.shippingAmount || 0;
-    const totalWithoutShippingAMD = totalAMD - shippingAMD;
-    return formatCurrency(totalWithoutShippingAMD, order.currency, 'AMD');
+    return formatCurrency(
+      resolveOrderMerchandiseAmd(order),
+      order.currency,
+      'AMD',
+    );
   };
 
   const calculateDiscount = () => {

@@ -17,5 +17,11 @@
       "source": "/api/:path*",
       "destination": "/api/:path*"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/v1/cron/armsoft-stock-sync",
+      "schedule": "*/15 * * * *"
+    }
   ]
 }

@@ -11,9 +11,15 @@ export function buildProductWhereClause(filters: ProductFilters): Prisma.Product
 
   const orConditions: Prisma.ProductWhereInput[] = [];
 
-  // Search filter
+  // Search filter (title, slug, or variant SKU)
   if (filters.search) {
     orConditions.push(
+      {
+        slug: {
+          contains: filters.search,
+          mode: "insensitive",
+        },
+      },
       {
         translations: {
           some: {

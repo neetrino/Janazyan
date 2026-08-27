@@ -4,7 +4,6 @@ import type { Cart } from '../../../app/cart/types';
 import { useAuth } from '../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../lib/i18n-client';
 import {
-  isCartSnapshotFresh,
   readCartSnapshot,
   resolveCartCacheScope,
 } from '../../../lib/cart/cart-snapshot-cache';
@@ -39,7 +38,7 @@ export function useCart(isLoggedIn: boolean) {
   const [error, setError] = useState<string | null>(null);
 
   const fetchCartData = useCallback(
-    async (options?: { background?: boolean }) => {
+    async (options?: { background?: boolean; forceFresh?: boolean }) => {
       const scope = resolveCartCacheScope(isLoggedIn, userId);
       if (!scope) {
         return;
@@ -50,7 +49,9 @@ export function useCart(isLoggedIn: boolean) {
       }
 
       try {
-        const freshCart = await fetchCart(isLoggedIn, t, userId);
+        const freshCart = await fetchCart(isLoggedIn, t, userId, {
+          forceFresh: options?.forceFresh ?? false,
+        });
         setCart(freshCart);
         setError(null);
       } catch {
@@ -74,9 +75,8 @@ export function useCart(isLoggedIn: boolean) {
       setLoading(false);
     }
 
-    if (!cached || !isCartSnapshotFresh(scope)) {
-      void fetchCartData({ background: cached !== null });
-    }
+    // Checkout must confirm server cart — stale optimistic snapshots block orders.
+    void fetchCartData({ background: cached !== null, forceFresh: true });
   }, [fetchCartData, isLoggedIn, userId]);
 
   useEffect(() => {

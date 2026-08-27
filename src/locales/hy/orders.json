@@ -31,7 +31,7 @@
   },
   "shippingAddress": {
     "title": "Առաքման հասցե",
-    "pickupStoreTitle": "Վերցման խանութ",
+    "pickupStoreTitle": "խանութի հասցե",
     "phone": "Հեռախոս: {phone}"
   },
   "orderSummary": {
