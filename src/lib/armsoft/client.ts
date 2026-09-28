@@ -1,9 +1,19 @@
 import {
+  ARMSOFT_PRODUCTS_MAX_PAGES,
+  ARMSOFT_PRODUCTS_PAGE_SIZE,
   ARMSOFT_REMAINDERS_MAX_PAGES,
   ARMSOFT_REMAINDERS_PAGE_SIZE,
 } from "./constants";
 import { getArmsoftSmConfig } from "./config";
-import type { ArmsoftProductRemainderRow, ArmsoftRemaindersPage } from "./types";
+import { normalizeSku } from "./sku-normalize";
+import type {
+  ArmsoftProductDirectoryRow,
+  ArmsoftProductRemainderRow,
+  ArmsoftProductsOutputDocument,
+  ArmsoftProductsPage,
+  ArmsoftRemaindersPage,
+  ArmsoftSalePriceRow,
+} from "./types";
 
 function todayIsoDate(): string {
   return new Date().toISOString().slice(0, 10);
@@ -23,12 +33,23 @@ async function parseJsonBody(response: Response): Promise<unknown> {
   }
 }
 
-function isRemaindersPage(value: unknown): value is ArmsoftRemaindersPage {
+function isPagedResponse(
+  value: unknown,
+): value is { id: string; hasMore: boolean; data?: unknown } {
   if (!value || typeof value !== "object") {
     return false;
   }
   const record = value as Record<string, unknown>;
   return typeof record.id === "string" && typeof record.hasMore === "boolean";
+}
+
+function armsoftRequestError(title: string, detail: string): never {
+  throw {
+    status: 502,
+    type: "https://api.shop.am/problems/armsoft-error",
+    title,
+    detail,
+  };
 }
 
 async function postArmsoftJson(
@@ -51,15 +72,70 @@ async function postArmsoftJson(
   const parsed = await parseJsonBody(response);
 
   if (!response.ok) {
-    throw {
-      status: 502,
-      type: "https://api.shop.am/problems/armsoft-error",
-      title: "ArmSoft request failed",
-      detail: `ArmSoft responded with HTTP ${response.status}`,
-    };
+    const detailFromBody =
+      parsed &&
+      typeof parsed === "object" &&
+      "Error" in parsed &&
+      typeof (parsed as { Error?: unknown }).Error === "string"
+        ? String((parsed as { Error: string }).Error)
+        : `ArmSoft responded with HTTP ${response.status}`;
+    armsoftRequestError("ArmSoft request failed", detailFromBody);
   }
 
   return parsed;
+}
+
+async function fetchPagedRows<T>(
+  firstPath: string,
+  firstBody: Record<string, unknown>,
+  nextPath: string,
+  maxPages: number,
+  title: string,
+): Promise<T[]> {
+  const rows: T[] = [];
+  const firstPageRaw = await postArmsoftJson(firstPath, firstBody);
+
+  if (!isPagedResponse(firstPageRaw)) {
+    armsoftRequestError(title, "Unexpected paged response shape");
+  }
+
+  const firstPage = firstPageRaw as ArmsoftRemaindersPage | ArmsoftProductsPage;
+  if (firstPage.data?.length) {
+    rows.push(...(firstPage.data as T[]));
+  }
+
+  let pageId = firstPage.id;
+  let hasMore = firstPage.hasMore;
+  let pageCount = 1;
+
+  while (hasMore && pageCount < maxPages) {
+    const nextRaw = await postArmsoftJson(nextPath, {
+      id: pageId,
+      close: false,
+    });
+
+    if (!isPagedResponse(nextRaw)) {
+      armsoftRequestError(title, "Unexpected next-page response shape");
+    }
+
+    const nextPage = nextRaw as ArmsoftRemaindersPage | ArmsoftProductsPage;
+    if (nextPage.data?.length) {
+      rows.push(...(nextPage.data as T[]));
+    }
+
+    pageId = nextPage.id;
+    hasMore = nextPage.hasMore;
+    pageCount += 1;
+  }
+
+  if (hasMore) {
+    await postArmsoftJson(nextPath, { id: pageId, close: true }).catch(
+      () => undefined,
+    );
+    armsoftRequestError(title, `Pagination exceeded ${maxPages} pages`);
+  }
+
+  return rows;
 }
 
 /**
@@ -69,75 +145,159 @@ export async function fetchAllProductRemainders(
   dateIso: string = todayIsoDate(),
 ): Promise<ArmsoftProductRemainderRow[]> {
   const config = getArmsoftSmConfig();
-  const rows: ArmsoftProductRemainderRow[] = [];
+  return fetchPagedRows<ArmsoftProductRemainderRow>(
+    "/v1/reports/productremainders",
+    {
+      pageSize: ARMSOFT_REMAINDERS_PAGE_SIZE,
+      date: dateIso,
+      storage: config.storageFilter,
+      pricelistType: config.pricelistType,
+      showAlsoAdditionalUnitQuantities: false,
+      showZeroRows: true,
+    },
+    "/v1/reports/productremainders/nextpage",
+    ARMSOFT_REMAINDERS_MAX_PAGES,
+    "ArmSoft remainders error",
+  );
+}
 
-  const firstPageRaw = await postArmsoftJson("/v1/reports/productremainders", {
-    pageSize: ARMSOFT_REMAINDERS_PAGE_SIZE,
-    date: dateIso,
-    storage: config.storageFilter,
-    pricelistType: config.pricelistType,
-    showAlsoAdditionalUnitQuantities: false,
-    showZeroRows: true,
-  });
+/**
+ * Fetches product directory rows (code ↔ inner id mapping for price list).
+ */
+export async function fetchAllProducts(): Promise<ArmsoftProductDirectoryRow[]> {
+  return fetchPagedRows<ArmsoftProductDirectoryRow>(
+    "/v1/directories/products",
+    {
+      pageSize: ARMSOFT_PRODUCTS_PAGE_SIZE,
+      showAlsoClosed: false,
+    },
+    "/v1/directories/products/nextpage",
+    ARMSOFT_PRODUCTS_MAX_PAGES,
+    "ArmSoft products directory error",
+  );
+}
 
-  if (!isRemaindersPage(firstPageRaw)) {
-    throw {
-      status: 502,
-      type: "https://api.shop.am/problems/armsoft-error",
-      title: "ArmSoft remainders error",
-      detail: "Unexpected remainders response shape",
-    };
+export function extractArmsoftProductImageUrl(
+  product: ArmsoftProductDirectoryRow,
+): string | null {
+  const candidates = [
+    product.imageUrl,
+    product.photoUrl,
+    product.pictureUrl,
+    product.externalCode,
+  ];
+
+  for (const value of candidates) {
+    const url = String(value ?? "").trim();
+    if (!url) {
+      continue;
+    }
+    if (/^https?:\/\//i.test(url)) {
+      return url;
+    }
   }
 
-  if (firstPageRaw.data?.length) {
-    rows.push(...firstPageRaw.data);
+  return null;
+}
+
+function isSalePriceRow(value: unknown): value is ArmsoftSalePriceRow {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  const record = value as Record<string, unknown>;
+  return (
+    typeof record.productId === "number" && typeof record.salePrice === "number"
+  );
+}
+
+/**
+ * Fetches sale prices (AMD) for product codes via pricelist calculation API.
+ * Remainders report does not return price columns in SM Public API.
+ */
+export async function fetchSalePricesBySku(
+  productCodes: string[],
+  dateIso: string = todayIsoDate(),
+  productsDirectoryRows?: ArmsoftProductDirectoryRow[],
+): Promise<Map<string, number>> {
+  const config = getArmsoftSmConfig();
+  const codes = [
+    ...new Set(
+      productCodes
+        .map((code) => normalizeSku(code))
+        .filter((code) => code.length > 0),
+    ),
+  ];
+  const bySku = new Map<string, number>();
+
+  if (codes.length === 0) {
+    return bySku;
   }
 
-  let pageId = firstPageRaw.id;
-  let hasMore = firstPageRaw.hasMore;
-  let pageCount = 1;
+  const products = productsDirectoryRows ?? (await fetchAllProducts());
+  const idToCode = new Map<number, string>();
+  for (const product of products) {
+    const code = normalizeSku(String(product.code ?? ""));
+    if (code && Number.isFinite(product.id)) {
+      idToCode.set(product.id, code);
+    }
+  }
 
-  while (hasMore && pageCount < ARMSOFT_REMAINDERS_MAX_PAGES) {
-    const nextRaw = await postArmsoftJson(
-      "/v1/reports/productremainders/nextpage",
-      { id: pageId, close: false },
+  const raw = await postArmsoftJson(
+    "/v1/calculation/productssalepricesfrompricelist",
+    {
+      pricelistType: config.pricelistType,
+      date: dateIso,
+      products: codes,
+      includeAllProducts: false,
+    },
+  );
+
+  if (!Array.isArray(raw)) {
+    armsoftRequestError(
+      "ArmSoft prices error",
+      "Unexpected sale-prices response shape",
     );
-
-    if (!isRemaindersPage(nextRaw)) {
-      throw {
-        status: 502,
-        type: "https://api.shop.am/problems/armsoft-error",
-        title: "ArmSoft remainders error",
-        detail: "Unexpected next-page response shape",
-      };
-    }
-
-    if (nextRaw.data?.length) {
-      rows.push(...nextRaw.data);
-    }
-
-    pageId = nextRaw.id;
-    hasMore = nextRaw.hasMore;
-    pageCount += 1;
   }
 
-  if (hasMore) {
-    await postArmsoftJson("/v1/reports/productremainders/nextpage", {
-      id: pageId,
-      close: true,
-    }).catch(() => undefined);
-
-    throw {
-      status: 502,
-      type: "https://api.shop.am/problems/armsoft-error",
-      title: "ArmSoft remainders error",
-      detail: `Remainders pagination exceeded ${ARMSOFT_REMAINDERS_MAX_PAGES} pages`,
-    };
+  for (const row of raw) {
+    if (!isSalePriceRow(row)) {
+      continue;
+    }
+    const sku = idToCode.get(row.productId);
+    if (!sku || !(row.salePrice > 0)) {
+      continue;
+    }
+    bySku.set(sku, row.salePrice);
   }
 
-  return rows;
+  return bySku;
+}
+
+/**
+ * Creates a ProductsOutput (warehouse stock-out) document in ArmSoft SM.
+ * Requires API key permission for documents write.
+ */
+export async function createProductsOutputDocument(
+  document: ArmsoftProductsOutputDocument,
+): Promise<ArmsoftProductsOutputDocument> {
+  const raw = await postArmsoftJson(
+    "/v1/documents/productsoutput",
+    document as unknown as Record<string, unknown>,
+  );
+
+  if (!raw || typeof raw !== "object") {
+    armsoftRequestError(
+      "ArmSoft productsoutput error",
+      "Unexpected productsoutput response shape",
+    );
+  }
+
+  return raw as ArmsoftProductsOutputDocument;
 }
 
 export const armsoftClient = {
   fetchAllProductRemainders,
+  fetchAllProducts,
+  fetchSalePricesBySku,
+  createProductsOutputDocument,
 };

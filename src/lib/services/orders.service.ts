@@ -16,6 +16,13 @@ import { convertPrice } from "@/lib/currency";
 import { getPublishedPartnerStoreById } from "./partner-stores.service";
 import type { PickupStoreAddress } from "@/lib/types/pickup-store";
 import { buildCheckoutBillingAddress } from "@/lib/orders/customer-contact";
+import { ARMSOFT_STOCK_HELD_EVENT } from "@/lib/armsoft/constants";
+import {
+  commitOrderStockToArmsoft,
+  logArmsoftStockError,
+  postsArmsoftStockOnCheckout,
+  releaseUnpostedOrderStock,
+} from "@/lib/armsoft/order-stock-commit";
 import { DEFAULT_LANGUAGE } from '../language';
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
@@ -219,15 +226,21 @@ class OrdersService {
               })),
             },
             events: {
-              create: {
-                type: 'order_created',
-                data: {
-                  source: userId ? 'user' : 'guest',
-                  paymentMethod,
-                  shippingMethod,
-                  ...(resolvedPromo?.ok ? { promoCode: resolvedPromo.promo.code } : {}),
+              create: [
+                {
+                  type: 'order_created',
+                  data: {
+                    source: userId ? 'user' : 'guest',
+                    paymentMethod,
+                    shippingMethod,
+                    ...(resolvedPromo?.ok ? { promoCode: resolvedPromo.promo.code } : {}),
+                  },
                 },
-              },
+                {
+                  type: ARMSOFT_STOCK_HELD_EVENT,
+                  data: { paymentMethod },
+                },
+              ],
             },
           },
           include: {
@@ -368,6 +381,14 @@ class OrdersService {
           },
         }),
       ]);
+
+      await releaseUnpostedOrderStock(orderAndPayment.order.id).catch((releaseError: unknown) => {
+        logArmsoftStockError(
+          "Failed to release stock after ArCa init error",
+          orderAndPayment.order.id,
+          releaseError,
+        );
+      });
 
       throw {
         status: 502,
@@ -689,6 +710,12 @@ class OrdersService {
         cartItems,
         resolvedPromo,
       });
+
+      if (postsArmsoftStockOnCheckout(paymentMethod)) {
+        void commitOrderStockToArmsoft(order.order.id).catch((error: unknown) => {
+          logArmsoftStockError("ArmSoft checkout stock post failed", order.order.id, error);
+        });
+      }
 
       let paymentUrl: string | null = null;
 

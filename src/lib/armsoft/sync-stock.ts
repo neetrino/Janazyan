@@ -1,20 +1,18 @@
 import { db } from "@white-shop/db";
-import { revalidateTag } from "next/cache";
-import {
-  invalidateProductPageCaches,
-  invalidateStorefrontProductRelatedCaches,
-} from "@/lib/cache/storefront-cache";
 import { CURRENCIES } from "@/lib/currency";
-import { cacheService } from "@/lib/services/cache.service";
 import { logger } from "@/lib/utils/logger";
-import { armsoftClient } from "./client";
+import { armsoftClient, extractArmsoftProductImageUrl } from "./client";
 import { getArmsoftSmConfig } from "./config";
 import { ARMSOFT_STOCK_UPDATE_BATCH_SIZE } from "./constants";
-import type {
-  ArmsoftProductRemainderRow,
-  ArmsoftStockBySku,
-  ArmsoftStockSyncResult,
-} from "./types";
+import { buildSkuCandidates, normalizeSku } from "./sku-normalize";
+import {
+  aggregateRemaindersBySku,
+  mergeSalePricesIntoSkuMap,
+  seedDirectorySkusIntoMap,
+} from "./sync-aggregate";
+import { invalidateAfterArmsoftSync } from "./sync-cache";
+import { loadHeldUnpostedQtyByVariant } from "./unposted-reservations";
+import type { ArmsoftStockSyncResult } from "./types";
 
 const HY_LOCALE = "hy";
 const PRICE_EPSILON = 0.005;
@@ -35,54 +33,6 @@ function amdToUsd(priceAmd: number, amdRate: number): number {
 
 function pricesEqual(a: number, b: number): boolean {
   return Math.abs(a - b) < PRICE_EPSILON;
-}
-
-function aggregateRemaindersBySku(
-  rows: ArmsoftProductRemainderRow[],
-  storageFilter: string | null,
-): Map<string, ArmsoftStockBySku> {
-  const bySku = new Map<string, ArmsoftStockBySku>();
-
-  for (const row of rows) {
-    const sku = String(row.product ?? "").trim();
-    if (!sku) {
-      continue;
-    }
-
-    if (storageFilter) {
-      const storage = String(row.storage ?? "").trim();
-      if (storage !== storageFilter) {
-        continue;
-      }
-    }
-
-    const available = Number(row.availableQuantity ?? 0);
-    const reserved = Number(row.reservedQuantity ?? 0);
-    const priceAmd = Number(row.price ?? 0);
-    const existing = bySku.get(sku);
-
-    if (!existing) {
-      bySku.set(sku, {
-        sku,
-        productName: row.productName ?? null,
-        availableQuantity: available,
-        reservedQuantity: reserved,
-        priceAmd: priceAmd > 0 ? priceAmd : 0,
-      });
-      continue;
-    }
-
-    existing.availableQuantity += available;
-    existing.reservedQuantity += reserved;
-    if (priceAmd > 0) {
-      existing.priceAmd = priceAmd;
-    }
-    if (!existing.productName && row.productName) {
-      existing.productName = row.productName;
-    }
-  }
-
-  return bySku;
 }
 
 async function resolveAmdToUsdRate(): Promise<number> {
@@ -109,108 +59,12 @@ async function resolveAmdToUsdRate(): Promise<number> {
   return CURRENCIES.AMD.rate;
 }
 
-async function invalidateAfterSync(): Promise<void> {
-  try {
-    // @ts-expect-error - revalidateTag type issue in Next.js
-    revalidateTag("products");
-    // @ts-expect-error - revalidateTag type issue in Next.js
-    revalidateTag("home-featured");
-    await cacheService.deletePattern("products:*");
-    await cacheService.deletePattern("cart:view:v1:*");
-    await invalidateProductPageCaches();
-    await invalidateStorefrontProductRelatedCaches();
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    logger.warn("ArmSoft catalog sync cache invalidation failed", { message });
-  }
-}
-
-/**
- * Pulls ArmSoft remainders and syncs stock, price (AMD→USD), and hy title by SKU.
- * Images are not available in SM Public API. Zero ArmSoft prices leave shop price unchanged.
- */
-export async function syncArmsoftStockToDb(): Promise<ArmsoftStockSyncResult> {
-  const config = getArmsoftSmConfig();
-  const amdToUsdRate = await resolveAmdToUsdRate();
-  const rows = await armsoftClient.fetchAllProductRemainders();
-  const bySku = aggregateRemaindersBySku(rows, config.storageFilter);
-
-  const variants = await db.productVariant.findMany({
-    where: { sku: { not: null } },
-    select: {
-      id: true,
-      sku: true,
-      stock: true,
-      stockReserved: true,
-      price: true,
-      productId: true,
-      product: {
-        select: {
-          translations: {
-            where: { locale: HY_LOCALE },
-            select: { id: true, title: true },
-            take: 1,
-          },
-        },
-      },
-    },
-  });
-
-  const stockUpdates: Array<{ id: string; stock: number; stockReserved: number }> = [];
-  const priceUpdates: Array<{ id: string; price: number }> = [];
-  const nameUpdates: Array<{ translationId: string; title: string }> = [];
-
-  let matched = 0;
-  let unchanged = 0;
-  const matchedSkus = new Set<string>();
-
-  for (const variant of variants) {
-    const sku = variant.sku?.trim();
-    if (!sku) {
-      continue;
-    }
-
-    const armsoft = bySku.get(sku);
-    if (!armsoft) {
-      continue;
-    }
-
-    matched += 1;
-    matchedSkus.add(sku);
-
-    const nextStock = toNonNegativeInt(armsoft.availableQuantity);
-    const nextReserved = toNonNegativeInt(armsoft.reservedQuantity);
-    let changed = false;
-
-    if (variant.stock !== nextStock || variant.stockReserved !== nextReserved) {
-      stockUpdates.push({
-        id: variant.id,
-        stock: nextStock,
-        stockReserved: nextReserved,
-      });
-      changed = true;
-    }
-
-    if (armsoft.priceAmd > 0) {
-      const nextPrice = amdToUsd(armsoft.priceAmd, amdToUsdRate);
-      if (!pricesEqual(variant.price, nextPrice)) {
-        priceUpdates.push({ id: variant.id, price: nextPrice });
-        changed = true;
-      }
-    }
-
-    const nextName = armsoft.productName?.trim() ?? "";
-    const hyTranslation = variant.product.translations[0];
-    if (nextName && hyTranslation && hyTranslation.title.trim() !== nextName) {
-      nameUpdates.push({ translationId: hyTranslation.id, title: nextName });
-      changed = true;
-    }
-
-    if (!changed) {
-      unchanged += 1;
-    }
-  }
-
+async function applyUpdatesInBatches(
+  stockUpdates: Array<{ id: string; stock: number; stockReserved: number }>,
+  priceUpdates: Array<{ id: string; price: number }>,
+  nameUpdates: Array<{ translationId: string; title: string }>,
+  mediaUpdates: Array<{ productId: string; media: string[] }>,
+): Promise<void> {
   for (
     let index = 0;
     index < stockUpdates.length;
@@ -259,14 +113,206 @@ export async function syncArmsoftStockToDb(): Promise<ArmsoftStockSyncResult> {
     );
   }
 
-  const anyUpdates =
-    stockUpdates.length > 0 || priceUpdates.length > 0 || nameUpdates.length > 0;
-  if (anyUpdates) {
-    await invalidateAfterSync();
+  for (
+    let index = 0;
+    index < mediaUpdates.length;
+    index += ARMSOFT_STOCK_UPDATE_BATCH_SIZE
+  ) {
+    const batch = mediaUpdates.slice(index, index + ARMSOFT_STOCK_UPDATE_BATCH_SIZE);
+    await db.$transaction(
+      batch.map((item) =>
+        db.product.update({
+          where: { id: item.productId },
+          data: { media: item.media },
+        }),
+      ),
+    );
+  }
+}
+
+function readStringMediaUrls(media: unknown): string[] {
+  if (!Array.isArray(media)) {
+    return [];
+  }
+
+  return media
+    .map((entry) => (typeof entry === "string" ? entry.trim() : ""))
+    .filter((entry) => entry.length > 0);
+}
+
+function shouldReplaceMedia(currentMedia: unknown, nextImageUrl: string): boolean {
+  const currentUrls = readStringMediaUrls(currentMedia);
+  if (currentUrls.length === 0) {
+    return true;
+  }
+
+  return currentUrls[0] !== nextImageUrl;
+}
+
+/**
+ * Pulls ArmSoft remainders + pricelist sale prices and syncs stock, price (AMD→USD),
+ * hy title, and main image by SKU when ArmSoft provides an image URL.
+ * ArmSoft is source of truth: cron polls every 15m (no webhook in SM Public API).
+ */
+export async function syncArmsoftStockToDb(): Promise<ArmsoftStockSyncResult> {
+  const config = getArmsoftSmConfig();
+  const amdToUsdRate = await resolveAmdToUsdRate();
+  const rows = await armsoftClient.fetchAllProductRemainders();
+  const productsDirectory = await armsoftClient.fetchAllProducts();
+  const bySku = aggregateRemaindersBySku(rows, config.storageFilter);
+  const directoryBySku = new Map<
+    string,
+    { productName: string | null; imageUrl: string | null }
+  >();
+
+  for (const product of productsDirectory) {
+    const sku = normalizeSku(String(product.code ?? ""));
+    if (!sku) {
+      continue;
+    }
+
+    const imageUrl = extractArmsoftProductImageUrl(product);
+    const productName = product.fullName?.trim() || product.name?.trim() || null;
+    directoryBySku.set(sku, { productName, imageUrl });
+  }
+
+  const heldByVariant = await loadHeldUnpostedQtyByVariant();
+  const variants = await db.productVariant.findMany({
+    where: { sku: { not: null } },
+    select: {
+      id: true,
+      sku: true,
+      stock: true,
+      stockReserved: true,
+      price: true,
+      product: {
+        select: {
+          id: true,
+          media: true,
+          translations: {
+            where: { locale: HY_LOCALE },
+            select: { id: true, title: true },
+            take: 1,
+          },
+        },
+      },
+    },
+  });
+
+  const priceLookupSkus = [
+    ...new Set([
+      ...bySku.keys(),
+      ...directoryBySku.keys(),
+      ...variants
+        .map((variant) => normalizeSku(variant.sku ?? ""))
+        .filter((sku) => sku.length > 0),
+    ]),
+  ];
+  const salePricesBySku = await armsoftClient.fetchSalePricesBySku(
+    priceLookupSkus,
+    undefined,
+    productsDirectory,
+  );
+  mergeSalePricesIntoSkuMap(bySku, salePricesBySku);
+  seedDirectorySkusIntoMap(bySku, directoryBySku);
+
+  const stockUpdates: Array<{ id: string; stock: number; stockReserved: number }> = [];
+  const priceUpdates: Array<{ id: string; price: number }> = [];
+  const nameUpdates: Array<{ translationId: string; title: string }> = [];
+  const mediaUpdatesByProduct = new Map<string, string[]>();
+
+  let matched = 0;
+  let unchanged = 0;
+  const matchedSkus = new Set<string>();
+  const missingVariantSkusSet = new Set<string>();
+
+  for (const variant of variants) {
+    const rawSku = variant.sku?.trim() ?? "";
+    if (!rawSku) {
+      continue;
+    }
+
+    const skuCandidates = buildSkuCandidates(rawSku);
+    const matchedSku = skuCandidates.find((candidate) => bySku.has(candidate));
+    if (!matchedSku) {
+      const normalized = normalizeSku(rawSku);
+      if (normalized && !directoryBySku.has(normalized)) {
+        missingVariantSkusSet.add(normalized);
+      }
+      continue;
+    }
+
+    const armsoft = bySku.get(matchedSku);
+    if (!armsoft) {
+      continue;
+    }
+
+    matched += 1;
+    matchedSkus.add(matchedSku);
+    let changed = false;
+
+    if (armsoft.hasStockData) {
+      const heldQty = heldByVariant.get(variant.id) ?? 0;
+      const nextStock = toNonNegativeInt(armsoft.availableQuantity - heldQty);
+      const nextReserved = toNonNegativeInt(armsoft.reservedQuantity);
+      if (variant.stock !== nextStock || variant.stockReserved !== nextReserved) {
+        stockUpdates.push({
+          id: variant.id,
+          stock: nextStock,
+          stockReserved: nextReserved,
+        });
+        changed = true;
+      }
+    }
+
+    if (armsoft.priceAmd > 0) {
+      const nextPrice = amdToUsd(armsoft.priceAmd, amdToUsdRate);
+      if (!pricesEqual(variant.price, nextPrice)) {
+        priceUpdates.push({ id: variant.id, price: nextPrice });
+        changed = true;
+      }
+    }
+
+    const nextName = armsoft.productName?.trim() ?? "";
+    const hyTranslation = variant.product.translations[0];
+    if (nextName && hyTranslation && hyTranslation.title.trim() !== nextName) {
+      nameUpdates.push({ translationId: hyTranslation.id, title: nextName });
+      changed = true;
+    }
+
+    const nextImageUrl = armsoft.imageUrl?.trim() ?? "";
+    if (nextImageUrl && shouldReplaceMedia(variant.product.media, nextImageUrl)) {
+      mediaUpdatesByProduct.set(variant.product.id, [nextImageUrl]);
+      changed = true;
+    }
+
+    if (!changed) {
+      unchanged += 1;
+    }
+  }
+
+  const mediaUpdates = [...mediaUpdatesByProduct].map(([productId, media]) => ({
+    productId,
+    media,
+  }));
+
+  await applyUpdatesInBatches(
+    stockUpdates,
+    priceUpdates,
+    nameUpdates,
+    mediaUpdates,
+  );
+
+  if (
+    stockUpdates.length > 0 ||
+    priceUpdates.length > 0 ||
+    nameUpdates.length > 0 ||
+    mediaUpdates.length > 0
+  ) {
+    await invalidateAfterArmsoftSync();
   }
 
   const missingSkus = [...bySku.keys()].filter((sku) => !matchedSkus.has(sku));
-
   const result: ArmsoftStockSyncResult = {
     fetchedRows: rows.length,
     uniqueSkus: bySku.size,
@@ -274,11 +320,15 @@ export async function syncArmsoftStockToDb(): Promise<ArmsoftStockSyncResult> {
     updatedStock: stockUpdates.length,
     updatedPrice: priceUpdates.length,
     updatedName: nameUpdates.length,
+    updatedMedia: mediaUpdates.length,
     unchanged,
     missingInDb: missingSkus.length,
     missingSkus: missingSkus.slice(0, 50),
+    missingInArmsoft: missingVariantSkusSet.size,
+    missingVariantSkus: [...missingVariantSkusSet].slice(0, 50),
     pricelistType: config.pricelistType,
     amdToUsdRate,
+    pricesFetched: salePricesBySku.size,
   };
 
   logger.warn("ArmSoft catalog sync completed", result);
