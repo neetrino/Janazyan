@@ -10,20 +10,17 @@ import { adminDeliveryService } from "./admin/admin-delivery.service";
 import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
 import { resolveCheckoutPromo } from "@/lib/promo-codes/resolve-checkout-promo";
-import { arcaClient, toArcaAmountMinorUnits } from "@/lib/payments/arca/client";
-import { buildArcaReturnUrl, getArcaConfig } from "@/lib/payments/arca/config";
 import { convertPrice } from "@/lib/currency";
 import { getPublishedPartnerStoreById } from "./partner-stores.service";
 import type { PickupStoreAddress } from "@/lib/types/pickup-store";
 import { buildCheckoutBillingAddress } from "@/lib/orders/customer-contact";
+import { registerArcaPayment } from "@/lib/orders/register-arca-payment";
 import { ARMSOFT_STOCK_HELD_EVENT } from "@/lib/armsoft/constants";
 import {
   commitOrderStockToArmsoft,
   logArmsoftStockError,
   postsArmsoftStockOnCheckout,
-  releaseUnpostedOrderStock,
 } from "@/lib/armsoft/order-stock-commit";
-import { DEFAULT_LANGUAGE } from '../language';
 
 const ORDER_SEQUENCE_FLOOR = FIRST_PUBLIC_ORDER_NUMBER - 1;
 
@@ -315,88 +312,6 @@ class OrdersService {
       },
       { timeout: 10000, maxWait: 5000 }
     );
-  }
-
-  private async registerArcaPayment(orderAndPayment: {
-    order: { id: string; number: string; total: number; customerLocale: string | null };
-    payment: { id: string };
-  }): Promise<string> {
-    try {
-      const arcaConfig = getArcaConfig();
-      const amountInArcaCurrency = arcaConfig.currency === '051'
-        ? convertPrice(orderAndPayment.order.total, 'USD', 'AMD')
-        : orderAndPayment.order.total;
-      const returnUrl = buildArcaReturnUrl(orderAndPayment.order.number);
-      const registration = await arcaClient.registerOrder({
-        orderNumber: orderAndPayment.order.number,
-        amountMinorUnits: toArcaAmountMinorUnits(amountInArcaCurrency, arcaConfig.currency),
-        returnUrl,
-        description: `Order #${orderAndPayment.order.number}`,
-        language: orderAndPayment.order.customerLocale || DEFAULT_LANGUAGE,
-      });
-
-      await db.payment.update({
-        where: { id: orderAndPayment.payment.id },
-        data: {
-          providerTransactionId: registration.orderId,
-          providerResponse: registration.rawResponse as Prisma.InputJsonValue,
-        },
-      });
-
-      return registration.formUrl;
-    } catch (error: unknown) {
-      logger.error('ArCa register failed during checkout', {
-        orderId: orderAndPayment.order.id,
-        paymentId: orderAndPayment.payment.id,
-        error,
-      });
-
-      const paymentErrorMessage = error instanceof Error
-        ? error.message
-        : 'Failed to initialize ArCa payment';
-
-      await db.$transaction([
-        db.payment.update({
-          where: { id: orderAndPayment.payment.id },
-          data: {
-            status: 'failed',
-            errorMessage: paymentErrorMessage,
-            failedAt: new Date(),
-          },
-        }),
-        db.order.update({
-          where: { id: orderAndPayment.order.id },
-          data: {
-            paymentStatus: 'failed',
-          },
-        }),
-        db.orderEvent.create({
-          data: {
-            orderId: orderAndPayment.order.id,
-            type: 'payment_init_failed',
-            data: {
-              provider: 'arca',
-              message: paymentErrorMessage,
-            },
-          },
-        }),
-      ]);
-
-      await releaseUnpostedOrderStock(orderAndPayment.order.id).catch((releaseError: unknown) => {
-        logArmsoftStockError(
-          "Failed to release stock after ArCa init error",
-          orderAndPayment.order.id,
-          releaseError,
-        );
-      });
-
-      throw {
-        status: 502,
-        type: "https://api.shop.am/problems/payment-provider-error",
-        title: "ArCa unavailable",
-        detail: "Failed to initialize ArCa payment. Please try again.",
-      };
-    }
   }
 
   /**
@@ -720,7 +635,7 @@ class OrdersService {
       let paymentUrl: string | null = null;
 
       if (paymentMethod === 'arca') {
-        paymentUrl = await this.registerArcaPayment(order);
+        paymentUrl = await registerArcaPayment(order);
       }
 
       void invalidateAdminDashboardCache().catch((error: unknown) => {
