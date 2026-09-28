@@ -40,7 +40,7 @@ function toErrorPayload(error: unknown, instance: string) {
 }
 
 /**
- * Admin: pull ArmSoft remainders (stock, price, hy name) into shop by SKU.
+ * Admin: pull ArmSoft remainders (stock, price, hy name, image when available) into shop by SKU.
  */
 export async function POST(req: NextRequest) {
   try {

@@ -49,7 +49,8 @@ function toErrorPayload(error: unknown, instance: string) {
 }
 
 /**
- * Vercel Cron (every 15m): sync ArmSoft stock, price, name → shop by SKU.
+ * Vercel Cron (every 15m): pull ArmSoft remainders + prices into shop by SKU.
+ * SM Public API has no webhook — polling is the only ArmSoft → shop path.
  * Auth: Authorization: Bearer ${CRON_SECRET}
  */
 export async function GET(req: NextRequest) {

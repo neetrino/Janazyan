@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma, db } from "@white-shop/db";
+import {
+  commitOrderStockToArmsoft,
+  logArmsoftStockError,
+  releaseUnpostedOrderStock,
+} from "@/lib/armsoft/order-stock-commit";
 import { arcaClient } from "@/lib/payments/arca/client";
 import { logger } from "@/lib/utils/logger";
 
@@ -48,6 +53,9 @@ export async function GET(req: NextRequest) {
   }
 
   if (payment.order.paymentStatus === "paid") {
+    await commitOrderStockToArmsoft(payment.orderId).catch((error: unknown) => {
+      logArmsoftStockError("ArmSoft stock post failed for paid ArCa order", payment.orderId, error);
+    });
     return NextResponse.redirect(
       buildRedirectUrl(req, `/orders/${payment.order.number}?payment=paid`),
     );
@@ -111,6 +119,10 @@ export async function GET(req: NextRequest) {
         }
       });
 
+      await commitOrderStockToArmsoft(payment.orderId).catch((error: unknown) => {
+        logArmsoftStockError("ArmSoft stock post failed after ArCa payment", payment.orderId, error);
+      });
+
       return NextResponse.redirect(
         buildRedirectUrl(req, `/orders/${payment.order.number}?payment=paid`),
       );
@@ -148,6 +160,10 @@ export async function GET(req: NextRequest) {
           },
         },
       });
+    });
+
+    await releaseUnpostedOrderStock(payment.orderId).catch((error: unknown) => {
+      logArmsoftStockError("Failed to release stock after ArCa payment failure", payment.orderId, error);
     });
   } catch (error: unknown) {
     logger.error("ArCa callback verification failed", {

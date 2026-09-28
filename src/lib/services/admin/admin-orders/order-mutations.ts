@@ -2,6 +2,11 @@ import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
 import type { UpdateOrderData } from "./types";
 import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
+import {
+  commitOrderStockToArmsoft,
+  logArmsoftStockError,
+  releaseUnpostedOrderStock,
+} from "@/lib/armsoft/order-stock-commit";
 
 /**
  * Delete order
@@ -228,6 +233,22 @@ export async function updateOrder(orderId: string, data: UpdateOrderData) {
     void invalidateAdminDashboardCache().catch((error: unknown) => {
       logger.warn('Failed to invalidate admin dashboard cache after order update', { error });
     });
+
+    const becameCancelled = data.status === "cancelled" && existing.status !== "cancelled";
+    const becameUnpaid =
+      (data.paymentStatus === "failed" || data.paymentStatus === "refunded") &&
+      data.paymentStatus !== existing.paymentStatus;
+    const becamePaid = data.paymentStatus === "paid" && existing.paymentStatus !== "paid";
+
+    if (becameCancelled || becameUnpaid) {
+      void releaseUnpostedOrderStock(order.id).catch((error: unknown) => {
+        logArmsoftStockError("Failed to release stock after order update", order.id, error);
+      });
+    } else if (becamePaid) {
+      void commitOrderStockToArmsoft(order.id).catch((error: unknown) => {
+        logArmsoftStockError("ArmSoft stock post failed after order was marked paid", order.id, error);
+      });
+    }
 
     return order;
   } catch (error: unknown) {

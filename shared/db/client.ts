@@ -14,6 +14,25 @@ function appendQueryParam(url: string, key: string, value: string): string {
   return url.includes("?") ? `${url}&${key}=${value}` : `${url}?${key}=${value}`;
 }
 
+function upsertQueryParam(url: string, key: string, value: string): string {
+  const escaped = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`([?&])${escaped}=[^&]*`, "i");
+  if (regex.test(url)) {
+    return url.replace(regex, `$1${key}=${value}`);
+  }
+
+  return appendQueryParam(url, key, value);
+}
+
+function readPositiveIntEnv(key: string): number | null {
+  const raw = process.env[key]?.trim() ?? "";
+  const parsed = Number.parseInt(raw, 10);
+  if (!Number.isFinite(parsed) || parsed <= 0) {
+    return null;
+  }
+  return parsed;
+}
+
 /**
  * Append libpq params if missing: UTF-8 + bounded connect wait (faster fail than default).
  * Neon/Vercel: ensure TLS; Prisma + Neon transaction pooler needs `pgbouncer=true`.
@@ -31,6 +50,18 @@ function augmentDatabaseUrl(raw: string): string {
   if ((u.includes("-pooler") || lowerAfterSsl.includes("pooler.")) && !lowerAfterSsl.includes("pgbouncer=")) {
     u = appendQueryParam(u, "pgbouncer", "true");
   }
+
+  // Ensure app pool settings come from env and override URL defaults.
+  const connectionLimit = readPositiveIntEnv("DATABASE_CONNECTION_LIMIT");
+  if (connectionLimit) {
+    u = upsertQueryParam(u, "connection_limit", String(connectionLimit));
+  }
+
+  const poolTimeout = readPositiveIntEnv("DATABASE_POOL_TIMEOUT");
+  if (poolTimeout) {
+    u = upsertQueryParam(u, "pool_timeout", String(poolTimeout));
+  }
+
   return u;
 }
 
