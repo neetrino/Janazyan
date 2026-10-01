@@ -72,8 +72,8 @@ export async function loadAdminDashboardCached(
 async function loadAdminDashboardFresh(
   params: Required<LoadAdminDashboardParams>,
 ): Promise<AdminDashboardPayload> {
-  const stats = await getStats();
-  const [activity, recentOrders, topProducts, userActivity] = await Promise.all([
+  const [stats, activity, recentOrders, topProducts, userActivity] = await Promise.all([
+    getStats(),
     getActivity(params.activityLimit),
     getRecentOrders(params.ordersLimit),
     getTopProducts(params.productsLimit),

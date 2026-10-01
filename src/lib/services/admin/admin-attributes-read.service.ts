@@ -13,31 +13,18 @@ class AdminAttributesReadService {
       return;
     }
     try {
-      // Check if colors column exists
-      const colorsCheck = await db.$queryRawUnsafe(`
-        SELECT EXISTS (
-          SELECT 1 
-          FROM information_schema.columns 
-          WHERE table_schema = 'public'
-          AND table_name = 'attribute_values' 
-          AND column_name = 'colors'
-        ) as exists;
-      `) as Array<{ exists: boolean }>;
+      const columnsCheck = await db.$queryRawUnsafe(`
+        SELECT
+          bool_or(column_name = 'colors') AS "colorsExists",
+          bool_or(column_name = 'imageUrl') AS "imageUrlExists"
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = 'attribute_values'
+        AND column_name IN ('colors', 'imageUrl');
+      `) as Array<{ colorsExists: boolean | null; imageUrlExists: boolean | null }>;
 
-      const colorsExists = colorsCheck[0]?.exists || false;
-
-      // Check if imageUrl column exists
-      const imageUrlCheck = await db.$queryRawUnsafe(`
-        SELECT EXISTS (
-          SELECT 1 
-          FROM information_schema.columns 
-          WHERE table_schema = 'public'
-          AND table_name = 'attribute_values' 
-          AND column_name = 'imageUrl'
-        ) as exists;
-      `) as Array<{ exists: boolean }>;
-
-      const imageUrlExists = imageUrlCheck[0]?.exists || false;
+      const colorsExists = columnsCheck[0]?.colorsExists || false;
+      const imageUrlExists = columnsCheck[0]?.imageUrlExists || false;
 
       if (colorsExists && imageUrlExists) {
         attributeValueColumnsVerified = true;

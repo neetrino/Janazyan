@@ -48,8 +48,8 @@ export async function createAndSubmitPayload({
       slug: formData.slug,
       descriptionHtml: formData.descriptionHtml || undefined,
       brandId: finalBrandIds.length > 0 ? finalBrandIds[0] : undefined,
-      primaryCategoryId: finalPrimaryCategoryId || undefined,
-      categoryIds: formData.categoryIds.length > 0 ? formData.categoryIds : undefined,
+      primaryCategoryId: finalPrimaryCategoryId || (isEditMode ? null : undefined),
+      categoryIds: formData.categoryIds.length > 0 || isEditMode ? formData.categoryIds : undefined,
       published: isEditMode ? formData.published : true,
       featured: formData.featured,
       locale: 'en',
@@ -57,7 +57,7 @@ export async function createAndSubmitPayload({
       attributeIds: attributeIds.length > 0 ? attributeIds : undefined,
     };
     
-    if (finalMedia.length > 0) {
+    if (finalMedia.length > 0 || isEditMode) {
       payload.media = finalMedia;
     }
     

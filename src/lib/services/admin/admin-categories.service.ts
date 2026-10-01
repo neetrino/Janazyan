@@ -372,7 +372,7 @@ class AdminCategoriesService {
       }
 
       // Check if the category to update is in the children of the potential parent
-      const isChild = await this.isCategoryDescendant(potentialParent.id, categoryId);
+      const isChild = await this.isCategoryDescendant(categoryId, potentialParent.id);
       if (isChild) {
         throw {
           status: 400,
@@ -385,38 +385,33 @@ class AdminCategoriesService {
 
     // Update subcategories if provided
     if (data.subcategoryIds !== undefined) {
-      // First, remove all existing children relationships
+      const validSubcategoryIds = data.subcategoryIds.filter(id => id !== categoryId);
+
+      // An ancestor of this category cannot become its subcategory
+      for (const subId of validSubcategoryIds) {
+        const isAncestor = await this.isCategoryDescendant(subId, categoryId);
+        if (isAncestor) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/bad-request",
+            title: "Circular reference",
+            detail: "Cannot set an ancestor category as subcategory",
+          };
+        }
+      }
+
       await db.category.updateMany({
         where: { parentId: categoryId },
         data: { parentId: null },
       });
 
-      // Then, set new children relationships (prevent circular references)
-      if (data.subcategoryIds.length > 0) {
-        // Filter out the category itself and its descendants
-        const validSubcategoryIds = data.subcategoryIds.filter(id => id !== categoryId);
-        
-        // Check for circular references
-        for (const subId of validSubcategoryIds) {
-          const isDescendant = await this.isCategoryDescendant(categoryId, subId);
-          if (isDescendant) {
-            throw {
-              status: 400,
-              type: "https://api.shop.am/problems/bad-request",
-              title: "Circular reference",
-              detail: "Cannot set a descendant category as subcategory",
-            };
-          }
-        }
-
-        if (validSubcategoryIds.length > 0) {
-          await db.category.updateMany({
-            where: { 
-              id: { in: validSubcategoryIds },
-            },
-            data: { parentId: categoryId },
-          });
-        }
+      if (validSubcategoryIds.length > 0) {
+        await db.category.updateMany({
+          where: {
+            id: { in: validSubcategoryIds },
+          },
+          data: { parentId: categoryId },
+        });
       }
     }
 

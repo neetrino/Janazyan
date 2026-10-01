@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/api-client';
 import { convertPrice, type CurrencyCode } from '@/lib/currency';
@@ -51,14 +51,37 @@ export function useProductEditMode({
 }: UseProductEditModeProps) {
   const router = useRouter();
   const { t } = useTranslation();
+  const [loadedProduct, setLoadedProduct] = useState<ProductData | null>(null);
 
   useEffect(() => {
-    if (productId && isLoggedIn && isAdmin) {
-      const loadProduct = async () => {
+    if (!productId || !isLoggedIn || !isAdmin) {
+      return;
+    }
+    let cancelled = false;
+    setLoadedProduct(null);
+    setLoadingProduct(true);
+    logger.debug('📥 [ADMIN] Loading product for edit:', productId);
+    apiClient
+      .get<ProductData>(`/api/v1/admin/products/${productId}`)
+      .then((product) => {
+        if (!cancelled) setLoadedProduct(product);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        console.error('❌ [ADMIN] Error loading product:', err);
+        setLoadingProduct(false);
+        router.push('/supersudo/products');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [productId, isLoggedIn, isAdmin, router, setLoadingProduct]);
+
+  useEffect(() => {
+    if (loadedProduct) {
+      const applyProduct = () => {
         try {
-          setLoadingProduct(true);
-          logger.debug('📥 [ADMIN] Loading product for edit:', productId);
-          const product = await apiClient.get<ProductData>(`/api/v1/admin/products/${productId}`);
+          const product = loadedProduct;
 
           const colorDataMap = new Map<string, ColorData>();
           let firstPrice = '';
@@ -276,12 +299,10 @@ export function useProductEditMode({
         }
       };
 
-      loadProduct();
+      applyProduct();
     }
   }, [
-    productId,
-    isLoggedIn,
-    isAdmin,
+    loadedProduct,
     router,
     attributes,
     defaultCurrency,
