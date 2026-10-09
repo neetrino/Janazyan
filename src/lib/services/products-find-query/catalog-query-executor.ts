@@ -12,19 +12,9 @@ const catalogProductSelect = {
   id: true,
   discountPercent: true,
   primaryCategoryId: true,
-  brandId: true,
   media: true,
   translations: {
     select: { slug: true, title: true, locale: true },
-  },
-  brand: {
-    select: {
-      id: true,
-      logoUrl: true,
-      translations: {
-        select: { name: true, locale: true },
-      },
-    },
   },
   variants: {
     where: { published: true },

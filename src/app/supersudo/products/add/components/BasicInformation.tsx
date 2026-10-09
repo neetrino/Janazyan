@@ -2,6 +2,7 @@
 
 import type { ChangeEvent } from 'react';
 import { Input } from '@shop/ui';
+import { RichTextEditor } from '../../../../../components/RichTextEditor';
 import { useTranslation } from '../../../../../lib/i18n-client';
 
 interface BasicInformationProps {
@@ -12,7 +13,7 @@ interface BasicInformationProps {
   descriptionHtml: string;
   onTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSlugChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onDescriptionChange: (html: string) => void;
 }
 
 export function BasicInformation({
@@ -95,9 +96,7 @@ export function BasicInformation({
           <label className="block text-sm font-medium text-gray-700 mb-1">
             {t('admin.products.add.description')}
           </label>
-          <textarea
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            rows={6}
+          <RichTextEditor
             value={descriptionHtml}
             onChange={onDescriptionChange}
             placeholder={t('admin.products.add.productDescriptionPlaceholder')}

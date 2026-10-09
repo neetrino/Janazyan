@@ -21,10 +21,6 @@ interface RelatedProduct {
   discountPercent?: number | null;
   image: string | null;
   inStock: boolean;
-  brand?: {
-    id: string;
-    name: string;
-  } | null;
   categories?: Array<{
     id: string;
     slug: string;
@@ -59,9 +55,10 @@ export function RelatedProductCard({
   width,
 }: RelatedProductCardProps) {
   const hasImage = product.image && !imageError;
-  const categoryName = product.categories && product.categories.length > 0 
-    ? product.categories.map(c => c.title).join(', ')
-    : product.brand?.name || 'Product';
+  const categoryName =
+    product.categories && product.categories.length > 0
+      ? product.categories.map((c) => c.title).join(', ')
+      : 'Product';
 
   return (
     <div

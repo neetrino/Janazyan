@@ -11,7 +11,6 @@ export function useProductFormState() {
     title: '',
     slug: '',
     descriptionHtml: '',
-    brandIds: [] as string[],
     primaryCategoryId: '',
     categoryIds: [] as string[],
     published: false,

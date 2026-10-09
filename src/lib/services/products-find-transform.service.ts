@@ -23,7 +23,6 @@ export type ProductListItem = {
   slug: string;
   title: string;
   defaultVariantId: string | null;
-  brand: { id: string; name: string; logoUrl: string | null } | null;
   categories: Array<{ id: string; slug: string; title: string }>;
   price: number;
   originalPrice: number | null;
@@ -243,7 +242,7 @@ class ProductsFindTransformService {
     lang: string = DEFAULT_LANGUAGE,
     options?: TransformOptions
   ): Promise<ProductListItem[]> {
-    const { globalDiscount, categoryDiscounts, brandDiscounts } =
+    const { globalDiscount, categoryDiscounts } =
       options?.discountSettings ?? (await getProductDiscountSettings());
     const isCatalog = options?.catalog === true;
 
@@ -251,14 +250,6 @@ class ProductsFindTransformService {
       // Безопасное получение translation с проверкой на существование массива
       const translations = Array.isArray(product.translations) ? product.translations : [];
       const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
-      
-      // Безопасное получение brand translation
-      const brandTranslations = product.brand && Array.isArray(product.brand.translations)
-        ? product.brand.translations
-        : [];
-      const brandTranslation = brandTranslations.length > 0
-        ? brandTranslations.find((t: { locale: string }) => t.locale === lang) || brandTranslations[0]
-        : null;
       
       const variants = Array.isArray(product.variants) ? product.variants : [];
       const variant = pickCheapestVariant(variants);
@@ -270,23 +261,16 @@ class ProductsFindTransformService {
       let finalPrice = originalPrice;
       const productDiscount = product.discountPercent || 0;
       
-      // Calculate applied discount with priority: productDiscount > categoryDiscount > brandDiscount > globalDiscount
+      // Calculate applied discount with priority: productDiscount > categoryDiscount > globalDiscount
       let appliedDiscount = 0;
       if (productDiscount > 0) {
         appliedDiscount = productDiscount;
       } else {
-        // Check category discounts
         const primaryCategoryId = product.primaryCategoryId;
         if (primaryCategoryId && categoryDiscounts[primaryCategoryId]) {
           appliedDiscount = categoryDiscounts[primaryCategoryId];
-        } else {
-          // Check brand discounts
-          const brandId = product.brandId;
-          if (brandId && brandDiscounts[brandId]) {
-            appliedDiscount = brandDiscounts[brandId];
-          } else if (globalDiscount > 0) {
-            appliedDiscount = globalDiscount;
-          }
+        } else if (globalDiscount > 0) {
+          appliedDiscount = globalDiscount;
         }
       }
 
@@ -316,13 +300,6 @@ class ProductsFindTransformService {
         slug: translation?.slug || "",
         title: translation?.title || "",
         defaultVariantId: variant?.id ?? null,
-        brand: product.brand
-          ? {
-              id: product.brand.id,
-              name: brandTranslation?.name || "",
-              logoUrl: product.brand.logoUrl || null,
-            }
-          : null,
         categories,
         price: finalPrice,
         originalPrice: appliedDiscount > 0 ? originalPrice : variant?.compareAtPrice || null,

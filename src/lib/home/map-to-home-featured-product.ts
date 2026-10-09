@@ -3,8 +3,6 @@ import { formatPrice } from '../currency';
 import type { CurrencyCode } from '../currency';
 import type { HomeFeaturedProduct } from './featured-products-data';
 
-export const HOME_FEATURED_PRODUCT_FALLBACK_IMAGE = '/figma/featured-product.webp';
-
 export type ProductToFeaturedInput = {
   id: string;
   slug: string;
@@ -17,7 +15,6 @@ export type ProductToFeaturedInput = {
   compareAtPrice?: number | null;
   originalPrice?: number | null;
   discountPercent?: number | null;
-  brand?: { name: string } | null;
   categories?: Array<{ title: string }>;
 };
 
@@ -27,11 +24,7 @@ function formatRatingValue(average: number): string {
 
 function resolveCategoryLabel(product: ProductToFeaturedInput): string {
   const categoryTitle = product.categories?.[0]?.title?.trim();
-  if (categoryTitle) {
-    return categoryTitle;
-  }
-  const brandName = product.brand?.name?.trim();
-  return brandName ?? '';
+  return categoryTitle ?? '';
 }
 
 function resolveCompareUsd(product: ProductToFeaturedInput): number | null {
@@ -80,7 +73,7 @@ export function mapToHomeFeaturedProduct(
       ratingAverage != null && ratingAverage > 0
         ? formatRatingValue(ratingAverage)
         : null,
-    image: product.image ?? HOME_FEATURED_PRODUCT_FALLBACK_IMAGE,
+    image: product.image,
     inStock: product.inStock,
     defaultVariantId: product.defaultVariantId ?? null,
     labels: product.labels ?? [],

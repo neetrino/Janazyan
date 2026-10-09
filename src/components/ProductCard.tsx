@@ -9,11 +9,6 @@ interface Product {
   price: number;
   image: string | null;
   inStock: boolean;
-  brand: {
-    id: string;
-    name: string;
-    logoUrl?: string | null;
-  } | null;
   defaultVariantId?: string | null;
   labels?: ProductLabel[];
   compareAtPrice?: number | null;
@@ -49,7 +44,6 @@ export function ProductCard({ product, viewMode = 'grid-3', priority = false }: 
       compareAtPrice: product.compareAtPrice,
       originalPrice: product.originalPrice,
       discountPercent: product.discountPercent,
-      brand: product.brand,
       categories: product.categories,
     },
     {

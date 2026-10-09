@@ -1,5 +1,6 @@
 /** Product slug utilities for admin flows. */
 import type { Prisma } from "@white-shop/db";
+import { toSlug } from "@/lib/utils/slug";
 
 const FALLBACK_PRODUCT_SLUG = "product";
 const MAX_SLUG_ATTEMPTS = 1000;
@@ -21,7 +22,7 @@ export async function ensureUniqueProductSlug({
   locale,
   excludeProductId,
 }: EnsureUniqueProductSlugParams): Promise<string> {
-  const baseSlug = slug.trim() || FALLBACK_PRODUCT_SLUG;
+  const baseSlug = toSlug(slug) || FALLBACK_PRODUCT_SLUG;
 
   for (let attempt = 0; attempt < MAX_SLUG_ATTEMPTS; attempt += 1) {
     const candidate = buildSlugCandidate(baseSlug, attempt);

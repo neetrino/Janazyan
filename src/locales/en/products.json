@@ -9,12 +9,6 @@
       "title": "Filter by Size",
       "noSizes": "No sizes available",
       "loading": "Loading..."
-    },
-    "brand": {
-      "title": "Filter by Brand",
-      "searchPlaceholder": "Find brand",
-      "noBrands": "No brands found",
-      "loading": "Loading..."
     }
   },
   "header": {

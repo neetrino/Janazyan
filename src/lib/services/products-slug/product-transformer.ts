@@ -11,14 +11,45 @@ import type { ProductWithFullRelations, ProductVariantWithOptions } from "./type
 import { DEFAULT_LANGUAGE } from '../../language';
 
 /**
- * Calculate actual discount with priority: productDiscount > categoryDiscount > brandDiscount > globalDiscount
+ * Admin edits one description field but may only update one locale row historically.
+ * Prefer the locale match; if another locale has clearly richer HTML, use that.
+ */
+function pickDescriptionHtml(
+  translations: Array<{ locale: string; descriptionHtml?: string | null }>,
+  lang: string,
+): string | null {
+  const score = (html: string): number => {
+    const tags = html.match(/<(strong|em|b|i|ul|ol|li|br|p)\b/gi);
+    return (tags?.length ?? 0) * 10 + html.length;
+  };
+
+  const preferred = translations.find((t) => t.locale === lang)?.descriptionHtml?.trim() || null;
+  const candidates = translations
+    .map((t) => t.descriptionHtml?.trim() || null)
+    .filter((html): html is string => Boolean(html));
+
+  if (candidates.length === 0) {
+    return null;
+  }
+  if (!preferred) {
+    return candidates[0];
+  }
+
+  const richest = candidates.reduce((best, html) => (score(html) > score(best) ? html : best));
+  const RICHNESS_GAP = 20;
+  if (score(richest) >= score(preferred) + RICHNESS_GAP) {
+    return richest;
+  }
+  return preferred;
+}
+
+/**
+ * Calculate actual discount with priority: productDiscount > categoryDiscount > globalDiscount
  */
 function calculateActualDiscount(
   productDiscount: number,
   primaryCategoryId: string | null,
-  brandId: string | null,
   categoryDiscounts: Record<string, number>,
-  brandDiscounts: Record<string, number>,
   globalDiscount: number
 ): number {
   if (productDiscount > 0) {
@@ -28,11 +59,6 @@ function calculateActualDiscount(
   // Check category discounts
   if (primaryCategoryId && categoryDiscounts[primaryCategoryId]) {
     return categoryDiscounts[primaryCategoryId];
-  }
-
-  // Check brand discounts
-  if (brandId && brandDiscounts[brandId]) {
-    return brandDiscounts[brandId];
   }
 
   if (globalDiscount > 0) {
@@ -288,16 +314,8 @@ export async function transformProduct(
   const translations = Array.isArray(product.translations) ? product.translations : [];
   const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
   
-  // Get brand translation
-  const brandTranslations = product.brand && Array.isArray(product.brand.translations)
-    ? product.brand.translations
-    : [];
-  const brandTranslation = brandTranslations.length > 0
-    ? brandTranslations.find((t: { locale: string }) => t.locale === lang) || brandTranslations[0]
-    : null;
-
   const settings = discountSettings ?? (await getProductDiscountSettings());
-  const { globalDiscount, categoryDiscounts, brandDiscounts } = settings;
+  const { globalDiscount, categoryDiscounts } = settings;
   
   const productDiscount = product.discountPercent || 0;
   
@@ -305,9 +323,7 @@ export async function transformProduct(
   const actualDiscount = calculateActualDiscount(
     productDiscount,
     product.primaryCategoryId,
-    product.brandId,
     categoryDiscounts,
-    brandDiscounts,
     globalDiscount
   );
 
@@ -327,15 +343,7 @@ export async function transformProduct(
     slug: translation?.slug || "",
     title: translation?.title || "",
     subtitle: translation?.subtitle || null,
-    description: translation?.descriptionHtml || null,
-    brand: product.brand
-      ? {
-          id: product.brand.id,
-          slug: product.brand.slug,
-          name: brandTranslation?.name || "",
-          logo: product.brand.logoUrl,
-        }
-      : null,
+    description: pickDescriptionHtml(translations, lang),
     categories,
     media: transformMedia(product),
     labels: transformLabels(product, lang),

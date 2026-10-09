@@ -37,12 +37,6 @@ const CATEGORIES = [
   { slug: "accessories", title: "Accessories" },
 ];
 
-const BRANDS = [
-  { slug: "acme", name: "Acme" },
-  { slug: "brand-x", name: "Brand X" },
-  { slug: "prime", name: "Prime" },
-];
-
 function slugify(text) {
   return text
     .toLowerCase()
@@ -111,28 +105,7 @@ async function seedCategories() {
   return ids;
 }
 
-async function seedBrands() {
-  const ids = [];
-  for (const { slug, name } of BRANDS) {
-    let brand = await prisma.brand.findUnique({ where: { slug } });
-    if (!brand) {
-      brand = await prisma.brand.create({
-        data: {
-          slug,
-          published: true,
-          translations: {
-            create: { locale: "en", name },
-          },
-        },
-      });
-    }
-    ids.push(brand.id);
-  }
-  console.log("[Seed] Brands:", ids.length);
-  return ids;
-}
-
-async function seedProducts(categoryIds, brandIds) {
+async function seedProducts(categoryIds) {
   const titles = [
     "Wireless Earbuds", "Running Shoes", "Cotton T-Shirt", "Desk Lamp", "Yoga Mat",
     "Water Bottle", "Backpack", "Smart Watch", "Sunglasses", "Notebook Set",
@@ -152,13 +125,11 @@ async function seedProducts(categoryIds, brandIds) {
     const catIndex = i % categoryIds.length;
     const primaryCategoryId = categoryIds[catIndex];
     const categoryIdsList = [primaryCategoryId];
-    const brandId = i % 3 === 0 ? brandIds[i % brandIds.length] : null;
     const price = 1999 + (i % 50) * 500;
     const stock = 10 + (i % 91);
     const featured = i < 10;
     const product = await prisma.product.create({
       data: {
-        brandId,
         media: [],
         published: true,
         featured,
@@ -201,8 +172,7 @@ async function main() {
   try {
     await seedAdmin();
     const categoryIds = await seedCategories();
-    const brandIds = await seedBrands();
-    await seedProducts(categoryIds, brandIds);
+    await seedProducts(categoryIds);
     await seedPartnerStores(prisma);
     console.log("=== Seed done ===");
   } catch (e) {

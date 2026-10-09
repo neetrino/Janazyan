@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense } from 'react';
+import { Suspense, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '../../../../lib/auth/AuthContext';
 import { useTranslation } from '../../../../lib/i18n-client';
@@ -28,6 +28,11 @@ function AddProductPageContent() {
   const isEditMode = !!productId;
 
   const formState = useProductFormState();
+  const descriptionHtmlRef = useRef(formState.formData.descriptionHtml);
+
+  useEffect(() => {
+    descriptionHtmlRef.current = formState.formData.descriptionHtml;
+  }, [formState.formData.descriptionHtml]);
 
   useProductDataLoading({
     isLoggedIn,
@@ -158,6 +163,7 @@ function AddProductPageContent() {
     getColorAttribute,
     getSizeAttribute,
     isClothingCategory,
+    descriptionHtmlRef,
   });
 
   if (isLoading || formState.loadingProduct) {
@@ -203,7 +209,10 @@ function AddProductPageContent() {
             variantImageInputRefs={formState.variantImageInputRefs}
             onTitleChange={handleTitleChange}
             onSlugChange={(e) => formState.setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-            onDescriptionChange={(e) => formState.setFormData((prev) => ({ ...prev, descriptionHtml: e.target.value }))}
+            onDescriptionChange={(html) => {
+              descriptionHtmlRef.current = html;
+              formState.setFormData((prev) => ({ ...prev, descriptionHtml: html }));
+            }}
             onProductTypeChange={formState.setProductType}
             onUploadImages={handleUploadImages}
             onRemoveImage={removeImageUrl}

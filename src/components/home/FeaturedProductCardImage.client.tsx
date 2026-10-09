@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 import { useState } from 'react';
-import { HOME_FEATURED_PRODUCT_FALLBACK_IMAGE } from '../../lib/home/map-to-home-featured-product';
+import { ProductImagePlaceholder } from '../ProductImagePlaceholder';
 
 type FeaturedProductCardImageProps = {
-  src: string;
+  src: string | null;
   alt: string;
   priority?: boolean;
 };
@@ -15,22 +15,28 @@ export function FeaturedProductCardImage({
   alt,
   priority = true,
 }: FeaturedProductCardImageProps) {
-  const [imageSrc, setImageSrc] = useState(src);
+  const [failed, setFailed] = useState(false);
+  const showPlaceholder = !src || failed;
+
+  if (showPlaceholder) {
+    return (
+      <ProductImagePlaceholder
+        className="h-full w-full rounded-[12px] bg-transparent"
+        aria-label={alt ? `No image for ${alt}` : 'No image'}
+      />
+    );
+  }
 
   return (
     <Image
-      src={imageSrc}
+      src={src}
       alt={alt}
       fill
       sizes="96px"
       className="object-contain object-bottom"
       priority={priority}
       loading={priority ? undefined : 'lazy'}
-      onError={() => {
-        if (imageSrc !== HOME_FEATURED_PRODUCT_FALLBACK_IMAGE) {
-          setImageSrc(HOME_FEATURED_PRODUCT_FALLBACK_IMAGE);
-        }
-      }}
+      onError={() => setFailed(true)}
     />
   );
 }

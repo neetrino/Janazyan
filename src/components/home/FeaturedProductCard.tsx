@@ -100,7 +100,6 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
           defaultVariantId: product.defaultVariantId,
           price: product.price,
           compareAtPrice: product.comparePriceUsd,
-          brand: null,
         }}
       />
 
@@ -126,7 +125,7 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
             width={75}
             height={78}
             aria-hidden
-            className="block h-full w-full max-w-none object-fill"
+            className="block h-auto w-full max-w-none object-fill"
           />
         </div>
       </div>

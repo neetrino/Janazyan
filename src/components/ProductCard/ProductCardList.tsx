@@ -38,7 +38,6 @@ interface ProductCardListProps {
     price: number;
     image: string | null;
     inStock: boolean;
-    brand: { id: string; name: string; logoUrl?: string | null } | null;
     labels?: ProductLabel[];
     compareAtPrice?: number | null;
     originalPrice?: number | null;
@@ -122,20 +121,6 @@ export function ProductCardList({
             <h3 className="text-lg sm:text-xl font-medium text-gray-900 hover:text-blue-600 transition-colors line-clamp-2">
               {product.title}
             </h3>
-            {product.brand?.logoUrl ? (
-              <div className="mt-1">
-                <div className="relative h-6 w-6">
-                  <Image
-                    src={product.brand.logoUrl}
-                    alt={product.brand?.name || 'Brand logo'}
-                    fill
-                    className="object-contain"
-                    sizes="24px"
-                    unoptimized
-                  />
-                </div>
-              </div>
-            ) : null}
           </Link>
           {/* Available Colors */}
           {product.colors && product.colors.length > 0 && (

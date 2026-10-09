@@ -10,8 +10,4 @@ export type WishlistProductSnapshot = {
   image: string | null;
   inStock: boolean;
   defaultVariantId?: string | null;
-  brand: {
-    id: string;
-    name: string;
-  } | null;
 };

@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
       filter: searchParams.get("filter") || searchParams.get("filters") || undefined,
       colors: searchParams.get("colors") || undefined,
       sizes: searchParams.get("sizes") || undefined,
-      brand: searchParams.get("brand") || undefined,
       sort: searchParams.get("sort") || "createdAt",
       page: searchParams.get("page")
         ? parseInt(searchParams.get("page")!)

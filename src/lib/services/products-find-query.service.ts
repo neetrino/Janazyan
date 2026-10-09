@@ -31,7 +31,7 @@ class ProductsFindQueryService {
     const needOverFetch =
       !filters.catalog &&
       (Boolean(filters.category || filters.search) ||
-        Boolean(filters.colors || filters.sizes || filters.brand));
+        Boolean(filters.colors || filters.sizes));
 
     const runQuery = filters.catalog
       ? executeCatalogProductQuery

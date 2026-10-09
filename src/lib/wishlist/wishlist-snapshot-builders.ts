@@ -10,7 +10,6 @@ type CatalogProductInput = {
   image: string | null;
   inStock: boolean;
   defaultVariantId?: string | null;
-  brand?: { id: string; name: string } | null;
   originalPrice?: number | null;
   compareAtPrice?: number | null;
   discountPercent?: number | null;
@@ -43,7 +42,6 @@ function buildSnapshot(input: CatalogProductInput): WishlistProductSnapshot {
     image: input.image,
     inStock: input.inStock,
     defaultVariantId: input.defaultVariantId ?? null,
-    brand: input.brand ?? null,
   };
 }
 
@@ -93,9 +91,6 @@ export function snapshotFromProductPage(
     image: resolveProductImage(input.product.media),
     inStock: input.inStock,
     defaultVariantId: input.defaultVariantId,
-    brand: input.product.brand
-      ? { id: input.product.brand.id, name: input.product.brand.name }
-      : null,
     originalPrice: input.originalPrice,
     compareAtPrice: input.compareAtPrice,
     discountPercent: input.discountPercent,

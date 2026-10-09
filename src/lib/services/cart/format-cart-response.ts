@@ -12,7 +12,6 @@ type CartItemRow = {
     media: unknown;
     discountPercent: number;
     primaryCategoryId: string | null;
-    brandId: string | null;
     translations: Array<{ locale: string; title?: string; slug?: string }>;
   };
   variant: {
@@ -37,11 +36,6 @@ function resolveAppliedDiscount(
   const primaryCategoryId = product.primaryCategoryId;
   if (primaryCategoryId && settings.categoryDiscounts[primaryCategoryId]) {
     return settings.categoryDiscounts[primaryCategoryId];
-  }
-
-  const brandId = product.brandId;
-  if (brandId && settings.brandDiscounts[brandId]) {
-    return settings.brandDiscounts[brandId];
   }
 
   return settings.globalDiscount > 0 ? settings.globalDiscount : 0;

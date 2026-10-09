@@ -1,11 +1,10 @@
 import { apiClient } from '@/lib/api-client';
 import { useTranslation } from '@/lib/i18n-client';
 import type { Category } from '../types';
-import { logger } from "@/lib/utils/logger";
+import { logger } from '@/lib/utils/logger';
 
-interface UseBrandAndCategoryCreationProps {
+interface UseCategoryCreationProps {
   formData: {
-    brandIds: string[];
     primaryCategoryId: string;
   };
   useNewCategory: boolean;
@@ -14,23 +13,21 @@ interface UseBrandAndCategoryCreationProps {
   setLoading: (loading: boolean) => void;
 }
 
-export function useBrandAndCategoryCreation({
+export function useCategoryCreation({
   formData,
   useNewCategory,
   newCategoryName,
   setCategories,
   setLoading,
-}: UseBrandAndCategoryCreationProps) {
+}: UseCategoryCreationProps) {
   const { t } = useTranslation();
 
-  const createBrandAndCategory = async (): Promise<{
-    finalBrandIds: string[];
+  const createCategoryIfNeeded = async (): Promise<{
     finalPrimaryCategoryId: string;
     creationMessages: string[];
     error: boolean;
   }> => {
     const creationMessages: string[] = [];
-    const finalBrandIds = [...formData.brandIds];
     let finalPrimaryCategoryId = formData.primaryCategoryId;
 
     if (useNewCategory && newCategoryName.trim()) {
@@ -46,18 +43,18 @@ export function useBrandAndCategoryCreation({
           setCategories((prev) => [...prev, categoryResponse.data]);
           logger.debug('✅ [ADMIN] Category created:', categoryResponse.data.id);
           creationMessages.push(
-            t('admin.products.add.categoryCreatedSuccess').replace('{name}', newCategoryName.trim())
+            t('admin.products.add.categoryCreatedSuccess').replace('{name}', newCategoryName.trim()),
           );
         }
       } catch (err: unknown) {
         console.error('❌ [ADMIN] Error creating category:', err);
         setLoading(false);
-        return { finalBrandIds, finalPrimaryCategoryId, creationMessages, error: true };
+        return { finalPrimaryCategoryId, creationMessages, error: true };
       }
     }
 
-    return { finalBrandIds, finalPrimaryCategoryId, creationMessages, error: false };
+    return { finalPrimaryCategoryId, creationMessages, error: false };
   };
 
-  return { createBrandAndCategory };
+  return { createCategoryIfNeeded };
 }

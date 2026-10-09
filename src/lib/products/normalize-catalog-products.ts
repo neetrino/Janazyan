@@ -10,7 +10,6 @@ export type CatalogGridProduct = {
   compareAtPrice: number | null;
   image: string | null;
   inStock: boolean;
-  brand: { id: string; name: string } | null;
   defaultVariantId: string | null;
   colors: unknown[];
   labels: ProductLabel[];
@@ -31,7 +30,6 @@ export function normalizeCatalogProducts(
       compareAtPrice: product.compareAtPrice ?? product.originalPrice ?? null,
       image: product.image ?? null,
       inStock: product.inStock ?? true,
-      brand: product.brand ?? null,
       defaultVariantId: product.defaultVariantId ?? null,
       colors: Array.isArray(product.colors) ? product.colors : [],
       labels: product.labels ?? [],

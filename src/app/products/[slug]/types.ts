@@ -74,12 +74,6 @@ export interface Product {
   media: ProductMedia[] | string[];
   variants: ProductVariant[];
   labels?: ProductLabel[];
-  brand?: {
-    id: string;
-    name: string;
-    logo?: string | null;
-    logoUrl?: string | null;
-  };
   categories?: Array<{
     id: string;
     slug: string;

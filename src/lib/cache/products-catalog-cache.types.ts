@@ -16,7 +16,6 @@ export type ProductsCatalogCacheResponse = {
     originalPrice: number | null;
     image: string | null;
     inStock: boolean;
-    brand: { id: string; name: string } | null;
     defaultVariantId: string | null;
     colors: unknown[];
     categories: Array<{ title: string }>;

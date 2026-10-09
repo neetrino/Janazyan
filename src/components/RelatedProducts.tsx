@@ -276,8 +276,6 @@ export function RelatedProducts({
 
                       discountPercent: product.discountPercent,
 
-                      brand: product.brand,
-
                       categories: product.categories,
 
                     })}

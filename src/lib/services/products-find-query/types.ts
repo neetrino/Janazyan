@@ -10,7 +10,6 @@ export interface ProductFilters {
   filter?: string;
   colors?: string;
   sizes?: string;
-  brand?: string;
   sort?: string;
   page?: number;
   limit?: number;
@@ -27,11 +26,6 @@ export interface ProductFilters {
 export type ProductWithRelations = Prisma.ProductGetPayload<{
   include: {
     translations: true;
-    brand: {
-      include: {
-        translations: true;
-      };
-    };
     variants: {
       include: {
         options: {

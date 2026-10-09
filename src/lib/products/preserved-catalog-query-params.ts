@@ -5,7 +5,6 @@ export const PRESERVED_CATALOG_QUERY_KEYS = [
   'apiKey',
   'cityId',
   'sort',
-  'brand',
   'colors',
   'sizes',
 ] as const;

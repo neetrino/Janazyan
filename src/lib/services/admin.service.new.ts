@@ -8,7 +8,6 @@ import { adminUsersService } from "./admin/admin-users.service";
 import { adminOrdersService } from "./admin/admin-orders.service";
 import { adminSettingsService } from "./admin/admin-settings.service";
 import { adminDeliveryService } from "./admin/admin-delivery.service";
-import { adminBrandsService } from "./admin/admin-brands.service";
 
 // Import remaining methods from original file (temporary - will be moved to separate services)
 // These will be moved to admin-products.service.ts, admin-categories.service.ts, and admin-attributes.service.ts
@@ -48,11 +47,6 @@ class AdminService {
   getDeliveryOptions = adminDeliveryService.getDeliveryOptions.bind(adminDeliveryService);
   getDeliveryPrice = adminDeliveryService.getDeliveryPrice.bind(adminDeliveryService);
   updateDeliverySettings = adminDeliveryService.updateDeliverySettings.bind(adminDeliveryService);
-
-  getBrands = adminBrandsService.getBrands.bind(adminBrandsService);
-  createBrand = adminBrandsService.createBrand.bind(adminBrandsService);
-  updateBrand = adminBrandsService.updateBrand.bind(adminBrandsService);
-  deleteBrand = adminBrandsService.deleteBrand.bind(adminBrandsService);
 
   // TODO: Move these to separate services:
   // - Products methods (getProducts, getProductById, createProduct, updateProduct, deleteProduct, updateProductDiscount, generateUniqueSku)

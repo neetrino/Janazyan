@@ -42,7 +42,6 @@ export function WishlistProductGrid({ products, pendingCount }: WishlistProductG
             compareAtPrice: product.compareAtPrice ?? undefined,
             originalPrice: product.originalPrice ?? undefined,
             discountPercent: product.discountPercent ?? undefined,
-            brand: product.brand,
           }}
           viewMode="grid-3"
           priority={index < PRIORITY_CARD_COUNT}

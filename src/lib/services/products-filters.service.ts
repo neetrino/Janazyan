@@ -119,11 +119,6 @@ class ProductsFiltersService {
           where,
           take: FILTERS_PRODUCTS_LIMIT,
           include: {
-            brand: {
-              include: {
-                translations: true,
-              },
-            },
             variants: {
               where: {
                 published: true,
@@ -176,18 +171,10 @@ class ProductsFiltersService {
       colors?: string[] | null;
     }>();
     const sizeMap = new Map<string, number>();
-    const brandMap = new Map<string, { id: string; name: string; count: number }>();
 
-    products.forEach((product: ProductWithRelations & { brand?: { id: string; translations?: Array<{ locale: string; name?: string }>; name?: string } | null }) => {
+    products.forEach((product: ProductWithRelations) => {
       if (!product || !product.variants || !Array.isArray(product.variants)) {
         return;
-      }
-      if (product.brand?.id) {
-        const name = (product.brand as { translations?: Array<{ locale: string; name?: string }>; name?: string }).translations?.find((t: { locale: string }) => t.locale === lang)?.name || (product.brand as { name?: string }).name || '';
-        if (name) {
-          const existing = brandMap.get(product.brand.id);
-          brandMap.set(product.brand.id, { id: product.brand.id, name, count: (existing?.count || 0) + 1 });
-        }
       }
       product.variants.forEach((variant: any) => {
         if (!variant || !variant.options || !Array.isArray(variant.options)) {
@@ -331,19 +318,15 @@ class ProductsFiltersService {
       // Sort colors alphabetically
       colors.sort((a: { label: string }, b: { label: string }) => a.label.localeCompare(b.label));
 
-      const brands = Array.from(brandMap.values()).sort((a, b) => a.name.localeCompare(b.name));
-
       return {
         colors,
         sizes,
-        brands,
       };
     } catch (error) {
       console.error('❌ [PRODUCTS FILTERS SERVICE] Error in getFilters:', error);
       return {
         colors: [],
         sizes: [],
-        brands: [],
       };
     }
   }

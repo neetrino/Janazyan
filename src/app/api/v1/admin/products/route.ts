@@ -143,7 +143,6 @@ export async function GET(req: NextRequest) {
  * - slug: string (required)
  * - subtitle?: string
  * - descriptionHtml?: string
- * - brandId?: string
  * - primaryCategoryId?: string
  * - categoryIds?: string[]
  * - published: boolean (required)

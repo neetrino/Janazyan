@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import { getServerLanguage } from '@/lib/language-server';
 import { parseProductSlugParam } from '@/lib/products/parse-product-slug';
+import { toSlug } from '@/lib/utils/slug';
 import { ProductPageServer } from './ProductPageServer';
 import { ProductPageShellInstant } from './ProductPageShellInstant';
 import { RESERVED_ROUTES } from './types';
@@ -19,6 +20,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!slug || RESERVED_ROUTES.includes(slug.toLowerCase())) {
     redirect(`/${slug}`);
+  }
+
+  // Legacy Armenian/Cyrillic URLs → Latin (HTTP redirect outside Suspense).
+  const latinSlug = toSlug(slug);
+  if (latinSlug && latinSlug !== slug) {
+    const variantSuffix = variantIdFromUrl ? `:${variantIdFromUrl}` : '';
+    redirect(`/products/${latinSlug}${variantSuffix}`);
   }
 
   return (

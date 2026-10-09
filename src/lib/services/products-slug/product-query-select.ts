@@ -91,7 +91,6 @@ export function buildProductDetailsSelect(
 
   const select: Prisma.ProductSelect = {
     id: true,
-    brandId: true,
     primaryCategoryId: true,
     discountPercent: true,
     media: true,
@@ -109,17 +108,6 @@ export function buildProductDetailsSelect(
         descriptionHtml: true,
         seoTitle: true,
         seoDescription: true,
-      },
-    },
-    brand: {
-      select: {
-        id: true,
-        slug: true,
-        logoUrl: true,
-        translations: {
-          where: localeWhere,
-          select: { locale: true, name: true },
-        },
       },
     },
     categories: {

@@ -94,7 +94,6 @@ async function loadProductsCatalogFromDbAndCache(
       originalPrice: product.originalPrice,
       image: product.image,
       inStock: product.inStock,
-      brand: product.brand ? { id: product.brand.id, name: product.brand.name } : null,
       defaultVariantId: product.defaultVariantId,
       colors: product.colors ?? [],
       categories: product.categories.map((category) => ({ title: category.title })),

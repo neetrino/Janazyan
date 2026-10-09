@@ -1,7 +1,6 @@
 'use client';
 
 import type { MouseEvent } from 'react';
-import Image from 'next/image';
 import { formatPrice, type CurrencyCode } from '../../../lib/currency';
 import { t, getProductText } from '../../../lib/i18n';
 import type { LanguageCode } from '../../../lib/language';
@@ -97,23 +96,6 @@ export function ProductInfoAndActions({
   return (
     <div className={PDP_INFO_COLUMN_CLASS}>
       <div className="flex-1 min-h-0">
-        {product.brand && (
-          <div className="mb-2 flex items-center gap-2">
-            {(product.brand.logo || product.brand.logoUrl) ? (
-              <div className="relative h-5 w-5 overflow-hidden rounded-full border border-gray-200">
-                <Image
-                  src={product.brand.logo || product.brand.logoUrl || ''}
-                  alt={product.brand.name}
-                  fill
-                  className="object-cover"
-                  sizes="20px"
-                  unoptimized
-                />
-              </div>
-            ) : null}
-            <p className="text-sm text-gray-500">{product.brand.name}</p>
-          </div>
-        )}
         <h1 className="text-4xl font-bold text-gray-900 mb-2">
           {getProductText(language, product.id, 'title') || product.title}
         </h1>
@@ -143,9 +125,13 @@ export function ProductInfoAndActions({
           </div>
         </div>
         <div
-          className={`${PDP_DESCRIPTION_SLOT_CLASS} text-gray-600 prose prose-sm lg:line-clamp-3`}
+          className={`${PDP_DESCRIPTION_SLOT_CLASS} rich-text-content text-gray-600`}
           dangerouslySetInnerHTML={{
-            __html: sanitizeHtml(getProductText(language, product.id, 'longDescription') || product.description || ''),
+            __html: sanitizeHtml(
+              product.description ||
+                getProductText(language, product.id, 'longDescription') ||
+                '',
+            ),
           }}
         />
 
