@@ -12,6 +12,7 @@ import {
   getBaseWhere,
   getBaseWhereAnyLocale,
 } from '@/lib/services/products-slug/product-query-where';
+import { decodeSlugParam, toSlug } from '@/lib/utils/slug';
 
 export type PublishedProductRef = {
   id: string;
@@ -52,10 +53,7 @@ function pickCategorySlug(
   return match?.slug ?? primary.translations[0]?.slug ?? null;
 }
 
-async function loadPublishedProductRefFromDb(
-  slug: string,
-  lang: string,
-): Promise<PublishedProductRef | null> {
+async function findPublishedProductRefRow(slug: string, lang: string) {
   let row = await db.product.findFirst({
     where: getBaseWhere(slug, lang),
     select: REF_SELECT,
@@ -67,6 +65,24 @@ async function loadPublishedProductRefFromDb(
       where: getBaseWhereAnyLocale(slug),
       select: REF_SELECT,
     });
+  }
+
+  return row;
+}
+
+async function loadPublishedProductRefFromDb(
+  rawSlug: string,
+  lang: string,
+): Promise<PublishedProductRef | null> {
+  const slug = decodeSlugParam(rawSlug);
+  let row = await findPublishedProductRefRow(slug, lang);
+
+  // Old Armenian/Cyrillic URLs → Latin slug after migration / admin normalize.
+  if (!row) {
+    const latinSlug = toSlug(slug);
+    if (latinSlug && latinSlug !== slug) {
+      row = await findPublishedProductRefRow(latinSlug, lang);
+    }
   }
 
   if (!row) {
@@ -101,9 +117,10 @@ async function persistPublishedProductRef(
  * Lightweight slug → product ref (shared across PDP parallel loads via dedup + Redis).
  */
 export async function getPublishedProductRefCached(
-  slug: string,
+  rawSlug: string,
   lang: string,
 ): Promise<PublishedProductRef | null> {
+  const slug = decodeSlugParam(rawSlug);
   const cacheKey = STOREFRONT_CACHE_KEYS.productRef(lang, slug);
   const cached = await readJsonCache<PublishedProductRef>(cacheKey);
   if (cached) {

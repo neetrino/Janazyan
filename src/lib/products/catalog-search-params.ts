@@ -14,10 +14,8 @@ export type ParsedCatalogParams = {
   category?: string;
   colors?: string;
   sizes?: string;
-  brand?: string;
   selectedColors: string[];
   selectedSizes: string[];
-  selectedBrands: string[];
 };
 
 export async function resolveSearchParams(
@@ -40,7 +38,6 @@ export function parseCatalogSearchParams(params: SearchParamsInput): ParsedCatal
 
   const colors = typeof params.colors === 'string' ? params.colors : undefined;
   const sizes = typeof params.sizes === 'string' ? params.sizes : undefined;
-  const brands = typeof params.brand === 'string' ? params.brand : undefined;
 
   return {
     page,
@@ -53,10 +50,8 @@ export function parseCatalogSearchParams(params: SearchParamsInput): ParsedCatal
         : undefined,
     colors,
     sizes,
-    brand: brands,
     selectedColors: colors ? colors.split(',').map((c) => c.trim().toLowerCase()) : [],
     selectedSizes: sizes ? sizes.split(',').map((s) => s.trim()) : [],
-    selectedBrands: brands ? brands.split(',').map((b) => b.trim()) : [],
   };
 }
 

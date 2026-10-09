@@ -45,7 +45,6 @@ export function buildProductUpdateData(
   allVariantImages: string[],
   existing: { publishedAt: Date | null }
 ): {
-  brandId?: string | null;
   primaryCategoryId?: string | null;
   categoryIds?: string[];
   categories?: Prisma.ProductUpdateInput["categories"];
@@ -55,7 +54,6 @@ export function buildProductUpdateData(
   featured?: boolean;
 } {
   const updateData: {
-    brandId?: string | null;
     primaryCategoryId?: string | null;
     categoryIds?: string[];
     categories?: Prisma.ProductUpdateInput["categories"];
@@ -65,7 +63,6 @@ export function buildProductUpdateData(
     featured?: boolean;
   } = {};
   
-  if (data.brandId !== undefined) updateData.brandId = data.brandId || null;
   if (data.primaryCategoryId !== undefined) updateData.primaryCategoryId = data.primaryCategoryId || null;
   if (data.categoryIds !== undefined) {
     const nextCategoryIds = data.categoryIds || [];
@@ -98,7 +95,9 @@ export function buildProductUpdateData(
 }
 
 /**
- * Update product translation
+ * Update product translation.
+ * Admin form is single-locale today, but storefront may render hy/ru/en.
+ * Description is shared — sync descriptionHtml to every locale row.
  */
 export async function updateProductTranslation(
   productId: string,
@@ -129,6 +128,13 @@ export async function updateProductTranslation(
         descriptionHtml: data.descriptionHtml || null,
       },
     });
+
+    if (data.descriptionHtml !== undefined) {
+      await tx.productTranslation.updateMany({
+        where: { productId },
+        data: { descriptionHtml: data.descriptionHtml || null },
+      });
+    }
   }
 }
 

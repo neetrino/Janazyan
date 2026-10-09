@@ -4,7 +4,7 @@ import { Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
 import type { Category, Variant } from '../types';
 
-interface CategoriesBrandsProps {
+interface ProductCategoriesSectionProps {
   categories: Category[];
   categoryIds: string[];
   categoriesExpanded: boolean;
@@ -19,7 +19,7 @@ interface CategoriesBrandsProps {
   onVariantsUpdate?: (updater: (prev: Variant[]) => Variant[]) => void;
 }
 
-export function CategoriesBrands({
+export function ProductCategoriesSection({
   categories,
   categoryIds,
   categoriesExpanded,
@@ -32,7 +32,7 @@ export function CategoriesBrands({
   onPrimaryCategoryIdChange,
   isClothingCategory,
   onVariantsUpdate,
-}: CategoriesBrandsProps) {
+}: ProductCategoriesSectionProps) {
   const { t } = useTranslation();
 
   const buildCategoryTree = () => {
@@ -55,7 +55,7 @@ export function CategoriesBrands({
 
     const flattenTree = (
       nodes: (Category & { children: Category[] })[],
-      result: (Category & { isSubcategory: boolean })[] = []
+      result: (Category & { isSubcategory: boolean })[] = [],
     ): (Category & { isSubcategory: boolean })[] => {
       nodes.forEach((node) => {
         result.push({ ...node, isSubcategory: false });
@@ -95,7 +95,7 @@ export function CategoriesBrands({
             sizes: [],
             sizeStocks: {},
             size: '',
-          }))
+          })),
         );
       }
     }
@@ -103,7 +103,7 @@ export function CategoriesBrands({
 
   return (
     <div>
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.products.add.categoriesAndBrands')}</h2>
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('admin.products.add.categories')}</h2>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           {t('admin.products.add.categories')}{' '}

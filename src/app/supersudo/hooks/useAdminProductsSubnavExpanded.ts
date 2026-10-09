@@ -39,13 +39,12 @@ function isUnderProductsSubnav(pathname: string): boolean {
   return (
     pathname.startsWith('/supersudo/products') ||
     pathname.startsWith('/supersudo/categories') ||
-    pathname.startsWith('/supersudo/brands') ||
     pathname.startsWith('/supersudo/attributes')
   );
 }
 
 /**
- * Expand/collapse state for Categories, Brands, Attributes under Products in admin nav.
+ * Expand/collapse state for Categories and Attributes under Products in admin nav.
  * Persists to localStorage; auto-expands when route is under those sections.
  */
 export function useAdminProductsSubnavExpanded(pathname: string): readonly [boolean, () => void] {

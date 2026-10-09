@@ -28,7 +28,6 @@ export type ProductVariantWithOptions = {
  */
 export type ProductWithFullRelations = {
   id: string;
-  brandId: string | null;
   primaryCategoryId: string | null;
   discountPercent: number;
   media: Prisma.JsonValue[];
@@ -45,12 +44,6 @@ export type ProductWithFullRelations = {
     seoTitle: string | null;
     seoDescription: string | null;
   }>;
-  brand: {
-    id: string;
-    slug: string;
-    logoUrl: string | null;
-    translations: Array<{ locale: string; name: string }>;
-  } | null;
   categories: Array<{
     id: string;
     translations: Array<{ locale: string; slug: string; title: string }>;

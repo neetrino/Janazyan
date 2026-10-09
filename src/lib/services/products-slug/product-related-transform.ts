@@ -9,13 +9,8 @@ export interface RelatedProductRow {
   id: string;
   discountPercent: number;
   primaryCategoryId: string | null;
-  brandId: string | null;
   media: unknown[];
   translations: Array<{ slug: string; title: string; locale: string }>;
-  brand: {
-    id: string;
-    translations: Array<{ name: string; locale: string }>;
-  } | null;
   variants: Array<{
     id: string;
     price: number;
@@ -38,24 +33,18 @@ export interface RelatedCardPayload {
   discountPercent: number | null;
   image: string | null;
   inStock: boolean;
-  brand: { id: string; name: string } | null;
   categories: Array<{ id: string; slug: string; title: string }>;
 }
 
 function pickAppliedDiscount(
   productDiscount: number,
   primaryCategoryId: string | null,
-  brandId: string | null,
   categoryDiscounts: Record<string, number>,
-  brandDiscounts: Record<string, number>,
   globalDiscount: number
 ): number {
   if (productDiscount > 0) return productDiscount;
   if (primaryCategoryId && categoryDiscounts[primaryCategoryId]) {
     return categoryDiscounts[primaryCategoryId];
-  }
-  if (brandId && brandDiscounts[brandId]) {
-    return brandDiscounts[brandId];
   }
   if (globalDiscount > 0) return globalDiscount;
   return 0;
@@ -75,22 +64,17 @@ export async function transformRelatedProductRows(
 ): Promise<RelatedCardPayload[]> {
   if (rows.length === 0) return [];
 
-  const { globalDiscount, categoryDiscounts, brandDiscounts } =
+  const { globalDiscount, categoryDiscounts } =
     discountSettings ?? (await getProductDiscountSettings());
 
   return rows.map((product) => {
     const tr = pickTranslation(product.translations, lang);
-    const brandTr = product.brand
-      ? pickTranslation(product.brand.translations, lang)
-      : null;
     const variant = product.variants[0];
     const productDiscount = product.discountPercent || 0;
     const appliedDiscount = pickAppliedDiscount(
       productDiscount,
       product.primaryCategoryId,
-      product.brandId,
       categoryDiscounts,
-      brandDiscounts,
       globalDiscount
     );
 
@@ -124,9 +108,6 @@ export async function transformRelatedProductRows(
       discountPercent: appliedDiscount > 0 ? appliedDiscount : null,
       image,
       inStock: (variant?.stock ?? 0) > 0,
-      brand: product.brand
-        ? { id: product.brand.id, name: brandTr?.name ?? "" }
-        : null,
       categories,
     };
   });

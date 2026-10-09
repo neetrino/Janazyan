@@ -2,12 +2,14 @@ import DOMPurify from "isomorphic-dompurify";
 
 /**
  * Sanitize HTML string to prevent XSS. Use before dangerouslySetInnerHTML.
+ * Includes b/i/strike so contentEditable output is not stripped before normalize.
  */
 export function sanitizeHtml(html: string): string {
   if (typeof html !== "string") return "";
   return DOMPurify.sanitize(html, {
     ALLOWED_TAGS: [
-      "p", "br", "strong", "em", "u", "s", "a", "ul", "ol", "li",
+      "p", "br", "strong", "em", "b", "i", "u", "s", "strike", "a",
+      "ul", "ol", "li",
       "h1", "h2", "h3", "h4", "h5", "h6", "blockquote", "span", "div",
     ],
     ALLOWED_ATTR: ["href", "target", "rel", "class"],

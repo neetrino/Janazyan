@@ -21,7 +21,6 @@ type CatalogProduct = {
   image: string | null;
   inStock: boolean;
   defaultVariantId?: string | null;
-  brand: { name: string } | null;
   categories: Array<{ title: string }>;
   labels?: ProductLabel[];
 };
@@ -37,7 +36,7 @@ export type HomeFeaturedProduct = {
   comparePriceLabel: string | null;
   discountLabel: string | null;
   rating: string | null;
-  image: string;
+  image: string | null;
   inStock: boolean;
   defaultVariantId: string | null;
   labels: ProductLabel[];
@@ -86,7 +85,7 @@ async function loadHomeFeaturedProducts(): Promise<HomeFeaturedProduct[]> {
 
 const getHomeFeaturedProductsCached = unstable_cache(
   loadHomeFeaturedProducts,
-  ['home-featured-products-v2'],
+  ['home-featured-products-v3'],
   {
     revalidate: HOME_FEATURED_REVALIDATE_SECONDS,
     tags: ['products', 'home-featured'],

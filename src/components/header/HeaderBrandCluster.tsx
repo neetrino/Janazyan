@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { HOME_NAV_LINK_HREFS } from '../home/constants';
 import { useTranslation } from '../../lib/i18n-client';
 import { isNavLinkActive } from '../../lib/nav/is-nav-link-active';
+
 import {
   HEADER_ACTIVE_PILL_HEIGHT_PX,
   HEADER_ACTIVE_PILL_RADIUS_PX,
@@ -110,6 +111,12 @@ function HeaderNav({
   };
 
   useEffect(() => {
+    for (const link of HOME_NAV_LINK_HREFS) {
+      router.prefetch(link.href);
+    }
+  }, [router]);
+
+  useEffect(() => {
     if (!pendingActiveHref) {
       return;
     }
@@ -119,6 +126,10 @@ function HeaderNav({
     }
   }, [pathname, pendingActiveHref, searchParams]);
 
+  /**
+   * Optimistic pill only — do not preventDefault/router.push.
+   * Native Link navigation + prefetch stays faster than a manual push.
+   */
   const handleNavLinkClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     if (event.defaultPrevented || event.button !== 0) {
       return;
@@ -128,16 +139,13 @@ function HeaderNav({
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
     if (isNavLinkActive(pathname, href, searchParams)) {
+      event.preventDefault();
       setPendingHref(null);
       return;
     }
 
     setPendingHref(href);
-    router.push(href);
   };
 
   const {
@@ -153,6 +161,7 @@ function HeaderNav({
     pathname,
     searchParams,
     pendingActiveHref,
+    onNavigate: setPendingHref,
   });
 
   return (

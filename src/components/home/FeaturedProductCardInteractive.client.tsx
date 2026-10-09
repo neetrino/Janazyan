@@ -27,12 +27,11 @@ type FeaturedProductCardInteractiveProps = {
     id: string;
     slug: string;
     title: string;
-    image: string;
+    image: string | null;
     inStock: boolean;
     defaultVariantId: string | null;
     price: number;
     compareAtPrice: number | null;
-    brand: { id: string; name: string } | null;
   };
   initialPriceLabel: string;
   initialComparePriceLabel: string | null;
@@ -80,7 +79,6 @@ export function FeaturedProductCardInteractive({
       image: product.image,
       inStock: product.inStock,
       defaultVariantId: product.defaultVariantId,
-      brand: product.brand,
     });
   };
 

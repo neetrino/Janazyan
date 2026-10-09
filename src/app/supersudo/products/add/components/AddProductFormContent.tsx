@@ -12,7 +12,7 @@ import type {
 import type { CurrencyCode } from '@/lib/currency';
 import { BasicInformation } from './BasicInformation';
 import { ProductImages } from './ProductImages';
-import { CategoriesBrands } from './CategoriesBrands';
+import { ProductCategoriesSection } from './ProductCategoriesSection';
 import { SimpleProductFields } from './SimpleProductFields';
 import { AttributesSelection } from './AttributesSelection';
 import { VariantBuilder } from './VariantBuilder';
@@ -25,7 +25,6 @@ interface AddProductFormContentProps {
     title: string;
     slug: string;
     descriptionHtml: string;
-    brandIds: string[];
     categoryIds: string[];
     primaryCategoryId: string;
     imageUrls: string[];
@@ -61,7 +60,7 @@ interface AddProductFormContentProps {
   variantImageInputRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>;
   onTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   onSlugChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onDescriptionChange: (html: string) => void;
   onProductTypeChange: (type: 'simple' | 'variable') => void;
   onUploadImages: (event: ChangeEvent<HTMLInputElement>) => Promise<void>;
   onRemoveImage: (index: number) => void;
@@ -182,7 +181,7 @@ export function AddProductFormContent({
           onSetFeaturedImage={onSetFeaturedImage}
         />
 
-        <CategoriesBrands
+        <ProductCategoriesSection
           categories={categories}
           categoryIds={formData.categoryIds}
           categoriesExpanded={categoriesExpanded}

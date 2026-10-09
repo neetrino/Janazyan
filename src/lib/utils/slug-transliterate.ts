@@ -1,0 +1,135 @@
+/**
+ * Practical Armenian / Cyrillic → Latin map for URL slugs.
+ * Digraphs must be applied before single-letter replacements.
+ */
+const ARMENIAN_DIGRAPHS: ReadonlyArray<readonly [string, string]> = [
+  ["\u0578\u0582", "u"],
+  ["\u0548\u0582", "u"],
+  ["\u0548\u0552", "u"],
+  ["\u0587", "ev"],
+  ["\u0535\u057e", "ev"],
+];
+
+const ARMENIAN_LETTERS: Readonly<Record<string, string>> = {
+  "\u0561": "a", "\u0531": "a",
+  "\u0562": "b", "\u0532": "b",
+  "\u0563": "g", "\u0533": "g",
+  "\u0564": "d", "\u0534": "d",
+  "\u0565": "e", "\u0535": "e",
+  "\u0566": "z", "\u0536": "z",
+  "\u0567": "e", "\u0537": "e",
+  "\u0568": "y", "\u0538": "y",
+  "\u0569": "t", "\u0539": "t",
+  "\u056a": "zh", "\u053a": "zh",
+  "\u056b": "i", "\u053b": "i",
+  "\u056c": "l", "\u053c": "l",
+  "\u056d": "kh", "\u053d": "kh",
+  "\u056e": "ts", "\u053e": "ts",
+  "\u056f": "k", "\u053f": "k",
+  "\u0570": "h", "\u0540": "h",
+  "\u0571": "dz", "\u0541": "dz",
+  "\u0572": "gh", "\u0542": "gh",
+  "\u0573": "ch", "\u0543": "ch",
+  "\u0574": "m", "\u0544": "m",
+  "\u0575": "y", "\u0545": "y",
+  "\u0576": "n", "\u0546": "n",
+  "\u0577": "sh", "\u0547": "sh",
+  "\u0578": "o", "\u0548": "o",
+  "\u0579": "ch", "\u0549": "ch",
+  "\u057a": "p", "\u054a": "p",
+  "\u057b": "j", "\u054b": "j",
+  "\u057c": "r", "\u054c": "r",
+  "\u057d": "s", "\u054d": "s",
+  "\u057e": "v", "\u054e": "v",
+  "\u057f": "t", "\u054f": "t",
+  "\u0580": "r", "\u0550": "r",
+  "\u0581": "ts", "\u0551": "ts",
+  "\u0582": "w", "\u0552": "w",
+  "\u0583": "p", "\u0553": "p",
+  "\u0584": "q", "\u0554": "q",
+  "\u0585": "o", "\u0555": "o",
+  "\u0586": "f", "\u0556": "f",
+};
+
+const CYRILLIC_LETTERS: Readonly<Record<string, string>> = {
+  "\u0430": "a",
+  "\u0431": "b",
+  "\u0432": "v",
+  "\u0433": "g",
+  "\u0434": "d",
+  "\u0435": "e",
+  "\u0451": "e",
+  "\u0436": "zh",
+  "\u0437": "z",
+  "\u0438": "i",
+  "\u0439": "y",
+  "\u043a": "k",
+  "\u043b": "l",
+  "\u043c": "m",
+  "\u043d": "n",
+  "\u043e": "o",
+  "\u043f": "p",
+  "\u0440": "r",
+  "\u0441": "s",
+  "\u0442": "t",
+  "\u0443": "u",
+  "\u0444": "f",
+  "\u0445": "kh",
+  "\u0446": "ts",
+  "\u0447": "ch",
+  "\u0448": "sh",
+  "\u0449": "shch",
+  "\u044a": "",
+  "\u044b": "y",
+  "\u044c": "",
+  "\u044d": "e",
+  "\u044e": "yu",
+  "\u044f": "ya",
+  "\u0410": "a",
+  "\u0411": "b",
+  "\u0412": "v",
+  "\u0413": "g",
+  "\u0414": "d",
+  "\u0415": "e",
+  "\u0401": "e",
+  "\u0416": "zh",
+  "\u0417": "z",
+  "\u0418": "i",
+  "\u0419": "y",
+  "\u041a": "k",
+  "\u041b": "l",
+  "\u041c": "m",
+  "\u041d": "n",
+  "\u041e": "o",
+  "\u041f": "p",
+  "\u0420": "r",
+  "\u0421": "s",
+  "\u0422": "t",
+  "\u0423": "u",
+  "\u0424": "f",
+  "\u0425": "kh",
+  "\u0426": "ts",
+  "\u0427": "ch",
+  "\u0428": "sh",
+  "\u0429": "shch",
+  "\u042a": "",
+  "\u042b": "y",
+  "\u042c": "",
+  "\u042d": "e",
+  "\u042e": "yu",
+  "\u042f": "ya",
+};
+
+/** Transliterate Armenian/Cyrillic characters to Latin for ASCII URL slugs. */
+export function transliterateForSlug(input: string): string {
+  let out = input;
+  for (const [from, to] of ARMENIAN_DIGRAPHS) {
+    out = out.split(from).join(to);
+  }
+  let result = "";
+  for (const char of out) {
+    result += ARMENIAN_LETTERS[char] ?? CYRILLIC_LETTERS[char] ?? char;
+  }
+  return result;
+}
+

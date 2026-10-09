@@ -10,6 +10,7 @@ import { dedupeInFlight } from '@/lib/cache/in-flight-dedup';
 import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { productsSlugService } from '@/lib/services/products-slug.service';
 import type { Product } from '@/app/products/[slug]/types';
+import { decodeSlugParam } from '@/lib/utils/slug';
 
 function isNotFoundError(error: unknown): boolean {
   return Boolean(
@@ -57,9 +58,10 @@ async function persistProductDetails(
  * Redis-backed product details with in-flight dedup and double-check before DB.
  */
 export async function getProductDetailsCached(
-  slug: string,
+  rawSlug: string,
   lang: string,
 ): Promise<Product | null> {
+  const slug = decodeSlugParam(rawSlug);
   const cacheKey = STOREFRONT_CACHE_KEYS.productDetails(lang, slug);
   const cached = await readJsonCache<Product>(cacheKey);
   if (cached) {

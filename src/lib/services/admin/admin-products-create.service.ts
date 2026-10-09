@@ -99,7 +99,6 @@ class AdminProductsCreateService {
     slug: string;
     subtitle?: string;
     descriptionHtml?: string;
-    brandId?: string;
     primaryCategoryId?: string;
     categoryIds?: string[];
     published: boolean;
@@ -354,7 +353,6 @@ class AdminProductsCreateService {
 
         const product = await tx.product.create({
           data: {
-            brandId: data.brandId || undefined,
             primaryCategoryId: data.primaryCategoryId || undefined,
             categoryIds: data.categoryIds || [],
             ...(data.categoryIds && data.categoryIds.length > 0

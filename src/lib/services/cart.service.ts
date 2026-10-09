@@ -26,8 +26,7 @@ class CartService {
     userId: string,
     locale: string,
   ): Promise<CartViewResponse> {
-    const [{ globalDiscount, categoryDiscounts, brandDiscounts }, cartRow] =
-      await Promise.all([
+    const [discountSettings, cartRow] = await Promise.all([
         getProductDiscountSettings(),
         db.cart.findFirst({
           where: { userId },
@@ -48,11 +47,7 @@ class CartService {
       });
     }
 
-    return buildCartViewResponse(cart.id, cart.items, locale, {
-      globalDiscount,
-      categoryDiscounts,
-      brandDiscounts,
-    });
+    return buildCartViewResponse(cart.id, cart.items, locale, discountSettings);
   }
 
   /**

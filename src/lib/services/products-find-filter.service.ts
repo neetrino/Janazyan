@@ -25,23 +25,14 @@ const normalizeFilterList = (
 
 class ProductsFindFilterService {
   /**
-   * Filter products by price, colors, sizes, brand in memory
+   * Filter products by price, colors, sizes in memory
    */
   filterProducts(
     products: ProductWithRelations[],
     filters: ProductFilters,
     bestsellerProductIds: string[]
   ): ProductWithRelations[] {
-    const { colors, sizes, brand } = filters;
-
-    // Filter by brand(s) - support multiple brands (comma-separated)
-    const brandList = normalizeFilterList(brand);
-    if (brandList.length > 0) {
-      products = products.filter(
-        (product: ProductWithRelations) => 
-          product.brandId && brandList.includes(product.brandId)
-      );
-    }
+    const { colors, sizes } = filters;
 
     // Filter by colors and sizes together if both are provided.
     // Skip filtering when only placeholder values (e.g., "undefined") are passed.

@@ -2,7 +2,6 @@ export const R2_IMAGE_FOLDERS = {
   products: 'products',
   categories: 'categories',
   attributes: 'attributes',
-  brands: 'brands',
   blog: 'blog-media',
   partnerStores: 'partner-stores',
 } as const;

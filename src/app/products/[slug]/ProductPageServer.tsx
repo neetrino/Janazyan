@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import type { LanguageCode } from '@/lib/language';
 import {
   fetchProductPageProduct,
@@ -26,6 +27,13 @@ export async function ProductPageServer({
     getProductRelatedCached(slug, language),
     fetchProductPageReviewsBySlug(slug, language),
   ]);
+
+  // Canonicalize old Armenian/encoded URLs to the stored Latin slug.
+  if (product?.slug && product.slug !== slug) {
+    const variantSuffix = variantIdFromUrl ? `:${variantIdFromUrl}` : '';
+    redirect(`/products/${product.slug}${variantSuffix}`);
+  }
+
   const clientPayload = prepareProductPageClientPayload(product);
   const initialRelated = relatedResult.data.filter(
     (item) => item.id !== product?.id && item.slug.length > 0,

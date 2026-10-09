@@ -72,7 +72,6 @@ export function invalidateAdminResourceCache(resource: string): void {
 
 export const ADMIN_LIST_CACHE_KEYS = {
   categories: 'admin:list:categories',
-  brands: 'admin:list:brands',
   attributes: 'admin:list:attributes',
   blogPosts: 'admin:list:blog-posts',
   partnerStores: 'admin:list:partner-stores:v2',

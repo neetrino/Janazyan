@@ -18,7 +18,6 @@ export const CART_WITH_ITEMS_INCLUDE = {
           media: true,
           discountPercent: true,
           primaryCategoryId: true,
-          brandId: true,
           translations: {
             select: { locale: true, title: true, slug: true },
           },

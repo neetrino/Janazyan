@@ -10,7 +10,7 @@ export const PRODUCT_PAGE_REVALIDATE_SECONDS = 300;
 const getCachedProductDetails = unstable_cache(
   async (slug: string, lang: string): Promise<Product | null> =>
     getProductDetailsCached(slug, lang),
-  ['product-page-details-v4'],
+  ['product-page-details-v6-rich-description'],
   { revalidate: PRODUCT_PAGE_REVALIDATE_SECONDS, tags: ['products'] },
 );
 
@@ -19,7 +19,7 @@ const getCachedProductReviews = unstable_cache(
     const rows = await getProductReviewsBySlugCached(slug, lang);
     return rows ?? [];
   },
-  ['product-page-reviews-v1'],
+  ['product-page-reviews-v2-latin-slug'],
   { revalidate: PRODUCT_PAGE_REVALIDATE_SECONDS, tags: ['products', 'reviews'] },
 );
 

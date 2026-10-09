@@ -29,6 +29,8 @@ type UseHeaderNavActivePillParams = {
   pathname: string;
   searchParams: URLSearchParams;
   pendingActiveHref?: string | null;
+  /** Called before navigating from a pill drag so the active pill stays optimistic. */
+  onNavigate?: (href: string) => void;
 };
 
 function getLinksLayoutKey(links: ReadonlyArray<NavLink>): string {
@@ -51,6 +53,7 @@ export function useHeaderNavActivePill({
   pathname,
   searchParams,
   pendingActiveHref = null,
+  onNavigate,
 }: UseHeaderNavActivePillParams) {
   const router = useRouter();
   const navRef = useRef<HTMLElement>(null);
@@ -211,10 +214,11 @@ export function useHeaderNavActivePill({
       }
 
       if (!isNavLinkActive(pathname, targetHref, searchParams)) {
+        onNavigate?.(targetHref);
         router.push(targetHref);
       }
     },
-    [links, pathname, pillPosition.width, router, searchParams, syncPillToIndex],
+    [links, onNavigate, pathname, pillPosition.width, router, searchParams, syncPillToIndex],
   );
 
   const handlePillPointerUp = useCallback(
