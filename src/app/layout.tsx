@@ -1,13 +1,6 @@
 import React, { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import {
-  Montserrat,
-  DM_Serif_Display,
-  Noto_Sans_Armenian,
-  Space_Grotesk,
-  DM_Sans,
-} from 'next/font/google';
 import './globals.css';
 import { ClientProviders } from '../components/ClientProviders';
 import { ConditionalHeader } from '../components/ConditionalHeader';
@@ -15,16 +8,16 @@ import { Footer } from '../components/Footer';
 import { MobileBottomNav } from '../components/MobileBottomNav';
 import { StorefrontBackground, StorefrontMain } from '../components/StorefrontLayoutShell';
 
-const montserrat = Montserrat({
-  subsets: ['latin', 'latin-ext'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+const montserrat = localFont({
+  src: '../assets/fonts/google/Montserrat-Variable.ttf',
+  weight: '400 900',
   variable: '--font-montserrat',
   display: 'swap',
 });
 
-const dmSerif = DM_Serif_Display({
-  subsets: ['latin'],
-  weight: ['400'],
+const dmSerif = localFont({
+  src: '../assets/fonts/google/DMSerifDisplay-Regular.ttf',
+  weight: '400',
   variable: '--font-display',
   display: 'swap',
 });
@@ -36,23 +29,23 @@ const wideDisplay = localFont({
   weight: '400',
 });
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+const spaceGrotesk = localFont({
+  src: '../assets/fonts/google/SpaceGrotesk-Variable.ttf',
+  weight: '400 700',
   variable: '--font-grotesk',
   display: 'swap',
 });
 
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+const dmSans = localFont({
+  src: '../assets/fonts/google/DMSans-Variable.ttf',
+  weight: '400 700',
   variable: '--font-dm-sans',
   display: 'swap',
 });
 
-const notoSansArmenian = Noto_Sans_Armenian({
-  subsets: ['armenian'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+const notoSansArmenian = localFont({
+  src: '../assets/fonts/google/NotoSansArmenian-Variable.ttf',
+  weight: '400 900',
   variable: '--font-armenian',
   display: 'swap',
 });
