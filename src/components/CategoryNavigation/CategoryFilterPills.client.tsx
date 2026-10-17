@@ -150,7 +150,7 @@ export function CategoryFilterPills({
       {showRightFade ? <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS} /> : null}
       <div
         ref={rowRef}
-        className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} cursor-grab select-none active:cursor-grabbing`}
+        className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} desktop:cursor-grab desktop:select-none desktop:active:cursor-grabbing desktop:[&_a]:cursor-grab desktop:[&_a]:active:cursor-grabbing`}
         data-category-filter-row
         onPointerDown={rowDrag.onPointerDown}
         onPointerMove={rowDrag.onPointerMove}

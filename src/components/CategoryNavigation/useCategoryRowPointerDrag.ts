@@ -2,7 +2,8 @@
 
 import { useRef, type MouseEvent, type PointerEvent, type RefObject } from 'react';
 
-const CATEGORY_ROW_DRAG_THRESHOLD_PX = 5;
+/** Ignore click jitter. Capture and suppress navigation only after a real drag. */
+const CATEGORY_ROW_DRAG_THRESHOLD_PX = 10;
 
 type DragSession = {
   pointerId: number;
@@ -20,11 +21,11 @@ export function useCategoryRowPointerDrag(rowRef: RefObject<HTMLDivElement | nul
   const suppressClickRef = useRef(false);
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
-    if (event.pointerType !== 'mouse' || event.button !== 0) {
+    if (event.pointerType === 'touch' || event.button !== 0) {
       return;
     }
     const row = rowRef.current;
-    if (!row) {
+    if (!row || row.scrollWidth <= row.clientWidth) {
       return;
     }
     sessionRef.current = {
@@ -47,9 +48,12 @@ export function useCategoryRowPointerDrag(rowRef: RefObject<HTMLDivElement | nul
     }
     if (!session.moved) {
       session.moved = true;
+      // Capture only after a drag starts. Capturing on pointerdown retargets
+      // the click away from the category link, so a tap never navigates.
       row.setPointerCapture(event.pointerId);
     }
     row.scrollLeft = session.scrollLeft - delta;
+    event.preventDefault();
   };
 
   const finishDrag = (event: PointerEvent<HTMLDivElement>) => {
@@ -59,7 +63,16 @@ export function useCategoryRowPointerDrag(rowRef: RefObject<HTMLDivElement | nul
     }
     sessionRef.current = null;
     if (session.moved) {
-      suppressClickRef.current = true;
+      const row = rowRef.current;
+      const scrolled = row ? row.scrollLeft !== session.scrollLeft : false;
+      if (scrolled) {
+        suppressClickRef.current = true;
+        // Click is dispatched after pointerup. If the browser drops it, clear
+        // the flag so the next category tap is not swallowed.
+        window.setTimeout(() => {
+          suppressClickRef.current = false;
+        }, 0);
+      }
     }
     const row = rowRef.current;
     if (row?.hasPointerCapture(event.pointerId)) {
