@@ -15,3 +15,6 @@ export const HERO_RECTANGLE_PINK_GRADIENT = `linear-gradient(${HERO_RECTANGLE_GR
 
 export const HERO_RECTANGLE_TOP_PERCENT = 2.9;
 export const HERO_RECTANGLE_BOTTOM_PERCENT = 3.4;
+
+/** ViewBox strip that squares the bottom corners so the card radius can clip them. */
+export const HERO_RECTANGLE_BOTTOM_CORNER_COVER = 64;

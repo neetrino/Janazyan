@@ -2,6 +2,7 @@ import { useId } from 'react';
 import type { HeroSlideBackground } from './hero-slides';
 import {
   HERO_RECTANGLE_BG_SRC,
+  HERO_RECTANGLE_BOTTOM_CORNER_COVER,
   HERO_RECTANGLE_BOTTOM_PERCENT,
   HERO_RECTANGLE_PATH,
   HERO_RECTANGLE_TOP_PERCENT,
@@ -16,6 +17,8 @@ type HeroRectangleBackgroundProps = {
   fill?: boolean;
   /** When set, fills the shape with a single solid color instead of the gradient. */
   solidColor?: string;
+  /** Pull the shape to the card’s bottom edge so the page color does not show past the radius. */
+  flushBottom?: boolean;
 };
 
 function HeroRectangleGradientDefs({
@@ -61,6 +64,7 @@ export function HeroRectangleBackground({
   className = '',
   fill = false,
   solidColor,
+  flushBottom = false,
 }: HeroRectangleBackgroundProps) {
   const clipId = useId();
   const gradientId = `${clipId}-gradient`;
@@ -77,7 +81,7 @@ export function HeroRectangleBackground({
         fill
           ? undefined
           : {
-              bottom: `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
+              bottom: flushBottom ? '0%' : `${HERO_RECTANGLE_BOTTOM_PERCENT}%`,
               top: `${HERO_RECTANGLE_TOP_PERCENT}%`,
             }
       }
@@ -95,15 +99,37 @@ export function HeroRectangleBackground({
           {!useRasterBlue ? <HeroRectangleGradientDefs gradientId={gradientId} variant={variant} /> : null}
         </defs>
         {useRasterBlue ? (
-          <image
-            href={HERO_RECTANGLE_BG_SRC}
-            width={HERO_RECTANGLE_VIEWBOX_WIDTH}
-            height={HERO_RECTANGLE_VIEWBOX_HEIGHT}
-            clipPath={`url(#${clipId})`}
-            preserveAspectRatio="xMidYMid slice"
-          />
+          <>
+            {flushBottom ? (
+              <image
+                href={HERO_RECTANGLE_BG_SRC}
+                y={HERO_RECTANGLE_VIEWBOX_HEIGHT - HERO_RECTANGLE_BOTTOM_CORNER_COVER}
+                width={HERO_RECTANGLE_VIEWBOX_WIDTH}
+                height={HERO_RECTANGLE_BOTTOM_CORNER_COVER}
+                preserveAspectRatio="xMidYMax slice"
+              />
+            ) : null}
+            <image
+              href={HERO_RECTANGLE_BG_SRC}
+              width={HERO_RECTANGLE_VIEWBOX_WIDTH}
+              height={HERO_RECTANGLE_VIEWBOX_HEIGHT}
+              clipPath={`url(#${clipId})`}
+              preserveAspectRatio="xMidYMid slice"
+            />
+          </>
         ) : (
-          <path d={HERO_RECTANGLE_PATH} fill={pathFill} />
+          <>
+            {flushBottom ? (
+              <rect
+                x="0"
+                y={HERO_RECTANGLE_VIEWBOX_HEIGHT - HERO_RECTANGLE_BOTTOM_CORNER_COVER}
+                width={HERO_RECTANGLE_VIEWBOX_WIDTH}
+                height={HERO_RECTANGLE_BOTTOM_CORNER_COVER}
+                fill={pathFill}
+              />
+            ) : null}
+            <path d={HERO_RECTANGLE_PATH} fill={pathFill} />
+          </>
         )}
       </svg>
     </div>

@@ -48,6 +48,12 @@ export const HEADER_PILL_BORDER_RADIUS_PX = 70;
 /** Logo left inset inside the nav pill (Figma header x=30). */
 export const HEADER_NAV_PILL_PADDING_LEFT_PX = 30;
 
+/**
+ * Pulls the brand-pill left edge inward without shifting logo or nav links.
+ * Applied as margin and subtracted from {@link HEADER_NAV_PILL_PADDING_LEFT_PX}.
+ */
+export const HEADER_NAV_PILL_LEFT_TRIM_PX = 25;
+
 /** Trailing inset inside the nav pill. */
 export const HEADER_NAV_PILL_PADDING_RIGHT_PX = 24;
 

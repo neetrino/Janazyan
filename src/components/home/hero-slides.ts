@@ -50,6 +50,9 @@ export const HERO_BODY_WASH_IMAGE_WIDTH_PX = 1086;
 export const HERO_BODY_WASH_IMAGE_HEIGHT_PX = 1448;
 
 export const HERO_ARROW_SIZE_PX = 64;
+
+/** Centers the arrow row on the hero card's bottom edge. */
+export const HERO_NAV_BOTTOM_CLASS = 'bottom-0 translate-y-1/2';
 /** Max drag distance from the default position (circular boundary). */
 export const HERO_IMAGE_MAX_DRAG_RADIUS_PX = 72;
 /** Auto-advance hero slides every 4 seconds. */

@@ -70,10 +70,10 @@ export default async function HomePage() {
           style={{ '--header-sticky-overlap': `${HEADER_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
         >
           <div className={STOREFRONT_CONTENT_SHELL_CLASS}>
-            <div className={HOME_HERO_BLEED_CLASS}>
+            <div className={`relative z-10 ${HOME_HERO_BLEED_CLASS}`}>
               <HomeHero />
             </div>
-            <div className="relative desktop:-mt-[30px]">
+            <div className="relative desktop:mt-3">
               <CategoryPosters />
             </div>
           </div>

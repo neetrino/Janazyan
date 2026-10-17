@@ -215,13 +215,14 @@ export function HomeHero() {
   return (
     <section
       aria-label={t('home.hero.ariaSection')}
-      className="relative w-full"
+      className="relative z-10 w-full"
     >
-      <div className="relative w-full overflow-x-clip rounded-[28px] bg-white [container-type:inline-size] sm:rounded-[44px] lg:h-[min(940px,calc(100svh-2.5rem))] lg:overflow-visible lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative w-full overflow-hidden rounded-[28px] bg-white [container-type:inline-size] sm:rounded-[44px] lg:h-[min(940px,calc(100svh-2.5rem))] lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (
           <HeroRectangleBackground
             key={slide.id}
             variant={slide.background}
+            flushBottom
             className={index === slideIndex ? 'opacity-100' : 'opacity-0'}
           />
         ))}
@@ -233,7 +234,6 @@ export function HomeHero() {
           getDragHandlers={getDragHandlers}
         />
         <HeroKidsLabel visible={activeSlide.showKidsLabel} label={heroKidsLabel} />
-        <HeroNavigationArrows onPrevious={goToPreviousSlide} onNext={goToNextSlide} />
 
         <div className={`relative z-20 ${STOREFRONT_TABLET_DOWN_CLASS}`}>
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-16 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-20 md:pt-10">
@@ -300,6 +300,7 @@ export function HomeHero() {
           </div>
         </div>
       </div>
+      <HeroNavigationArrows onPrevious={goToPreviousSlide} onNext={goToNextSlide} />
     </section>
   );
 }
