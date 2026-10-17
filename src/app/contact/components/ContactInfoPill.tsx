@@ -2,8 +2,6 @@ import Image from 'next/image';
 import type { ReactNode } from 'react';
 import {
   CONTACT_PILL_ICON_BG_SRC,
-  CONTACT_PILL_ARROW_BODY_CLASS,
-  CONTACT_PILL_ARROW_HOST_CLASS,
   CONTACT_PILL_SHELL_CLASS,
   CONTACT_PILL_TEXT_CLASS,
 } from '../contact-page.constants';
@@ -16,8 +14,6 @@ type ContactInfoPillProps = {
   className?: string;
   textClassName?: string;
   iconClassName?: string;
-  /** Adds a right-pointing callout tail — Figma location pill. */
-  arrowTail?: 'right';
 };
 
 const CONTACT_PILL_ICON_CLASS = 'relative z-10 size-8 object-contain';
@@ -50,14 +46,8 @@ export function ContactInfoPill({
   className = '',
   textClassName = CONTACT_PILL_TEXT_CLASS,
   iconClassName = CONTACT_PILL_ICON_CLASS,
-  arrowTail,
 }: ContactInfoPillProps) {
-  const shellClassName = [
-    CONTACT_PILL_SHELL_CLASS,
-    arrowTail === 'right' ? CONTACT_PILL_ARROW_BODY_CLASS : className,
-  ]
-    .filter(Boolean)
-    .join(' ');
+  const shellClassName = [CONTACT_PILL_SHELL_CLASS, className].filter(Boolean).join(' ');
   const icon = <PillIcon iconSrc={iconSrc} iconAlt={iconAlt} iconClassName={iconClassName} />;
   const body =
     href ? (
@@ -71,14 +61,6 @@ export function ContactInfoPill({
         <span className={textClassName}>{children}</span>
       </div>
     );
-
-  if (arrowTail === 'right') {
-    return (
-      <div className={`${CONTACT_PILL_ARROW_HOST_CLASS} relative inline-flex ${className}`}>
-        {body}
-      </div>
-    );
-  }
 
   return body;
 }

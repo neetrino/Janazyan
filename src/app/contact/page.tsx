@@ -26,7 +26,7 @@ export default function ContactPage() {
       sectionAriaLabel="Contact"
       {...CONTACT_PAGE_HERO_SHELL_PROPS}
       catalog={
-        <section className={`py-8 md:py-10 lg:py-0 ${CONTACT_SECTION_DESKTOP_BLEED_CLASS}`}>
+        <section className={`pb-8 pt-0 md:pb-10 md:pt-1 lg:py-0 ${CONTACT_SECTION_DESKTOP_BLEED_CLASS}`}>
           <div className={CONTACT_PAGE_GRID_CLASS}>
             <div className={CONTACT_HERO_COLUMN_CLASS}>
               <div className={CONTACT_HERO_CLIP_WRAPPER_CLASS}>

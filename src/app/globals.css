@@ -287,23 +287,6 @@ body {
     }
   }
 
-  .contact-pill-with-arrow-right {
-    filter: drop-shadow(0 4px 20px rgba(147, 182, 227, 0.12));
-  }
-
-  .contact-pill-with-arrow-right::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -14px;
-    width: 14px;
-    height: 28px;
-    transform: translateY(-50%);
-    background-color: #ffffff;
-    clip-path: polygon(0 12%, 100% 50%, 0 88%);
-    pointer-events: none;
-  }
-
   /*
    * Catalog desktop backdrop — Safari-safe edge pinning.
    *
