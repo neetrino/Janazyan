@@ -9,12 +9,17 @@ import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
 import {
   HERO_BODY_WASH_DESKTOP_FRAME_CLASS,
+  HERO_OCTOPUS_FRAME_CLASS,
+  HERO_OCTOPUS_MIRROR_CLASS,
   HERO_SLIDE_AUTOPLAY_MS,
   HERO_SLIDES,
 } from './hero-slides';
 import {
+  HOME_HERO_KIDS_LABEL_RIGHT_CLASS,
+  HOME_HERO_KIDS_LABEL_TOP_CLASS,
   HOME_HERO_TITLE_DESKTOP_CLASS,
   HOME_HERO_TITLE_MOBILE_CLASS,
+  HOME_HERO_TITLE_TOP_CLASS,
 } from './hero-typography.constants';
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
@@ -112,22 +117,20 @@ function HeroProductImages({
             ? 'animate-hero-jellyfish-float'
             : ''
         }
-        wrapperClassName={`absolute right-[8%] hidden aspect-[773/753] w-[min(640px,46vw)] transition-opacity duration-500 md:block lg:top-[22%] lg:z-20 lg:h-[70%] lg:w-auto ${
+        wrapperClassName={`absolute z-20 hidden transition-opacity duration-500 md:block ${HERO_OCTOPUS_FRAME_CLASS} ${
           activeSlideIndex === 1 ? 'opacity-100' : 'opacity-0'
         }`}
         dragHandlers={getDragHandlers(jellyfishSlide.id)}
       >
-        <div className="absolute -left-[4.53%] -top-[7.3%] h-[107.3%] w-[104.53%]">
-          <Image
-            src={jellyfishSlide.productImage}
-            alt={jellyfishSlide.productAlt}
-            fill
-            loading="lazy"
-            sizes="46vw"
-            draggable={false}
-            className="pointer-events-none object-contain"
-          />
-        </div>
+        <Image
+          src={jellyfishSlide.productImage}
+          alt={jellyfishSlide.productAlt}
+          fill
+          loading="lazy"
+          sizes="46vw"
+          draggable={false}
+          className={`pointer-events-none object-cover ${HERO_OCTOPUS_MIRROR_CLASS}`}
+        />
       </HeroDraggableShell>
     </>
   );
@@ -136,7 +139,7 @@ function HeroProductImages({
 function HeroKidsLabel({ visible, label }: { visible: boolean; label: string }) {
   return (
     <p
-      className={`pointer-events-none absolute right-[8%] top-[248px] z-20 hidden text-[35px] font-light leading-[30px] text-cream transition-opacity duration-500 md:block ${
+      className={`pointer-events-none absolute z-30 hidden whitespace-nowrap text-[35px] font-light leading-[30px] text-cream transition-opacity duration-500 desktop:block ${HOME_HERO_KIDS_LABEL_RIGHT_CLASS} ${HOME_HERO_KIDS_LABEL_TOP_CLASS} ${
         visible ? 'opacity-100' : 'opacity-0'
       }`}
       aria-hidden={!visible}
@@ -253,7 +256,9 @@ export function HomeHero() {
                   priority
                   sizes="100vw"
                   draggable={false}
-                  className="pointer-events-none object-contain"
+                  className={`pointer-events-none object-contain ${
+                    activeSlide.id === 'kids-care' ? HERO_OCTOPUS_MIRROR_CLASS : ''
+                  }`}
                 />
               </HeroDraggableShell>
             </div>
@@ -279,7 +284,7 @@ export function HomeHero() {
 
         <div className={`pointer-events-none absolute inset-0 z-10 ${STOREFRONT_DESKTOP_ONLY_CLASS}`}>
           <div
-            className={`pointer-events-auto absolute top-[30.32%] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS} ${STOREFRONT_HERO_CONTENT_INSET_RIGHT_CLASS}`}
+            className={`pointer-events-auto absolute ${HOME_HERO_TITLE_TOP_CLASS} ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS} ${STOREFRONT_HERO_CONTENT_INSET_RIGHT_CLASS}`}
           >
             <h1 className={HOME_HERO_TITLE_DESKTOP_CLASS}>
               {heroTitle}

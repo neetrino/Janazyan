@@ -19,12 +19,9 @@ export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = 64;
 /** Vertical inset — centers pills in {@link HEADER_HOME_BAND_HEIGHT_PX} (non-home). */
 export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PILL_HEIGHT_PX) / 2;
 
-/** Home horizontal inset — brand flush left, actions inset right. */
+/** Home horizontal inset — brand flush with the hero card, actions inset right. */
 export const HEADER_HOME_HORIZONTAL_INSET_LEFT_PX = 0;
 export const HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX = 25;
-
-/** Home brand cluster — a small shift toward the left edge of the screen. */
-export const HEADER_HOME_BRAND_SHIFT_LEFT_CLASS = '-translate-x-3';
 
 /** Vertical inset — centers pills in {@link HEADER_HERO_SHELL_BAND_HEIGHT_PX}. */
 export const HEADER_EMBEDDED_HERO_SHELL_ROW_INSET_PX =

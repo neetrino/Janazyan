@@ -19,8 +19,8 @@ export const HERO_SLIDES: HeroSlide[] = [
   {
     id: 'kids-care',
     background: 'pink',
-    productImage: '/figma/hero-jellyfish.webp',
-    productAlt: 'Janazyan kids care products',
+    productImage: '/figma/hero-octopus.png',
+    productAlt: 'Janazyan kids care octopus',
     showKidsLabel: true,
   },
 ];
@@ -35,6 +35,16 @@ export const HERO_BODY_WASH_DESKTOP_FRAME_CLASS =
 /** Crop inside that window: image height 157.05%, shifted up 41.87%. */
 export const HERO_BODY_WASH_IMAGE_CROP_CLASS =
   'pointer-events-none absolute left-0 top-[-41.87%] h-[157.05%] w-full max-w-none';
+
+/**
+ * Figma node 42:236 on the 1388×940 pink hero.
+ * The layer is rotated 180°, so these are its visible bounds.
+ */
+export const HERO_OCTOPUS_FRAME_CLASS =
+  'left-[45.53%] top-[31.49%] h-[66.91%] w-[46.47%]';
+
+/** Horizontal mirror of the kids-slide octopus. */
+export const HERO_OCTOPUS_MIRROR_CLASS = '-scale-x-100';
 
 export const HERO_BODY_WASH_IMAGE_WIDTH_PX = 1086;
 export const HERO_BODY_WASH_IMAGE_HEIGHT_PX = 1448;

@@ -22,6 +22,7 @@ import {
 } from '../hooks/useInstantSearch';
 import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 import { HEADER_LOGO_IMAGE_CROP_STYLE, HEADER_LOGO_SRC } from '../header/header-logo.constants';
+import { handleHomeLogoClick } from '../../lib/navigation/scroll-home-to-top';
 
 const LANGUAGE_MENU_Z_INDEX = 50;
 const MOBILE_TOP_BAR_LOGO_WIDTH_PX = 55;
@@ -110,6 +111,7 @@ export function MobileTopBar() {
         href="/"
         aria-label={t('common.navigation.home')}
         className="flex h-12 w-[55px] shrink-0 items-center justify-center"
+        onClick={handleHomeLogoClick}
       >
         <span
           className="relative block overflow-hidden"
