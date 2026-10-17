@@ -243,10 +243,8 @@ export function HeaderBrandCluster({
         gap: HEADER_LOGO_NAV_GAP_PX,
         height: HEADER_PILL_HEIGHT_PX,
         borderRadius: pill ? HEADER_PILL_BORDER_RADIUS_PX : 0,
-        marginLeft: pill ? HEADER_NAV_PILL_LEFT_TRIM_PX : 0,
-        paddingLeft: pill
-          ? HEADER_NAV_PILL_PADDING_LEFT_PX - HEADER_NAV_PILL_LEFT_TRIM_PX
-          : HEADER_NAV_PILL_PADDING_LEFT_PX,
+        marginLeft: HEADER_NAV_PILL_LEFT_TRIM_PX,
+        paddingLeft: HEADER_NAV_PILL_PADDING_LEFT_PX - HEADER_NAV_PILL_LEFT_TRIM_PX,
         paddingRight: HEADER_NAV_PILL_PADDING_RIGHT_PX,
         ...(isHomePage
           ? {}
