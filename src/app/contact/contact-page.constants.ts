@@ -57,11 +57,11 @@ export const CONTACT_SECTION_DESKTOP_BLEED_CLASS =
  * Desktop form track starts at the address pill's right edge (measured from the
  * section content box). The form then centers in the space left before the right edge.
  */
-export const CONTACT_FORM_AFTER_ADDRESS_PILL_PX = 584;
+export const CONTACT_FORM_AFTER_ADDRESS_PILL_PX = 656;
 
 /** Responsive grid — laptop keeps hero beside the form; desktop centers the form after the address pill. */
 export const CONTACT_PAGE_GRID_CLASS =
-  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[584px_minmax(0,1fr)] desktop:items-start desktop:justify-stretch desktop:gap-0';
+  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[656px_minmax(0,1fr)] desktop:items-start desktop:justify-stretch desktop:gap-0';
 
 /** Left column — stretch target; height spans background top through footer overlap. */
 export const CONTACT_HERO_COLUMN_CLASS =
@@ -117,14 +117,14 @@ export const CONTACT_PILL_TEXT_CLASS =
 
 /** Desktop pill anchors — measured from the visible 484px Figma hero frame. */
 export const CONTACT_PILL_PHONE_POSITION_CLASS =
-  'absolute left-[24%] top-[4%] desktop:left-[180px] desktop:top-[28px] desktop:mt-0';
+  'absolute left-[28%] top-[7%] desktop:left-[204px] desktop:top-[52px] desktop:mt-0';
 
 export const CONTACT_PILL_EMAIL_POSITION_CLASS =
-  'absolute left-[7%] top-[22%] desktop:left-[276px] desktop:top-[152px] desktop:mt-0';
+  'absolute left-[11%] top-[25%] desktop:left-[300px] desktop:top-[176px] desktop:mt-0';
 
 /** Figma node 496:550 — same rounded shell as the other contact pills. */
 export const CONTACT_PILL_LOCATION_POSITION_CLASS =
-  'absolute left-[22%] top-[48%] desktop:left-[376px] desktop:top-[333px] desktop:mt-0 desktop:w-fit';
+  'absolute left-[26%] top-[51%] desktop:left-[400px] desktop:top-[357px] desktop:mt-0 desktop:w-fit';
 
 export const CONTACT_PILL_LOCATION_ICON_CLASS =
   'relative z-10 size-[35px] object-contain';
@@ -134,7 +134,7 @@ export const CONTACT_PILL_LOCATION_TEXT_CLASS =
   `${CONTACT_PILL_TEXT_CLASS} w-[200px] whitespace-pre-line leading-[22px] tracking-[-0.3125px]`;
 
 export const CONTACT_PILL_TIME_POSITION_CLASS =
-  'absolute left-[4%] top-[70%] max-desktop:max-w-[320px] desktop:left-[188px] desktop:top-[500px] desktop:mt-0';
+  'absolute left-[8%] top-[73%] max-desktop:max-w-[320px] desktop:left-[212px] desktop:top-[524px] desktop:mt-0';
 
 export const CONTACT_PILL_TIME_TEXT_CLASS =
   `${CONTACT_PILL_TEXT_CLASS} flex flex-col gap-0 leading-[18px]`;
