@@ -21,7 +21,6 @@ import {
   HOME_HERO_TITLE_MOBILE_CLASS,
   HOME_HERO_TITLE_TOP_CLASS,
 } from './hero-typography.constants';
-import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_DESKTOP_ONLY_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
 import {
@@ -29,98 +28,55 @@ import {
   STOREFRONT_HERO_CONTENT_INSET_RIGHT_CLASS,
 } from '../../lib/layout/hero-frame.constants';
 
-type HeroDraggableShellProps = {
-  slideId: string;
+type HeroProductImageFrameProps = {
   isActive: boolean;
-  isDragging: boolean;
-  offset: { x: number; y: number };
   animationClass: string;
   wrapperClassName: string;
-  dragHandlers: ReturnType<ReturnType<typeof useHeroImageDrag>['getDragHandlers']>;
   children: ReactNode;
 };
 
-function HeroDraggableShell({
-  slideId,
+function HeroProductImageFrame({
   isActive,
-  isDragging,
-  offset,
   animationClass,
   wrapperClassName,
-  dragHandlers,
   children,
-}: HeroDraggableShellProps) {
+}: HeroProductImageFrameProps) {
   return (
     <div
-      className={`${wrapperClassName} ${isActive ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      className={`${wrapperClassName} pointer-events-none`}
       aria-hidden={!isActive}
     >
-      <div
-        className={`relative h-full w-full touch-none select-none ${
-          isDragging ? 'cursor-grabbing' : 'cursor-grab'
-        }`}
-        style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
-        {...dragHandlers}
-        data-slide-id={slideId}
-      >
-        <div className={`relative h-full w-full ${isDragging ? '' : animationClass}`}>{children}</div>
-      </div>
+      <div className={`relative h-full w-full ${animationClass}`}>{children}</div>
     </div>
   );
 }
 
-function HeroProductImages({
-  activeSlideIndex,
-  offsets,
-  draggingSlideId,
-  getDragHandlers,
-}: {
-  activeSlideIndex: number;
-  offsets: Record<string, { x: number; y: number }>;
-  draggingSlideId: string | null;
-  getDragHandlers: ReturnType<typeof useHeroImageDrag>['getDragHandlers'];
-}) {
+function HeroProductImages({ activeSlideIndex }: { activeSlideIndex: number }) {
   const bodyWashSlide = HERO_SLIDES[0];
   const jellyfishSlide = HERO_SLIDES[1];
 
   return (
     <>
-      <HeroDraggableShell
-        slideId={bodyWashSlide.id}
+      <HeroProductImageFrame
         isActive={activeSlideIndex === 0}
-        isDragging={draggingSlideId === bodyWashSlide.id}
-        offset={offsets[bodyWashSlide.id] ?? { x: 0, y: 0 }}
-        animationClass={
-          activeSlideIndex === 0 && draggingSlideId !== bodyWashSlide.id
-            ? 'animate-hero-body-wash-showcase'
-            : ''
-        }
+        animationClass={activeSlideIndex === 0 ? 'animate-hero-body-wash-showcase' : ''}
         wrapperClassName={`absolute hidden transition-opacity duration-500 lg:block ${HERO_BODY_WASH_DESKTOP_FRAME_CLASS} ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
-        dragHandlers={getDragHandlers(bodyWashSlide.id)}
       >
         <HeroBodyWashImage
           src={bodyWashSlide.productImage}
           alt={bodyWashSlide.productAlt}
           priority
         />
-      </HeroDraggableShell>
+      </HeroProductImageFrame>
 
-      <HeroDraggableShell
-        slideId={jellyfishSlide.id}
+      <HeroProductImageFrame
         isActive={activeSlideIndex === 1}
-        isDragging={draggingSlideId === jellyfishSlide.id}
-        offset={offsets[jellyfishSlide.id] ?? { x: 0, y: 0 }}
-        animationClass={
-          activeSlideIndex === 1 && draggingSlideId !== jellyfishSlide.id
-            ? 'animate-hero-jellyfish-float'
-            : ''
-        }
+        animationClass={activeSlideIndex === 1 ? 'animate-hero-jellyfish-float' : ''}
         wrapperClassName={`absolute z-20 hidden transition-opacity duration-500 md:block ${HERO_OCTOPUS_FRAME_CLASS} ${
           activeSlideIndex === 1 ? 'opacity-100' : 'opacity-0'
         }`}
-        dragHandlers={getDragHandlers(jellyfishSlide.id)}
       >
         <Image
           src={jellyfishSlide.productImage}
@@ -131,7 +87,7 @@ function HeroProductImages({
           draggable={false}
           className={`pointer-events-none object-cover ${HERO_OCTOPUS_MIRROR_CLASS}`}
         />
-      </HeroDraggableShell>
+      </HeroProductImageFrame>
     </>
   );
 }
@@ -187,9 +143,6 @@ export function HomeHero() {
   const heroKidsLabel = t('home.hero.kidsLabel');
   const buyNowLabel = t('home.hero.buyNow');
   const learnMoreLabel = t('home.hero.learnMore');
-  const slideIds = HERO_SLIDES.map((slide) => slide.id);
-  const { offsets, draggingSlideId, getDragHandlers } = useHeroImageDrag(slideIds);
-
   const goToNextSlide = useCallback(() => {
     setSlideIndex((current) => (current + 1) % HERO_SLIDES.length);
   }, []);
@@ -199,13 +152,9 @@ export function HomeHero() {
   }, []);
 
   useEffect(() => {
-    if (draggingSlideId !== null) {
-      return;
-    }
-
     const timerId = window.setInterval(goToNextSlide, HERO_SLIDE_AUTOPLAY_MS);
     return () => window.clearInterval(timerId);
-  }, [draggingSlideId, goToNextSlide]);
+  }, [goToNextSlide]);
 
   const activeAnimationClass =
     activeSlide.id === 'kids-care'
@@ -227,27 +176,16 @@ export function HomeHero() {
           />
         ))}
 
-        <HeroProductImages
-          activeSlideIndex={slideIndex}
-          offsets={offsets}
-          draggingSlideId={draggingSlideId}
-          getDragHandlers={getDragHandlers}
-        />
+        <HeroProductImages activeSlideIndex={slideIndex} />
         <HeroKidsLabel visible={activeSlide.showKidsLabel} label={heroKidsLabel} />
 
         <div className={`relative z-20 ${STOREFRONT_TABLET_DOWN_CLASS}`}>
           <div className="relative z-10 flex flex-col gap-8 px-5 pb-16 pt-8 sm:px-8 md:gap-10 md:px-10 md:pb-20 md:pt-10">
             <div className="relative -mt-2 h-[280px] w-full overflow-visible rounded-2xl md:hidden">
-              <HeroDraggableShell
-                slideId={activeSlide.id}
+              <HeroProductImageFrame
                 isActive
-                isDragging={draggingSlideId === activeSlide.id}
-                offset={offsets[activeSlide.id] ?? { x: 0, y: 0 }}
-                animationClass={
-                  draggingSlideId === activeSlide.id ? '' : activeAnimationClass
-                }
+                animationClass={activeAnimationClass}
                 wrapperClassName="relative h-full w-full"
-                dragHandlers={getDragHandlers(activeSlide.id)}
               >
                 <Image
                   src={activeSlide.productImage}
@@ -260,7 +198,7 @@ export function HomeHero() {
                     activeSlide.id === 'kids-care' ? HERO_OCTOPUS_MIRROR_CLASS : ''
                   }`}
                 />
-              </HeroDraggableShell>
+              </HeroProductImageFrame>
             </div>
 
             {activeSlide.showKidsLabel ? (

@@ -5,6 +5,7 @@ import {
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
   PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
   PRODUCTS_PAGE_TOOLBAR_ROW_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS,
   PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS,
   PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS,
 } from '../../app/products/products-page-layout.constants';
@@ -45,6 +46,7 @@ export function ProductsShopHeroToolbar({
               language={language}
               activeCategorySlug={activeCategorySlug}
               variant="pills"
+              alignWithCatalog
             />
           </Suspense>
         </div>
@@ -52,7 +54,7 @@ export function ProductsShopHeroToolbar({
           <Suspense
             fallback={
               <div
-                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+                className={`${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} shrink-0 animate-pulse bg-sky-deep/40 ${PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS}`}
               />
             }
           >

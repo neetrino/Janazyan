@@ -155,7 +155,7 @@ function ProductsHeroShellInner({
       <ProductsCatalogDesktopBackground />
       <Header embedded />
       <div
-        className="relative z-10 shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
+        className="relative z-10 shrink-0 overflow-visible desktop:-mt-[var(--header-sticky-overlap)]"
         style={{ '--header-sticky-overlap': `${HEADER_HERO_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
       >
         <div

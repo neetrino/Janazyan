@@ -17,12 +17,15 @@ import { isShopToolbarCategoryActive } from '../../lib/categories/shop-category-
 import { prefetchCategoryCatalog } from '../../lib/products/prefetch-category-catalog';
 import { CategoryFilterPill } from './CategoryFilterPill';
 import { getCategoryNavLabel } from './category-nav-label';
+import { useCategoryRowPointerDrag } from './useCategoryRowPointerDrag';
 import type { LanguageCode } from '../../lib/language';
 
 type CategoryFilterPillsProps = {
   categories: CategoryTreeNode[];
   activeCategorySlug?: string;
   language: LanguageCode;
+  /** Line the first pill up with the first catalog product card. */
+  alignWithCatalog?: boolean;
 };
 
 const CATEGORY_ROW_SCROLL_END_THRESHOLD_PX = 4;
@@ -73,10 +76,12 @@ function useCategoryRowScrollFade(rowRef: RefObject<HTMLDivElement | null>): boo
 export function CategoryFilterPills({
   categories,
   language,
+  alignWithCatalog = false,
 }: CategoryFilterPillsProps): ReactElement {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rowRef = useRef<HTMLDivElement>(null);
+  const rowDrag = useCategoryRowPointerDrag(rowRef);
   const showRightFade = useCategoryRowScrollFade(rowRef);
   const warmedCategoriesRef = useRef<Set<string>>(new Set());
   const liveActiveCategorySlug = searchParams.has('category')
@@ -143,8 +148,19 @@ export function CategoryFilterPills({
   return (
     <div className="relative">
       {showRightFade ? <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_SCROLL_FADE_CLASS} /> : null}
-      <div ref={rowRef} className={PRODUCTS_PAGE_CATEGORY_ROW_CLASS} data-category-filter-row>
-        <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS} />
+      <div
+        ref={rowRef}
+        className={`${PRODUCTS_PAGE_CATEGORY_ROW_CLASS} cursor-grab select-none active:cursor-grabbing`}
+        data-category-filter-row
+        onPointerDown={rowDrag.onPointerDown}
+        onPointerMove={rowDrag.onPointerMove}
+        onPointerUp={rowDrag.onPointerUp}
+        onPointerCancel={rowDrag.onPointerCancel}
+        onClickCapture={rowDrag.onClickCapture}
+      >
+        {alignWithCatalog ? null : (
+          <div aria-hidden className={PRODUCTS_PAGE_CATEGORY_ROW_EDGE_SPACER_CLASS} />
+        )}
         {categories.map((category) => {
           const isActive = isShopToolbarCategoryActive(category, liveActiveCategorySlug);
           const href = hrefByCategoryId.get(category.id) ?? '/products';
