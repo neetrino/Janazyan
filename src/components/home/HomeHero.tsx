@@ -3,10 +3,15 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { HeroArrowButtonIcon } from './HeroArrowIcon';
+import { HeroBodyWashImage } from './HeroBodyWashImage';
+import { HeroCtaArrow } from './HeroArrowIcon';
 import { HeroNavigationArrows } from './HeroNavigationArrows';
 import { HeroRectangleBackground } from './HeroRectangleBackground';
-import { HERO_SLIDE_AUTOPLAY_MS, HERO_SLIDES } from './hero-slides';
+import {
+  HERO_BODY_WASH_DESKTOP_FRAME_CLASS,
+  HERO_SLIDE_AUTOPLAY_MS,
+  HERO_SLIDES,
+} from './hero-slides';
 import {
   HOME_HERO_TITLE_DESKTOP_CLASS,
   HOME_HERO_TITLE_MOBILE_CLASS,
@@ -14,7 +19,10 @@ import {
 import { useHeroImageDrag } from './useHeroImageDrag';
 import { useTranslation } from '../../lib/i18n-client';
 import { STOREFRONT_DESKTOP_ONLY_CLASS, STOREFRONT_TABLET_DOWN_CLASS } from '../../lib/layout/storefront-layout.constants';
-import { STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS } from '../../lib/layout/hero-frame.constants';
+import {
+  STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS,
+  STOREFRONT_HERO_CONTENT_INSET_RIGHT_CLASS,
+} from '../../lib/layout/hero-frame.constants';
 
 type HeroDraggableShellProps = {
   slideId: string;
@@ -82,19 +90,15 @@ function HeroProductImages({
             ? 'animate-hero-body-wash-showcase'
             : ''
         }
-        wrapperClassName={`absolute right-[4%] top-[205px] hidden aspect-[549/732] h-[min(732px,78vh)] w-[min(549px,40vw)] transition-opacity duration-500 md:block lg:left-[48.34%] lg:right-auto lg:top-[-40px] lg:z-20 lg:aspect-auto lg:h-[950px] lg:w-[51.44%] ${
+        wrapperClassName={`absolute hidden transition-opacity duration-500 lg:block ${HERO_BODY_WASH_DESKTOP_FRAME_CLASS} ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
         dragHandlers={getDragHandlers(bodyWashSlide.id)}
       >
-        <Image
+        <HeroBodyWashImage
           src={bodyWashSlide.productImage}
           alt={bodyWashSlide.productAlt}
-          fill
           priority
-          sizes="50vw"
-          draggable={false}
-          className="pointer-events-none object-contain object-top"
         />
       </HeroDraggableShell>
 
@@ -108,7 +112,7 @@ function HeroProductImages({
             ? 'animate-hero-jellyfish-float'
             : ''
         }
-        wrapperClassName={`absolute right-[8%] top-[296px] hidden aspect-[773/753] w-[min(640px,46vw)] transition-opacity duration-500 md:block lg:z-20 ${
+        wrapperClassName={`absolute right-[8%] hidden aspect-[773/753] w-[min(640px,46vw)] transition-opacity duration-500 md:block lg:top-[22%] lg:z-20 lg:h-[70%] lg:w-auto ${
           activeSlideIndex === 1 ? 'opacity-100' : 'opacity-0'
         }`}
         dragHandlers={getDragHandlers(jellyfishSlide.id)}
@@ -155,17 +159,17 @@ function HeroActionButtons({
     <div className={`flex flex-wrap items-center gap-3.5 ${className}`}>
       <Link
         href="/products"
-        className="inline-flex h-[52px] items-center gap-1 rounded-full bg-cream px-6 text-[15px] font-extrabold tracking-[-0.01em] text-sky-deep shadow-soft transition-transform duration-700 ease-in-out hover:-translate-y-0.5 md:h-[56px] md:text-[16px]"
+        className="inline-flex h-[52px] items-center gap-1 rounded-full bg-cream px-6 text-[15px] font-extrabold tracking-[-0.01em] text-sky-deep transition-transform duration-700 ease-in-out hover:-translate-y-0.5 md:h-[56px] md:text-[16px]"
       >
         {buyNowLabel}
-        <HeroArrowButtonIcon />
+        <HeroCtaArrow tone="sky" />
       </Link>
       <Link
         href="/about"
         className="inline-flex h-[52px] items-center gap-1 rounded-full border-[3px] border-cream px-6 text-[15px] font-semibold tracking-[-0.01em] text-cream transition-[transform,background-color] duration-700 ease-in-out hover:-translate-y-0.5 hover:bg-cream/10 md:h-[56px] md:text-[16px]"
       >
         {learnMoreLabel}
-        <HeroArrowButtonIcon />
+        <HeroCtaArrow tone="cream" />
       </Link>
     </div>
   );
@@ -210,7 +214,7 @@ export function HomeHero() {
       aria-label={t('home.hero.ariaSection')}
       className="relative w-full"
     >
-      <div className="relative w-full overflow-x-clip rounded-[28px] bg-white sm:rounded-[44px] lg:h-[940px] lg:overflow-visible lg:rounded-bl-[44px] lg:rounded-br-[44px]">
+      <div className="relative w-full overflow-x-clip rounded-[28px] bg-white [container-type:inline-size] sm:rounded-[44px] lg:h-[min(940px,calc(100svh-2.5rem))] lg:overflow-visible lg:rounded-bl-[44px] lg:rounded-br-[44px]">
         {HERO_SLIDES.map((slide, index) => (
           <HeroRectangleBackground
             key={slide.id}
@@ -273,9 +277,11 @@ export function HomeHero() {
           </div>
         </div>
 
-        <div className={`pointer-events-none absolute inset-0 z-[25] ${STOREFRONT_DESKTOP_ONLY_CLASS}`}>
-          <div className={`pointer-events-auto absolute top-[285px] max-w-[min(760px,52%)] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS}`}>
-            <h1 className={`overflow-visible pb-2 ${HOME_HERO_TITLE_DESKTOP_CLASS}`}>
+        <div className={`pointer-events-none absolute inset-0 z-10 ${STOREFRONT_DESKTOP_ONLY_CLASS}`}>
+          <div
+            className={`pointer-events-auto absolute top-[30.32%] ${STOREFRONT_HERO_CONTENT_INSET_LEFT_CLASS} ${STOREFRONT_HERO_CONTENT_INSET_RIGHT_CLASS}`}
+          >
+            <h1 className={HOME_HERO_TITLE_DESKTOP_CLASS}>
               {heroTitle}
             </h1>
             <p className="mt-10 w-[486px] text-[18px] leading-[28px] tracking-[-0.44px] text-white">

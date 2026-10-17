@@ -2,15 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User } from 'lucide-react';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useAuth } from '../../lib/auth/AuthContext';
 import { useTranslation } from '../../lib/i18n-hooks';
 
-const HEADER_ACTION_BUTTON_SIZE_PX = 40;
-/** Figma node I45:562;42:243 — filled cyan profile button. */
-const HEADER_PROFILE_BG = '#93B6E3';
+const HEADER_PROFILE_ICON = '/figma/header-actions-profile.svg';
 const DROPDOWN_GAP_PX = 8;
 const DROPDOWN_Z_INDEX = 100;
 
@@ -211,14 +208,9 @@ export function HeaderAccountMenu() {
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-controls={isOpen ? menuId : undefined}
-        className="grid place-items-center rounded-full transition-opacity hover:opacity-80"
-        style={{
-          width: HEADER_ACTION_BUTTON_SIZE_PX,
-          height: HEADER_ACTION_BUTTON_SIZE_PX,
-          backgroundColor: HEADER_PROFILE_BG,
-        }}
+        className="grid size-9 place-items-center rounded-full bg-sky-deep transition-opacity hover:opacity-80"
       >
-        <User className="pointer-events-none h-[22px] w-[22px] text-white" strokeWidth={2} />
+        <img src={HEADER_PROFILE_ICON} alt="" className="pointer-events-none" />
       </button>
 
       {isMounted && dropdownPanel ? createPortal(dropdownPanel, document.body) : null}

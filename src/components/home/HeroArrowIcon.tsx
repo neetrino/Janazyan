@@ -43,3 +43,19 @@ export function HeroArrowButtonIcon({ className = '' }: { className?: string }) 
     <HeroArrowIcon direction="right" size={HERO_ARROW_BUTTON_SIZE_PX} className={className} />
   );
 }
+
+const HERO_CTA_ARROW_SRC = {
+  sky: '/figma/hero-cta-arrow-sky.svg',
+  cream: '/figma/hero-cta-arrow-cream.svg',
+} as const;
+
+type HeroCtaArrowTone = keyof typeof HERO_CTA_ARROW_SRC;
+
+/** Figma button arrow — 20px frame, SVG drawn at its own 17×16.67 size. */
+export function HeroCtaArrow({ tone }: { tone: HeroCtaArrowTone }) {
+  return (
+    <span className="inline-flex size-5 shrink-0 items-center justify-center" aria-hidden>
+      <img src={HERO_CTA_ARROW_SRC[tone]} alt="" />
+    </span>
+  );
+}

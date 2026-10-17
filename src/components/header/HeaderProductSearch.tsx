@@ -123,9 +123,11 @@ export function HeaderProductSearch() {
           setIsPopupOpen((prev) => !prev);
           setIsOpen(false);
         }}
-        className="relative grid h-10 w-10 place-items-center rounded-full transition-opacity hover:opacity-80"
+        className="grid size-8 place-items-center rounded-full transition-opacity hover:opacity-80"
       >
-        <Search className="h-[22px] w-[22px] text-ink-800" strokeWidth={2.2} />
+        <span className="[transform:scaleX(-1)]">
+          <img src="/figma/header-actions-search.svg" alt="" />
+        </span>
       </button>
 
       {isPopupOpen ? (

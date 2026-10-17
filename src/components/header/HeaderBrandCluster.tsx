@@ -22,9 +22,10 @@ import {
 import {
   HEADER_LOGO_COMPACT_HEIGHT_PX,
   HEADER_LOGO_COMPACT_WIDTH_PX,
-  HEADER_LOGO_HEIGHT_PX,
+  HEADER_LOGO_HOME_HEIGHT_PX,
+  HEADER_LOGO_HOME_WIDTH_PX,
   HEADER_LOGO_NAV_GAP_PX,
-  HEADER_LOGO_WIDTH_PX,
+  HEADER_HOME_BRAND_SHIFT_LEFT_CLASS,
   HEADER_NAV_LINK_GAP_CLASS,
   HEADER_NAV_PILL_PADDING_LEFT_PX,
   HEADER_NAV_PILL_PADDING_RIGHT_PX,
@@ -59,8 +60,8 @@ type HeaderBrandClusterProps = {
 let pendingHeaderNavHref: string | null = null;
 
 function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
-  const logoWidthPx = isHomePage ? HEADER_LOGO_WIDTH_PX : HEADER_LOGO_COMPACT_WIDTH_PX;
-  const logoHeightPx = isHomePage ? HEADER_LOGO_HEIGHT_PX : HEADER_LOGO_COMPACT_HEIGHT_PX;
+  const logoWidthPx = isHomePage ? HEADER_LOGO_HOME_WIDTH_PX : HEADER_LOGO_COMPACT_WIDTH_PX;
+  const logoHeightPx = isHomePage ? HEADER_LOGO_HOME_HEIGHT_PX : HEADER_LOGO_COMPACT_HEIGHT_PX;
 
   return (
     <Link href="/" className="relative block shrink-0" aria-label="Janazyan Home">
@@ -74,7 +75,7 @@ function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
             alt="Janazyan"
             fill
             priority
-            sizes={`${HEADER_LOGO_WIDTH_PX}px`}
+            sizes={`${HEADER_LOGO_HOME_WIDTH_PX}px`}
             className="object-contain object-left"
           />
         ) : (
@@ -216,18 +217,28 @@ function HeaderNav({
   );
 }
 
-export function HeaderBrandCluster({ pathname, searchParams, isHomePage }: HeaderBrandClusterProps) {
+export function HeaderBrandCluster({
+  pathname,
+  searchParams,
+  isHomePage,
+  pill = true,
+}: HeaderBrandClusterProps & { pill?: boolean }) {
   const shadowClassName = isHomePage
     ? 'shadow-soft'
     : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
+  const surfaceClassName = pill
+    ? `bg-white ${shadowClassName}`
+    : 'bg-transparent shadow-none';
 
   return (
     <div
-      className={`flex min-w-0 items-center bg-white ${shadowClassName}`}
+      className={`flex min-w-0 items-center transition-[background-color,box-shadow,border-radius] duration-300 ease-out ${surfaceClassName} ${
+        isHomePage ? HEADER_HOME_BRAND_SHIFT_LEFT_CLASS : ''
+      }`}
       style={{
         gap: HEADER_LOGO_NAV_GAP_PX,
         height: HEADER_PILL_HEIGHT_PX,
-        borderRadius: HEADER_PILL_BORDER_RADIUS_PX,
+        borderRadius: pill ? HEADER_PILL_BORDER_RADIUS_PX : 0,
         paddingLeft: HEADER_NAV_PILL_PADDING_LEFT_PX,
         paddingRight: HEADER_NAV_PILL_PADDING_RIGHT_PX,
         ...(isHomePage

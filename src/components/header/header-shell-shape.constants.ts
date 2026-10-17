@@ -4,14 +4,17 @@ export const HEADER_HOME_BAND_HEIGHT_PX = 120;
 /** Sticky header band height — hero-shell embedded pages; matches {@link HEADER_HOME_BAND_HEIGHT_PX}. */
 export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = HEADER_HOME_BAND_HEIGHT_PX;
 
-/** Figma header / Frame 472 pill height. */
+/** Figma header brand pill height. */
 export const HEADER_PILL_HEIGHT_PX = 72;
 
-/** Home embedded header — Figma row offset from hero top (top-only inset). */
-export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 64;
+/** Figma Frame 472 (node 570:602) — actions pill. */
+export const HEADER_ACTIONS_PILL_HEIGHT_PX = 64;
 
-/** Hero-shell embedded header — same top inset as home hero. */
-export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
+/** Home embedded header — pills sit on the top edge of the hero card. */
+export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 8;
+
+/** Hero-shell embedded header — keeps the previous inset on catalog pages. */
+export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = 64;
 
 /** Vertical inset — centers pills in {@link HEADER_HOME_BAND_HEIGHT_PX} (non-home). */
 export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PILL_HEIGHT_PX) / 2;
@@ -19,6 +22,9 @@ export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PI
 /** Home horizontal inset — brand flush left, actions inset right. */
 export const HEADER_HOME_HORIZONTAL_INSET_LEFT_PX = 0;
 export const HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX = 25;
+
+/** Home brand cluster — a small shift toward the left edge of the screen. */
+export const HEADER_HOME_BRAND_SHIFT_LEFT_CLASS = '-translate-x-3';
 
 /** Vertical inset — centers pills in {@link HEADER_HERO_SHELL_BAND_HEIGHT_PX}. */
 export const HEADER_EMBEDDED_HERO_SHELL_ROW_INSET_PX =
@@ -66,9 +72,8 @@ export const HEADER_COMPACT_DESKTOP_NAV_LINK_GAP_PX = 18;
 /** Narrowest desktop band — extra header lift between desktop min (1300) and this width. */
 export const HEADER_NARROW_DESKTOP_MAX_WIDTH_PX = 1400;
 
-/** Embedded home/hero-shell — nudge header up on compact desktop so pills stay in the S-notch. */
-export const HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS =
-  'desktop:max-[1649px]:min-[1401px]:-translate-y-4 desktop:max-[1400px]:-translate-y-6';
+/** Embedded home — sit the bar a little higher on the hero picture. */
+export const HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS = 'desktop:translate-y-1';
 
 /** Non-home compact desktop ramp — lift (px) at 1600 / 1500 / 1400 / 1300 viewport widths. */
 export const HEADER_NON_HOME_COMPACT_RAMP_TOP_WIDTH_PX = 1600;
@@ -165,6 +170,10 @@ export function resolveHeaderStickyOverlapPx(bandHeightPx: number): number {
 /** Figma logo frame inside the header cluster (node 368:626). */
 export const HEADER_LOGO_WIDTH_PX = 85;
 export const HEADER_LOGO_HEIGHT_PX = HEADER_PILL_HEIGHT_PX;
+
+/** Home logo — larger than the pill so the mark reads clearly. */
+export const HEADER_LOGO_HOME_WIDTH_PX = 120;
+export const HEADER_LOGO_HOME_HEIGHT_PX = 104;
 
 /** Compact logo — fits nav pill vertical padding on hero-shell pages. */
 export const HEADER_LOGO_COMPACT_HEIGHT_PX = HEADER_PILL_HEIGHT_PX - HEADER_NAV_PILL_PADDING_Y_PX * 2;
