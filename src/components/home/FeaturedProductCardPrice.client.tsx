@@ -19,12 +19,12 @@ export function FeaturedProductCardPrice({
 
   return (
     <>
-      <p className="absolute left-[15px] top-[307px] z-10 text-[23px] font-black leading-7 tracking-[-0.45px] text-ink-800">
+      <p className="absolute left-[5.3%] top-[86.66%] z-20 text-[23px] font-black leading-7 tracking-[-0.45px] text-ink-800">
         {priceLabel}
       </p>
 
       {comparePriceLabel ? (
-        <p className="absolute left-[120px] top-[309px] z-10 text-[16px] leading-7 text-ink-800/70 line-through">
+        <p className="absolute left-[42.4%] top-[87.33%] z-20 text-[16px] leading-7 text-ink-800/70 line-through">
           {comparePriceLabel}
         </p>
       ) : null}

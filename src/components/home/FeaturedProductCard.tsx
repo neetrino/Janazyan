@@ -12,18 +12,9 @@ import { primeProductPageSnapshot } from '@/lib/products/product-page-snapshot';
 const CARD_WIDTH_PX = 283;
 const CARD_HEIGHT_PX = 347;
 const CARD_BODY_TOP_PX = 47;
-const PRODUCT_IMAGE_WIDTH_PX = 62;
+const PRODUCT_IMAGE_WIDTH_PX = 93;
 const PRODUCT_IMAGE_HEIGHT_PX = 235;
 const PRODUCT_IMAGE_TOP_PX = -28;
-const PRODUCT_TITLE_TOP_PX = 212;
-
-const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
-const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
-const FEATURED_CART_ICON_TOP_PX = 289;
-const FEATURED_CART_ICON_SIZE_PX = Math.round(
-  CARD_WIDTH_PX * (1 - FEATURED_CART_ICON_LEFT_RATIO - FEATURED_CART_ICON_RIGHT_RATIO),
-);
-
 const FEATURED_CARD_BG = '/figma/featured-card-bg.svg';
 const FEATURED_CARD_BG_WIDTH_PX = 283;
 const FEATURED_CARD_BG_HEIGHT_PX = 300;
@@ -118,44 +109,41 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
           />
         </div>
 
-        <div className="absolute bottom-0 left-[73.58%] right-0 top-[77.44%] z-10">
+        <div className="absolute bottom-0 left-[73.58%] right-0 top-[73.89%] z-10">
           <Image
             src={FEATURED_CARD_CART_CORNER}
             alt=""
             width={75}
             height={78}
             aria-hidden
-            className="block h-auto w-full max-w-none object-fill"
+            className="block h-full w-full max-w-none rounded-[29px] object-fill"
           />
         </div>
-      </div>
 
-      <span
-        className="pointer-events-none absolute left-[15px] right-[43px] z-20 line-clamp-2 text-[16px] font-medium leading-[21px] text-ink-800"
-        style={{ top: PRODUCT_TITLE_TOP_PX }}
-      >
-        {product.title}
-      </span>
-
-      {product.category ? (
-        <p className="absolute left-[15px] top-[259px] z-10 text-[16px] font-medium leading-[21px] text-ink-800/50">
-          {product.category}
+        <p className="pointer-events-none absolute left-[5.3%] right-[6%] top-[54.98%] z-20 break-words text-[16px] font-medium leading-[21px] text-ink-800">
+          {product.title}
         </p>
-      ) : null}
 
-      {product.rating ? (
-        <div className="absolute left-[14px] top-[280px] z-10 flex items-center gap-2">
-          <Image src={FEATURED_STAR_ICON} alt="" width={18} height={19} />
-          <span className="text-[16px] leading-5 tracking-[-0.15px] text-ink-800">
-            {product.rating}
-          </span>
-        </div>
-      ) : null}
+        {product.category ? (
+          <p className="absolute left-[5.3%] right-[28%] top-[70.65%] z-20 break-words text-[16px] font-medium leading-[21px] text-ink-800/50">
+            {product.category}
+          </p>
+        ) : null}
 
-      <FeaturedProductCardPrice
-        price={product.price}
-        comparePrice={product.comparePriceUsd}
-      />
+        {product.rating ? (
+          <div className="absolute left-[4.95%] top-[77.66%] z-20 flex h-[9.01%] w-[21.2%] items-center gap-2">
+            <Image src={FEATURED_STAR_ICON} alt="" width={18} height={19} />
+            <span className="text-[16px] leading-5 tracking-[-0.15px] text-ink-800">
+              {product.rating}
+            </span>
+          </div>
+        ) : null}
+
+        <FeaturedProductCardPrice
+          price={product.price}
+          comparePrice={product.comparePriceUsd}
+        />
+      </div>
 
     </article>
   );
