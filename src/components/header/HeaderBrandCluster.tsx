@@ -20,8 +20,6 @@ import {
   getHeaderNavLinkTextClass,
 } from './header-nav-typography.constants';
 import {
-  HEADER_LOGO_COMPACT_HEIGHT_PX,
-  HEADER_LOGO_COMPACT_WIDTH_PX,
   HEADER_LOGO_HOME_HEIGHT_PX,
   HEADER_LOGO_HOME_WIDTH_PX,
   HEADER_LOGO_NAV_GAP_PX,
@@ -29,11 +27,10 @@ import {
   HEADER_NAV_PILL_LEFT_TRIM_PX,
   HEADER_NAV_PILL_PADDING_LEFT_PX,
   HEADER_NAV_PILL_PADDING_RIGHT_PX,
-  HEADER_NAV_PILL_PADDING_Y_PX,
   HEADER_PILL_BORDER_RADIUS_PX,
   HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
-import { HEADER_LOGO_IMAGE_CROP_STYLE, HEADER_LOGO_SRC } from './header-logo.constants';
+import { HEADER_LOGO_SRC } from './header-logo.constants';
 import { STOREFRONT_DESKTOP_FLEX_CLASS } from '../../lib/layout/storefront-layout.constants';
 import { useHeaderNavActivePill } from './useHeaderNavActivePill';
 import { handleHomeLogoClick } from '../../lib/navigation/scroll-home-to-top';
@@ -60,10 +57,7 @@ type HeaderBrandClusterProps = {
  */
 let pendingHeaderNavHref: string | null = null;
 
-function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
-  const logoWidthPx = isHomePage ? HEADER_LOGO_HOME_WIDTH_PX : HEADER_LOGO_COMPACT_WIDTH_PX;
-  const logoHeightPx = isHomePage ? HEADER_LOGO_HOME_HEIGHT_PX : HEADER_LOGO_COMPACT_HEIGHT_PX;
-
+function HeaderLogo() {
   return (
     <Link
       href="/"
@@ -73,24 +67,16 @@ function HeaderLogo({ isHomePage }: { isHomePage: boolean }) {
     >
       <span
         className="relative block overflow-hidden"
-        style={{ width: logoWidthPx, height: logoHeightPx }}
+        style={{ width: HEADER_LOGO_HOME_WIDTH_PX, height: HEADER_LOGO_HOME_HEIGHT_PX }}
       >
-        {isHomePage ? (
-          <Image
-            src={HEADER_LOGO_SRC}
-            alt="Janazyan"
-            fill
-            priority
-            sizes={`${HEADER_LOGO_HOME_WIDTH_PX}px`}
-            className="object-contain object-left"
-          />
-        ) : (
-          <img
-            src={HEADER_LOGO_SRC}
-            alt="Janazyan"
-            style={HEADER_LOGO_IMAGE_CROP_STYLE}
-          />
-        )}
+        <Image
+          src={HEADER_LOGO_SRC}
+          alt="Janazyan"
+          fill
+          priority
+          sizes={`${HEADER_LOGO_HOME_WIDTH_PX}px`}
+          className="object-contain object-left"
+        />
       </span>
     </Link>
   );
@@ -226,12 +212,9 @@ function HeaderNav({
 export function HeaderBrandCluster({
   pathname,
   searchParams,
-  isHomePage,
   pill = true,
 }: HeaderBrandClusterProps & { pill?: boolean }) {
-  const shadowClassName = isHomePage
-    ? 'shadow-soft'
-    : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
+  const shadowClassName = 'shadow-soft';
   const surfaceClassName = pill
     ? `bg-white ${shadowClassName}`
     : 'bg-transparent shadow-none';
@@ -246,15 +229,9 @@ export function HeaderBrandCluster({
         marginLeft: HEADER_NAV_PILL_LEFT_TRIM_PX,
         paddingLeft: HEADER_NAV_PILL_PADDING_LEFT_PX - HEADER_NAV_PILL_LEFT_TRIM_PX,
         paddingRight: HEADER_NAV_PILL_PADDING_RIGHT_PX,
-        ...(isHomePage
-          ? {}
-          : {
-              paddingTop: HEADER_NAV_PILL_PADDING_Y_PX,
-              paddingBottom: HEADER_NAV_PILL_PADDING_Y_PX,
-            }),
       }}
     >
-      <HeaderLogo isHomePage={isHomePage} />
+      <HeaderLogo />
       <HeaderNav pathname={pathname} searchParams={searchParams} />
     </div>
   );

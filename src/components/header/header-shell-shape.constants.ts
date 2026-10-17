@@ -155,9 +155,9 @@ export function resolveHeaderRowVerticalInsetPx(bandHeightPx: number): number {
   return (bandHeightPx - HEADER_PILL_HEIGHT_PX) / 2;
 }
 
-/** Embedded header row top — home keeps Figma offset; hero-shell nudged down on desktop. */
-export function resolveEmbeddedHeaderRowTopPx(isHomePage: boolean): number {
-  return isHomePage ? HEADER_HOME_EMBEDDED_ROW_TOP_PX : HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX;
+/** Embedded header row top — same offset as home on every page. */
+export function resolveEmbeddedHeaderRowTopPx(_isHomePage: boolean): number {
+  return HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 }
 
 /** Embedded header row bottom — no trailing band inset on embedded layouts. */

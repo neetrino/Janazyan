@@ -190,7 +190,6 @@ function HeaderCurrencyControl() {
 }
 
 export function HeaderStorefrontActions({
-  isHomePage,
   pill = true,
 }: {
   isHomePage: boolean;
@@ -200,9 +199,7 @@ export function HeaderStorefrontActions({
   const wishlistBadgeLabel = formatWishlistBadgeCount(wishlistCount);
   const cartCount = useCartItemCount();
   const cartBadgeLabel = formatCartBadgeCount(cartCount);
-  const shadowClassName = isHomePage
-    ? 'shadow-soft'
-    : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
+  const shadowClassName = 'shadow-soft';
   const surfaceClassName = pill
     ? `bg-white ${shadowClassName}`
     : 'bg-transparent shadow-none';

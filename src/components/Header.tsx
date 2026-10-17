@@ -17,13 +17,7 @@ import {
   resolveHeaderStickyOverlapPx,
   HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS,
   HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS,
-  HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS,
 } from './header/header-shell-shape.constants';
-import {
-  PRODUCTS_PAGE_CONTENT_INSET_CLASS,
-  PRODUCTS_PAGE_MAX_WIDTH_CLASS,
-  PRODUCTS_PAGE_SIDE_PADDING_CLASS,
-} from '../app/products/products-page-layout.constants';
 import {
   STOREFRONT_CONTENT_MAX_WIDTH_CLASS,
   STOREFRONT_DESKTOP_ONLY_CLASS,
@@ -68,21 +62,12 @@ function resolveHeaderContainerLayout(
 ): HeaderContainerLayout {
   const isHomePage = pathname === '/';
 
-  if (isHomePage) {
+  if (isHomePage || usesEmbeddedHeroHeaderLayout(pathname, embedded)) {
     return {
       containerClassName: `mx-auto w-full ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`,
       insetClassName: '',
       horizontalInsetLeftPx: HEADER_HOME_HORIZONTAL_INSET_LEFT_PX,
       horizontalInsetRightPx: HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX,
-    };
-  }
-
-  if (usesEmbeddedHeroHeaderLayout(pathname, embedded)) {
-    return {
-      containerClassName: `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`,
-      insetClassName: PRODUCTS_PAGE_CONTENT_INSET_CLASS,
-      horizontalInsetLeftPx: 0,
-      horizontalInsetRightPx: 0,
     };
   }
 
@@ -169,10 +154,7 @@ function HeaderOverlayBar({
 }) {
   const { containerClassName, insetClassName, horizontalInsetLeftPx, horizontalInsetRightPx } =
     resolveHeaderContainerLayout(pathname, true);
-  const compactScreenOffsetClass =
-    pathname === '/'
-      ? HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS
-      : HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS;
+  const compactScreenOffsetClass = HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS;
 
   return (
     <header
@@ -229,7 +211,7 @@ export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const scrolled = useHeaderScrollPill();
-  const navPill = !(embedded && pathname === '/') || scrolled;
+  const navPill = !embedded || scrolled;
   const plainWhite = isProductsListingPage(pathname);
   const storefrontTone = isStorefrontPage(pathname) && !plainWhite;
 
