@@ -53,9 +53,15 @@ export const CONTACT_SECTION_DESKTOP_BLEED_PX = 100;
 export const CONTACT_SECTION_DESKTOP_BLEED_CLASS =
   `desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] ${CONTACT_HERO_FOOTER_BLEED_CLASS} desktop:pt-6 desktop:pb-0 desktop:overflow-visible desktop:rounded-tl-[36px]`;
 
-/** Responsive grid — laptop keeps hero beside the form; desktop matches Figma spacing. */
+/**
+ * Desktop form track starts at the address pill's right edge (measured from the
+ * section content box). The form then centers in the space left before the right edge.
+ */
+export const CONTACT_FORM_AFTER_ADDRESS_PILL_PX = 584;
+
+/** Responsive grid — laptop keeps hero beside the form; desktop centers the form after the address pill. */
 export const CONTACT_PAGE_GRID_CLASS =
-  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[484px_633px] desktop:items-start desktop:justify-start desktop:gap-[280px]';
+  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[584px_minmax(0,1fr)] desktop:items-start desktop:justify-stretch desktop:gap-0';
 
 /** Left column — stretch target; height spans background top through footer overlap. */
 export const CONTACT_HERO_COLUMN_CLASS =
@@ -73,7 +79,7 @@ export const CONTACT_FORM_COLUMN_TOP_OFFSET_PX = 48;
 
 /** Form column — Figma heading/card gap 16px (345 − 329). */
 export const CONTACT_FORM_COLUMN_CLASS =
-  `flex w-full max-w-[633px] flex-col gap-4 self-start min-[900px]:mt-8 desktop:mt-[48px] min-[1548px]:mt-[64px] min-[1800px]:mt-[80px]`;
+  'mx-auto flex w-full max-w-[633px] flex-col gap-4 self-start min-[900px]:mt-8 desktop:mt-[48px] min-[1548px]:mt-[64px] min-[1800px]:mt-[80px]';
 
 /** Figma node 505:576 — 8px horizontal inset, 10px title/description gap. */
 export const CONTACT_FORM_HEADING_CLASS = 'space-y-2.5 px-1 desktop:px-2';
