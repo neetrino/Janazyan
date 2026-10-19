@@ -38,6 +38,8 @@ type PartnerStoresMapProps = {
   ariaLabel: string;
   getDirectionsLabel: string;
   minHeightPx?: number;
+  /** Fix the map box to `minHeightPx` instead of only using it as a minimum. */
+  lockHeight?: boolean;
 };
 
 type LeafletModule = typeof import('leaflet');
@@ -104,6 +106,7 @@ export function PartnerStoresMap({
   ariaLabel,
   getDirectionsLabel,
   minHeightPx = MAP_HEIGHT_PX,
+  lockHeight = false,
 }: PartnerStoresMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -255,7 +258,11 @@ export function PartnerStoresMap({
     <div
       ref={containerRef}
       className={mapClassName}
-      style={{ minHeight: resolvedMinHeightPx }}
+      style={
+        lockHeight
+          ? { height: resolvedMinHeightPx, minHeight: resolvedMinHeightPx }
+          : { minHeight: resolvedMinHeightPx }
+      }
       role="region"
       aria-label={ariaLabel}
     />

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { ChevronDown, MapPin, Store } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { groupPartnerStoresByHierarchy } from '../group-partner-stores';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 
@@ -126,6 +126,9 @@ export function PartnerStoresDirectory({
   embedded = false,
 }: PartnerStoresDirectoryProps) {
   const itemRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const listRef = useRef<HTMLDivElement>(null);
+  const lockedListHeightRef = useRef<number | null>(null);
+  const [lockedListHeight, setLockedListHeight] = useState<number | null>(null);
   const regions = useMemo(() => groupPartnerStoresByHierarchy(stores), [stores]);
   const [openRegionIds, setOpenRegionIds] = useState<Set<string>>(new Set());
   const [openAreaIds, setOpenAreaIds] = useState<Set<string>>(new Set());
@@ -137,6 +140,19 @@ export function PartnerStoresDirectory({
     }
     itemRefs.current.delete(storeId);
   };
+
+  /** Keep the closed-list height; extra rows scroll inside the panel. */
+  useLayoutEffect(() => {
+    if (embedded || lockedListHeightRef.current !== null || openRegionIds.size > 0) {
+      return;
+    }
+    const list = listRef.current;
+    if (!list || list.scrollHeight < 1) {
+      return;
+    }
+    lockedListHeightRef.current = list.scrollHeight;
+    setLockedListHeight(list.scrollHeight);
+  }, [embedded, openRegionIds, regions]);
 
   /** Expand the hierarchy that contains the selected store (e.g. after a map pin click). */
   useEffect(() => {
@@ -224,7 +240,16 @@ export function PartnerStoresDirectory({
 
   return (
     <div className="partner-stores-directory" aria-label={ariaLabel}>
-      <div className={listClassName} role="list">
+      <div
+        ref={listRef}
+        className={listClassName}
+        role="list"
+        style={
+          lockedListHeight === null
+            ? undefined
+            : { height: lockedListHeight, maxHeight: lockedListHeight }
+        }
+      >
         {regions.map((region) => {
           const regionOpen = openRegionIds.has(region.id);
           const regionStoreCount =

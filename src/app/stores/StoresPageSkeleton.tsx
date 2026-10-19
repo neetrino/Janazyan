@@ -1,12 +1,15 @@
 import { MAP_HEIGHT_PX } from '../../features/stores/constants';
-import { STOREFRONT_PAGE_HEADER_SECTION_CLASS } from '../../lib/layout/storefront-mobile-layout.constants';
+import {
+  STORES_PAGE_FOOTER_SECTION_CLASS,
+  STORES_PAGE_HEADER_SECTION_CLASS,
+} from './StoresPageSections';
 
 /**
  * Hero copy placeholder — synchronous on client navigation.
  */
 export function StoresPageHeaderSkeleton() {
   return (
-    <section className={`animate-pulse ${STOREFRONT_PAGE_HEADER_SECTION_CLASS}`} aria-busy="true" aria-label="Loading stores header">
+    <section className={`animate-pulse ${STORES_PAGE_HEADER_SECTION_CLASS}`} aria-busy="true" aria-label="Loading stores header">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto h-4 w-32 rounded bg-neutral-200" />
@@ -53,7 +56,7 @@ export function StoresPageMainSkeleton() {
 
 export function StoresPageFooterSkeleton() {
   return (
-    <section className="animate-pulse border-t border-gray-100 py-14 md:py-16" aria-hidden>
+    <section className={`animate-pulse ${STORES_PAGE_FOOTER_SECTION_CLASS}`} aria-hidden>
       <div className="mx-auto max-w-3xl text-center">
         <div className="mx-auto h-8 w-64 rounded bg-neutral-200" />
         <div className="mx-auto mt-3 h-12 w-full max-w-md rounded bg-neutral-100" />

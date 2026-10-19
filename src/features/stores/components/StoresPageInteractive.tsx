@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Search } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { STOREFRONT_TABLET_DOWN_CLASS } from '../../../lib/layout/storefront-layout.constants';
 import { getStoredLanguage } from '../../../lib/language';
@@ -66,6 +66,18 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
   const [mapFocusRequest, setMapFocusRequest] = useState(0);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const mapSectionRef = useRef<HTMLDivElement>(null);
+  const directoryShellRef = useRef<HTMLDivElement>(null);
+  const [directoryHeightPx, setDirectoryHeightPx] = useState<number | null>(null);
+
+  useLayoutEffect(() => {
+    if (directoryHeightPx !== null) {
+      return;
+    }
+    const height = directoryShellRef.current?.offsetHeight ?? 0;
+    if (height > 0) {
+      setDirectoryHeightPx(height);
+    }
+  }, [directoryHeightPx, filteredStores.length]);
 
   const filteredStores = useMemo(
     () => filterPartnerStores(stores, searchQuery),

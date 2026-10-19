@@ -4,7 +4,11 @@ import { getServerLanguage } from '../../lib/language-server';
 import { fetchPartnerStores } from '../../lib/partner-stores/partner-stores-cache';
 import { loadStoresPageCopy } from '../../features/stores/load-stores-page-copy';
 import { StoresPageMain } from './StoresPageMain';
-import { StoresPageFooter, StoresPageHeader } from './StoresPageSections';
+import {
+  STORES_PAGE_CATALOG_BOTTOM_PADDING_CLASS,
+  StoresPageFooter,
+  StoresPageHeader,
+} from './StoresPageSections';
 import { StoresPageMainSkeleton } from './StoresPageSkeleton';
 
 export const revalidate = 300;
@@ -20,6 +24,7 @@ export default async function StoresPage() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Partner stores"
+      catalogBottomPaddingClassName={STORES_PAGE_CATALOG_BOTTOM_PADDING_CLASS}
       catalog={
         <>
           <StoresPageHeader copy={copy} />
