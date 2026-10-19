@@ -162,13 +162,17 @@ body {
    * ProductsHeroShell puts SIDE_PADDING + CONTENT_INSET on one node; at sm+
    * `sm:px-8` (32px) wins, so bleeding gutter+32 overshoots and causes X scroll.
    */
+  .about-page-scale-host {
+    container-type: inline-size;
+  }
+
   @media (min-width: 1300px) {
     .about-page-shell-bleed {
       --about-shell-max-width: 1510px;
-      --about-left-bleed: calc(max((100vw - var(--about-shell-max-width)) / 2, 0px) + 2rem);
-      margin-left: calc(-1 * var(--about-left-bleed));
-      margin-right: -2rem;
-      width: calc(100% + var(--about-left-bleed) + 2rem);
+      --about-edge-bleed: calc(max((100vw - var(--about-shell-max-width)) / 2, 0px) + 2rem);
+      margin-left: calc(-1 * var(--about-edge-bleed));
+      margin-right: calc(-1 * var(--about-edge-bleed));
+      width: calc(100% + var(--about-edge-bleed) * 2);
       overflow-x: clip;
     }
   }

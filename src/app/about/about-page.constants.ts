@@ -26,14 +26,21 @@ export const ABOUT_ARTBOARD_HEIGHT_PX = 1146;
 /** Extra scaled space below the cream composition before the compact footer. */
 export const ABOUT_ARTBOARD_FOOTER_GAP_PX = 64;
 
-export const ABOUT_SHAMPOO_IMAGE_SRC = '/figma/about-page-shampoo.webp';
+export const ABOUT_SHAMPOO_IMAGE_SRC = '/figma/about-page-shampoo.png';
 export const ABOUT_CREAM_IMAGE_SRC = '/figma/about-page-cream.webp';
 
 /** Figma node 606:725 — Group 9291 1 */
 export const ABOUT_SHAMPOO_WIDTH_PX = 617;
 export const ABOUT_SHAMPOO_HEIGHT_PX = 713;
-export const ABOUT_SHAMPOO_LEFT_PX = 823;
-export const ABOUT_SHAMPOO_TOP_PX = 0;
+export const ABOUT_SHAMPOO_IMAGE_WIDTH_PX = 819;
+export const ABOUT_SHAMPOO_IMAGE_HEIGHT_PX = 682;
+/**
+ * Inset from the text column's right edge. The photo sits in that column,
+ * not in the scaled artboard, so the shell clip cannot cut its right side.
+ */
+export const ABOUT_SHAMPOO_RIGHT_INSET_PX = 48;
+/** Nudge the photo down so it sits beside the intro, not under the header. */
+export const ABOUT_SHAMPOO_TOP_PX = 96;
 
 /** Figma node 606:726 — cream composition, bleeds to shell left edge */
 export const ABOUT_CREAM_WIDTH_PX = 651;
