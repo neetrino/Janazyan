@@ -1,14 +1,14 @@
 export const PDP_ACTION_STACK_CLASS = 'flex flex-col gap-4';
 
-/** Desktop: qty · add-to-cart · wishlist on one row. */
-export const PDP_ACTION_ROW_CLASS = 'hidden items-center gap-4 desktop:flex';
+/** Qty · add-to-cart · wishlist on one row from the tablet layout up. */
+export const PDP_ACTION_ROW_CLASS = 'hidden w-full flex-nowrap items-center gap-4 lg:flex';
 
-/** Mobile bottom row: qty only. */
-export const PDP_MOBILE_CONTROLS_ROW_CLASS = 'desktop:hidden';
+/** Phone only: qty on its own row. */
+export const PDP_MOBILE_CONTROLS_ROW_CLASS = 'lg:hidden';
 
-/** Mobile top row: add-to-cart · wishlist. */
+/** Phone only: add-to-cart · wishlist. */
 export const PDP_MOBILE_CART_ROW_CLASS =
-  'flex items-center gap-4 desktop:hidden';
+  'flex items-center gap-4 lg:hidden';
 
 export const PDP_MOBILE_ADD_TO_CART_CLASS = `inline-flex h-14 min-w-0 flex-1 whitespace-nowrap px-4 text-sm font-bold uppercase tracking-wide disabled:cursor-not-allowed disabled:bg-neutral-300 disabled:hover:bg-neutral-300 disabled:hover:shadow-none disabled:active:scale-100`;
 

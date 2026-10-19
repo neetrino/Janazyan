@@ -11,6 +11,7 @@ import type { Review } from '../../../components/ProductReviews/utils';
 import { ProductImageGallery } from './ProductImageGallery';
 import { ProductInfoAndActions } from './ProductInfoAndActions';
 import {
+  PDP_INFO_COLUMN_SHELL_CLASS,
   PDP_STAGE_GRID_CLASS,
 } from './product-info-layout.constants';
 import { ProductPageShellInstant } from './ProductPageShellInstant';
@@ -276,7 +277,7 @@ export function ProductPageClient({
             mainImagePriority={currentImageIndex === 0}
           />
 
-          <div className="flex h-full min-h-0 flex-col">
+          <div className={PDP_INFO_COLUMN_SHELL_CLASS}>
           <ProductInfoAndActions
             product={product}
             price={price}
