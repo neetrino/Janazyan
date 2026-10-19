@@ -20,16 +20,24 @@ const FEATURED_CARD_BG_WIDTH_PX = 283;
 const FEATURED_CARD_BG_HEIGHT_PX = 300;
 const FEATURED_CARD_CART_CORNER = '/figma/featured-card-cart-corner.svg';
 const FEATURED_STAR_ICON = '/figma/featured-star.svg';
-const FEATURED_CARD_SURFACE_IMAGE_CLASS =
-  'block h-full w-full max-w-none drop-shadow-[0_16px_32px_rgba(30,41,57,0.14)] transition-[filter] duration-300 group-hover:drop-shadow-[0_22px_42px_rgba(30,41,57,0.18)]';
+const FEATURED_CARD_SURFACE_IMAGE_CLASS = 'block h-full w-full max-w-none';
+
+const FEATURED_CARD_SURFACE_SHADOW_CLASS =
+  'drop-shadow-[0_16px_32px_rgba(30,41,57,0.14)] transition-[filter] duration-300 group-hover:drop-shadow-[0_22px_42px_rgba(30,41,57,0.18)]';
 
 export type FeaturedProductCardProps = {
   product: HomeFeaturedProduct;
   /** Eagerly load the product image; lazy-load when false. */
   priority?: boolean;
+  /** Related-products carousel keeps the card surface flat. */
+  hideSurfaceShadow?: boolean;
 };
 
-export function FeaturedProductCard({ product, priority = true }: FeaturedProductCardProps) {
+export function FeaturedProductCard({
+  product,
+  priority = true,
+  hideSurfaceShadow = false,
+}: FeaturedProductCardProps) {
   const productHref = `/products/${product.slug}`;
   const handleProductNavigate = () => {
     primeProductPageSnapshot({
@@ -105,7 +113,11 @@ export function FeaturedProductCard({ product, priority = true }: FeaturedProduc
             width={FEATURED_CARD_BG_WIDTH_PX}
             height={FEATURED_CARD_BG_HEIGHT_PX}
             aria-hidden
-            className={FEATURED_CARD_SURFACE_IMAGE_CLASS}
+            className={
+              hideSurfaceShadow
+                ? FEATURED_CARD_SURFACE_IMAGE_CLASS
+                : `${FEATURED_CARD_SURFACE_IMAGE_CLASS} ${FEATURED_CARD_SURFACE_SHADOW_CLASS}`
+            }
           />
         </div>
 
