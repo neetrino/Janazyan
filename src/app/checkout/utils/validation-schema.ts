@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { FieldErrors } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslation } from '../../../lib/i18n-client';
+import { CHECKOUT_PHONE_PATTERN } from '@/lib/orders/checkout-phone';
 import type { CheckoutFormData } from '../types';
 
 /** Map Zod issues to RHF field errors (first issue per field). */
@@ -32,7 +33,14 @@ export function useCheckoutSchema() {
     firstName: z.string().min(1, t('checkout.errors.firstNameRequired')),
     lastName: z.string().min(1, t('checkout.errors.lastNameRequired')),
     email: z.string().email(t('checkout.errors.invalidEmail')).min(1, t('checkout.errors.emailRequired')),
-    phone: z.string().min(1, t('checkout.errors.phoneRequired')).regex(/^\+?[0-9]{8,15}$/, t('checkout.errors.invalidPhone')),
+    phone: z.string().min(1, t('checkout.errors.phoneRequired')).regex(CHECKOUT_PHONE_PATTERN, t('checkout.errors.invalidPhone')),
+    alternatePhone: z
+      .string()
+      .optional()
+      .refine(
+        (value) => !value?.trim() || CHECKOUT_PHONE_PATTERN.test(value.trim()),
+        { message: t('checkout.errors.invalidPhone') },
+      ),
     shippingMethod: z.enum(['pickup', 'delivery'], {
       message: t('checkout.errors.selectShippingMethod'),
     }),

@@ -103,6 +103,14 @@ export function OrderDetailsSummary({
                 <dd className="tabular-nums">{orderDetails.customerPhone}</dd>
               </>
             )}
+            {orderDetails.customerAlternatePhone && (
+              <>
+                <dt className="font-medium text-gray-500 whitespace-nowrap">
+                  {t('checkout.form.alternatePhone')}
+                </dt>
+                <dd className="tabular-nums">{orderDetails.customerAlternatePhone}</dd>
+              </>
+            )}
             {orderDetails.customerEmail && (
               <>
                 <dt className="font-medium text-gray-500 whitespace-nowrap">

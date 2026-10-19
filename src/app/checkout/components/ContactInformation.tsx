@@ -3,6 +3,7 @@
 import { Input } from '@shop/ui';
 import { UseFormRegister, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../../lib/i18n-client';
+import { CheckoutAlternatePhoneField } from './CheckoutAlternatePhoneField';
 import { CheckoutFormData } from '../types';
 
 interface ContactInformationProps {
@@ -42,6 +43,11 @@ export function ContactInformation({
           disabled={isSubmitting}
         />
       </div>
+      <CheckoutAlternatePhoneField
+        register={register}
+        errors={errors}
+        isSubmitting={isSubmitting}
+      />
       {(errors.email || errors.phone) && (
         <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
           <p className="text-sm text-red-600">

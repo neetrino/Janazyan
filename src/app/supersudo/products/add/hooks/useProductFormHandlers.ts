@@ -2,6 +2,11 @@ import type { FormEvent, MutableRefObject } from 'react';
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { convertPrice, type CurrencyCode } from '@/lib/currency';
+import { useTranslation } from '@/lib/i18n-client';
+import {
+  filledProductContentTranslations,
+  type ProductContentTranslation,
+} from '@/lib/products/product-translations';
 import type { Attribute, Variant, GeneratedVariant } from '../types';
 import { useCategoryCreation } from './useCategoryCreation';
 import { useVariantConversionToFormData } from './useVariantConversionToFormData';
@@ -24,6 +29,7 @@ interface UseProductFormHandlersProps {
     mainProductImage: string;
     variants: Variant[];
     labels: any[];
+    translations: ProductContentTranslation[];
   };
   setFormData: (updater: (prev: any) => any) => void;
   setLoading: (loading: boolean) => void;
@@ -46,8 +52,8 @@ interface UseProductFormHandlersProps {
   getColorAttribute: () => Attribute | undefined;
   getSizeAttribute: () => Attribute | undefined;
   isClothingCategory: () => boolean;
-  /** Always-current description from the rich-text editor (avoids stale submit). */
-  descriptionHtmlRef: MutableRefObject<string>;
+  /** Latest per-language fields, including a description flushed on submit. */
+  translationsRef: MutableRefObject<ProductContentTranslation[]>;
 }
 
 export function useProductFormHandlers({
@@ -68,9 +74,10 @@ export function useProductFormHandlers({
   getColorAttribute,
   getSizeAttribute,
   isClothingCategory,
-  descriptionHtmlRef,
+  translationsRef,
 }: UseProductFormHandlersProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const formDataRef = useRef(formData);
   const simpleProductDataRef = useRef(simpleProductData);
 
@@ -123,8 +130,13 @@ export function useProductFormHandlers({
       // Prefer latest ref values so contentEditable blur/submit is not lost to a stale render.
       const latestFormData = {
         ...formDataRef.current,
-        descriptionHtml: descriptionHtmlRef.current,
+        translations: translationsRef.current,
       };
+      if (filledProductContentTranslations(latestFormData.translations).length === 0) {
+        alert(t('admin.products.add.translationRequired'));
+        setLoading(false);
+        return;
+      }
       const latestSimpleProductData = simpleProductDataRef.current;
       logger.debug('📝 [ADMIN] Submitting product form:', latestFormData);
 

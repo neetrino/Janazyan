@@ -4,6 +4,7 @@ import { sanitizeStoredProductImageUrl } from "../products/resolve-stored-produc
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
 import { DEFAULT_LANGUAGE } from '../language';
+import { pickProductTranslation } from '@/lib/products/product-translations';
 import {
   getProductDiscountSettings,
   type ProductDiscountSettings,
@@ -249,7 +250,7 @@ class ProductsFindTransformService {
     const data = products.map((product: ProductWithRelations) => {
       // Безопасное получение translation с проверкой на существование массива
       const translations = Array.isArray(product.translations) ? product.translations : [];
-      const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
+      const translation = pickProductTranslation(translations, lang);
       
       const variants = Array.isArray(product.variants) ? product.variants : [];
       const variant = pickCheapestVariant(variants);

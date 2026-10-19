@@ -1,30 +1,29 @@
 'use client';
 
-import type { ChangeEvent } from 'react';
-import { Input } from '@shop/ui';
-import { RichTextEditor } from '../../../../../components/RichTextEditor';
 import { useTranslation } from '../../../../../lib/i18n-client';
+import type { LanguageCode } from '../../../../../lib/language';
+import type { ProductContentTranslation } from '../../../../../lib/products/product-translations';
+import { ProductTranslationFields } from './ProductTranslationFields';
 
 interface BasicInformationProps {
   productType: 'simple' | 'variable';
   setProductType: (type: 'simple' | 'variable') => void;
-  title: string;
+  syncKey: string;
   slug: string;
-  descriptionHtml: string;
-  onTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSlugChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDescriptionChange: (html: string) => void;
+  translations: ProductContentTranslation[];
+  onTranslationChange: (
+    locale: LanguageCode,
+    patch: Partial<Pick<ProductContentTranslation, 'title' | 'slug' | 'descriptionHtml'>>,
+  ) => void;
 }
 
 export function BasicInformation({
   productType,
   setProductType,
-  title,
+  syncKey,
   slug,
-  descriptionHtml,
-  onTitleChange,
-  onSlugChange,
-  onDescriptionChange,
+  translations,
+  onTranslationChange,
 }: BasicInformationProps) {
   const { t } = useTranslation();
 
@@ -66,42 +65,12 @@ export function BasicInformation({
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('admin.products.add.title')} *
-          </label>
-          <Input
-            type="text"
-            value={title}
-            onChange={onTitleChange}
-            required
-            placeholder={t('admin.products.add.productTitlePlaceholder')}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('admin.products.add.slug')} *
-          </label>
-          <Input
-            type="text"
-            value={slug}
-            onChange={onSlugChange}
-            required
-            placeholder={t('admin.products.add.productSlugPlaceholder')}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t('admin.products.add.description')}
-          </label>
-          <RichTextEditor
-            value={descriptionHtml}
-            onChange={onDescriptionChange}
-            placeholder={t('admin.products.add.productDescriptionPlaceholder')}
-          />
-        </div>
+        <ProductTranslationFields
+          syncKey={syncKey}
+          slug={slug}
+          translations={translations}
+          onChange={onTranslationChange}
+        />
       </div>
     </div>
   );

@@ -18,6 +18,7 @@ export const CHECKOUT_VALIDATION_FIELD_ORDER: (keyof CheckoutFormData)[] = [
   'lastName',
   'email',
   'phone',
+  'alternatePhone',
   'shippingMethod',
   'pickupStoreId',
   'shippingCity',

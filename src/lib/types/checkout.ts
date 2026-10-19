@@ -13,6 +13,7 @@ export interface CheckoutData {
   lastName?: string;
   email: string;
   phone: string;
+  alternatePhone?: string;
   shippingMethod?: string;
   pickupStoreId?: string;
   shippingAddress?: {

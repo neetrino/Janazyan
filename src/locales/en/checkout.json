@@ -15,6 +15,8 @@
     "lastName": "Last Name",
     "email": "Email",
     "phone": "Phone",
+    "alternatePhone": "Second phone",
+    "alternatePhoneHint": "If we cannot reach the first number, we will call this one. Optional.",
     "address": "Address",
     "city": "City",
     "postalCode": "Postal Code",

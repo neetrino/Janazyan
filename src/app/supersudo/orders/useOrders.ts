@@ -27,6 +27,7 @@ export interface Order {
   currency: string;
   customerEmail: string;
   customerPhone: string;
+  customerAlternatePhone?: string | null;
   customerFirstName?: string;
   customerLastName?: string;
   customerId?: string | null;
@@ -62,6 +63,7 @@ export interface OrderDetails {
   };
   customerEmail?: string;
   customerPhone?: string;
+  customerAlternatePhone?: string | null;
   customer?: {
     id: string;
     email: string | null;

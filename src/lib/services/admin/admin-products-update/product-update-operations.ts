@@ -61,7 +61,8 @@ export async function updateProduct(
     // Execute everything in a transaction for atomicity and speed
     const result = await db.$transaction(async (tx: Prisma.TransactionClient) => {
       const dataToPersist: UpdateProductData = { ...data };
-      if (data.slug && data.slug.trim()) {
+      const hasTranslationList = Array.isArray(data.translations) && data.translations.length > 0;
+      if (!hasTranslationList && data.slug && data.slug.trim()) {
         dataToPersist.slug = await ensureUniqueProductSlug({
           tx,
           slug: data.slug,

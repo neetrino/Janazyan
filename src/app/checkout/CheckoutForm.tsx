@@ -3,6 +3,7 @@
 import { Input } from '@shop/ui';
 import { UseFormRegister, UseFormSetValue, FieldErrors } from 'react-hook-form';
 import { useTranslation } from '../../lib/i18n-client';
+import { CheckoutAlternatePhoneField } from './components/CheckoutAlternatePhoneField';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CheckoutProductsInOrder } from './components/CheckoutProductsInOrder';
 import { DeliveryAddressFields } from './components/DeliveryAddressFields';
@@ -139,6 +140,13 @@ export function CheckoutForm({
                 {...register('phone')}
                 error={errors.phone?.message}
                 disabled={isSubmitting}
+              />
+            </div>
+            <div className={`${CHECKOUT_FIELD_WRAPPER_CLASS} md:col-start-2`}>
+              <CheckoutAlternatePhoneField
+                register={register}
+                errors={errors}
+                isSubmitting={isSubmitting}
               />
             </div>
           </div>

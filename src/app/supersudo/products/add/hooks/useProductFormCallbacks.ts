@@ -3,9 +3,7 @@ import { logger } from "@/lib/utils/logger";
  * Hook for product form callbacks and event handlers
  */
 
-import type { ChangeEvent } from 'react';
-import type { Category, Attribute, GeneratedVariant } from '../types';
-import { generateSlug } from '../utils/productUtils';
+import type { Category, GeneratedVariant } from '../types';
 
 interface UseProductFormCallbacksProps {
   formData: {
@@ -31,22 +29,12 @@ export function useProductFormCallbacks({
   selectedAttributesForVariants,
   selectedAttributeValueIds,
   generatedVariants,
-  setFormData,
   setSelectedAttributesForVariants,
   setSelectedAttributeValueIds,
   setGeneratedVariants,
   setSimpleProductData,
   checkIsClothingCategory,
 }: UseProductFormCallbacksProps) {
-  const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const title = e.target.value;
-    setFormData((prev) => ({
-      ...prev,
-      title,
-      slug: generateSlug(title),
-    }));
-  };
-
   const isClothingCategory = () => checkIsClothingCategory(formData.primaryCategoryId, categories);
 
   const handleAttributeToggle = (attributeId: string, checked: boolean) => {
@@ -98,7 +86,6 @@ export function useProductFormCallbacks({
   };
 
   return {
-    handleTitleChange,
     isClothingCategory,
     handleAttributeToggle,
     handleAttributeRemove,

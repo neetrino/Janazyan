@@ -82,6 +82,12 @@ export interface ProductData {
     imageUrl?: string;
     published?: boolean;
   }>;
+  translations?: Array<{
+    locale: string;
+    title: string;
+    slug: string;
+    descriptionHtml?: string | null;
+  }>;
 }
 
 export interface GeneratedVariant {

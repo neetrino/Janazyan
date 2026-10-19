@@ -14,6 +14,7 @@ import { convertPrice } from "@/lib/currency";
 import { getPublishedPartnerStoreById } from "./partner-stores.service";
 import type { PickupStoreAddress } from "@/lib/types/pickup-store";
 import { buildCheckoutBillingAddress } from "@/lib/orders/customer-contact";
+import { parseOptionalCheckoutPhone } from "@/lib/orders/checkout-phone";
 import { registerArcaPayment } from "@/lib/orders/register-arca-payment";
 import { ARMSOFT_STOCK_HELD_EVENT } from "@/lib/armsoft/constants";
 import {
@@ -124,6 +125,7 @@ class OrdersService {
     lastName?: string;
     email: string;
     phone: string;
+    alternatePhone?: string | null;
     subtotal: number;
     discountAmount: number;
     shippingAmount: number;
@@ -142,6 +144,7 @@ class OrdersService {
       lastName,
       email,
       phone,
+      alternatePhone,
       subtotal,
       discountAmount,
       shippingAmount,
@@ -189,6 +192,7 @@ class OrdersService {
           lastName,
           email,
           phone,
+          alternatePhone,
           shippingAddress: serializedShippingAddress,
         });
         const newOrder = await tx.order.create({
@@ -326,6 +330,7 @@ class OrdersService {
         lastName,
         email,
         phone,
+        alternatePhone: rawAlternatePhone,
         shippingMethod = 'pickup',
         pickupStoreId,
         shippingAddress,
@@ -343,6 +348,17 @@ class OrdersService {
           detail: "Email and phone are required",
         };
       }
+
+      const parsedAlternatePhone = parseOptionalCheckoutPhone(rawAlternatePhone);
+      if (!parsedAlternatePhone.ok) {
+        throw {
+          status: 400,
+          type: "https://api.shop.am/problems/validation-error",
+          title: "Validation Error",
+          detail: "Invalid alternate phone",
+        };
+      }
+      const alternatePhone = parsedAlternatePhone.phone;
 
       // Get cart items - either from user cart or guest items
       let cartItems: CheckoutCartItem[] = [];
@@ -617,6 +633,7 @@ class OrdersService {
         lastName,
         email,
         phone,
+        alternatePhone,
         subtotal,
         discountAmount,
         shippingAmount,

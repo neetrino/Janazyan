@@ -3,6 +3,12 @@
  */
 
 import type { ProductData, Variant, ProductLabel } from '../types';
+import type { LanguageCode } from '@/lib/language';
+import {
+  mergeProductContentTranslations,
+  pickProductTranslation,
+  type ProductContentTranslation,
+} from '@/lib/products/product-translations';
 
 interface FormData {
   title: string;
@@ -17,6 +23,8 @@ interface FormData {
   mainProductImage: string;
   variants: Variant[];
   labels: ProductLabel[];
+  skuSourceLocale: LanguageCode;
+  translations: ProductContentTranslation[];
 }
 
 /**
@@ -29,10 +37,28 @@ export function buildFormData(
   mainProductImage: string,
   mergedVariant: Variant
 ): FormData {
+  const translations = mergeProductContentTranslations(
+    product.translations && product.translations.length > 0
+      ? product.translations
+      : [
+          {
+            locale: 'en',
+            title: product.title,
+            slug: product.slug,
+            descriptionHtml: product.descriptionHtml,
+          },
+        ],
+  );
+  const source = pickProductTranslation(translations, 'hy');
+  const skuSourceLocale: LanguageCode =
+    source?.title.trim() && source.locale ? source.locale : 'hy';
+
   return {
-    title: product.title || '',
-    slug: product.slug || '',
-    descriptionHtml: product.descriptionHtml || '',
+    title: source?.title || '',
+    slug: source?.slug || '',
+    descriptionHtml: source?.descriptionHtml || '',
+    skuSourceLocale,
+    translations,
     primaryCategoryId: product.primaryCategoryId || '',
     categoryIds: product.categoryIds || [],
     published: product.published || false,

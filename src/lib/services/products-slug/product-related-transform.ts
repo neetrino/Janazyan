@@ -1,4 +1,5 @@
 import { processImageUrl } from "../../utils/image-utils";
+import { pickProductTranslation } from "@/lib/products/product-translations";
 import {
   getProductDiscountSettings,
   type ProductDiscountSettings,
@@ -68,7 +69,7 @@ export async function transformRelatedProductRows(
     discountSettings ?? (await getProductDiscountSettings());
 
   return rows.map((product) => {
-    const tr = pickTranslation(product.translations, lang);
+    const tr = pickProductTranslation(product.translations, lang);
     const variant = product.variants[0];
     const productDiscount = product.discountPercent || 0;
     const appliedDiscount = pickAppliedDiscount(

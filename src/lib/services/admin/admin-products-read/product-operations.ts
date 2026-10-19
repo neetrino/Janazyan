@@ -6,6 +6,7 @@ import { executeProductListQuery, executeProductDetailQuery } from "./query-exec
 import { loadAdminCategoryTitleMap } from "../admin-category-title";
 import { collectProductCategoryIds, formatProductForList } from "./product-formatter";
 import { formatVariantForAdmin } from "./variant-formatter";
+import { pickProductTranslation } from "@/lib/products/product-translations";
 
 /**
  * Get products for admin
@@ -66,7 +67,7 @@ export async function getProductById(productId: string) {
     variants?: Array<unknown>;
   };
   const translations = Array.isArray(productWithRelations.translations) ? productWithRelations.translations : [];
-  const translation = translations.find((t: { locale: string }) => t.locale === "en") || translations[0] || null;
+  const translation = pickProductTranslation(translations, "en");
 
   // Безопасное получение labels с проверкой на существование массива
   const labels = Array.isArray(productWithRelations.labels) ? productWithRelations.labels : [];
@@ -96,6 +97,12 @@ export async function getProductById(productId: string) {
     slug: translation?.slug || "",
     subtitle: translation?.subtitle || null,
     descriptionHtml: translation?.descriptionHtml || null,
+    translations: translations.map((row) => ({
+      locale: row.locale,
+      title: row.title || "",
+      slug: row.slug || "",
+      descriptionHtml: row.descriptionHtml || "",
+    })),
     primaryCategoryId: product.primaryCategoryId || null,
     categoryIds: product.categoryIds || [],
     attributeIds: allAttributeIds, // All attribute IDs that this product has

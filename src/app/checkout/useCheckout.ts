@@ -60,6 +60,7 @@ export function useCheckout() {
       lastName: '',
       email: '',
       phone: '',
+      alternatePhone: '',
       shippingMethod: 'pickup',
       pickupStoreId: '',
       paymentMethod: 'cash_on_delivery',

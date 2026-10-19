@@ -1,6 +1,8 @@
 import { useState, useRef } from 'react';
 import type { Category, Attribute, Variant, ProductLabel, GeneratedVariant } from '../types';
 import type { CurrencyCode } from '@/lib/currency';
+import type { LanguageCode } from '@/lib/language';
+import { emptyProductContentTranslations } from '@/lib/products/product-translations';
 
 export function useProductFormState() {
   const [loading, setLoading] = useState(false);
@@ -11,6 +13,8 @@ export function useProductFormState() {
     title: '',
     slug: '',
     descriptionHtml: '',
+    skuSourceLocale: 'hy' as LanguageCode,
+    translations: emptyProductContentTranslations(),
     primaryCategoryId: '',
     categoryIds: [] as string[],
     published: false,

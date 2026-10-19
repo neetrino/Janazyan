@@ -9,38 +9,16 @@ import { getProductDiscountSettings, type ProductDiscountSettings } from "../pro
 import { getOutOfStockLabel } from "./utils";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
 import { DEFAULT_LANGUAGE } from '../../language';
+import { pickProductDescriptionHtml, pickProductTranslation } from '@/lib/products/product-translations';
 
 /**
- * Admin edits one description field but may only update one locale row historically.
- * Prefer the locale match; if another locale has clearly richer HTML, use that.
+ * Description of the visible language, or another saved language when that one is empty.
  */
 function pickDescriptionHtml(
-  translations: Array<{ locale: string; descriptionHtml?: string | null }>,
+  translations: Array<{ locale: string; title?: string | null; descriptionHtml?: string | null }>,
   lang: string,
 ): string | null {
-  const score = (html: string): number => {
-    const tags = html.match(/<(strong|em|b|i|ul|ol|li|br|p)\b/gi);
-    return (tags?.length ?? 0) * 10 + html.length;
-  };
-
-  const preferred = translations.find((t) => t.locale === lang)?.descriptionHtml?.trim() || null;
-  const candidates = translations
-    .map((t) => t.descriptionHtml?.trim() || null)
-    .filter((html): html is string => Boolean(html));
-
-  if (candidates.length === 0) {
-    return null;
-  }
-  if (!preferred) {
-    return candidates[0];
-  }
-
-  const richest = candidates.reduce((best, html) => (score(html) > score(best) ? html : best));
-  const RICHNESS_GAP = 20;
-  if (score(richest) >= score(preferred) + RICHNESS_GAP) {
-    return richest;
-  }
-  return preferred;
+  return pickProductDescriptionHtml(translations, lang);
 }
 
 /**
@@ -312,7 +290,7 @@ export async function transformProduct(
 ) {
   // Get translations
   const translations = Array.isArray(product.translations) ? product.translations : [];
-  const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
+  const translation = pickProductTranslation(translations, lang);
   
   const settings = discountSettings ?? (await getProductDiscountSettings());
   const { globalDiscount, categoryDiscounts } = settings;

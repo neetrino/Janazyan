@@ -140,8 +140,14 @@ export function RegisterFormSection() {
       return;
     }
 
-    if (!email.trim() && !phone.trim()) {
-      setError(t('register.errors.emailOrPhoneRequired'));
+    if (!email.trim()) {
+      setError(t('register.errors.emailRequired'));
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!phone.trim()) {
+      setError(t('register.errors.phoneRequired'));
       setIsSubmitting(false);
       return;
     }
@@ -166,8 +172,8 @@ export function RegisterFormSection() {
 
     try {
       await register({
-        email: email.trim() || undefined,
-        phone: phone.trim() || undefined,
+        email: email.trim(),
+        phone: phone.trim(),
         password,
         firstName: firstName.trim() || undefined,
         lastName: lastName.trim() || undefined,
@@ -277,6 +283,7 @@ export function RegisterFormSection() {
               value={phone}
               onChange={setPhone}
               disabled={isDisabled}
+              required
             />
           </div>
 

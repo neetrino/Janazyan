@@ -1,5 +1,5 @@
 import type { Prisma } from "@white-shop/db";
-import { resolveOrderCustomerContact } from "@/lib/orders/customer-contact";
+import { readOrderAlternatePhone, resolveOrderCustomerContact } from "@/lib/orders/customer-contact";
 
 /**
  * Format order for list response
@@ -47,6 +47,7 @@ export function formatOrderForList(order: {
     currency: order.currency || 'AMD',
     customerEmail: contact.email,
     customerPhone: contact.phone,
+    customerAlternatePhone: readOrderAlternatePhone(order.billingAddress),
     customerFirstName: contact.firstName,
     customerLastName: contact.lastName,
     customerId: contact.customerId,
@@ -267,6 +268,7 @@ export function formatOrderForDetail(order: {
     },
     customerEmail: contact.email || undefined,
     customerPhone: contact.phone || undefined,
+    customerAlternatePhone: readOrderAlternatePhone(order.billingAddress) || undefined,
     billingAddress: order.billingAddress || null,
     shippingAddress: order.shippingAddress || null,
     shippingMethod: order.shippingMethod || null,

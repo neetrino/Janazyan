@@ -1,6 +1,8 @@
 import { Prisma } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
 import { cleanImageUrls, separateMainAndVariantImages, smartSplitUrls } from "../../../utils/image-utils";
+import { resolveProductContentRows } from "@/lib/products/product-translations";
+import { saveProductContentTranslations } from "../save-product-translations";
 import type { UpdateProductData } from "./types";
 
 /**
@@ -95,47 +97,19 @@ export function buildProductUpdateData(
 }
 
 /**
- * Update product translation.
- * Admin form is single-locale today, but storefront may render hy/ru/en.
- * Description is shared — sync descriptionHtml to every locale row.
+ * Save one language or the full hy/en/ru set.
+ * Blank languages are removed. Description is not copied across locales.
  */
 export async function updateProductTranslation(
   productId: string,
   data: UpdateProductData,
   tx: Prisma.TransactionClient
 ) {
-  if (data.title || data.slug || data.subtitle !== undefined || data.descriptionHtml !== undefined) {
-    const locale = data.locale || "en";
-    await tx.productTranslation.upsert({
-      where: {
-        productId_locale: {
-          productId,
-          locale,
-        },
-      },
-      update: {
-        ...(data.title && { title: data.title }),
-        ...(data.slug && { slug: data.slug }),
-        ...(data.subtitle !== undefined && { subtitle: data.subtitle || null }),
-        ...(data.descriptionHtml !== undefined && { descriptionHtml: data.descriptionHtml || null }),
-      },
-      create: {
-        productId,
-        locale,
-        title: data.title || "",
-        slug: data.slug || "",
-        subtitle: data.subtitle || null,
-        descriptionHtml: data.descriptionHtml || null,
-      },
-    });
-
-    if (data.descriptionHtml !== undefined) {
-      await tx.productTranslation.updateMany({
-        where: { productId },
-        data: { descriptionHtml: data.descriptionHtml || null },
-      });
-    }
+  const rows = resolveProductContentRows(data);
+  if (rows.length === 0) {
+    return;
   }
+  await saveProductContentTranslations(tx, productId, rows);
 }
 
 /**
