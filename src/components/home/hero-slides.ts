@@ -26,28 +26,29 @@ export const HERO_SLIDES: HeroSlide[] = [
 ];
 
 /**
- * Figma node I45:562;362:564 — product window on the 1388×940 hero.
- * x=671 (48.34%), width=714 (51.44%), height=606 (64.47%). Top is a little below the Figma y.
+ * Figma 606:725 — 617×713, flush to the artboard’s right edge, y=138.
+ * Top clears the 120px header band so the photo does not cover the action pills.
+ * The frame stays inside the hero card, so it cannot spill past the right edge.
  */
 export const HERO_BODY_WASH_DESKTOP_FRAME_CLASS =
-  'lg:left-[48.34%] lg:top-[26%] lg:z-30 lg:h-[64.47%] lg:w-[51.44%]';
+  'right-0 top-[88px] z-20 h-[calc(100%-108px)] aspect-[617/713] overflow-hidden';
 
-/** Crop inside that window: image height 157.05%, shifted up 41.87%. */
-export const HERO_BODY_WASH_IMAGE_CROP_CLASS =
-  'pointer-events-none absolute left-0 top-[-41.87%] h-[157.05%] w-full max-w-none';
+export const HERO_BODY_WASH_IMAGE_CLASS =
+  'pointer-events-none object-cover object-right';
 
 /**
  * Figma node 42:236 on the 1388×940 pink hero.
  * The layer is rotated 180°, so these are its visible bounds.
  */
+/** Full octopus inside the hero card — no crop at the bottom edge. */
 export const HERO_OCTOPUS_FRAME_CLASS =
-  'left-[45.53%] top-[31.49%] h-[66.91%] w-[46.47%]';
+  'bottom-2 left-[40%] top-[8%] w-[56%] translate-y-8';
 
 /** Horizontal mirror of the kids-slide octopus. */
 export const HERO_OCTOPUS_MIRROR_CLASS = '-scale-x-100';
 
-export const HERO_BODY_WASH_IMAGE_WIDTH_PX = 1086;
-export const HERO_BODY_WASH_IMAGE_HEIGHT_PX = 1448;
+export const HERO_BODY_WASH_IMAGE_WIDTH_PX = 1002;
+export const HERO_BODY_WASH_IMAGE_HEIGHT_PX = 1243;
 
 export const HERO_ARROW_SIZE_PX = 64;
 

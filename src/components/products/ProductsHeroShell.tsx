@@ -56,6 +56,8 @@ type ProductsHeroShellProps = {
   catalogBottomPaddingClassName?: string;
   /** Extra class on the desktop catalog gradient, e.g. a shorter product-page shape. */
   catalogBackgroundClassName?: string;
+  /** Stretch the catalog gradient to the full shell height (checkout). */
+  catalogBackgroundCoversShell?: boolean;
   /**
    * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
    * like login/register so content does not leave a large empty band above the nav.
@@ -133,6 +135,7 @@ function ProductsHeroShellInner({
   compactContentSpacing = true,
   catalogBottomPaddingClassName,
   catalogBackgroundClassName,
+  catalogBackgroundCoversShell = false,
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -155,7 +158,10 @@ function ProductsHeroShellInner({
         } as CSSProperties
       }
     >
-      <ProductsCatalogDesktopBackground className={catalogBackgroundClassName} />
+      <ProductsCatalogDesktopBackground
+        className={catalogBackgroundClassName}
+        coversShell={catalogBackgroundCoversShell}
+      />
       <Header embedded />
       <div
         className="relative z-10 shrink-0 overflow-visible desktop:-mt-[var(--header-sticky-overlap)]"
@@ -190,7 +196,13 @@ function ProductsHeroShellInner({
   );
 }
 
-function ProductsCatalogDesktopBackground({ className = '' }: { className?: string }) {
+function ProductsCatalogDesktopBackground({
+  className = '',
+  coversShell = false,
+}: {
+  className?: string;
+  coversShell?: boolean;
+}) {
   const gradientId = useId();
 
   return (
@@ -206,7 +218,7 @@ function ProductsCatalogDesktopBackground({ className = '' }: { className?: stri
     >
       <svg
         viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
-        preserveAspectRatio="xMidYMin meet"
+        preserveAspectRatio={coversShell ? 'none' : 'xMidYMin meet'}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -242,6 +254,7 @@ export function ProductsHeroShell({
   compactContentSpacing,
   catalogBottomPaddingClassName,
   catalogBackgroundClassName,
+  catalogBackgroundCoversShell = false,
   mobileFillViewport = true,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
@@ -267,7 +280,10 @@ export function ProductsHeroShell({
         sectionAriaLabel={sectionAriaLabel}
         leadingBackground={
           catalogBackgroundClassName ? (
-            <ProductsCatalogDesktopBackground className={catalogBackgroundClassName} />
+            <ProductsCatalogDesktopBackground
+              className={catalogBackgroundClassName}
+              coversShell={catalogBackgroundCoversShell}
+            />
           ) : undefined
         }
       >
@@ -286,6 +302,7 @@ export function ProductsHeroShell({
             compactContentSpacing={resolvedCompactContentSpacing}
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
             catalogBackgroundClassName={catalogBackgroundClassName}
+            catalogBackgroundCoversShell={catalogBackgroundCoversShell}
           />
         </section>
       </div>

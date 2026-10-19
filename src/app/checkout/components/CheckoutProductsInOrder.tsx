@@ -15,19 +15,19 @@ const CHECKOUT_PRODUCTS_IN_ORDER_TITLE_CLASS =
 const CHECKOUT_PRODUCTS_IN_ORDER_COUNT_CLASS =
   'shrink-0 text-xs font-semibold text-gray-700 desktop:text-sm';
 
-const CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS = 'relative w-20 shrink-0 desktop:w-[5.5rem]';
+const CHECKOUT_PRODUCTS_IN_ORDER_ITEM_CLASS = 'relative w-24 shrink-0 desktop:w-28';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_REMOVE_BUTTON_CLASS =
   'absolute -right-1 -top-1 z-10 grid h-6 w-6 place-items-center rounded-full border border-white/80 bg-white text-gray-500 shadow-sm transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50 desktop:h-7 desktop:w-7';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_IMAGE_WRAPPER_CLASS =
-  'relative h-16 w-16 overflow-hidden rounded-xl border border-white/60 bg-white/70 p-1.5 shadow-sm desktop:h-[5.5rem] desktop:w-[5.5rem]';
+  'relative aspect-square w-full overflow-hidden rounded-xl border border-white/60 bg-white/70 p-2 shadow-sm';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_PRODUCT_TITLE_CLASS =
-  'mt-2 line-clamp-2 text-[10px] font-medium leading-tight text-gray-700 sm:text-[11px] desktop:text-xs';
+  'mt-2 text-[10px] font-medium leading-tight text-gray-700 sm:text-[11px] desktop:text-xs';
 
 const CHECKOUT_PRODUCTS_IN_ORDER_LIST_CLASS =
-  'flex gap-6 overflow-x-auto pb-1 desktop:gap-8';
+  'flex gap-6 overflow-x-auto px-1 pb-1 pt-3 desktop:gap-8';
 
 function formatItemCount(count: number, t: (key: string) => string): string {
   const key = count === 1 ? 'checkout.productsInOrder.itemCountOne' : 'checkout.productsInOrder.itemCountMany';
@@ -85,7 +85,7 @@ export function CheckoutProductsInOrder({
                       src={product.image}
                       alt={displayTitle}
                       fill
-                      className="object-contain"
+                      className="object-contain object-center"
                       sizes={`(max-width: 1299px) ${PRODUCT_PREVIEW_IMAGE_SIZE_MOBILE_PX}px, ${PRODUCT_PREVIEW_IMAGE_SIZE_DESKTOP_PX}px`}
                       unoptimized
                     />

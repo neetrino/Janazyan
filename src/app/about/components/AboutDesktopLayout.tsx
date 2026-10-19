@@ -51,7 +51,7 @@ export function AboutDesktopLayout({
   return (
     <div className="@container relative w-full">
       <div
-        className="relative w-full overflow-x-clip"
+        className="relative w-full"
         style={{
           height: `calc(${artboardTotalHeightPx}px * ${scaleExpression})`,
         }}

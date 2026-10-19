@@ -60,7 +60,7 @@ function HeroProductImages({ activeSlideIndex }: { activeSlideIndex: number }) {
       <HeroProductImageFrame
         isActive={activeSlideIndex === 0}
         animationClass={activeSlideIndex === 0 ? 'animate-hero-body-wash-showcase' : ''}
-        wrapperClassName={`absolute hidden transition-opacity duration-500 lg:block ${HERO_BODY_WASH_DESKTOP_FRAME_CLASS} ${
+        wrapperClassName={`absolute hidden overflow-hidden transition-opacity duration-500 lg:block ${HERO_BODY_WASH_DESKTOP_FRAME_CLASS} ${
           activeSlideIndex === 0 ? 'opacity-100' : 'opacity-0'
         }`}
       >
@@ -85,7 +85,7 @@ function HeroProductImages({ activeSlideIndex }: { activeSlideIndex: number }) {
           loading="lazy"
           sizes="46vw"
           draggable={false}
-          className={`pointer-events-none object-cover ${HERO_OCTOPUS_MIRROR_CLASS}`}
+          className={`pointer-events-none object-contain object-bottom ${HERO_OCTOPUS_MIRROR_CLASS}`}
         />
       </HeroProductImageFrame>
     </>
