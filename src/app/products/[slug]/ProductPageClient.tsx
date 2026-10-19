@@ -328,7 +328,7 @@ export function ProductPageClient({
       />
 
       <div className="max-w-7xl mx-auto px-4 lg:px-8">
-        <div id="product-reviews" className="mt-16 scroll-mt-24">
+        <div id="product-reviews" className="relative z-10 mt-8 scroll-mt-24 pt-10">
           <ProductReviews
             productSlug={slug}
             productId={product.id}

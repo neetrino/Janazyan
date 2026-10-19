@@ -54,6 +54,8 @@ type ProductsHeroShellProps = {
   compactContentSpacing?: boolean;
   /** Override catalog bottom spacing for route-specific footer handoff. */
   catalogBottomPaddingClassName?: string;
+  /** Extra class on the desktop catalog gradient, e.g. a shorter product-page shape. */
+  catalogBackgroundClassName?: string;
   /**
    * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
    * like login/register so content does not leave a large empty band above the nav.
@@ -130,6 +132,7 @@ function ProductsHeroShellInner({
   compactHero = false,
   compactContentSpacing = true,
   catalogBottomPaddingClassName,
+  catalogBackgroundClassName,
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -152,7 +155,7 @@ function ProductsHeroShellInner({
         } as CSSProperties
       }
     >
-      <ProductsCatalogDesktopBackground />
+      <ProductsCatalogDesktopBackground className={catalogBackgroundClassName} />
       <Header embedded />
       <div
         className="relative z-10 shrink-0 overflow-visible desktop:-mt-[var(--header-sticky-overlap)]"
@@ -187,13 +190,13 @@ function ProductsHeroShellInner({
   );
 }
 
-function ProductsCatalogDesktopBackground() {
+function ProductsCatalogDesktopBackground({ className = '' }: { className?: string }) {
   const gradientId = useId();
 
   return (
     <div
       aria-hidden
-      className="products-catalog-desktop-background pointer-events-none absolute z-0"
+      className={`products-catalog-desktop-background pointer-events-none absolute z-0 ${className}`}
       style={
         {
           '--products-catalog-background-aspect-width': PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
@@ -238,6 +241,7 @@ export function ProductsHeroShell({
   compactMobileTop,
   compactContentSpacing,
   catalogBottomPaddingClassName,
+  catalogBackgroundClassName,
   mobileFillViewport = true,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
@@ -276,6 +280,7 @@ export function ProductsHeroShell({
             compactHero={compactHero}
             compactContentSpacing={resolvedCompactContentSpacing}
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
+            catalogBackgroundClassName={catalogBackgroundClassName}
           />
         </section>
       </div>

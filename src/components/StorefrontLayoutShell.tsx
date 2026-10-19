@@ -52,6 +52,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
             {...(productDetailPage
               ? {
                   catalogBottomPaddingClassName: PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS,
+                  catalogBackgroundClassName: 'pdp-catalog-background',
                 }
               : {})}
             sectionAriaLabel={
