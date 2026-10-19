@@ -9,32 +9,14 @@ import {
 } from '../../../lib/cart/cart-snapshot-cache';
 import { parseCartUpdatedDetail } from '../../../lib/cart/cart-events';
 
-function readInitialCart(
-  isLoggedIn: boolean,
-  userId: string | null | undefined,
-): Cart | null {
-  const scope = resolveCartCacheScope(isLoggedIn, userId);
-  return scope ? readCartSnapshot(scope) : null;
-}
-
-function shouldShowLoading(
-  isLoggedIn: boolean,
-  userId: string | null | undefined,
-): boolean {
-  const scope = resolveCartCacheScope(isLoggedIn, userId);
-  if (!scope) {
-    return true;
-  }
-  return readCartSnapshot(scope) === null;
-}
-
 export function useCart(isLoggedIn: boolean) {
   const { user } = useAuth();
   const { t } = useTranslation();
   const userId = user?.id;
 
-  const [cart, setCart] = useState<Cart | null>(() => readInitialCart(isLoggedIn, userId));
-  const [loading, setLoading] = useState(() => shouldShowLoading(isLoggedIn, userId));
+  // Same first render on server and client. The snapshot lives in localStorage.
+  const [cart, setCart] = useState<Cart | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const fetchCartData = useCallback(

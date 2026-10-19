@@ -338,8 +338,7 @@ body {
     border-bottom-right-radius: 44px;
   }
 
-  /* Checkout — same gradient covers the whole shell, not only the Figma aspect box. */
-  .checkout-catalog-background.products-catalog-desktop-background > svg {
+  .products-catalog-background-cover.products-catalog-desktop-background > svg {
     width: 100%;
     height: 100%;
     aspect-ratio: auto;

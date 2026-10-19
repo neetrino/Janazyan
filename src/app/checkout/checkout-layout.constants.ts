@@ -3,8 +3,10 @@ import {
   AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
 } from '../../components/auth/auth-layout.constants';
 
-/** Checkout mobile — gradient catalog surface like /login. */
+/** Same hero shell as /about so the blue shape sits in the same place. */
 export const CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS = {
+  compactMobileTop: false,
+  compactContentSpacing: false,
   mobileContentInsetClassName: AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
   mobileContentSurfaceClassName: AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
 } as const;

@@ -17,7 +17,7 @@ const CATEGORY_IMAGE_CLASS: Record<
   (typeof CATEGORY_FIGMA_GRID_IDS)[number],
   string
 > = {
-  body: 'left-[29%] top-[-17%] h-[149%] w-[72%]',
+  body: 'left-[29.12%] top-[-24.65%] h-[149.31%] w-[72.21%]',
   kids: 'left-[12%] top-[-19%] h-[137%] w-[88%]',
   hair: 'left-[28%] top-[-7%] h-[138%] w-[71%]',
   face: 'left-[22%] top-[-40%] h-[172%] w-[83%]',
@@ -39,7 +39,7 @@ function CategoryPosterArrow() {
   return (
     <span
       aria-hidden
-      className="absolute bottom-[43px] right-[38px] z-10 flex size-[85px] items-center justify-center transition-transform duration-300 group-hover:scale-105"
+      className="absolute bottom-[22px] right-[17px] z-10 flex size-[85px] items-center justify-center transition-transform duration-300 group-hover:scale-105"
     >
       <span className="relative flex size-[85.071px] items-center justify-center">
         <span className="relative flex size-16 rotate-[154.96deg] items-center justify-center">

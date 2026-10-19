@@ -58,6 +58,8 @@ type ProductsHeroShellProps = {
   catalogBackgroundClassName?: string;
   /** Stretch the catalog gradient to the full shell height (checkout). */
   catalogBackgroundCoversShell?: boolean;
+  /** Extra class on the desktop catalog background only — not painted on mobile. */
+  desktopBackgroundClassName?: string;
   /**
    * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
    * like login/register so content does not leave a large empty band above the nav.
@@ -136,6 +138,7 @@ function ProductsHeroShellInner({
   catalogBottomPaddingClassName,
   catalogBackgroundClassName,
   catalogBackgroundCoversShell = false,
+  desktopBackgroundClassName,
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -159,7 +162,7 @@ function ProductsHeroShellInner({
       }
     >
       <ProductsCatalogDesktopBackground
-        className={catalogBackgroundClassName}
+        className={[catalogBackgroundClassName, desktopBackgroundClassName].filter(Boolean).join(' ')}
         coversShell={catalogBackgroundCoversShell}
       />
       <Header embedded />
@@ -208,7 +211,7 @@ function ProductsCatalogDesktopBackground({
   return (
     <div
       aria-hidden
-      className={`products-catalog-desktop-background pointer-events-none absolute z-0 ${className}`}
+      className={`products-catalog-desktop-background pointer-events-none absolute z-0 ${coversShell ? 'products-catalog-background-cover' : ''} ${className}`}
       style={
         {
           '--products-catalog-background-aspect-width': PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
@@ -255,6 +258,7 @@ export function ProductsHeroShell({
   catalogBottomPaddingClassName,
   catalogBackgroundClassName,
   catalogBackgroundCoversShell = false,
+  desktopBackgroundClassName,
   mobileFillViewport = true,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
@@ -302,6 +306,7 @@ export function ProductsHeroShell({
             compactContentSpacing={resolvedCompactContentSpacing}
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
             catalogBackgroundClassName={catalogBackgroundClassName}
+            desktopBackgroundClassName={desktopBackgroundClassName}
             catalogBackgroundCoversShell={catalogBackgroundCoversShell}
           />
         </section>
