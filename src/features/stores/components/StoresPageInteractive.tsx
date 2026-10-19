@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Search } from 'lucide-react';
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { normalizePartnerStoreCoordinates } from '../coordinates';
 import { STOREFRONT_TABLET_DOWN_CLASS } from '../../../lib/layout/storefront-layout.constants';
 import { getStoredLanguage } from '../../../lib/language';
@@ -69,8 +69,13 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
   const directoryShellRef = useRef<HTMLDivElement>(null);
   const [directoryHeightPx, setDirectoryHeightPx] = useState<number | null>(null);
 
-  useLayoutEffect(() => {
-    if (directoryHeightPx !== null) {
+  const filteredStores = useMemo(
+    () => filterPartnerStores(stores, searchQuery),
+    [searchQuery, stores],
+  );
+
+  useEffect(() => {
+    if (directoryHeightPx !== null || filteredStores.length === 0) {
       return;
     }
     const height = directoryShellRef.current?.offsetHeight ?? 0;
@@ -78,11 +83,6 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
       setDirectoryHeightPx(height);
     }
   }, [directoryHeightPx, filteredStores.length]);
-
-  const filteredStores = useMemo(
-    () => filterPartnerStores(stores, searchQuery),
-    [searchQuery, stores],
-  );
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
@@ -116,7 +116,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,0.42fr)_minmax(0,1fr)] lg:gap-8">
           <div className="relative z-10">
-            <div className="partner-stores-directory-shell lg:sticky lg:top-28">
+            <div ref={directoryShellRef} className="partner-stores-directory-shell lg:sticky lg:top-28">
               <div className="partner-stores-directory-shell__header flex items-center justify-end">
                 <label className={STORES_PAGE_SEARCH_WRAPPER_CLASS}>
                   <Search className={STORES_PAGE_SEARCH_ICON_CLASS} aria-hidden="true" />
@@ -159,7 +159,8 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                   onStoreSelect={handleStoreSelect}
                   ariaLabel={copy.map.ariaLabel}
                   getDirectionsLabel={copy.getDirections}
-                  minHeightPx={STORES_PAGE_MAP_HEIGHT_PX}
+                  minHeightPx={directoryHeightPx ?? STORES_PAGE_MAP_HEIGHT_PX}
+                  lockHeight={directoryHeightPx !== null}
                 />
               </div>
             </div>

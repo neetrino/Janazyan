@@ -125,6 +125,10 @@ export function PartnerStoresMap({
   onStoreSelectRef.current = onStoreSelect;
 
   useEffect(() => {
+    mapRef.current?.invalidateSize();
+  }, [resolvedMinHeightPx, lockHeight]);
+
+  useEffect(() => {
     if (!containerRef.current || mapRef.current) {
       return undefined;
     }
