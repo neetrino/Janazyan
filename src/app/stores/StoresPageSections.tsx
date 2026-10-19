@@ -6,9 +6,9 @@ import type { StoresTranslation } from '../../features/stores/types';
 /** Tighter than the shared page header — less space above the stores title. */
 export const STORES_PAGE_HEADER_SECTION_CLASS = 'pb-4 pt-0 md:pb-12 md:pt-2';
 
-/** CTA block: keep space above the heading, almost none under the contact button. */
+/** CTA block: space above the heading and under the contact button. */
 export const STORES_PAGE_FOOTER_SECTION_CLASS =
-  'border-t border-gray-100 pt-14 pb-0 md:pt-16';
+  'border-t border-gray-100 pb-10 pt-14 md:pb-14 md:pt-16';
 
 /** Shell clearance under the contact button — smaller than the shared catalog footer gap. */
 export const STORES_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
