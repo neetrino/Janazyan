@@ -307,9 +307,11 @@ body {
     overflow: hidden;
   }
 
-  .pdp-catalog-background.products-catalog-desktop-background > svg {
-    transform: scaleY(0.92);
-    transform-origin: top center;
+  .pdp-catalog-background.products-catalog-desktop-background {
+    bottom: auto;
+    height: var(--pdp-catalog-background-height, 100%);
+    border-bottom-left-radius: 44px;
+    border-bottom-right-radius: 44px;
   }
 
   .products-catalog-desktop-background > svg {

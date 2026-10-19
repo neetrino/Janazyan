@@ -153,7 +153,7 @@ export function RelatedProducts({
 
   return (
 
-    <section className="mt-24 w-full border-t border-gray-200 py-12 font-body">
+    <section className="pdp-related-products mt-24 w-full border-t border-gray-200 py-12 font-body">
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 

@@ -215,6 +215,9 @@ export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
 export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS =
   'pb-24 md:pb-32 desktop:pb-28';
 
+/** Product-page blue shape ends this far below the related-products block. */
+export const PDP_CATALOG_BACKGROUND_BELOW_RELATED_PX = 48;
+
 /** Single product page — keep reviews above the footer with a small visual gap. */
 export const PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS =
   'pb-24 md:pb-32 desktop:pb-40';

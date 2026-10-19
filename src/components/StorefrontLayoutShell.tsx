@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import { PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS } from '../app/products/products-page-layout.constants';
+import { PDP_MOBILE_CONTENT_SURFACE_CLASS } from '../lib/layout/storefront-mobile-layout.constants';
 import { PROFILE_PAGE_HERO_SHELL_MOBILE_PROPS } from '../lib/layout/account-pages-layout.constants';
 import { resolveStorefrontMainBottomPaddingClass } from '../lib/layout/storefront-footer-layout';
 import {
@@ -53,6 +54,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
               ? {
                   catalogBottomPaddingClassName: PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS,
                   catalogBackgroundClassName: 'pdp-catalog-background',
+                  mobileContentSurfaceClassName: PDP_MOBILE_CONTENT_SURFACE_CLASS,
                 }
               : {})}
             sectionAriaLabel={

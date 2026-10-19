@@ -63,6 +63,13 @@ export const STOREFRONT_MOBILE_CONTENT_SURFACE_CLASS =
 export const STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS =
   `relative z-10 ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_MARGIN_CLASS} w-auto rounded-t-[44px] bg-white ${STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_TOP_PADDING_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} ${STOREFRONT_MOBILE_BOTTOM_NAV_CLEARANCE_CLASS}`;
 
+/**
+ * Product page on small screens — transparent card so the blue shape shows
+ * through until the related-products block, then the white backdrop.
+ */
+export const PDP_MOBILE_CONTENT_SURFACE_CLASS =
+  STOREFRONT_MOBILE_CONTENT_ONLY_SURFACE_CLASS.replace('bg-white', 'bg-transparent');
+
 /** Gap between search row and optional page toolbar. */
 export const STOREFRONT_MOBILE_TOOLBAR_GAP_CLASS = 'mt-5';
 

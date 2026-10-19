@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { PDP_CATALOG_BACKGROUND_BELOW_RELATED_PX } from '../products-page-layout.constants';
 import { apiClient } from '../../../lib/api-client';
 import { t } from '../../../lib/i18n';
 import { useAuth } from '../../../lib/auth/AuthContext';
@@ -86,6 +87,41 @@ export function ProductPageClient({
   useEffect(() => {
     setReviews(initialReviews);
   }, [initialReviews]);
+
+  useEffect(() => {
+    let observer: ResizeObserver | null = null;
+    const isVisible = (element: Element): element is HTMLElement =>
+      element instanceof HTMLElement && element.getClientRects().length > 0;
+
+    const update = () => {
+      const section = [...document.querySelectorAll('.pdp-related-products')].find(isVisible);
+      const background = [...document.querySelectorAll('.pdp-catalog-background')].find(isVisible);
+      if (!section || !background) {
+        return;
+      }
+      if (!observer) {
+        observer = new ResizeObserver(update);
+        observer.observe(section);
+      }
+      const height =
+        section.getBoundingClientRect().bottom -
+        background.getBoundingClientRect().top +
+        PDP_CATALOG_BACKGROUND_BELOW_RELATED_PX;
+      background.style.setProperty('--pdp-catalog-background-height', `${Math.ceil(height)}px`);
+    };
+
+    update();
+    const intervalId = window.setInterval(update, 200);
+    const stopId = window.setTimeout(() => window.clearInterval(intervalId), 4000);
+    window.addEventListener('resize', update);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.clearTimeout(stopId);
+      window.removeEventListener('resize', update);
+      observer?.disconnect();
+    };
+  }, [slug]);
 
   const {
     product,

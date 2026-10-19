@@ -265,6 +265,11 @@ export function ProductsHeroShell({
         compactMobileTop={resolvedCompactMobileTop}
         fillViewport={mobileFillViewport}
         sectionAriaLabel={sectionAriaLabel}
+        leadingBackground={
+          catalogBackgroundClassName ? (
+            <ProductsCatalogDesktopBackground className={catalogBackgroundClassName} />
+          ) : undefined
+        }
       >
         {catalog}
       </StorefrontMobileShell>
