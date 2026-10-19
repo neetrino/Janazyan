@@ -115,7 +115,7 @@ export function FeaturedProductCardSlot({
   return (
     <div className="flex shrink-0 justify-center overflow-visible">
       <div className={`origin-top ${SCALE_CLASS[scale]}`}>
-        <FeaturedProductCard product={product} priority={priority} />
+        {card}
       </div>
     </div>
   );

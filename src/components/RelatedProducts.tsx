@@ -281,6 +281,7 @@ export function RelatedProducts({
                     })}
 
                     scale="carousel"
+                    hideSurfaceShadow
 
                   />
 
