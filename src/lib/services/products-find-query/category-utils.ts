@@ -6,6 +6,7 @@ import {
   type ShopCategorySlug,
 } from "@/lib/categories/shop-category-slug-keywords";
 import { logger } from "../../utils/logger";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
 
 type PublishedCategoryNode = {
   id: string;
@@ -125,8 +126,7 @@ async function findAllCategoryIdsByShopSlugTitle(
   const childrenMap = buildChildrenMap(rows);
 
   for (const row of rows) {
-    const translation =
-      row.translations.find((tr) => tr.locale === lang) ?? row.translations[0];
+    const translation = pickLocalizedText(row.translations, lang, (entry) => entry.title);
     if (!translation) {
       continue;
     }

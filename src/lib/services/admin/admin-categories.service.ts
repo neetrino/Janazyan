@@ -1,10 +1,11 @@
 import { db } from "@white-shop/db";
-import { toSlug } from "@/lib/utils/slug";
 import { logger } from "@/lib/utils/logger";
 import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
 import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
 import { getRootCategoryRows } from "@/lib/categories/category-sibling-order";
 import { pickAdminCategoryTitle } from "./admin-category-title";
+import { readNamedLocaleRows, reserveSharedSlug, saveCategoryLocaleRows } from "./category-content";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
 
 type AdminCategoryRow = {
   id: string;
@@ -33,15 +34,16 @@ class AdminCategoriesService {
 
   private mapAdminCategoryRow(category: AdminCategoryRow) {
     const translations = Array.isArray(category.translations) ? category.translations : [];
-    const translation =
-      translations.find((row) => row.locale === "en") ??
-      translations[0] ??
-      null;
+    const translation = pickLocalizedText(translations, "hy", (row) => row.title);
 
     return {
       id: category.id,
       title: pickAdminCategoryTitle(translations),
       slug: translation?.slug || "",
+      translations: translations.map((row) => ({
+        locale: row.locale,
+        title: row.title,
+      })),
       parentId: category.parentId,
       position: category.position,
       requiresSizes: category.requiresSizes || false,
@@ -62,43 +64,6 @@ class AdminCategoriesService {
     });
 
     return (aggregate._max.position ?? -1) + 1;
-  }
-
-  private async generateUniqueSlug(
-    title: string,
-    locale: string,
-    excludeCategoryId?: string,
-  ): Promise<string> {
-    const baseSlug = toSlug(title) || "category";
-    let slug = baseSlug;
-    let counter = 1;
-
-    while (true) {
-      const existing = await db.categoryTranslation.findFirst({
-        where: {
-          slug,
-          locale,
-          ...(excludeCategoryId ? { categoryId: { not: excludeCategoryId } } : {}),
-        },
-        select: { id: true },
-      });
-
-      if (!existing) {
-        return slug;
-      }
-
-      slug = `${baseSlug}-${counter}`;
-      counter += 1;
-
-      if (counter > 1000) {
-        throw {
-          status: 500,
-          type: "https://api.shop.am/problems/internal-error",
-          title: "Unable to generate unique slug",
-          detail: "Could not generate a unique slug for the category",
-        };
-      }
-    }
   }
 
   private async detachCategoryFromProducts(categoryId: string): Promise<void> {
@@ -190,13 +155,14 @@ class AdminCategoriesService {
    */
   async createCategory(data: {
     title: string;
+    slug?: string;
     locale?: string;
+    translations?: unknown;
     parentId?: string;
     requiresSizes?: boolean;
     imageUrl?: string;
     published?: boolean;
   }) {
-    const locale = data.locale || "en";
     
     // Validate parent category exists if parentId is provided
     if (data.parentId) {
@@ -214,7 +180,16 @@ class AdminCategoriesService {
       }
     }
     
-    const slug = await this.generateUniqueSlug(data.title, locale);
+    const rows = readNamedLocaleRows(data.translations, { locale: data.locale, text: data.title });
+    if (rows.length === 0) {
+      throw {
+        status: 400,
+        type: "https://api.shop.am/problems/validation-error",
+        title: "Validation Error",
+        detail: "Enter a title in at least one language",
+      };
+    }
+    const slug = await reserveSharedSlug(data.slug || rows[0].text, rows.map((row) => row.locale));
     const position = await this.getNextSiblingPosition(data.parentId ?? null);
     const imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.categories);
 
@@ -228,12 +203,12 @@ class AdminCategoriesService {
           ? [{ type: "image", url: imageUrl }]
           : [],
         translations: {
-          create: {
-            locale,
-            title: data.title,
+          create: rows.map((row) => ({
+            locale: row.locale,
+            title: row.text,
             slug,
-            fullPath: slug, // Can be enhanced to build full path
-          },
+            fullPath: slug,
+          })),
         },
       },
       include: {
@@ -243,13 +218,17 @@ class AdminCategoriesService {
 
     // Безопасное получение translation с проверкой на существование массива
     const categoryTranslations = Array.isArray(category.translations) ? category.translations : [];
-    const translation = categoryTranslations.find((t: { locale: string }) => t.locale === locale) || categoryTranslations[0] || null;
+    const translation = pickLocalizedText(categoryTranslations, rows[0].locale, (row) => row.title);
 
     return {
       data: {
         id: category.id,
         title: translation?.title || "",
         slug: translation?.slug || "",
+        translations: categoryTranslations.map((row) => ({
+          locale: row.locale,
+          title: row.title,
+        })),
         parentId: category.parentId,
         requiresSizes: category.requiresSizes || false,
         imageUrl: this.extractImageUrl(category.media),
@@ -265,16 +244,10 @@ class AdminCategoriesService {
     const category = await db.category.findUnique({
       where: { id: categoryId },
       include: {
-        translations: {
-          where: { locale: "en" },
-          take: 1,
-        },
+        translations: true,
         children: {
           include: {
-            translations: {
-              where: { locale: "en" },
-              take: 1,
-            },
+            translations: true,
           },
         },
       },
@@ -285,12 +258,16 @@ class AdminCategoriesService {
     }
 
     const translations = Array.isArray(category.translations) ? category.translations : [];
-    const translation = translations[0] || null;
+    const translation = pickLocalizedText(translations, "hy", (row) => row.title);
 
     return {
       id: category.id,
       title: translation?.title || "",
       slug: translation?.slug || "",
+      translations: translations.map((row) => ({
+        locale: row.locale,
+        title: row.title,
+      })),
       parentId: category.parentId,
       requiresSizes: category.requiresSizes || false,
       published: Boolean(category.published),
@@ -314,7 +291,9 @@ class AdminCategoriesService {
    */
   async updateCategory(categoryId: string, data: {
     title?: string;
+    slug?: string;
     locale?: string;
+    translations?: unknown;
     parentId?: string | null;
     requiresSizes?: boolean;
     subcategoryIds?: string[];
@@ -322,6 +301,10 @@ class AdminCategoriesService {
     published?: boolean;
   }) {
     const locale = data.locale || "en";
+    const contentRows = readNamedLocaleRows(data.translations, {
+      locale,
+      text: data.title,
+    });
     
     const category = await db.category.findUnique({
       where: { id: categoryId },
@@ -436,33 +419,14 @@ class AdminCategoriesService {
         : [];
     }
 
-    if (data.title) {
-      const slug = await this.generateUniqueSlug(data.title, locale, categoryId);
-
-      const categoryTranslations = Array.isArray(category.translations) ? category.translations : [];
-      const existingTranslation = categoryTranslations.find((t: { locale: string }) => t.locale === locale);
-
-      if (existingTranslation) {
-        // Update existing translation
-        await db.categoryTranslation.update({
-          where: { id: existingTranslation.id },
-          data: {
-            title: data.title,
-            slug,
-          },
-        });
-      } else {
-        // Create new translation
-        await db.categoryTranslation.create({
-          data: {
-            categoryId: category.id,
-            locale,
-            title: data.title,
-            slug,
-            fullPath: slug,
-          },
-        });
-      }
+    if (contentRows.length > 0) {
+      const existingSlug = category.translations[0]?.slug;
+      const slug = await reserveSharedSlug(
+        data.slug || existingSlug || contentRows[0].text,
+        contentRows.map((row) => row.locale),
+        categoryId,
+      );
+      await saveCategoryLocaleRows(categoryId, contentRows, slug);
     }
 
     // Update category base data
@@ -475,13 +439,17 @@ class AdminCategoriesService {
     });
 
     const categoryTranslations = Array.isArray(updatedCategory.translations) ? updatedCategory.translations : [];
-    const translation = categoryTranslations.find((t: { locale: string }) => t.locale === locale) || categoryTranslations[0] || null;
+    const translation = pickLocalizedText(categoryTranslations, "hy", (row) => row.title);
 
     return {
       data: {
         id: updatedCategory.id,
         title: translation?.title || "",
         slug: translation?.slug || "",
+        translations: categoryTranslations.map((row) => ({
+          locale: row.locale,
+          title: row.title,
+        })),
         parentId: updatedCategory.parentId,
         requiresSizes: updatedCategory.requiresSizes || false,
         published: Boolean(updatedCategory.published),

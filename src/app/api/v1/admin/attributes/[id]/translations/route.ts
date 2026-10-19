@@ -35,6 +35,8 @@ export async function PATCH(
     const result = await adminService.updateAttributeTranslation(attributeId, {
       name: body.name,
       locale: body.locale || "en",
+      key: body.key,
+      translations: body.translations,
     });
 
     await invalidateAdminAttributesServerList();

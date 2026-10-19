@@ -1,4 +1,5 @@
 import { resolveCartProductImageUrl } from '@/lib/products/resolve-stored-product-image-url';
+import { pickProductTranslation } from '@/lib/products/product-translations';
 import type { ProductDiscountSettings } from '@/lib/services/products-discount-settings.cache';
 import type { CartViewResponse } from '@/lib/cart/cart-view-cache.types';
 
@@ -48,8 +49,7 @@ function formatCartItem(
 ): CartViewResponse['cart']['items'][number] {
   const product = item.product;
   const variant = item.variant;
-  const translation =
-    product.translations.find((row) => row.locale === locale) ?? product.translations[0];
+  const translation = pickProductTranslation(product.translations, locale);
   const appliedDiscount = resolveAppliedDiscount(product, settings);
   const variantOriginalPrice = variant.price ?? 0;
   let finalPrice = variantOriginalPrice;

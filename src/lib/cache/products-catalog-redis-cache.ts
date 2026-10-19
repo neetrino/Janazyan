@@ -1,6 +1,7 @@
 import 'server-only';
 
 import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
+import { localizeRecordCategoryTitles } from '@/lib/categories/present-category-title';
 import { productsService } from '@/lib/services/products.service';
 import { fetchProductAverageRatings } from '@/lib/products/fetch-product-average-ratings';
 import {
@@ -28,6 +29,16 @@ const EMPTY_CATALOG: ProductsCatalogCacheResponse = {
   meta: { total: 0, page: 1, limit: 12, totalPages: 0 },
 };
 
+function presentCatalog(
+  response: ProductsCatalogCacheResponse,
+  lang: string,
+): ProductsCatalogCacheResponse {
+  return {
+    ...response,
+    data: response.data.map((product) => localizeRecordCategoryTitles(product, lang)),
+  };
+}
+
 export async function getProductsCatalogFromRedisOrDb(
   filters: ProductsCatalogCacheFilters,
 ): Promise<ProductsCatalogCacheResponse> {
@@ -42,7 +53,7 @@ export async function getProductsCatalogFromRedisOrDb(
       hasSearch: Boolean(filters.search?.trim()),
       hasCategory: Boolean(filters.category?.trim()),
     });
-    return cached;
+    return presentCatalog(cached, filters.lang);
   }
 
   logger.debug('[PRODUCTS CATALOG CACHE] miss', {
@@ -65,7 +76,7 @@ async function loadProductsCatalogFromDbAndCache(
 ): Promise<ProductsCatalogCacheResponse> {
   const cachedAfterLock = await readJsonCache<ProductsCatalogCacheResponse>(cacheKey);
   if (cachedAfterLock) {
-    return cachedAfterLock;
+    return presentCatalog(cachedAfterLock, filters.lang);
   }
 
   if (!isDatabaseConnectionUrlConfigured()) {

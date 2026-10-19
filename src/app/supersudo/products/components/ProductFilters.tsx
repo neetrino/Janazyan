@@ -3,6 +3,7 @@
 import type { FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category } from '../types';
+import { categoryTitlesLabel } from '../../categories/utils';
 
 interface ProductFiltersProps {
   search: string;
@@ -116,7 +117,7 @@ export function ProductFilters({
                             }}
                             className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                           />
-                          <span className="text-sm text-gray-700">{category.title}</span>
+                          <span className="text-sm text-gray-700">{categoryTitlesLabel(category)}</span>
                         </label>
                       ))}
                     </div>

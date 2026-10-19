@@ -2,6 +2,10 @@ import { apiClient } from '@/lib/api-client';
 import type { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import type { Attribute } from '../types';
 import { logger } from "@/lib/utils/logger";
+import {
+  filledProductContentTranslations,
+  type ProductContentTranslation,
+} from '@/lib/products/product-translations';
 
 interface CreateAndSubmitPayloadProps {
   formData: {
@@ -15,6 +19,7 @@ interface CreateAndSubmitPayloadProps {
     featuredImageIndex: number;
     mainProductImage: string;
     labels: any[];
+    translations: ProductContentTranslation[];
   };
   finalPrimaryCategoryId: string;
   variants: any[];
@@ -41,16 +46,22 @@ export async function createAndSubmitPayload({
   setLoading,
   router,
 }: CreateAndSubmitPayloadProps): Promise<void> {
+  const translations = filledProductContentTranslations(formData.translations, formData.slug);
+  const primary = translations[0];
+  if (!primary) {
+    throw new Error('Enter a title in at least one language');
+  }
+
   const payload: any = {
-      title: formData.title,
-      slug: formData.slug,
-      // Always send description so edit clears/updates formatting reliably.
-      descriptionHtml: formData.descriptionHtml ?? '',
+      title: primary.title,
+      slug: primary.slug,
+      descriptionHtml: primary.descriptionHtml,
       primaryCategoryId: finalPrimaryCategoryId || (isEditMode ? null : undefined),
       categoryIds: formData.categoryIds.length > 0 || isEditMode ? formData.categoryIds : undefined,
       published: isEditMode ? formData.published : true,
       featured: formData.featured,
-      locale: 'en',
+      locale: primary.locale,
+      translations,
       variants: variants,
       attributeIds: attributeIds.length > 0 ? attributeIds : undefined,
     };

@@ -150,6 +150,9 @@ export function useOrderSubmission({
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
+        ...(data.alternatePhone?.trim()
+          ? { alternatePhone: data.alternatePhone.trim() }
+          : {}),
         shippingMethod: data.shippingMethod,
         ...(data.shippingMethod === 'pickup' && data.pickupStoreId?.trim()
           ? { pickupStoreId: data.pickupStoreId.trim() }

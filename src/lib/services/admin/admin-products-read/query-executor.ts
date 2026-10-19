@@ -8,8 +8,7 @@ import { logger } from "../../../utils/logger";
  */
 const getProductListInclude = () => ({
   translations: {
-    where: { locale: "en" },
-    take: 1,
+    select: { locale: true, title: true, slug: true },
   },
   variants: {
     where: { published: true },

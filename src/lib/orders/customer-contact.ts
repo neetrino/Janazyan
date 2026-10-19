@@ -5,6 +5,7 @@ type ContactAddress = {
   lastName?: string | null;
   email?: string | null;
   phone?: string | null;
+  alternatePhone?: string | null;
 };
 
 function parseContactAddress(
@@ -75,6 +76,7 @@ export function buildCheckoutBillingAddress(params: {
   lastName?: string;
   email: string;
   phone: string;
+  alternatePhone?: string | null;
   shippingAddress?: Record<string, unknown> | null;
 }): Record<string, unknown> | null {
   const contact = {
@@ -82,15 +84,25 @@ export function buildCheckoutBillingAddress(params: {
     ...(params.lastName?.trim() ? { lastName: params.lastName.trim() } : {}),
     email: params.email,
     phone: params.phone,
+    ...(params.alternatePhone?.trim() ? { alternatePhone: params.alternatePhone.trim() } : {}),
   };
 
   if (params.shippingAddress && "addressLine1" in params.shippingAddress) {
     return { ...params.shippingAddress, ...contact };
   }
 
-  if (params.firstName?.trim() || params.lastName?.trim()) {
+  if (params.firstName?.trim() || params.lastName?.trim() || params.alternatePhone?.trim()) {
     return contact;
   }
 
   return null;
+}
+
+/** Second checkout phone stored on the billing snapshot. */
+export function readOrderAlternatePhone(
+  billingAddress: Prisma.JsonValue | null | undefined,
+): string | null {
+  const billing = parseContactAddress(billingAddress);
+  const value = billing?.alternatePhone;
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }

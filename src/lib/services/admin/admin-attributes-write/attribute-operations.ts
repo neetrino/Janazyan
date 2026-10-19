@@ -1,62 +1,54 @@
 import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
+import { readNamedLocaleRows } from "../category-content";
+import { reserveAttributeKey, saveAttributeNames } from "../attribute-content";
 import { formatAttribute } from "./utils";
+
+const attributeInclude = {
+  translations: true,
+  values: {
+    include: { translations: true },
+    orderBy: { position: "asc" as const },
+  },
+};
 
 /**
  * Create attribute
  */
 export async function createAttribute(data: {
-  name: string;
-  key: string;
+  name?: string;
+  key?: string;
   type?: string;
   filterable?: boolean;
   locale?: string;
+  translations?: unknown;
 }) {
-  logger.info('Creating attribute', { key: data.key });
-
-  // Check if attribute with this key already exists
-  const existing = await db.attribute.findUnique({
-    where: { key: data.key },
-  });
-
-  if (existing) {
+  const rows = readNamedLocaleRows(data.translations, { locale: data.locale, text: data.name });
+  if (rows.length === 0) {
     throw {
       status: 400,
       type: "https://api.shop.am/problems/validation-error",
-      title: "Attribute already exists",
-      detail: `Attribute with key '${data.key}' already exists`,
+      title: "Validation Error",
+      detail: "Enter a name in at least one language",
     };
   }
 
-  const locale = data.locale || "en";
+  const key = await reserveAttributeKey(data.key || rows[0].text);
+  logger.info('Creating attribute', { key });
 
   const attribute = await db.attribute.create({
     data: {
-      key: data.key,
+      key,
       type: data.type || "select",
       filterable: data.filterable !== false,
       translations: {
-        create: {
-          locale,
-          name: data.name,
-        },
+        create: rows.map((row) => ({ locale: row.locale, name: row.text })),
       },
     },
-    include: {
-      translations: {
-        where: { locale },
-      },
-      values: {
-        include: {
-          translations: {
-            where: { locale },
-          },
-        },
-      },
-    },
+    include: attributeInclude,
   });
 
-  return formatAttribute(attribute, locale);
+  return formatAttribute(attribute, rows[0].locale);
 }
 
 /**
@@ -65,19 +57,16 @@ export async function createAttribute(data: {
 export async function updateAttributeTranslation(
   attributeId: string,
   data: {
-    name: string;
+    name?: string;
     locale?: string;
+    key?: string;
+    translations?: unknown;
   }
 ) {
   logger.info('Updating attribute translation', { attributeId, name: data.name });
 
   const attribute = await db.attribute.findUnique({
     where: { id: attributeId },
-    include: {
-      translations: {
-        where: { locale: data.locale || "en" },
-      },
-    },
   });
 
   if (!attribute) {
@@ -89,42 +78,23 @@ export async function updateAttributeTranslation(
     };
   }
 
-  const locale = data.locale || "en";
+  const rows = readNamedLocaleRows(data.translations, { locale: data.locale, text: data.name });
+  if (rows.length > 0) {
+    await saveAttributeNames(attributeId, rows);
+  }
 
-  // Use upsert to handle both create and update cases
-  await db.attributeTranslation.upsert({
-    where: {
-      attributeId_locale: {
-        attributeId,
-        locale,
-      },
-    },
-    update: {
-      name: data.name.trim(),
-    },
-    create: {
-      attributeId,
-      locale,
-      name: data.name.trim(),
-    },
-  });
+  if (typeof data.key === 'string' && data.key.trim()) {
+    const key = await reserveAttributeKey(data.key, attributeId);
+    if (key !== attribute.key) {
+      await db.attribute.update({ where: { id: attributeId }, data: { key } });
+    }
+  }
 
-  // Return updated attribute with all values
+  const locale = rows[0]?.locale || data.locale || "en";
+
   const updatedAttribute = await db.attribute.findUnique({
     where: { id: attributeId },
-    include: {
-      translations: {
-        where: { locale },
-      },
-      values: {
-        include: {
-          translations: {
-            where: { locale },
-          },
-        },
-        orderBy: { position: "asc" },
-      },
-    },
+    include: attributeInclude,
   });
 
   if (!updatedAttribute) {

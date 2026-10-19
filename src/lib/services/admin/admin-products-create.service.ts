@@ -9,7 +9,8 @@ import {
   separateMainAndVariantImages,
 } from "../../utils/image-utils";
 import { logger } from "@/lib/utils/logger";
-import { ensureUniqueProductSlug } from "./product-slug-utils";
+import { resolveProductContentRows } from "@/lib/products/product-translations";
+import { assignUniqueProductTranslationSlugs } from "./save-product-translations";
 import {
   resolveProductMediaArray,
   resolveVariantImageUrlField,
@@ -104,6 +105,7 @@ class AdminProductsCreateService {
     published: boolean;
     featured?: boolean;
     locale: string;
+    translations?: unknown;
     media?: any[];
     mainProductImage?: string;
     labels?: Array<{
@@ -137,11 +139,17 @@ class AdminProductsCreateService {
       }
 
       const result = await db.$transaction(async (tx: any) => {
-        const uniqueSlug = await ensureUniqueProductSlug({
-          tx,
-          slug: data.slug,
-          locale: data.locale || "en",
-        });
+        const contentRows = resolveProductContentRows(data);
+        if (contentRows.length === 0) {
+          throw {
+            status: 400,
+            type: "https://api.shop.am/problems/validation-error",
+            title: "Validation Error",
+            detail: "Enter a title in at least one language",
+          };
+        }
+        const storedTranslations = await assignUniqueProductTranslationSlugs(tx, contentRows);
+        const uniqueSlug = storedTranslations[0]?.slug || "product";
 
         // Track used SKUs within this transaction to ensure uniqueness
         const usedSkus = new Set<string>();
@@ -367,13 +375,13 @@ class AdminProductsCreateService {
             featured: data.featured ?? false,
             publishedAt: data.published ? new Date() : undefined,
             translations: {
-              create: {
-                locale: data.locale || "en",
-                title: data.title,
-                slug: uniqueSlug,
-                subtitle: data.subtitle || undefined,
-                descriptionHtml: data.descriptionHtml || undefined,
-              },
+              create: storedTranslations.map((row, index) => ({
+                locale: row.locale,
+                title: row.title,
+                slug: row.slug,
+                subtitle: index === 0 ? data.subtitle || undefined : undefined,
+                descriptionHtml: row.descriptionHtml || undefined,
+              })),
             },
             variants: {
               create: variantsData,

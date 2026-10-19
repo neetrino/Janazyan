@@ -15,6 +15,7 @@ import {
   ADMIN_TABLE_THEAD,
 } from '../../constants/admin-table-classes';
 import type { Category } from '../types';
+import { categoryMatchesSearch } from '../utils';
 import { CategorySiblingRows, resolveDropBeforeId } from './CategorySiblingRows';
 import {
   type CategoryDragState,
@@ -32,7 +33,7 @@ interface CategoriesListProps {
 }
 
 function matchesSearch(category: Category, normalizedSearch: string): boolean {
-  return category.title.toLowerCase().includes(normalizedSearch);
+  return categoryMatchesSearch(category, normalizedSearch);
 }
 
 export function CategoriesList({

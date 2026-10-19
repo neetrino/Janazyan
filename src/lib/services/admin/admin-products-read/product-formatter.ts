@@ -1,3 +1,5 @@
+import { DEFAULT_LANGUAGE } from "@/lib/language";
+import { pickProductTranslation } from "@/lib/products/product-translations";
 import { pickAdminCategoryTitle } from "../admin-category-title";
 
 function categoryTitleFromTranslations(
@@ -87,6 +89,7 @@ export function formatProductForList(
     primaryCategoryId: string | null;
     categoryIds?: string[];
     translations?: Array<{
+      locale: string;
       slug: string;
       title: string;
     }>;
@@ -103,10 +106,7 @@ export function formatProductForList(
   },
   categoryTitleById?: Map<string, string>,
 ) {
-  const translation =
-    Array.isArray(product.translations) && product.translations.length > 0
-      ? product.translations[0]
-      : null;
+  const translation = pickProductTranslation(product.translations ?? [], DEFAULT_LANGUAGE);
 
   const variant =
     Array.isArray(product.variants) && product.variants.length > 0

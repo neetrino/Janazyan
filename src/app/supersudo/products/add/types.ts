@@ -4,6 +4,7 @@ export interface Category {
   slug: string;
   parentId: string | null;
   requiresSizes?: boolean;
+  translations?: Array<{ locale: string; title: string }>;
 }
 
 export interface Attribute {
@@ -81,6 +82,12 @@ export interface ProductData {
     size?: string;
     imageUrl?: string;
     published?: boolean;
+  }>;
+  translations?: Array<{
+    locale: string;
+    title: string;
+    slug: string;
+    descriptionHtml?: string | null;
   }>;
 }
 

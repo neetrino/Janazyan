@@ -6,10 +6,12 @@ import { resolvePartnerStoreCoordinatesFromAddress } from '@/lib/partner-stores/
 import type { PartnerStoreTranslationInput } from '@/features/stores/partner-store-locales';
 import { adminPartnerStoreHierarchyService } from './admin-partner-store-hierarchy.service';
 import {
-  getPartnerStoreEnglishAddress,
+  filledPartnerStoreTranslations,
+  getPartnerStoreGeocodeAddress,
   validatePartnerStoreCoordinates,
   validatePartnerStoreTranslations,
 } from './partner-store-validators';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 import { logger } from '@/lib/utils/logger';
 
 const YEREVAN_GEOCODE_MAX_DISTANCE_KM = 18;
@@ -33,9 +35,8 @@ type AdminPartnerStoreRow = {
   }>;
 };
 
-function mapAdminStore(row: AdminPartnerStoreRow, displayLocale = 'en') {
-  const translation =
-    row.translations.find((t) => t.locale === displayLocale) ?? row.translations[0];
+function mapAdminStore(row: AdminPartnerStoreRow) {
+  const translation = pickLocalizedText(row.translations, 'hy', (item) => item.name);
 
   return {
     id: row.id,
@@ -115,7 +116,7 @@ function ensureResolvedCoordinates(
 async function resolveGeocodePlaceContext(
   regionId: string,
   areaId: string | null,
-): Promise<{ regionName: string | null; areaName: string | null }> {
+): Promise<{ regionName: string | null; areaName: string | null; isYerevan: boolean }> {
   const [region, area] = await Promise.all([
     db.partnerStoreRegion.findUnique({
       where: { id: regionId },
@@ -129,16 +130,20 @@ async function resolveGeocodePlaceContext(
       : Promise.resolve(null),
   ]);
 
-  const pickEnName = (
+  const pickPlaceName = (
     translations: Array<{ locale: string; name: string }> | undefined,
   ): string | null =>
-    translations?.find((translation) => translation.locale === 'en')?.name ??
-    translations?.[0]?.name ??
-    null;
+    pickLocalizedText(translations ?? [], 'en', (row) => row.name)?.name ?? null;
+
+  const regionNames = region?.translations ?? [];
+  const isYerevan = regionNames.some((row) =>
+    ['yerevan', 'երևան', 'ереван'].includes(row.name.trim().toLowerCase()),
+  );
 
   return {
-    regionName: pickEnName(region?.translations),
-    areaName: pickEnName(area?.translations ?? undefined),
+    regionName: pickPlaceName(region?.translations),
+    areaName: pickPlaceName(area?.translations ?? undefined),
+    isYerevan,
   };
 }
 
@@ -164,6 +169,7 @@ class AdminPartnerStoresService {
     regionId: string;
     areaId?: string | null;
     translations: PartnerStoreTranslationInput[];
+    slug?: string;
     logoUrl?: string;
     lat?: number;
     lng?: number;
@@ -183,15 +189,16 @@ class AdminPartnerStoresService {
     await adminPartnerStoreHierarchyService.assertRegionAreaLink(data.regionId, areaId);
     validatePartnerStoreTranslations(data.translations);
 
-    const enAddress = getPartnerStoreEnglishAddress(data.translations);
+    const savedTranslations = filledPartnerStoreTranslations(data.translations);
+    const geocodeAddress = getPartnerStoreGeocodeAddress(data.translations);
     const placeContext = await resolveGeocodePlaceContext(data.regionId, areaId);
-    const isYerevan = placeContext.regionName === 'Yerevan';
+    const isYerevan = placeContext.isYerevan;
     const coordinates =
       data.lat !== undefined && data.lng !== undefined
         ? { lat: data.lat, lng: data.lng }
         : ensureResolvedCoordinates(
             await resolvePartnerStoreCoordinatesFromAddress({
-              address: enAddress,
+              address: geocodeAddress,
               regionName: placeContext.regionName,
               areaName: placeContext.areaName,
               anchor: isYerevan ? { ...MAP_DEFAULT_CENTER } : null,
@@ -202,8 +209,7 @@ class AdminPartnerStoresService {
           );
     validatePartnerStoreCoordinates(coordinates.lat, coordinates.lng);
 
-    const enName = data.translations.find((t) => t.locale === 'en')!.name.trim();
-    const slug = await generateUniqueSlug(enName);
+    const slug = await generateUniqueSlug(data.slug?.trim() || savedTranslations[0].name);
     const logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl);
     const position =
       data.position !== undefined
@@ -221,14 +227,12 @@ class AdminPartnerStoresService {
         position,
         published: data.published ?? true,
         translations: {
-          create: data.translations
-            .filter((t) => t.name.trim() && t.address.trim())
-            .map((t) => ({
+          create: savedTranslations.map((t) => ({
               locale: t.locale,
               name: t.name.trim(),
               address: t.address.trim(),
               logoAlt: t.logoAlt?.trim() || null,
-            })),
+          })),
         },
       },
       include: { translations: true },
@@ -244,6 +248,7 @@ class AdminPartnerStoresService {
       regionId?: string;
       areaId?: string | null;
       translations?: PartnerStoreTranslationInput[];
+      slug?: string;
       logoUrl?: string | null;
       lat?: number;
       lng?: number;
@@ -274,11 +279,13 @@ class AdminPartnerStoresService {
       data.areaId !== undefined ? data.areaId?.trim() || null : store.areaId;
     await adminPartnerStoreHierarchyService.assertRegionAreaLink(nextRegionId, nextAreaId);
 
-    const enAddress = data.translations ? getPartnerStoreEnglishAddress(data.translations) : '';
-    const existingEnAddress =
-      store.translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
+    const savedTranslations = data.translations
+      ? filledPartnerStoreTranslations(data.translations)
+      : [];
+    const geocodeAddress = data.translations ? getPartnerStoreGeocodeAddress(data.translations) : '';
+    const existingAddress = pickLocalizedText(store.translations, 'hy', (row) => row.address)?.address.trim() ?? '';
     const shouldRefreshCoordinates =
-      Boolean(data.translations) && enAddress !== existingEnAddress;
+      Boolean(data.translations) && geocodeAddress !== existingAddress;
     const explicitLat = data.lat;
     const explicitLng = data.lng;
     const hasExplicitCoordinates =
@@ -288,6 +295,7 @@ class AdminPartnerStoresService {
       regionId?: string;
       areaId?: string | null;
       logoUrl?: string | null;
+      slug?: string;
       lat?: number;
       lng?: number;
       position?: number;
@@ -303,6 +311,9 @@ class AdminPartnerStoresService {
     if (data.logoUrl !== undefined) {
       updateData.logoUrl = await resolvePartnerStoreLogoUrl(data.logoUrl ?? undefined);
     }
+    if (data.slug?.trim()) {
+      updateData.slug = await generateUniqueSlug(data.slug, storeId);
+    }
     // Manual map pin wins over address geocode when both are present.
     if (hasExplicitCoordinates) {
       validatePartnerStoreCoordinates(explicitLat, explicitLng);
@@ -310,14 +321,13 @@ class AdminPartnerStoresService {
       updateData.lng = explicitLng;
     } else if (shouldRefreshCoordinates) {
       const placeContext = await resolveGeocodePlaceContext(nextRegionId, nextAreaId);
-      const isYerevan = placeContext.regionName === 'Yerevan';
       const coordinates = ensureResolvedCoordinates(
         await resolvePartnerStoreCoordinatesFromAddress({
-          address: enAddress,
+          address: geocodeAddress,
           regionName: placeContext.regionName,
           areaName: placeContext.areaName,
-          anchor: isYerevan ? { ...MAP_DEFAULT_CENTER } : null,
-          maxDistanceKm: isYerevan
+          anchor: placeContext.isYerevan ? { ...MAP_DEFAULT_CENTER } : null,
+          maxDistanceKm: placeContext.isYerevan
             ? YEREVAN_GEOCODE_MAX_DISTANCE_KM
             : REGION_GEOCODE_MAX_DISTANCE_KM,
         }),
@@ -345,11 +355,8 @@ class AdminPartnerStoresService {
       await db.partnerStore.update({ where: { id: storeId }, data: updateData });
     }
 
-    if (data.translations) {
-      for (const translation of data.translations) {
-        if (!translation.name.trim() || !translation.address.trim()) {
-          continue;
-        }
+    if (savedTranslations.length > 0) {
+      for (const translation of savedTranslations) {
         await db.partnerStoreTranslation.upsert({
           where: { storeId_locale: { storeId, locale: translation.locale } },
           create: {
@@ -357,15 +364,18 @@ class AdminPartnerStoresService {
             locale: translation.locale,
             name: translation.name.trim(),
             address: translation.address.trim(),
-            logoAlt: translation.logoAlt?.trim() || null,
+            logoAlt: translation.logoAlt?.trim() || translation.name.trim() || null,
           },
           update: {
             name: translation.name.trim(),
             address: translation.address.trim(),
-            logoAlt: translation.logoAlt?.trim() || null,
+            logoAlt: translation.logoAlt?.trim() || translation.name.trim() || null,
           },
         });
       }
+      await db.partnerStoreTranslation.deleteMany({
+        where: { storeId, locale: { notIn: savedTranslations.map((row) => row.locale) } },
+      });
     }
 
     const updated = await db.partnerStore.findUnique({

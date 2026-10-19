@@ -97,6 +97,14 @@ export function OrderRow({
           >
             {order.customerPhone ? order.customerPhone : '—'}
           </div>
+          {order.customerAlternatePhone && (
+            <div
+              className="min-w-0 max-w-full truncate text-left text-xs tabular-nums text-gray-500"
+              title={order.customerAlternatePhone}
+            >
+              {order.customerAlternatePhone}
+            </div>
+          )}
         </div>
       </td>
       <td

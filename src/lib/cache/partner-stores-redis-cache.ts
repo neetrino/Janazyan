@@ -1,5 +1,6 @@
 import { MAP_DEFAULT_CENTER } from '@/features/stores/constants';
 import type { PartnerStore } from '@/features/stores/types';
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
 import { getPublishedPartnerStores } from '@/lib/services/partner-stores.service';
 import {
   readJsonCache,
@@ -49,13 +50,24 @@ function shouldUseCachedPartnerStores(stores: PartnerStore[]): boolean {
   return maxClusterSize < DUPLICATE_COORDINATE_CLUSTER_THRESHOLD;
 }
 
+function presentStoreInLocale(store: PartnerStore, locale: string): PartnerStore {
+  return {
+    ...store,
+    name: writeInContentLocale(store.name, locale),
+    address: writeInContentLocale(store.address, locale),
+    logoAlt: writeInContentLocale(store.logoAlt, locale),
+    regionName: writeInContentLocale(store.regionName, locale),
+    areaName: store.areaName ? writeInContentLocale(store.areaName, locale) : null,
+  };
+}
+
 export async function getPartnerStoresFromRedisOrDb(
   locale: string,
 ): Promise<PartnerStore[]> {
   const key = STOREFRONT_CACHE_KEYS.partnerStores(locale);
   const cached = await readJsonCache<PartnerStore[]>(key);
   if (cached && shouldUseCachedPartnerStores(cached)) {
-    return cached;
+    return cached.map((store) => presentStoreInLocale(store, locale));
   }
 
   if (!isDatabaseConnectionUrlConfigured()) {

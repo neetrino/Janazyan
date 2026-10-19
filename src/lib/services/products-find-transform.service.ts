@@ -4,6 +4,9 @@ import { sanitizeStoredProductImageUrl } from "../products/resolve-stored-produc
 import { translations } from "../translations";
 import { ProductWithRelations } from "./products-find-query.service";
 import { DEFAULT_LANGUAGE } from '../language';
+import { pickProductTranslation } from '@/lib/products/product-translations';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 import {
   getProductDiscountSettings,
   type ProductDiscountSettings,
@@ -69,10 +72,11 @@ function collectProductColors(
         let colorsHex: string[] | null | undefined = null;
 
         if ("attributeValue" in colorOption && colorOption.attributeValue) {
-          const colorTranslation =
-            colorOption.attributeValue.translations?.find(
-              (t: { locale: string }) => t.locale === lang
-            ) || colorOption.attributeValue.translations?.[0];
+          const colorTranslation = pickLocalizedText(
+            colorOption.attributeValue.translations ?? [],
+            lang,
+            (row) => row.label,
+          );
           colorValue =
             colorTranslation?.label || colorOption.attributeValue.value || "";
           imageUrl = colorOption.attributeValue.imageUrl || null;
@@ -162,9 +166,7 @@ function collectProductColors(
         Array.isArray(attr.values)
       ) {
         attr.values.forEach((attrValue) => {
-          const translation =
-            attrValue.translations?.find((t) => t.locale === lang) ||
-            attrValue.translations?.[0];
+          const translation = pickLocalizedText(attrValue.translations ?? [], lang, (row) => row.label);
           const colorValue = translation?.label || attrValue.value || "";
           if (colorValue) {
             const normalizedValue = colorValue.trim().toLowerCase();
@@ -210,14 +212,13 @@ function resolvePrimaryCategory(
   const catTranslations = Array.isArray(primary.translations)
     ? primary.translations
     : [];
-  const catTranslation =
-    catTranslations.find((t) => t.locale === lang) || catTranslations[0] || null;
+  const catTranslation = pickLocalizedText(catTranslations, lang, (row) => row.title);
 
   return [
     {
       id: primary.id,
       slug: catTranslation?.slug || "",
-      title: catTranslation?.title || "",
+      title: presentCategoryTitle(catTranslation?.title || "", lang),
     },
   ];
 }
@@ -249,7 +250,7 @@ class ProductsFindTransformService {
     const data = products.map((product: ProductWithRelations) => {
       // Безопасное получение translation с проверкой на существование массива
       const translations = Array.isArray(product.translations) ? product.translations : [];
-      const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
+      const translation = pickProductTranslation(translations, lang);
       
       const variants = Array.isArray(product.variants) ? product.variants : [];
       const variant = pickCheapestVariant(variants);
@@ -283,14 +284,11 @@ class ProductsFindTransformService {
         : Array.isArray(product.categories)
           ? product.categories.map((cat: CategoryRelation) => {
               const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
-              const catTranslation =
-                catTranslations.find((t: { locale: string }) => t.locale === lang) ||
-                catTranslations[0] ||
-                null;
+              const catTranslation = pickLocalizedText(catTranslations, lang, (row) => row.title);
               return {
                 id: cat.id,
                 slug: catTranslation?.slug || '',
-                title: catTranslation?.title || '',
+                title: presentCategoryTitle(catTranslation?.title || '', lang),
               };
             })
           : [];

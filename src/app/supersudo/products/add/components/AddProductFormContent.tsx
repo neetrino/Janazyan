@@ -10,6 +10,8 @@ import type {
   GeneratedVariant,
 } from '../types';
 import type { CurrencyCode } from '@/lib/currency';
+import type { LanguageCode } from '@/lib/language';
+import type { ProductContentTranslation } from '@/lib/products/product-translations';
 import { BasicInformation } from './BasicInformation';
 import { ProductImages } from './ProductImages';
 import { ProductCategoriesSection } from './ProductCategoriesSection';
@@ -32,7 +34,9 @@ interface AddProductFormContentProps {
     labels: ProductLabel[];
     featured: boolean;
     variants: Variant[];
+    translations: ProductContentTranslation[];
   };
+  contentSyncKey: string;
   productType: 'simple' | 'variable';
   simpleProductData: {
     price: string;
@@ -58,9 +62,10 @@ interface AddProductFormContentProps {
   fileInputRef: React.RefObject<HTMLInputElement>;
   attributesDropdownRef: React.RefObject<HTMLDivElement>;
   variantImageInputRefs: React.MutableRefObject<Record<string, HTMLInputElement | null>>;
-  onTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onSlugChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  onDescriptionChange: (html: string) => void;
+  onTranslationChange: (
+    locale: LanguageCode,
+    patch: Partial<Pick<ProductContentTranslation, 'title' | 'slug' | 'descriptionHtml'>>,
+  ) => void;
   onProductTypeChange: (type: 'simple' | 'variable') => void;
   onUploadImages: (event: ChangeEvent<HTMLInputElement>) => Promise<void>;
   onRemoveImage: (index: number) => void;
@@ -115,9 +120,8 @@ export function AddProductFormContent({
   fileInputRef,
   attributesDropdownRef,
   variantImageInputRefs,
-  onTitleChange,
-  onSlugChange,
-  onDescriptionChange,
+  contentSyncKey,
+  onTranslationChange,
   onProductTypeChange,
   onUploadImages,
   onRemoveImage,
@@ -162,12 +166,10 @@ export function AddProductFormContent({
         <BasicInformation
           productType={productType}
           setProductType={onProductTypeChange}
-          title={formData.title}
+          syncKey={contentSyncKey}
           slug={formData.slug}
-          descriptionHtml={formData.descriptionHtml}
-          onTitleChange={onTitleChange}
-          onSlugChange={onSlugChange}
-          onDescriptionChange={onDescriptionChange}
+          translations={formData.translations}
+          onTranslationChange={onTranslationChange}
         />
 
         <ProductImages

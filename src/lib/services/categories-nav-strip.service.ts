@@ -8,6 +8,8 @@ import {
   getChildCategoryRows,
   getRootCategoryRows,
 } from '../categories/category-sibling-order';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 const MAX_STRIP_CATEGORIES = 9;
 
@@ -27,8 +29,7 @@ function buildTreeFromRows(rows: CategoryRow[], lang: string): CategoryTreeNode[
   const categoryMap = new Map<string, CategoryTreeNode>();
 
   for (const category of rows) {
-    const translation =
-      category.translations.find((tr) => tr.locale === lang) ?? category.translations[0];
+    const translation = pickLocalizedText(category.translations, lang, (row) => row.title);
     if (!translation) {
       continue;
     }
@@ -36,7 +37,7 @@ function buildTreeFromRows(rows: CategoryRow[], lang: string): CategoryTreeNode[
     categoryMap.set(category.id, {
       id: category.id,
       slug: translation.slug,
-      title: translation.title,
+      title: presentCategoryTitle(translation.title, lang),
       fullPath: translation.fullPath,
       children: [],
     });

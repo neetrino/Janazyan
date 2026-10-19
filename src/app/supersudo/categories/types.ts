@@ -1,3 +1,5 @@
+import type { LocalizedText } from '@/lib/i18n/localized-text';
+
 export interface Category {
   id: string;
   slug: string;
@@ -7,6 +9,7 @@ export interface Category {
   requiresSizes?: boolean;
   imageUrl?: string | null;
   published?: boolean;
+  translations?: Array<{ locale: string; title: string }>;
   children?: Category[];
 }
 
@@ -16,6 +19,8 @@ export interface CategoryWithLevel extends Category {
 
 export interface CategoryFormData {
   title: string;
+  slug: string;
+  translations: LocalizedText[];
   parentId: string;
   requiresSizes: boolean;
   subcategoryIds: string[];

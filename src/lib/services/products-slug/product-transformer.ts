@@ -9,38 +9,18 @@ import { getProductDiscountSettings, type ProductDiscountSettings } from "../pro
 import { getOutOfStockLabel } from "./utils";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
 import { DEFAULT_LANGUAGE } from '../../language';
+import { pickProductDescriptionHtml, pickProductTranslation } from '@/lib/products/product-translations';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 /**
- * Admin edits one description field but may only update one locale row historically.
- * Prefer the locale match; if another locale has clearly richer HTML, use that.
+ * Description of the visible language, or another saved language when that one is empty.
  */
 function pickDescriptionHtml(
-  translations: Array<{ locale: string; descriptionHtml?: string | null }>,
+  translations: Array<{ locale: string; title?: string | null; descriptionHtml?: string | null }>,
   lang: string,
 ): string | null {
-  const score = (html: string): number => {
-    const tags = html.match(/<(strong|em|b|i|ul|ol|li|br|p)\b/gi);
-    return (tags?.length ?? 0) * 10 + html.length;
-  };
-
-  const preferred = translations.find((t) => t.locale === lang)?.descriptionHtml?.trim() || null;
-  const candidates = translations
-    .map((t) => t.descriptionHtml?.trim() || null)
-    .filter((html): html is string => Boolean(html));
-
-  if (candidates.length === 0) {
-    return null;
-  }
-  if (!preferred) {
-    return candidates[0];
-  }
-
-  const richest = candidates.reduce((best, html) => (score(html) > score(best) ? html : best));
-  const RICHNESS_GAP = 20;
-  if (score(richest) >= score(preferred) + RICHNESS_GAP) {
-    return richest;
-  }
-  return preferred;
+  return pickProductDescriptionHtml(translations, lang);
 }
 
 /**
@@ -220,7 +200,7 @@ function transformVariants(
             // New format: use AttributeValue
             const attrValue = opt.attributeValue;
             const attr = attrValue.attribute;
-            const translation = attrValue.translations?.find((t: { locale: string }) => t.locale === lang) || attrValue.translations?.[0];
+            const translation = pickLocalizedText(attrValue.translations ?? [], lang, (row) => row.label);
             return {
               attribute: attr?.key || "",
               value: translation?.label || attrValue.value || "",
@@ -270,7 +250,7 @@ function transformProductAttributes(
     
     const mapped = (productAttrs as ProductAttribute[]).map((pa) => {
       const attr = pa.attribute;
-      const attrTranslation = attr.translations?.find((t: { locale: string }) => t.locale === lang) || attr.translations?.[0];
+      const attrTranslation = pickLocalizedText(attr.translations ?? [], lang, (row) => row.name);
       
       return {
         id: pa.id,
@@ -285,7 +265,7 @@ function transformProductAttributes(
             imageUrl: string | null;
             colors: string | null;
           }) => {
-            const valTranslation = val.translations?.find((t: { locale: string }) => t.locale === lang) || val.translations?.[0];
+            const valTranslation = pickLocalizedText(val.translations ?? [], lang, (row) => row.label);
             return {
               id: val.id,
               value: val.value,
@@ -312,7 +292,7 @@ export async function transformProduct(
 ) {
   // Get translations
   const translations = Array.isArray(product.translations) ? product.translations : [];
-  const translation = translations.find((t: { locale: string }) => t.locale === lang) || translations[0] || null;
+  const translation = pickProductTranslation(translations, lang);
   
   const settings = discountSettings ?? (await getProductDiscountSettings());
   const { globalDiscount, categoryDiscounts } = settings;
@@ -330,11 +310,11 @@ export async function transformProduct(
   // Transform categories
   const categories = Array.isArray(product.categories) ? product.categories.map((cat: { id: string; translations?: Array<{ locale: string; slug: string; title: string }> }) => {
     const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
-    const catTranslation = catTranslations.find((t: { locale: string }) => t.locale === lang) || catTranslations[0] || null;
+    const catTranslation = pickLocalizedText(catTranslations, lang, (row) => row.title);
     return {
       id: cat.id,
       slug: catTranslation?.slug || "",
-      title: catTranslation?.title || "",
+      title: presentCategoryTitle(catTranslation?.title || "", lang),
     };
   }) : [];
 

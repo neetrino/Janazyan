@@ -1,24 +1,28 @@
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
 import type { PartnerStoreTranslationInput } from '@/features/stores/partner-store-locales';
+
+export function filledPartnerStoreTranslations(
+  translations: PartnerStoreTranslationInput[],
+): PartnerStoreTranslationInput[] {
+  return translations
+    .filter((row) => row.name.trim() && row.address.trim())
+    .map((row) => ({
+      ...row,
+      name: writeInContentLocale(row.name, row.locale).trim(),
+      address: writeInContentLocale(row.address, row.locale).trim(),
+    }));
+}
 
 export function validatePartnerStoreTranslations(
   translations: PartnerStoreTranslationInput[],
 ): void {
-  if (!translations.length) {
+  if (filledPartnerStoreTranslations(translations).length === 0) {
     throw {
       status: 400,
       type: 'https://api.shop.am/problems/validation-error',
       title: 'Validation Error',
-      detail: 'At least one translation is required',
-    };
-  }
-
-  const enTranslation = translations.find((t) => t.locale === 'en');
-  if (!enTranslation?.name.trim() || !enTranslation.address.trim()) {
-    throw {
-      status: 400,
-      type: 'https://api.shop.am/problems/validation-error',
-      title: 'Validation Error',
-      detail: 'English name and address are required',
+      detail: 'Enter a name and address in at least one language',
     };
   }
 }
@@ -42,8 +46,9 @@ export function validatePartnerStoreCoordinates(lat: number, lng: number): void 
   }
 }
 
-export function getPartnerStoreEnglishAddress(
+export function getPartnerStoreGeocodeAddress(
   translations: PartnerStoreTranslationInput[],
 ): string {
-  return translations.find((translation) => translation.locale === 'en')?.address.trim() ?? '';
+  const filled = filledPartnerStoreTranslations(translations);
+  return pickLocalizedText(filled, 'hy', (row) => row.address)?.address.trim() ?? '';
 }

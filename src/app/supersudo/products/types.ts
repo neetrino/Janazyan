@@ -34,6 +34,7 @@ export interface Category {
   slug: string;
   parentId: string | null;
   requiresSizes: boolean;
+  translations?: Array<{ locale: string; title: string }>;
 }
 
 

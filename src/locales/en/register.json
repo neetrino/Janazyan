@@ -5,7 +5,7 @@
     "firstName": "First Name",
     "lastName": "Last Name",
     "email": "Email",
-    "phone": "Phone (optional)",
+    "phone": "Phone",
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "showPassword": "Show password",
@@ -30,7 +30,8 @@
   "errors": {
     "acceptTerms": "Please accept the Terms of Service and Privacy Policy",
     "mustAcceptTerms": "You must accept the terms to continue",
-    "emailOrPhoneRequired": "Please provide email or phone number",
+    "emailRequired": "Please enter your email",
+    "phoneRequired": "Please enter your phone number",
     "passwordRequired": "Please enter a password",
     "passwordMinLength": "Password must be at least 6 characters",
     "passwordsDoNotMatch": "Passwords do not match",

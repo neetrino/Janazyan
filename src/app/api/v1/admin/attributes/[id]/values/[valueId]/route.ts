@@ -37,6 +37,7 @@ export async function PATCH(
       colors: body.colors,
       imageUrl: body.imageUrl,
       locale: body.locale || "en",
+      translations: body.translations,
     });
 
     await invalidateAdminAttributesServerList();

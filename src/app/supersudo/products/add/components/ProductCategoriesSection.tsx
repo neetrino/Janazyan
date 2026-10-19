@@ -3,6 +3,7 @@
 import { Input } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
 import type { Category, Variant } from '../types';
+import { categoryTitlesLabel } from '../../../categories/utils';
 
 interface ProductCategoriesSectionProps {
   categories: Category[];
@@ -188,7 +189,7 @@ export function ProductCategoriesSection({
                               category.isSubcategory ? 'text-xs' : 'text-sm font-semibold'
                             }`}
                           >
-                            {category.title}
+                            {categoryTitlesLabel(category)}
                           </span>
                         </label>
                       ))}

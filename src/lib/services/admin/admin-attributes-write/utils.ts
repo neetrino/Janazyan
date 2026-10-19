@@ -1,3 +1,5 @@
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
+
 /**
  * Parse colors data from various formats to string array
  */
@@ -42,14 +44,17 @@ export function formatAttributeValue(
   id: string;
   value: string;
   label: string;
+  translations: Array<{ locale: string; label: string }>;
   colors: string[];
   imageUrl: string | null;
 } {
-  const valTranslation = val.translations?.find((t) => t.locale === locale) || val.translations?.[0];
+  const translations = val.translations ?? [];
+  const valTranslation = pickLocalizedText(translations, locale, (row) => row.label);
   return {
     id: val.id,
     value: val.value,
     label: valTranslation?.label || val.value,
+    translations: translations.map((row) => ({ locale: row.locale, label: row.label })),
     colors: parseColors(val.colors),
     imageUrl: val.imageUrl || null,
   };
@@ -78,23 +83,27 @@ export function formatAttribute(
   id: string;
   key: string;
   name: string;
+  translations: Array<{ locale: string; name: string }>;
   type: string;
   filterable: boolean;
   values: Array<{
     id: string;
     value: string;
     label: string;
+    translations: Array<{ locale: string; label: string }>;
     colors: string[];
     imageUrl: string | null;
   }>;
 } {
-  const translation = attribute.translations?.find((t) => t.locale === locale) || attribute.translations?.[0];
+  const translations = attribute.translations ?? [];
+  const translation = pickLocalizedText(translations, locale, (row) => row.name);
   const values = attribute.values || [];
 
   return {
     id: attribute.id,
     key: attribute.key,
     name: translation?.name || attribute.key,
+    translations: translations.map((row) => ({ locale: row.locale, name: row.name })),
     type: attribute.type,
     filterable: attribute.filterable,
     values: values.map((val) => formatAttributeValue(val, locale)),

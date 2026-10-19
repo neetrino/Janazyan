@@ -6,14 +6,11 @@ const loginSchema = z.object({
 });
 
 const registerSchema = z.object({
-  email: z.string().email().optional(),
-  phone: z.string().min(1).optional(),
+  email: z.string().email("Valid email is required"),
+  phone: z.string().min(1, "Phone is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
-}).refine((data) => data.email ?? data.phone, {
-  message: "Either email or phone is required",
-  path: ["email"],
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

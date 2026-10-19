@@ -4,6 +4,8 @@ import { logger } from '../../../../lib/utils/logger';
 import { showToast } from '../../../../components/Toast';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category, CategoryFormData } from '../types';
+import { applyLocalizedTextChange, emptyLocalizedTexts, filledLocalizedTexts, mergeLocalizedTexts } from '@/lib/i18n/localized-text';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
 import {
   ADMIN_LIST_CACHE_KEYS,
   invalidateAdminListCache,
@@ -42,12 +44,51 @@ interface UseCategoryActionsReturn {
 
 const initialFormData: CategoryFormData = {
   title: '',
+  slug: '',
+  translations: emptyLocalizedTexts(),
   parentId: '',
   requiresSizes: false,
   subcategoryIds: [],
   imageUrl: '',
   published: 'published',
 };
+
+function categoryFormFrom(category: Category, subcategoryIds: string[]): CategoryFormData {
+  const translations = mergeLocalizedTexts(
+    (category.translations ?? [{ locale: 'en', title: category.title }]).map((row) => ({
+      locale: row.locale,
+      text: presentCategoryTitle(row.title, row.locale),
+    })),
+  );
+  return {
+    title: filledLocalizedTexts(translations)[0]?.text ?? category.title,
+    slug: category.slug,
+    translations,
+    parentId: category.parentId || '',
+    requiresSizes: category.requiresSizes || false,
+    subcategoryIds,
+    imageUrl: category.imageUrl || '',
+    published: category.published ? 'published' : 'draft',
+  };
+}
+
+export function updateCategoryFormText(form: CategoryFormData, locale: CategoryFormData['translations'][number]['locale'], patch: { text?: string; slug?: string }): CategoryFormData {
+  const written = patch.text === undefined
+    ? patch
+    : { ...patch, text: presentCategoryTitle(patch.text, locale) };
+  const next = applyLocalizedTextChange(
+    { ...form, texts: form.translations },
+    locale,
+    written,
+  );
+  const filled = filledLocalizedTexts(next.texts);
+  return {
+    ...form,
+    translations: next.texts,
+    slug: next.slug,
+    title: filled[0]?.text ?? '',
+  };
+}
 
 /**
  * Hook for category CRUD operations
@@ -78,6 +119,11 @@ export function useCategoryActions(): UseCategoryActionsReturn {
     try {
       await apiClient.post('/api/v1/admin/categories', {
         title: formData.title.trim(),
+        slug: formData.slug,
+        translations: filledLocalizedTexts(formData.translations).map((row) => ({
+          locale: row.locale,
+          title: row.text,
+        })),
         parentId: formData.parentId || undefined,
         requiresSizes: formData.requiresSizes,
         imageUrl: formData.imageUrl.trim() || undefined,
@@ -109,24 +155,13 @@ export function useCategoryActions(): UseCategoryActionsReturn {
       const response = await apiClient.get<{ data: Category }>(`/api/v1/admin/categories/${category.id}`);
       const categoryWithChildren = response.data;
       
-      setFormData({
-        title: category.title,
-        parentId: category.parentId || '',
-        requiresSizes: category.requiresSizes || false,
-        subcategoryIds: categoryWithChildren.children?.map(child => child.id) || [],
-        imageUrl: category.imageUrl || '',
-        published: category.published ? 'published' : 'draft',
-      });
+      setFormData(categoryFormFrom(
+        categoryWithChildren,
+        categoryWithChildren.children?.map((child) => child.id) || [],
+      ));
     } catch (err: unknown) {
       logger.error('Error fetching category children', { error: err });
-      setFormData({
-        title: category.title,
-        parentId: category.parentId || '',
-        requiresSizes: category.requiresSizes || false,
-        subcategoryIds: [],
-        imageUrl: category.imageUrl || '',
-        published: category.published ? 'published' : 'draft',
-      });
+      setFormData(categoryFormFrom(category, []));
     }
     
     setShowEditModal(true);
@@ -147,6 +182,11 @@ export function useCategoryActions(): UseCategoryActionsReturn {
 
       await apiClient.put(`/api/v1/admin/categories/${editingCategory.id}`, {
         title: formData.title.trim(),
+        slug: formData.slug,
+        translations: filledLocalizedTexts(formData.translations).map((row) => ({
+          locale: row.locale,
+          title: row.text,
+        })),
         parentId: normalizedParentId,
         requiresSizes: formData.requiresSizes,
         subcategoryIds: sanitizedSubcategoryIds,

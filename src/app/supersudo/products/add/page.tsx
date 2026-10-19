@@ -18,6 +18,7 @@ import { useProductAttributeHandlers } from './hooks/useProductAttributeHandlers
 import { useProductFormHandlers } from './hooks/useProductFormHandlers';
 import { useProductFormCallbacks } from './hooks/useProductFormCallbacks';
 import { isClothingCategory as checkIsClothingCategory, generateSlug } from './utils/productUtils';
+import { updateProductFormTranslation } from './utils/productTranslationForm';
 
 function AddProductPageContent() {
   const { t } = useTranslation();
@@ -28,11 +29,11 @@ function AddProductPageContent() {
   const isEditMode = !!productId;
 
   const formState = useProductFormState();
-  const descriptionHtmlRef = useRef(formState.formData.descriptionHtml);
+  const translationsRef = useRef(formState.formData.translations);
 
   useEffect(() => {
-    descriptionHtmlRef.current = formState.formData.descriptionHtml;
-  }, [formState.formData.descriptionHtml]);
+    translationsRef.current = formState.formData.translations;
+  }, [formState.formData.translations]);
 
   useProductDataLoading({
     isLoggedIn,
@@ -86,7 +87,6 @@ function AddProductPageContent() {
   });
 
   const {
-    handleTitleChange,
     isClothingCategory,
     handleAttributeToggle,
     handleAttributeRemove,
@@ -163,7 +163,7 @@ function AddProductPageContent() {
     getColorAttribute,
     getSizeAttribute,
     isClothingCategory,
-    descriptionHtmlRef,
+    translationsRef,
   });
 
   if (isLoading || formState.loadingProduct) {
@@ -207,11 +207,13 @@ function AddProductPageContent() {
             fileInputRef={formState.fileInputRef}
             attributesDropdownRef={formState.attributesDropdownRef}
             variantImageInputRefs={formState.variantImageInputRefs}
-            onTitleChange={handleTitleChange}
-            onSlugChange={(e) => formState.setFormData((prev) => ({ ...prev, slug: e.target.value }))}
-            onDescriptionChange={(html) => {
-              descriptionHtmlRef.current = html;
-              formState.setFormData((prev) => ({ ...prev, descriptionHtml: html }));
+            contentSyncKey={productId ?? 'new'}
+            onTranslationChange={(locale, patch) => {
+              formState.setFormData((prev) => {
+                const next = updateProductFormTranslation(prev, locale, patch);
+                translationsRef.current = next.translations;
+                return next;
+              });
             }}
             onProductTypeChange={formState.setProductType}
             onUploadImages={handleUploadImages}

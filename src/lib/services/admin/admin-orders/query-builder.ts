@@ -25,6 +25,7 @@ export function buildOrderWhereClause(filters: OrderFilters): Prisma.OrderWhereI
         { number: { contains: searchTerm, mode: 'insensitive' } },
         { customerEmail: { contains: searchTerm, mode: 'insensitive' } },
         { customerPhone: { contains: searchTerm, mode: 'insensitive' } },
+        { billingAddress: { path: ['alternatePhone'], string_contains: searchTerm } },
         {
           user: {
             OR: [

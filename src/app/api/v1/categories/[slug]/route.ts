@@ -5,6 +5,7 @@ import {
   readJsonCache,
   writeJsonCache,
 } from "@/lib/cache/storefront-cache";
+import { localizeCategoryDetail } from "@/lib/categories/present-category-title";
 import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { categoriesService } from "@/lib/services/categories.service";
 import { logger } from "@/lib/utils/logger";
@@ -19,9 +20,9 @@ export async function GET(
     const { slug } = await params;
     const cacheKey = STOREFRONT_CACHE_KEYS.categoryBySlug(lang, slug);
 
-    const cached = await readJsonCache<unknown>(cacheKey);
+    const cached = await readJsonCache<{ title: string; seo?: { title?: string | null }; parent?: { title: string } | null }>(cacheKey);
     if (cached !== null) {
-      return NextResponse.json(cached, { headers: { "X-Cache": "HIT" } });
+      return NextResponse.json(localizeCategoryDetail(cached, lang), { headers: { "X-Cache": "HIT" } });
     }
 
     const result = await categoriesService.findBySlug(slug, lang);

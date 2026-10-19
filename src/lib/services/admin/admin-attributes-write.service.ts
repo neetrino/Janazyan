@@ -9,11 +9,12 @@ class AdminAttributesWriteService {
    * Create attribute
    */
   async createAttribute(data: {
-    name: string;
-    key: string;
+    name?: string;
+    key?: string;
     type?: string;
     filterable?: boolean;
     locale?: string;
+    translations?: unknown;
   }) {
     return createAttribute(data);
   }
@@ -24,8 +25,10 @@ class AdminAttributesWriteService {
   async updateAttributeTranslation(
     attributeId: string,
     data: {
-      name: string;
+      name?: string;
       locale?: string;
+      key?: string;
+      translations?: unknown;
     }
   ) {
     return updateAttributeTranslation(attributeId, data);
@@ -36,7 +39,7 @@ class AdminAttributesWriteService {
    */
   async addAttributeValue(
     attributeId: string,
-    data: { label: string; locale?: string }
+    data: { label?: string; locale?: string; translations?: unknown; value?: string }
   ) {
     return addAttributeValue(attributeId, data);
   }
@@ -52,6 +55,7 @@ class AdminAttributesWriteService {
       colors?: string[];
       imageUrl?: string | null;
       locale?: string;
+      translations?: unknown;
     }
   ) {
     return updateAttributeValue(attributeId, valueId, data);

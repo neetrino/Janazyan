@@ -1,5 +1,6 @@
 import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
 import type { CategoryTreeNode } from '@/lib/categories/category-tree';
+import { localizeCategoryNodes } from '@/lib/categories/present-category-title';
 import { categoriesNavStripService } from '@/lib/services/categories-nav-strip.service';
 import {
   readJsonCache,
@@ -14,7 +15,7 @@ export async function getCategoryNavStripFromRedisOrDb(
   const key = STOREFRONT_CACHE_KEYS.categoriesNavStrip(lang);
   const cached = await readJsonCache<CategoryTreeNode[]>(key);
   if (cached) {
-    return cached;
+    return localizeCategoryNodes(cached, lang);
   }
 
   if (!isDatabaseConnectionUrlConfigured()) {
