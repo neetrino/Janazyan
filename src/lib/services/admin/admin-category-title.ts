@@ -1,6 +1,8 @@
 import { db } from "@white-shop/db";
 
-const ADMIN_CATEGORY_TITLE_LOCALE = "en";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
+
+const ADMIN_CATEGORY_TITLE_LOCALE = "hy";
 
 type CategoryTranslationRow = {
   locale: string;
@@ -8,7 +10,7 @@ type CategoryTranslationRow = {
 };
 
 /**
- * Admin UI prefers EN category titles; falls back to the first available translation.
+ * Admin lists show the Armenian title when it exists, otherwise another saved language.
  */
 export function pickAdminCategoryTitle(
   translations: CategoryTranslationRow[] | undefined,
@@ -17,8 +19,8 @@ export function pickAdminCategoryTitle(
     return "";
   }
 
-  const preferred = translations.find((row) => row.locale === ADMIN_CATEGORY_TITLE_LOCALE);
-  return (preferred ?? translations[0])?.title?.trim() ?? "";
+  const picked = pickLocalizedText(translations, ADMIN_CATEGORY_TITLE_LOCALE, (row) => row.title);
+  return picked?.title.trim() ?? "";
 }
 
 /**

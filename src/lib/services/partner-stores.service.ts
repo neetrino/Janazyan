@@ -1,5 +1,7 @@
 import { db } from '@white-shop/db';
 import { isDatabaseConnectionUrlConfigured } from '@white-shop/db/env';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
 import { PARTNER_STORE_DEFAULT_LOGO } from '@/features/stores/constants';
 import type { PartnerStore } from '@/features/stores/types';
 import { normalizePartnerStoreCoordinates } from '@/features/stores/coordinates';
@@ -40,12 +42,8 @@ function pickLocalizedName(
   translations: Array<{ locale: string; name: string }>,
   locale: string,
 ): string {
-  return (
-    translations.find((t) => t.locale === locale)?.name ??
-    translations.find((t) => t.locale === FALLBACK_LOCALE)?.name ??
-    translations[0]?.name ??
-    ''
-  );
+  const name = pickLocalizedText(translations, locale, (row) => row.name)?.name ?? '';
+  return writeInContentLocale(name, locale);
 }
 
 function pickGeocodeAddress(row: StoreRow, locale: string): string | null {
@@ -68,13 +66,9 @@ function pickGeocodePlaceName(
 }
 
 function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
-  const translations = row.translations;
-  const match =
-    translations.find((t) => t.locale === locale) ??
-    translations.find((t) => t.locale === FALLBACK_LOCALE) ??
-    translations[0];
-
-  if (!match) {
+  const nameRow = pickLocalizedText(row.translations, locale, (item) => item.name);
+  const addressRow = pickLocalizedText(row.translations, locale, (item) => item.address);
+  if (!nameRow || !addressRow) {
     return null;
   }
 
@@ -85,10 +79,10 @@ function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
 
   return {
     id: row.id,
-    name: match.name,
-    address: match.address,
+    name: writeInContentLocale(nameRow.name, locale),
+    address: writeInContentLocale(addressRow.address, locale),
     logo: PARTNER_STORE_DEFAULT_LOGO,
-    logoAlt: match.logoAlt ?? match.name,
+    logoAlt: writeInContentLocale(nameRow.logoAlt ?? nameRow.name, locale),
     lat: coordinates.lat,
     lng: coordinates.lng,
     regionId: row.regionId,

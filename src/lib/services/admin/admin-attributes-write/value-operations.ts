@@ -1,18 +1,30 @@
 import { db } from "@white-shop/db";
 import { logger } from "../../../utils/logger";
 import { ensureColorsColumnsExist } from "./migration";
-import { formatAttribute, parseColors } from "./utils";
+import { formatAttribute } from "./utils";
 import { resolveAdminImageReference } from "@/lib/r2/resolve-admin-image-reference";
 import { R2_IMAGE_FOLDERS } from "@/lib/r2/r2-image-folders";
+import { readNamedLocaleRows } from "../category-content";
+import { attributeValueKey, saveAttributeValueLabels } from "../attribute-content";
 
 /**
  * Add attribute value
  */
 export async function addAttributeValue(
   attributeId: string,
-  data: { label: string; locale?: string }
+  data: { label?: string; locale?: string; translations?: unknown; value?: string }
 ) {
-  logger.info('Adding attribute value', { attributeId, label: data.label });
+  const rows = readNamedLocaleRows(data.translations, { locale: data.locale, text: data.label });
+  if (rows.length === 0) {
+    throw {
+      status: 400,
+      type: "https://api.shop.am/problems/validation-error",
+      title: "Validation Error",
+      detail: "Enter a label in at least one language",
+    };
+  }
+
+  logger.info('Adding attribute value', { attributeId, label: rows[0].text });
 
   const attribute = await db.attribute.findUnique({
     where: { id: attributeId },
@@ -27,12 +39,8 @@ export async function addAttributeValue(
     };
   }
 
-  const locale = data.locale || "en";
+  const value = attributeValueKey(data.value || rows[0].text);
 
-  // Use label as value (normalized)
-  const value = data.label.trim().toLowerCase().replace(/\s+/g, '-');
-
-  // Check if value already exists
   const existing = await db.attributeValue.findFirst({
     where: {
       attributeId,
@@ -45,7 +53,7 @@ export async function addAttributeValue(
       status: 400,
       type: "https://api.shop.am/problems/validation-error",
       title: "Value already exists",
-      detail: `Value '${data.label}' already exists for this attribute`,
+      detail: `Value '${rows[0].text}' already exists for this attribute`,
     };
   }
 
@@ -54,27 +62,17 @@ export async function addAttributeValue(
       attributeId,
       value,
       translations: {
-        create: {
-          locale,
-          label: data.label.trim(),
-        },
+        create: rows.map((row) => ({ locale: row.locale, label: row.text })),
       },
     },
   });
 
-  // Return updated attribute with all values
   const updatedAttribute = await db.attribute.findUnique({
     where: { id: attributeId },
     include: {
-      translations: {
-        where: { locale },
-      },
+      translations: true,
       values: {
-        include: {
-          translations: {
-            where: { locale },
-          },
-        },
+        include: { translations: true },
         orderBy: { position: "asc" },
       },
     },
@@ -89,7 +87,7 @@ export async function addAttributeValue(
     };
   }
 
-  return formatAttribute(updatedAttribute, locale);
+  return formatAttribute(updatedAttribute, rows[0].locale);
 }
 
 /**
@@ -102,6 +100,7 @@ export async function updateAttributeValue(
     label?: string;
     colors?: string[];
     imageUrl?: string | null;
+    translations?: unknown;
     locale?: string;
   }
 ) {
@@ -142,7 +141,14 @@ export async function updateAttributeValue(
     };
   }
 
-  const locale = data.locale || "en";
+  const labelRows = data.translations !== undefined || data.label !== undefined
+    ? readNamedLocaleRows(data.translations, { locale: data.locale, text: data.label })
+    : [];
+  if (labelRows.length > 0) {
+    await saveAttributeValueLabels(valueId, labelRows);
+  }
+
+  const locale = labelRows[0]?.locale || data.locale || "en";
   const updateData: {
     colors?: string[];
     imageUrl?: string | null;
@@ -164,28 +170,6 @@ export async function updateAttributeValue(
   // Update imageUrl if provided
   if (data.imageUrl !== undefined) {
     updateData.imageUrl = await resolveAdminImageReference(data.imageUrl, R2_IMAGE_FOLDERS.attributes);
-  }
-
-  // Update translation label if provided
-  if (data.label !== undefined) {
-    const existingTranslation = attributeValue.translations.find(
-      (t: { locale: string }) => t.locale === locale
-    );
-
-    if (existingTranslation) {
-      await db.attributeValueTranslation.update({
-        where: { id: existingTranslation.id },
-        data: { label: data.label.trim() },
-      });
-    } else {
-      await db.attributeValueTranslation.create({
-        data: {
-          attributeValueId: valueId,
-          locale,
-          label: data.label.trim(),
-        },
-      });
-    }
   }
 
   // Update attribute value if colors or imageUrl changed
@@ -210,15 +194,9 @@ export async function updateAttributeValue(
   const updatedAttribute = await db.attribute.findUnique({
     where: { id: attributeId },
     include: {
-      translations: {
-        where: { locale },
-      },
+      translations: true,
       values: {
-        include: {
-          translations: {
-            where: { locale },
-          },
-        },
+        include: { translations: true },
         orderBy: { position: "asc" },
       },
     },

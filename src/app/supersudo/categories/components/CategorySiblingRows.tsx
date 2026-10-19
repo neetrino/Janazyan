@@ -14,6 +14,7 @@ import {
   ADMIN_TABLE_TD,
 } from '../../constants/admin-table-classes';
 import type { Category, CategoryWithLevel } from '../types';
+import { CategoryLocaleTitles } from './CategoryLocaleTitles';
 
 function processImageUrl(url: string | null | undefined): string {
   if (!url) return '';
@@ -179,13 +180,13 @@ function CategoryTableRow({
       <td className={`${ADMIN_TABLE_TD} text-left text-gray-900`}>
         <div className={`flex items-center gap-2 ${titleOffsetClass}`}>
           <div>
-            <div className="text-sm font-medium">{category.title}</div>
-            <div className="text-xs text-gray-500">{category.slug}</div>
+            <CategoryLocaleTitles category={category} />
+            <div className="mt-1 text-xs text-gray-500">{category.slug}</div>
           </div>
         </div>
       </td>
       <td className={`${ADMIN_TABLE_TD} whitespace-nowrap text-left text-gray-700`}>
-        {parentCategory ? parentCategory.title : t('admin.categories.rootCategory')}
+        {parentCategory ? <CategoryLocaleTitles category={parentCategory} /> : t('admin.categories.rootCategory')}
       </td>
       <td className={`${ADMIN_TABLE_TD} whitespace-nowrap text-center`}>
         <div className="flex items-center justify-center gap-1">

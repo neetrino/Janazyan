@@ -10,6 +10,8 @@ import { getOutOfStockLabel } from "./utils";
 import type { ProductWithFullRelations, ProductVariantWithOptions } from "./types";
 import { DEFAULT_LANGUAGE } from '../../language';
 import { pickProductDescriptionHtml, pickProductTranslation } from '@/lib/products/product-translations';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 /**
  * Description of the visible language, or another saved language when that one is empty.
@@ -198,7 +200,7 @@ function transformVariants(
             // New format: use AttributeValue
             const attrValue = opt.attributeValue;
             const attr = attrValue.attribute;
-            const translation = attrValue.translations?.find((t: { locale: string }) => t.locale === lang) || attrValue.translations?.[0];
+            const translation = pickLocalizedText(attrValue.translations ?? [], lang, (row) => row.label);
             return {
               attribute: attr?.key || "",
               value: translation?.label || attrValue.value || "",
@@ -248,7 +250,7 @@ function transformProductAttributes(
     
     const mapped = (productAttrs as ProductAttribute[]).map((pa) => {
       const attr = pa.attribute;
-      const attrTranslation = attr.translations?.find((t: { locale: string }) => t.locale === lang) || attr.translations?.[0];
+      const attrTranslation = pickLocalizedText(attr.translations ?? [], lang, (row) => row.name);
       
       return {
         id: pa.id,
@@ -263,7 +265,7 @@ function transformProductAttributes(
             imageUrl: string | null;
             colors: string | null;
           }) => {
-            const valTranslation = val.translations?.find((t: { locale: string }) => t.locale === lang) || val.translations?.[0];
+            const valTranslation = pickLocalizedText(val.translations ?? [], lang, (row) => row.label);
             return {
               id: val.id,
               value: val.value,
@@ -308,11 +310,11 @@ export async function transformProduct(
   // Transform categories
   const categories = Array.isArray(product.categories) ? product.categories.map((cat: { id: string; translations?: Array<{ locale: string; slug: string; title: string }> }) => {
     const catTranslations = Array.isArray(cat.translations) ? cat.translations : [];
-    const catTranslation = catTranslations.find((t: { locale: string }) => t.locale === lang) || catTranslations[0] || null;
+    const catTranslation = pickLocalizedText(catTranslations, lang, (row) => row.title);
     return {
       id: cat.id,
       slug: catTranslation?.slug || "",
-      title: catTranslation?.title || "",
+      title: presentCategoryTitle(catTranslation?.title || "", lang),
     };
   }) : [];
 

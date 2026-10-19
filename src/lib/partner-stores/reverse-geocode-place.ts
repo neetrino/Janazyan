@@ -1,8 +1,12 @@
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
 import {
   GEOCODE_TIMEOUT_MS,
   GEOCODE_USER_AGENT,
   withNominatimRateLimit,
 } from './geocode-nominatim-queue';
+
+const ARMENIAN_SCRIPT = /[\u0531-\u0587]/;
+const CYRILLIC_SCRIPT = /[\u0400-\u04FF]/;
 
 const NOMINATIM_REVERSE_URL = 'https://nominatim.openstreetmap.org/reverse';
 
@@ -208,9 +212,25 @@ export async function reverseGeocodePartnerStorePlace(
   return {
     ...place,
     addresses: {
-      en: enAddress,
+      en: localizeGeocodedAddress(enAddress ?? hyAddress, null, 'en'),
       hy: hyAddress,
-      ru: ruAddress,
+      ru: localizeGeocodedAddress(ruAddress, hyAddress, 'ru'),
     },
   };
+}
+
+function localizeGeocodedAddress(
+  own: string | null,
+  hy: string | null,
+  locale: 'en' | 'ru',
+): string | null {
+  if (locale === 'ru' && own && CYRILLIC_SCRIPT.test(own)) {
+    return own;
+  }
+  const source = locale === 'ru' && hy && ARMENIAN_SCRIPT.test(hy) ? hy : (own ?? hy);
+  if (!source) {
+    return null;
+  }
+  const written = writeInContentLocale(source, locale).trim();
+  return written || null;
 }

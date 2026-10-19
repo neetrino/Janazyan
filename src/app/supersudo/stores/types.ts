@@ -52,4 +52,5 @@ export type PartnerStoreFormData = {
   lng: number | null;
   /** Only `'map'` is sent to the API so address geocode still runs when pin was not touched. */
   coordinatesSource: PartnerStoreCoordinatesSource;
+  slug: string;
 };

@@ -4,6 +4,7 @@ import { flattenCategoryTree, type CategoryTreeNode } from "@/lib/categories/cat
 import { DEFAULT_LANGUAGE } from "@/lib/language";
 import { processImageUrl } from "@/lib/utils/image-utils";
 import { categoriesService } from "./categories.service";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
 
 const NAV_DISPLAY_LIMIT = 10;
 
@@ -17,11 +18,7 @@ export type CategoryNavPreviewProduct = {
 type TranslationRow = { locale: string; slug: string; title: string };
 
 function pickTranslation(rows: TranslationRow[], lang: string): TranslationRow | null {
-  const preferred = rows.find((r) => r.locale === lang);
-  if (preferred) return preferred;
-  const primary = rows.find((r) => r.locale === DEFAULT_LANGUAGE);
-  if (primary) return primary;
-  return rows[0] ?? null;
+  return pickLocalizedText(rows, lang, (row) => row.title);
 }
 
 function extractProductImage(media: unknown): string | null {

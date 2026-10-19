@@ -5,6 +5,8 @@ import {
   getRootCategoryRows,
 } from "@/lib/categories/category-sibling-order";
 import { DEFAULT_LANGUAGE } from '../language';
+import { presentCategoryTitle } from '@/lib/categories/present-category-title';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 class CategoriesService {
   /**
@@ -71,9 +73,7 @@ class CategoriesService {
     }> = [];
 
     categoryRows.forEach((category) => {
-      const translation =
-        category.translations.find((row) => row.locale === lang) ||
-        category.translations[0];
+      const translation = pickLocalizedText(category.translations, lang, (row) => row.title);
       if (!translation) {
         return;
       }
@@ -81,7 +81,7 @@ class CategoriesService {
       categoryMap.set(category.id, {
         id: category.id,
         slug: translation.slug,
-        title: translation.title,
+        title: presentCategoryTitle(translation.title, lang),
         fullPath: translation.fullPath,
         children: [],
       });
@@ -142,37 +142,62 @@ class CategoriesService {
     });
 
     if (!category) {
-      throw {
-        status: 404,
-        type: "https://api.shop.am/problems/not-found",
-        title: "Category not found",
-        detail: `Category with slug '${slug}' does not exist or is not published`,
-      };
+      const anyLocale = await db.category.findFirst({
+        where: {
+          translations: { some: { slug } },
+          published: true,
+          deletedAt: null,
+        },
+        include: {
+          translations: true,
+          parent: { include: { translations: true } },
+        },
+      });
+      if (!anyLocale) {
+        throw {
+          status: 404,
+          type: "https://api.shop.am/problems/not-found",
+          title: "Category not found",
+          detail: `Category with slug '${slug}' does not exist or is not published`,
+        };
+      }
+      return this.mapCategoryDetail(anyLocale, lang);
     }
 
-    const translation =
-      category.translations.find((t: { locale: string }) => t.locale === lang) ||
-      category.translations[0];
+    return this.mapCategoryDetail(category, lang);
+  }
+
+  private mapCategoryDetail(
+    category: {
+      id: string;
+      translations: Array<{ locale: string; slug: string; title: string; fullPath: string; description: string | null; seoTitle: string | null; seoDescription: string | null }>;
+      parent: {
+        id: string;
+        translations: Array<{ locale: string; slug: string; title: string }>;
+      } | null;
+    },
+    lang: string,
+  ) {
+    const translation = pickLocalizedText(category.translations, lang, (row) => row.title);
     const parentTranslation = category.parent
-      ? category.parent.translations.find((t: { locale: string }) => t.locale === lang) ||
-        category.parent.translations[0]
+      ? pickLocalizedText(category.parent.translations, lang, (row) => row.title)
       : null;
 
     return {
       id: category.id,
       slug: translation?.slug || "",
-      title: translation?.title || "",
+      title: presentCategoryTitle(translation?.title || "", lang),
       description: translation?.description || null,
       fullPath: translation?.fullPath || "",
       seo: {
-        title: translation?.seoTitle || translation?.title,
+        title: presentCategoryTitle(translation?.seoTitle || translation?.title || "", lang),
         description: translation?.seoDescription || null,
       },
       parent: category.parent
         ? {
             id: category.parent.id,
             slug: parentTranslation?.slug || "",
-            title: parentTranslation?.title || "",
+            title: presentCategoryTitle(parentTranslation?.title || "", lang),
           }
         : null,
     };

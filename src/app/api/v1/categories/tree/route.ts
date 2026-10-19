@@ -7,6 +7,7 @@ import {
   writeJsonCache,
 } from "@/lib/cache/storefront-cache";
 import { apiRouteErrorResponse, buildApiRouteErrorContext } from "@/lib/http/api-route-errors";
+import { localizeCategoryNodes } from "@/lib/categories/present-category-title";
 import { DEFAULT_LANGUAGE } from '@/lib/language';
 import { categoriesService } from "@/lib/services/categories.service";
 
@@ -16,9 +17,12 @@ export async function GET(req: NextRequest) {
     const lang = searchParams.get("lang") || DEFAULT_LANGUAGE;
     const cacheKey = STOREFRONT_CACHE_KEYS.categoriesTree(lang);
 
-    const cached = await readJsonCache<unknown>(cacheKey);
+    const cached = await readJsonCache<{ data: Array<{ title: string; children: Array<{ title: string }> }> }>(cacheKey);
     if (cached !== null) {
-      return NextResponse.json(cached, { headers: { "X-Cache": "HIT" } });
+      return NextResponse.json(
+        { ...cached, data: localizeCategoryNodes(cached.data, lang) },
+        { headers: { "X-Cache": "HIT" } },
+      );
     }
 
     assertPostgresDatabaseUrlConfigured();

@@ -38,15 +38,15 @@ class AdminPartnerStoreRegionsService {
 
   async createRegion(data: {
     translations: LocaleNameInput[];
+    slug?: string;
     position?: number;
     published?: boolean;
   }) {
     const translations = normalizeNameTranslations(data.translations);
-    const enName = translations.find((t) => t.locale === 'en')!.name;
     const slug = await generateUniqueSlug(
       async (candidate) =>
         Boolean(await db.partnerStoreRegion.findFirst({ where: { slug: candidate } })),
-      enName,
+      data.slug?.trim() || translations[0].name,
       'region',
     );
     const position = data.position ?? (await nextRegionPosition());
@@ -78,6 +78,7 @@ class AdminPartnerStoreRegionsService {
     regionId: string,
     data: {
       translations?: LocaleNameInput[];
+      slug?: string;
       position?: number;
       published?: boolean;
     },
@@ -100,17 +101,18 @@ class AdminPartnerStoreRegionsService {
 
     if (data.translations) {
       const translations = normalizeNameTranslations(data.translations);
-      const enName = translations.find((t) => t.locale === 'en')!.name;
-      updateData.slug = await generateUniqueSlug(
-        async (candidate) =>
-          Boolean(
-            await db.partnerStoreRegion.findFirst({
-              where: { slug: candidate, id: { not: regionId } },
-            }),
-          ),
-        enName,
-        'region',
-      );
+      if (data.slug?.trim()) {
+        updateData.slug = await generateUniqueSlug(
+          async (candidate) =>
+            Boolean(
+              await db.partnerStoreRegion.findFirst({
+                where: { slug: candidate, id: { not: regionId } },
+              }),
+            ),
+          data.slug,
+          'region',
+        );
+      }
 
       await db.partnerStoreRegion.update({ where: { id: regionId }, data: updateData });
 
@@ -121,6 +123,9 @@ class AdminPartnerStoreRegionsService {
           update: { name: translation.name },
         });
       }
+      await db.partnerStoreRegionTranslation.deleteMany({
+        where: { regionId, locale: { notIn: translations.map((row) => row.locale) } },
+      });
     } else if (Object.keys(updateData).length > 0) {
       await db.partnerStoreRegion.update({ where: { id: regionId }, data: updateData });
     }

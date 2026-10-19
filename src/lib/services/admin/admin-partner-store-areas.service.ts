@@ -40,6 +40,7 @@ class AdminPartnerStoreAreasService {
   async createArea(data: {
     regionId: string;
     translations: LocaleNameInput[];
+    slug?: string;
     position?: number;
     published?: boolean;
   }) {
@@ -49,7 +50,6 @@ class AdminPartnerStoreAreasService {
     }
 
     const translations = normalizeNameTranslations(data.translations);
-    const enName = translations.find((t) => t.locale === 'en')!.name;
     const slug = await generateUniqueSlug(
       async (candidate) =>
         Boolean(
@@ -57,7 +57,7 @@ class AdminPartnerStoreAreasService {
             where: { regionId: data.regionId, slug: candidate },
           }),
         ),
-      enName,
+      data.slug?.trim() || translations[0].name,
       'area',
     );
     const position = data.position ?? (await nextAreaPosition(data.regionId));
@@ -92,6 +92,7 @@ class AdminPartnerStoreAreasService {
     data: {
       regionId?: string;
       translations?: LocaleNameInput[];
+      slug?: string;
       position?: number;
       published?: boolean;
     },
@@ -130,21 +131,22 @@ class AdminPartnerStoreAreasService {
 
     if (data.translations) {
       const translations = normalizeNameTranslations(data.translations);
-      const enName = translations.find((t) => t.locale === 'en')!.name;
-      updateData.slug = await generateUniqueSlug(
-        async (candidate) =>
-          Boolean(
-            await db.partnerStoreArea.findFirst({
-              where: {
-                regionId: nextRegionId,
-                slug: candidate,
-                id: { not: areaId },
-              },
-            }),
-          ),
-        enName,
-        'area',
-      );
+      if (data.slug?.trim()) {
+        updateData.slug = await generateUniqueSlug(
+          async (candidate) =>
+            Boolean(
+              await db.partnerStoreArea.findFirst({
+                where: {
+                  regionId: nextRegionId,
+                  slug: candidate,
+                  id: { not: areaId },
+                },
+              }),
+            ),
+          data.slug,
+          'area',
+        );
+      }
 
       await db.partnerStoreArea.update({ where: { id: areaId }, data: updateData });
 
@@ -155,6 +157,9 @@ class AdminPartnerStoreAreasService {
           update: { name: translation.name },
         });
       }
+      await db.partnerStoreAreaTranslation.deleteMany({
+        where: { areaId, locale: { notIn: translations.map((row) => row.locale) } },
+      });
     } else if (Object.keys(updateData).length > 0) {
       await db.partnerStoreArea.update({ where: { id: areaId }, data: updateData });
     }

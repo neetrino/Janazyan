@@ -4,6 +4,7 @@ import { db } from "@white-shop/db";
 import { apiRouteErrorResponse, buildApiRouteErrorContext } from "@/lib/http/api-route-errors";
 import { cacheService } from "@/lib/services/cache.service";
 import { processImageUrl } from "@/lib/utils/image-utils";
+import { presentCategoryTitle } from "@/lib/categories/present-category-title";
 import { DEFAULT_LANGUAGE } from '@/lib/language';
 
 const CACHE_TTL = 300; // 5 minutes
@@ -19,9 +20,17 @@ export async function GET(req: NextRequest) {
     const cached = await cacheService.get(cacheKey);
     if (cached !== null && cached !== undefined) {
       const data = typeof cached === "string" ? JSON.parse(cached) : cached;
-      return NextResponse.json(data, {
-        headers: { "X-Cache": "HIT" },
-      });
+      const rows = Array.isArray(data?.data) ? data.data : [];
+      return NextResponse.json(
+        {
+          ...data,
+          data: rows.map((row: { title?: string }) => ({
+            ...row,
+            title: presentCategoryTitle(row.title || "", lang),
+          })),
+        },
+        { headers: { "X-Cache": "HIT" } },
+      );
     }
 
     assertPostgresDatabaseUrlConfigured();
@@ -70,7 +79,7 @@ export async function GET(req: NextRequest) {
         {
           id: cat.id,
           slug: t?.slug || "",
-          title: t?.title || "",
+          title: presentCategoryTitle(t?.title || "", lang),
           productCount: parentCount + childrenCount,
         },
         ...cat.children.map((child) => {
@@ -80,7 +89,7 @@ export async function GET(req: NextRequest) {
           return {
             id: child.id,
             slug: ct?.slug || "",
-            title: ct?.title || "",
+            title: presentCategoryTitle(ct?.title || "", lang),
             productCount: countMap.get(child.id) || 0,
           };
         }),

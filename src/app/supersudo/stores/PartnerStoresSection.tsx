@@ -14,6 +14,8 @@ import { ApiError } from '../../../lib/api-client/types';
 import { useTranslation } from '../../../lib/i18n-client';
 import { useAdminDialogs } from '../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
+import { emptyLocalizedTexts, filledLocalizedTexts, mergeLocalizedTexts } from '@/lib/i18n/localized-text';
 import {
   ADMIN_LIST_CACHE_KEYS,
   fetchAdminListCached,
@@ -21,6 +23,7 @@ import {
 } from '@/lib/admin/admin-list-client-cache';
 import { createEmptyFormData, formDataFromStore, parseFormPayload } from './form-utils';
 import { PartnerStoreDrawer } from './PartnerStoreDrawer';
+import { PartnerHierarchyDrawer, type PartnerHierarchyDraft } from './PartnerHierarchyDrawer';
 import { PartnerStoresAdminTree } from './PartnerStoresAdminTree';
 import { usePartnerStoreDragReorder } from './usePartnerStoreDragReorder';
 import type {
@@ -45,12 +48,6 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
-function askName(message: string): string | null {
-  const value = window.prompt(message);
-  const trimmed = value?.trim() ?? '';
-  return trimmed.length > 0 ? trimmed : null;
-}
-
 export function PartnerStoresSection() {
   const { t } = useTranslation();
   const { confirm: confirmDialog } = useAdminDialogs();
@@ -64,6 +61,8 @@ export function PartnerStoresSection() {
   const [submitting, setSubmitting] = useState(false);
   const [imageUploading, setImageUploading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [hierarchyDraft, setHierarchyDraft] = useState<PartnerHierarchyDraft | null>(null);
+  const [hierarchySaving, setHierarchySaving] = useState(false);
   const [expandedRegionIds, setExpandedRegionIds] = useState<Set<string>>(new Set());
   const [reordering, setReordering] = useState(false);
 
@@ -115,6 +114,9 @@ export function PartnerStoresSection() {
       return (
         store.name.toLowerCase().includes(q) ||
         store.address.toLowerCase().includes(q) ||
+        store.translations.some((row) =>
+          row.name.toLowerCase().includes(q) || row.address.toLowerCase().includes(q),
+        ) ||
         store.slug.toLowerCase().includes(q) ||
         regionName.includes(q) ||
         areaName.includes(q)
@@ -260,48 +262,95 @@ export function PartnerStoresSection() {
     }
   };
 
-  const handleAddRegion = async () => {
-    const name = askName(t('admin.partnerStores.regionNamePrompt'));
-    if (!name) {
+  const openHierarchy = (draft: PartnerHierarchyDraft) => {
+    setHierarchyDraft(draft);
+  };
+
+  const handleSaveHierarchy = async () => {
+    if (!hierarchyDraft) {
       return;
     }
+    const filled = filledLocalizedTexts(hierarchyDraft.texts);
+    if (filled.length === 0) {
+      alert(t('admin.partnerStores.enRequired'));
+      return;
+    }
+    const translations = filled.map((row) => ({ locale: row.locale, name: row.text }));
+    setHierarchySaving(true);
     try {
-      await apiClient.post('/api/v1/admin/partner-store-regions', {
-        translations: [
-          { locale: 'en', name },
-          { locale: 'hy', name },
-          { locale: 'ru', name },
-        ],
-      });
+      if (hierarchyDraft.kind === 'region') {
+        const body = { translations, slug: hierarchyDraft.slug };
+        if (hierarchyDraft.id) {
+          await apiClient.put(`/api/v1/admin/partner-store-regions/${hierarchyDraft.id}`, body);
+        } else {
+          await apiClient.post('/api/v1/admin/partner-store-regions', body);
+        }
+      } else {
+        const body = { regionId: hierarchyDraft.regionId, translations, slug: hierarchyDraft.slug };
+        if (hierarchyDraft.id) {
+          await apiClient.put(`/api/v1/admin/partner-store-areas/${hierarchyDraft.id}`, body);
+        } else {
+          await apiClient.post('/api/v1/admin/partner-store-areas', body);
+        }
+        setExpandedRegionIds((current) => new Set(current).add(hierarchyDraft.regionId));
+      }
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
       await fetchStores();
+      setHierarchyDraft(null);
     } catch (err) {
-      console.error('Error creating region:', err);
-      alert(t('admin.partnerStores.errorSavingRegion'));
+      console.error('Error saving hierarchy:', err);
+      alert(hierarchyDraft.kind === 'region'
+        ? t('admin.partnerStores.errorSavingRegion')
+        : t('admin.partnerStores.errorSavingArea'));
+    } finally {
+      setHierarchySaving(false);
     }
   };
 
-  const handleAddArea = async (regionId: string) => {
-    const name = askName(t('admin.partnerStores.areaNamePrompt'));
-    if (!name) {
-      return;
-    }
-    try {
-      await apiClient.post('/api/v1/admin/partner-store-areas', {
-        regionId,
-        translations: [
-          { locale: 'en', name },
-          { locale: 'hy', name },
-          { locale: 'ru', name },
-        ],
-      });
-      invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.partnerStores);
-      await fetchStores();
-      setExpandedRegionIds((current) => new Set(current).add(regionId));
-    } catch (err) {
-      console.error('Error creating area:', err);
-      alert(t('admin.partnerStores.errorSavingArea'));
-    }
+  const handleAddRegion = () => {
+    openHierarchy({
+      kind: 'region',
+      id: null,
+      regionId: '',
+      texts: emptyLocalizedTexts(),
+      slug: '',
+    });
+  };
+
+  const handleEditRegion = (region: AdminPartnerStoreRegion) => {
+    openHierarchy({
+      kind: 'region',
+      id: region.id,
+      regionId: '',
+      texts: mergeLocalizedTexts(region.translations.map((row) => ({
+        locale: row.locale,
+        text: writeInContentLocale(row.name, row.locale),
+      }))),
+      slug: region.slug,
+    });
+  };
+
+  const handleAddArea = (regionId: string) => {
+    openHierarchy({
+      kind: 'area',
+      id: null,
+      regionId,
+      texts: emptyLocalizedTexts(),
+      slug: '',
+    });
+  };
+
+  const handleEditArea = (area: AdminPartnerStoreArea) => {
+    openHierarchy({
+      kind: 'area',
+      id: area.id,
+      regionId: area.regionId,
+      texts: mergeLocalizedTexts(area.translations.map((row) => ({
+        locale: row.locale,
+        text: writeInContentLocale(row.name, row.locale),
+      }))),
+      slug: area.slug,
+    });
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -310,8 +359,8 @@ export function PartnerStoresSection() {
       alert(t('admin.partnerStores.regionRequired'));
       return;
     }
-    const en = formData.translations.find((tr) => tr.locale === 'en');
-    if (!en?.name.trim() || !en.address.trim()) {
+    const complete = formData.translations.some((row) => row.name.trim() && row.address.trim());
+    if (!complete) {
       alert(t('admin.partnerStores.enRequired'));
       return;
     }
@@ -363,7 +412,7 @@ export function PartnerStoresSection() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-xl font-semibold text-gray-900">{t('admin.partnerStores.title')}</h2>
         <div className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" onClick={() => void handleAddRegion()}>
+          <Button variant="outline" size="sm" onClick={handleAddRegion}>
             {t('admin.partnerStores.addRegion')}
           </Button>
           <Button
@@ -402,7 +451,9 @@ export function PartnerStoresSection() {
           dragState={dragState}
           dropIndicator={dropIndicator}
           onToggleRegion={toggleRegion}
-          onAddArea={(regionId) => void handleAddArea(regionId)}
+          onAddArea={handleAddArea}
+          onEditRegion={handleEditRegion}
+          onEditArea={handleEditArea}
           onAddStore={handleOpenAdd}
           onEditStore={handleOpenEdit}
           onDeleteStore={(store) => void handleDelete(store)}
@@ -438,6 +489,13 @@ export function PartnerStoresSection() {
         onFormChange={setFormData}
         onLogoUpload={(event) => void handleLogoUpload(event)}
         onRemoveLogo={() => setFormData((current) => ({ ...current, logoUrl: '' }))}
+      />
+      <PartnerHierarchyDrawer
+        draft={hierarchyDraft}
+        saving={hierarchySaving}
+        onClose={() => setHierarchyDraft(null)}
+        onChange={setHierarchyDraft}
+        onSave={() => void handleSaveHierarchy()}
       />
     </>
   );

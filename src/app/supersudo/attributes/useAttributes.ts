@@ -13,11 +13,13 @@ import {
 } from '@/lib/admin/admin-list-client-cache';
 import { R2_IMAGE_FOLDERS } from '@/lib/r2/r2-image-folders';
 import { uploadAdminImagesToR2 } from '@/lib/r2/upload-admin-images-client';
+import { emptyNamedForm, filledNamePayload, namedFormFrom, updateNamedForm, updateNamedText, type NamedFormState } from './attributeForm';
 
 export interface AttributeValue {
   id: string;
   value: string;
   label: string;
+  translations?: Array<{ locale: string; label: string }>;
   colors?: string[];
   imageUrl?: string | null;
 }
@@ -26,6 +28,7 @@ export interface Attribute {
   id: string;
   key: string;
   name: string;
+  translations?: Array<{ locale: string; name: string }>;
   type: string;
   filterable: boolean;
   values: AttributeValue[];
@@ -38,16 +41,14 @@ export function useAttributes() {
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingAttribute, setEditingAttribute] = useState<string | null>(null);
-  const [editingAttributeName, setEditingAttributeName] = useState('');
+  const [editingForm, setEditingForm] = useState<NamedFormState>(emptyNamedForm());
   const [savingAttribute, setSavingAttribute] = useState(false);
   const [expandedAttributes, setExpandedAttributes] = useState<Set<string>>(new Set());
   
   // Form states
-  const [formData, setFormData] = useState({
-    name: '',
-  });
+  const [formData, setFormData] = useState<NamedFormState>(emptyNamedForm());
   
-  const [newValue, setNewValue] = useState('');
+  const [newValueForm, setNewValueForm] = useState<NamedFormState>(emptyNamedForm());
   const [addingValueTo, setAddingValueTo] = useState<string | null>(null);
   const [deletingValue, setDeletingValue] = useState<string | null>(null);
   const [editingValue, setEditingValue] = useState<{ attributeId: string; value: AttributeValue } | null>(null);
@@ -55,7 +56,7 @@ export function useAttributes() {
   const [expandedValueId, setExpandedValueId] = useState<string | null>(null);
   
   // Inline edit form states
-  const [editingLabel, setEditingLabel] = useState('');
+  const [editingValueForm, setEditingValueForm] = useState<NamedFormState>(emptyNamedForm());
   const [editingColors, setEditingColors] = useState<string[]>([]);
   const [editingImageUrl, setEditingImageUrl] = useState<string | null>(null);
   const [savingValue, setSavingValue] = useState(false);
@@ -92,22 +93,18 @@ export function useAttributes() {
       return;
     }
 
-    // Auto-generate key from name
-    const autoKey = formData.name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-
     try {
-      logger.debug('🆕 [ADMIN] Creating attribute:', autoKey);
       await apiClient.post('/api/v1/admin/attributes', {
         name: formData.name.trim(),
-        key: autoKey,
+        key: formData.slug,
+        translations: filledNamePayload(formData, 'name'),
         type: 'select',
         filterable: true,
-        locale: 'en',
       });
       
       logger.debug('✅ [ADMIN] Attribute created successfully');
       setShowAddForm(false);
-      setFormData({ name: '' });
+      setFormData(emptyNamedForm());
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.createdSuccess'), 'success');
@@ -144,23 +141,22 @@ export function useAttributes() {
   };
 
   const handleUpdateAttributeName = async (attributeId: string) => {
-    const trimmedName = editingAttributeName.trim();
-    
-    if (!trimmedName) {
+    if (!editingForm.name.trim()) {
       showToast(t('admin.attributes.fillName'), 'warning');
       return;
     }
 
     try {
       setSavingAttribute(true);
-      logger.debug(`✏️ [ADMIN] Updating attribute name: ${attributeId} -> ${trimmedName}`);
+      logger.debug(`✏️ [ADMIN] Updating attribute name: ${attributeId}`);
       await apiClient.patch(`/api/v1/admin/attributes/${attributeId}/translations`, {
-        name: trimmedName,
-        locale: 'en',
+        name: editingForm.name.trim(),
+        key: editingForm.slug,
+        translations: filledNamePayload(editingForm, 'name'),
       });
       logger.debug('✅ [ADMIN] Attribute name updated successfully');
       setEditingAttribute(null);
-      setEditingAttributeName('');
+      setEditingForm(emptyNamedForm());
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
       showToast(t('admin.attributes.nameUpdatedSuccess') || 'Attribute name updated successfully', 'success');
@@ -177,57 +173,50 @@ export function useAttributes() {
     if (editingAttribute === attribute.id) {
       // Close
       setEditingAttribute(null);
-      setEditingAttributeName('');
+      setEditingForm(emptyNamedForm());
     } else {
-      // Open
       setEditingAttribute(attribute.id);
-      setEditingAttributeName(attribute.name);
+      setEditingForm(namedFormFrom(
+        attribute.translations?.map((row) => ({ locale: row.locale, text: row.name })),
+        attribute.name,
+        attribute.key,
+      ));
     }
   };
 
   const handleAddValue = async (attributeId: string) => {
-    const trimmedValue = newValue.trim();
-    
-    if (!trimmedValue) {
+    if (!newValueForm.name.trim()) {
       showToast(t('admin.attributes.enterValue'), 'warning');
       setValueError(t('admin.attributes.enterValue'));
       return;
     }
 
-    // Find the attribute
     const attribute = attributes.find((attr) => attr.id === attributeId);
     if (!attribute) {
       showToast(t('admin.attributes.attributeNotFound'), 'error');
       return;
     }
 
-    // Check for duplicates on frontend (case-insensitive, normalized)
-    const normalizedNewValue = trimmedValue.toLowerCase().trim();
-    const existingValue = attribute.values.find((val) => {
-      const normalizedExisting = val.label.toLowerCase().trim();
-      return normalizedExisting === normalizedNewValue;
-    });
-
+    const nextKey = newValueForm.slug.trim().toLowerCase();
+    const existingValue = attribute.values.find((val) => val.value.toLowerCase() === nextKey);
     if (existingValue) {
-      const errorMsg = t('admin.attributes.valueAlreadyExists').replace('{value}', trimmedValue);
+      const errorMsg = t('admin.attributes.valueAlreadyExists').replace('{value}', newValueForm.name.trim());
       showToast(errorMsg, 'error', 5000);
       setValueError(errorMsg);
       return;
     }
 
-    // Clear any previous errors
     setValueError(null);
 
     try {
       setAddingValueTo(attributeId);
-      logger.debug('➕ [ADMIN] Adding value to attribute:', attributeId, trimmedValue);
       await apiClient.post(`/api/v1/admin/attributes/${attributeId}/values`, {
-        label: trimmedValue,
-        locale: 'en',
+        label: newValueForm.name.trim(),
+        value: newValueForm.slug,
+        translations: filledNamePayload(newValueForm, 'label'),
       });
       
-      logger.debug('✅ [ADMIN] Value added successfully');
-      setNewValue('');
+      setNewValueForm(emptyNamedForm());
       setValueError(null);
       setAddingValueTo(null);
       showToast(t('admin.attributes.valueAddedSuccess'), 'success');
@@ -239,7 +228,7 @@ export function useAttributes() {
       
       // Check if it's a duplicate error from backend
       if (errorMessage.includes('already exists') || errorMessage.includes('уже существует')) {
-        const duplicateMsg = t('admin.attributes.valueAlreadyExists').replace('{value}', trimmedValue);
+        const duplicateMsg = t('admin.attributes.valueAlreadyExists').replace('{value}', newValueForm.name.trim());
         showToast(duplicateMsg, 'error', 5000);
         setValueError(duplicateMsg);
       } else {
@@ -280,6 +269,7 @@ export function useAttributes() {
 
   const handleUpdateValue = async (data: {
     label?: string;
+    translations?: Array<Record<string, string>>;
     colors?: string[];
     imageUrl?: string | null;
   }) => {
@@ -294,10 +284,7 @@ export function useAttributes() {
         colorsIsArray: Array.isArray(data.colors),
         colorsLength: data.colors?.length
       });
-      await apiClient.patch(`/api/v1/admin/attributes/${editingValue.attributeId}/values/${editingValue.value.id}`, {
-        ...data,
-        locale: 'en',
-      });
+      await apiClient.patch(`/api/v1/admin/attributes/${editingValue.attributeId}/values/${editingValue.value.id}`, data);
       logger.debug('✅ [ADMIN] Value updated successfully');
       invalidateAdminListCache(ADMIN_LIST_CACHE_KEYS.attributes);
       fetchAttributes();
@@ -315,14 +302,17 @@ export function useAttributes() {
       // Close
       setExpandedValueId(null);
       setEditingValue(null);
-      setEditingLabel('');
+      setEditingValueForm(emptyNamedForm());
       setEditingColors([]);
       setEditingImageUrl(null);
     } else {
-      // Open
       setExpandedValueId(value.id);
       setEditingValue({ attributeId, value });
-      setEditingLabel(value.label);
+      setEditingValueForm(namedFormFrom(
+        value.translations?.map((row) => ({ locale: row.locale, text: row.label })),
+        value.label,
+        value.value,
+      ));
       setEditingColors(value.colors || []);
       setEditingImageUrl(value.imageUrl || null);
     }
@@ -372,14 +362,14 @@ export function useAttributes() {
     try {
       setSavingValue(true);
       await handleUpdateValue({
-        label: editingLabel.trim() !== editingValue.value.label ? editingLabel.trim() : undefined,
+        label: editingValueForm.name.trim(),
+        translations: filledNamePayload(editingValueForm, 'label'),
         colors: editingColors.length > 0 ? editingColors : undefined,
         imageUrl: editingImageUrl,
       });
-      // Close the expanded form
       setExpandedValueId(null);
       setEditingValue(null);
-      setEditingLabel('');
+      setEditingValueForm(emptyNamedForm());
       setEditingColors([]);
       setEditingImageUrl(null);
     } catch (error: any) {
@@ -407,17 +397,17 @@ export function useAttributes() {
     loading,
     showAddForm,
     editingAttribute,
-    editingAttributeName,
+    editingForm,
     savingAttribute,
     expandedAttributes,
     formData,
-    newValue,
+    newValueForm,
     addingValueTo,
     deletingValue,
     editingValue,
     valueError,
     expandedValueId,
-    editingLabel,
+    editingValueForm,
     editingColors,
     editingImageUrl,
     savingValue,
@@ -426,9 +416,9 @@ export function useAttributes() {
     // Actions
     setShowAddForm,
     setFormData,
-    setNewValue,
-    setEditingAttributeName,
-    setEditingLabel,
+    setNewValueForm,
+    setEditingForm,
+    setEditingValueForm,
     setEditingColors,
     setEditingImageUrl,
     setValueError,

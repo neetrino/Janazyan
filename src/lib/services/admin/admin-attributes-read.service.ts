@@ -1,5 +1,6 @@
 import { db } from "@white-shop/db";
 import { logger } from "@/lib/utils/logger";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
 
 let attributeValueColumnsVerified = false;
 
@@ -79,16 +80,10 @@ class AdminAttributesReadService {
     try {
       attributes = await db.attribute.findMany({
         include: {
-          translations: {
-            where: { locale: "en" },
-            take: 1,
-          },
+          translations: true,
           values: {
             include: {
-              translations: {
-                where: { locale: "en" },
-                take: 1,
-              },
+              translations: true,
             },
             orderBy: {
               position: "asc",
@@ -106,10 +101,7 @@ class AdminAttributesReadService {
         // Fetch attributes first
         const attributesList = await db.attribute.findMany({
           include: {
-            translations: {
-              where: { locale: "en" },
-              take: 1,
-            },
+            translations: true,
           },
           orderBy: {
             position: "asc",
@@ -126,10 +118,7 @@ class AdminAttributesReadService {
               attributeId: true,
               value: true,
               position: true,
-              translations: {
-                where: { locale: "en" },
-                take: 1,
-              },
+              translations: true,
             },
             orderBy: {
               position: "asc",
@@ -169,7 +158,6 @@ class AdminAttributesReadService {
             ? await db.attributeValueTranslation.findMany({
                 where: {
                   attributeValueId: { in: valueIds },
-                  locale: "en",
                 },
               })
             : [];
@@ -208,19 +196,22 @@ class AdminAttributesReadService {
     }
 
     return {
-      data: attributes.map((attribute: { id: string; key: string; type: string; filterable: boolean; translations?: Array<{ name: string }>; values?: Array<{ id: string; value: string; translations?: Array<{ label: string }>; colors?: any; imageUrl?: string | null }> }) => {
+      data: attributes.map((attribute: { id: string; key: string; type: string; filterable: boolean; translations?: Array<{ locale: string; name: string }>; values?: Array<{ id: string; value: string; translations?: Array<{ locale: string; label: string }>; colors?: any; imageUrl?: string | null }> }) => {
         const translations = Array.isArray(attribute.translations) ? attribute.translations : [];
-        const translation = translations[0] || null;
+        const translation = pickLocalizedText(translations, "hy", (row) => row.name);
         const values = Array.isArray(attribute.values) ? attribute.values : [];
         return {
           id: attribute.id,
           key: attribute.key,
           name: translation?.name || attribute.key,
+          translations: translations.map((row) => ({ locale: row.locale, name: row.name })),
           type: attribute.type,
           filterable: attribute.filterable,
           values: values.map((value: any) => {
-            const valueTranslations = Array.isArray(value.translations) ? value.translations : [];
-            const valueTranslation = valueTranslations[0] || null;
+            const valueTranslations: Array<{ locale: string; label?: string }> = Array.isArray(value.translations)
+              ? value.translations
+              : [];
+            const valueTranslation = pickLocalizedText(valueTranslations, "hy", (row) => row.label);
             const colorsData = value.colors;
             let colorsArray: string[] = [];
             
@@ -249,6 +240,9 @@ class AdminAttributesReadService {
               id: value.id,
               value: value.value,
               label: valueTranslation?.label || value.value,
+              translations: valueTranslations.flatMap((row) =>
+                row.label ? [{ locale: row.locale, label: row.label }] : [],
+              ),
               colors: colorsArray,
               imageUrl: value.imageUrl || null,
             };

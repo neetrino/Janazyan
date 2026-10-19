@@ -3,6 +3,7 @@ import { Prisma } from "@white-shop/db";
 import { findCategoryIdsBySlug } from "./products-find-query/category-utils";
 import { ProductWithRelations } from "./products-find-query.service";
 import { DEFAULT_LANGUAGE } from '../language';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 class ProductsFiltersService {
   /**
@@ -196,7 +197,11 @@ class ProductsFiltersService {
             
             // New format: Use AttributeValue if available
             if (option.attributeValue) {
-              const translation = option.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || option.attributeValue.translations?.[0];
+              const translation = pickLocalizedText(
+                (option.attributeValue.translations ?? []) as Array<{ locale: string; label?: string }>,
+                lang,
+                (row) => row.label,
+              );
               colorValue = translation?.label || option.attributeValue.value || "";
               imageUrl = option.attributeValue.imageUrl || null;
               colorsHex = option.attributeValue.colors || null;
@@ -241,7 +246,11 @@ class ProductsFiltersService {
               
               // New format: Use AttributeValue if available
               if (option.attributeValue) {
-                const translation = option.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || option.attributeValue.translations?.[0];
+                const translation = pickLocalizedText(
+                (option.attributeValue.translations ?? []) as Array<{ locale: string; label?: string }>,
+                lang,
+                (row) => row.label,
+              );
                 sizeValue = translation?.label || option.attributeValue.value || "";
               } else if (option.value) {
                 // Old format: use value directly
@@ -265,7 +274,11 @@ class ProductsFiltersService {
         (product as any).productAttributes.forEach((productAttr: any) => {
           if (productAttr.attribute?.key === 'color' && productAttr.attribute?.values) {
             productAttr.attribute.values.forEach((attrValue: any) => {
-              const translation = attrValue.translations?.find((t: { locale: string }) => t.locale === lang) || attrValue.translations?.[0];
+              const translation = pickLocalizedText(
+                (attrValue.translations ?? []) as Array<{ locale: string; label?: string }>,
+                lang,
+                (row) => row.label,
+              );
               const colorValue = translation?.label || attrValue.value || "";
               if (colorValue) {
                 const colorKey = colorValue.toLowerCase();

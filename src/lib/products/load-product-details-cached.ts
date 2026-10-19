@@ -8,6 +8,7 @@ import {
 } from '@/lib/cache/storefront-cache';
 import { dedupeInFlight } from '@/lib/cache/in-flight-dedup';
 import { DEFAULT_LANGUAGE } from '@/lib/language';
+import { localizeRecordCategoryTitles } from '@/lib/categories/present-category-title';
 import { productsSlugService } from '@/lib/services/products-slug.service';
 import type { Product } from '@/app/products/[slug]/types';
 import { decodeSlugParam } from '@/lib/utils/slug';
@@ -39,7 +40,7 @@ async function persistProductDetails(
 ): Promise<Product | null> {
   const cachedAfterLock = await readJsonCache<Product>(cacheKey);
   if (cachedAfterLock) {
-    return cachedAfterLock;
+    return localizeRecordCategoryTitles(cachedAfterLock, lang);
   }
 
   try {
@@ -65,7 +66,7 @@ export async function getProductDetailsCached(
   const cacheKey = STOREFRONT_CACHE_KEYS.productDetails(lang, slug);
   const cached = await readJsonCache<Product>(cacheKey);
   if (cached) {
-    return cached;
+    return localizeRecordCategoryTitles(cached, lang);
   }
 
   return dedupeInFlight(`product-details:${cacheKey}`, () =>

@@ -1,5 +1,7 @@
 import { processImageUrl } from "../../utils/image-utils";
 import { pickProductTranslation } from "@/lib/products/product-translations";
+import { presentCategoryTitle } from "@/lib/categories/present-category-title";
+import { pickLocalizedText } from "@/lib/i18n/localized-text";
 import {
   getProductDiscountSettings,
   type ProductDiscountSettings,
@@ -51,8 +53,8 @@ function pickAppliedDiscount(
   return 0;
 }
 
-function pickTranslation<T extends { locale: string }>(rows: T[], lang: string): T | null {
-  return rows.find((t) => t.locale === lang) ?? rows[0] ?? null;
+function pickTranslation<T extends { locale: string; title: string }>(rows: T[], lang: string): T | null {
+  return pickLocalizedText(rows, lang, (row) => row.title);
 }
 
 /**
@@ -90,7 +92,7 @@ export async function transformRelatedProductRows(
       return {
         id: cat.id,
         slug: ct?.slug ?? "",
-        title: ct?.title ?? "",
+        title: presentCategoryTitle(ct?.title ?? "", lang),
       };
     });
 

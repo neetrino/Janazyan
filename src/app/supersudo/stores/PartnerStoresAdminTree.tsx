@@ -2,6 +2,7 @@
 
 import { useState, type DragEvent } from 'react';
 import { Button } from '@shop/ui';
+import { PartnerLocaleNames } from './PartnerLocaleNames';
 import { PartnerStoreAdminRows } from './PartnerStoreAdminRows';
 import { PartnerStoreDragHandle } from './PartnerStoreDragHandle';
 import type { PartnerStoreDragState, PartnerStoreDropIndicator } from './partner-store-drag';
@@ -22,6 +23,8 @@ type PartnerStoresAdminTreeProps = {
   dropIndicator: PartnerStoreDropIndicator | null;
   onToggleRegion: (regionId: string) => void;
   onAddArea: (regionId: string) => void;
+  onEditRegion: (region: AdminPartnerStoreRegion) => void;
+  onEditArea: (area: AdminPartnerStoreArea) => void;
   onAddStore: (regionId?: string, areaId?: string) => void;
   onEditStore: (store: AdminPartnerStore) => void;
   onDeleteStore: (store: AdminPartnerStore) => void;
@@ -61,6 +64,8 @@ export function PartnerStoresAdminTree({
   dropIndicator,
   onToggleRegion,
   onAddArea,
+  onEditRegion,
+  onEditArea,
   onAddStore,
   onEditStore,
   onDeleteStore,
@@ -159,14 +164,16 @@ export function PartnerStoresAdminTree({
                   onClick={() => onToggleRegion(region.id)}
                   aria-expanded={expanded}
                 >
-                  {expanded ? '▾ ' : '▸ '}
-                  {region.name}
+                  <PartnerLocaleNames item={region} />
                   <span className="ml-2 text-xs font-normal text-gray-500">
                     ({regionStores.length})
                   </span>
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" onClick={() => onEditRegion(region)}>
+                  {labels.edit}
+                </Button>
                 <Button variant="outline" size="sm" onClick={() => onAddArea(region.id)}>
                   {labels.addArea}
                 </Button>
@@ -253,13 +260,16 @@ export function PartnerStoresAdminTree({
                             onClick={() => toggleArea(area.id)}
                             aria-expanded={areaExpanded}
                           >
-                            {areaExpanded ? '▾ ' : '▸ '}
-                            {area.name}
+                            <PartnerLocaleNames item={area} />
                             <span className="ml-2 text-xs font-normal text-gray-500">
                               ({areaStores.length})
                             </span>
                           </button>
                         </div>
+                        <div className="flex flex-wrap gap-2">
+                        <Button variant="outline" size="sm" onClick={() => onEditArea(area)}>
+                          {labels.edit}
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"
@@ -267,6 +277,7 @@ export function PartnerStoresAdminTree({
                         >
                           {labels.addStoreHere}
                         </Button>
+                        </div>
                       </div>
                       {areaExpanded ? (
                         areaStores.length === 0 ? (

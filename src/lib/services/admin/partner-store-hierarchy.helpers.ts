@@ -1,3 +1,5 @@
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
+import { writeInContentLocale } from '@/lib/i18n/locale-script';
 import type { PartnerStoreLocale } from '@/features/stores/partner-store-locales';
 import { PARTNER_STORE_LOCALES } from '@/features/stores/partner-store-locales';
 import { toSlug } from '@/lib/utils/slug';
@@ -27,14 +29,9 @@ export function notFoundError(detail: string) {
 
 export function pickTranslationName(
   translations: Array<{ locale: string; name: string }>,
-  displayLocale = 'en',
+  displayLocale = 'hy',
 ): string {
-  return (
-    translations.find((t) => t.locale === displayLocale)?.name ??
-    translations.find((t) => t.locale === 'en')?.name ??
-    translations[0]?.name ??
-    ''
-  );
+  return pickLocalizedText(translations, displayLocale, (row) => row.name)?.name ?? '';
 }
 
 export function mapNameTranslations(
@@ -48,16 +45,11 @@ export function normalizeNameTranslations(translations: LocaleNameInput[]): Arra
   name: string;
 }> {
   const cleaned = translations
-    .map((t) => ({ locale: t.locale, name: t.name.trim() }))
+    .map((t) => ({ locale: t.locale, name: writeInContentLocale(t.name, t.locale).trim() }))
     .filter((t) => t.name.length > 0);
 
   if (!cleaned.length) {
-    throw validationError('At least one name translation is required');
-  }
-
-  const en = cleaned.find((t) => t.locale === 'en');
-  if (!en) {
-    throw validationError('English name is required');
+    throw validationError('Enter a name in at least one language');
   }
 
   return cleaned;

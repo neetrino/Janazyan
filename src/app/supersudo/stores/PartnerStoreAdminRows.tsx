@@ -4,6 +4,7 @@ import type { DragEvent } from 'react';
 import { Button } from '@shop/ui';
 import { PartnerStoreDragHandle } from './PartnerStoreDragHandle';
 import type { PartnerStoreDragState, PartnerStoreDropIndicator } from './partner-store-drag';
+import { PartnerLocaleNames } from './PartnerLocaleNames';
 import type { AdminPartnerStore } from './types';
 
 type StoreRowsProps = {
@@ -122,8 +123,7 @@ export function PartnerStoreAdminRows({
                 />
               ) : null}
               <div className="min-w-0">
-                <p className="font-medium text-gray-900">{store.name}</p>
-                <p className="text-sm text-gray-600">{store.address}</p>
+                <PartnerLocaleNames item={store} />
               </div>
             </div>
             <div className="flex items-center gap-2">

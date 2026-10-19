@@ -1,5 +1,6 @@
 import { ProductFilters, ProductWithRelations } from "./products-find-query.service";
 import { DEFAULT_LANGUAGE } from '../language';
+import { pickLocalizedText } from '@/lib/i18n/localized-text';
 
 /**
  * Normalize comma-separated filter values and drop placeholders like "undefined" or "null".
@@ -59,7 +60,11 @@ class ProductsFindFilterService {
           const getColorValue = (opt: any, lang: string = DEFAULT_LANGUAGE): string | null => {
             // New format: Use AttributeValue if available
             if (opt.attributeValue && opt.attributeValue.attribute?.key === "color") {
-              const translation = opt.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || opt.attributeValue.translations?.[0];
+              const translation = pickLocalizedText(
+                (opt.attributeValue.translations ?? []) as Array<{ locale: string; label?: string }>,
+                lang,
+                (row) => row.label,
+              );
               return (translation?.label || opt.attributeValue.value || "").trim().toLowerCase();
             }
             // Old format: check attributeKey, key, or attribute
@@ -73,7 +78,11 @@ class ProductsFindFilterService {
           const getSizeValue = (opt: any, lang: string = DEFAULT_LANGUAGE): string | null => {
             // New format: Use AttributeValue if available
             if (opt.attributeValue && opt.attributeValue.attribute?.key === "size") {
-              const translation = opt.attributeValue.translations?.find((t: { locale: string }) => t.locale === lang) || opt.attributeValue.translations?.[0];
+              const translation = pickLocalizedText(
+                (opt.attributeValue.translations ?? []) as Array<{ locale: string; label?: string }>,
+                lang,
+                (row) => row.label,
+              );
               return (translation?.label || opt.attributeValue.value || "").trim().toUpperCase();
             }
             // Old format: check attributeKey, key, or attribute

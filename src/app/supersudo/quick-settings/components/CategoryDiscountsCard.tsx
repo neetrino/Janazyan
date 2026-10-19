@@ -2,11 +2,13 @@
 
 import { Card, Button, Input } from '@shop/ui';
 import { useTranslation } from '../../../../lib/i18n-client';
+import { categoryTitlesLabel } from '../../categories/utils';
 
 interface AdminCategory {
   id: string;
   title: string;
   parentId: string | null;
+  translations?: Array<{ locale: string; title: string }>;
 }
 
 interface CategoryDiscountsCardProps {
@@ -73,7 +75,7 @@ export function CategoryDiscountsCard({
               >
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {category.title || t('admin.quickSettings.untitledCategory')}
+                    {categoryTitlesLabel(category) || t('admin.quickSettings.untitledCategory')}
                   </p>
                   {category.parentId ? (
                     <p className="text-xs text-gray-500">{t('admin.quickSettings.parentCategoryId').replace('{id}', category.parentId)}</p>
