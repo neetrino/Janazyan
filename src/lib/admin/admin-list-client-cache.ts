@@ -80,7 +80,7 @@ export const ADMIN_LIST_CACHE_KEYS = {
   settings: 'admin:settings:main',
   stats: 'admin:stats:v1',
   coupons: 'admin:list:coupons',
-  delivery: 'admin:settings:delivery',
+  delivery: 'admin:settings:delivery:v3',
 } as const;
 
 export function buildAdminProductsCacheKey(params: Record<string, string>): string {

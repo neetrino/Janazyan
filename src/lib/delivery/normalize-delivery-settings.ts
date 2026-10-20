@@ -1,3 +1,4 @@
+import { canonicalDeliveryName, normalizeDeliveryNames } from './delivery-names';
 import { DELIVERY_EXTRA_FIELD_KEYS } from './delivery-settings.constants';
 import { DEFAULT_DELIVERY_SETTINGS } from './delivery-settings.defaults';
 import type {
@@ -60,11 +61,14 @@ function normalizeZone(zone: DeliveryZone, index: number): DeliveryZone {
   const extraFields = (zone.extraFields ?? [])
     .map(normalizeExtraField)
     .filter((field): field is DeliveryExtraField => field !== null);
+  const fallback = zone.name?.trim() || `Zone ${index + 1}`;
+  const names = normalizeDeliveryNames(zone.names, fallback);
 
   return {
     id: zone.id || createId(`zone-${index}`),
-    name: zone.name?.trim() || `Zone ${index + 1}`,
-    slug: zone.slug?.trim() || slugify(zone.name || `zone-${index + 1}`),
+    name: canonicalDeliveryName(names, fallback),
+    names,
+    slug: zone.slug?.trim() || slugify(canonicalDeliveryName(names, fallback)),
     pricing: normalizePricing(zone.pricing),
     carrier: zone.carrier?.trim() || undefined,
     carrierNote: zone.carrierNote?.trim() || undefined,
@@ -73,9 +77,13 @@ function normalizeZone(zone: DeliveryZone, index: number): DeliveryZone {
 }
 
 function normalizeCountry(country: DeliveryCountry, index: number): DeliveryCountry {
+  const fallback = country.name?.trim() || `Country ${index + 1}`;
+  const names = normalizeDeliveryNames(country.names, fallback);
+
   return {
     id: country.id || createId(`country-${index}`),
-    name: country.name?.trim() || `Country ${index + 1}`,
+    name: canonicalDeliveryName(names, fallback),
+    names,
     zones: (country.zones ?? []).map(normalizeZone),
   };
 }
@@ -87,10 +95,12 @@ function migrateLegacyLocations(locations: LegacyLocation[]): DeliverySettings {
     const countryName = location.country?.trim() || 'Armenia';
     const existing = countriesMap.get(countryName.toLowerCase());
 
+    const cityName = location.city?.trim() || `City ${index + 1}`;
     const zone: DeliveryZone = {
       id: location.id || createId(`zone-${index}`),
-      name: location.city?.trim() || `City ${index + 1}`,
-      slug: slugify(location.city || `city-${index + 1}`),
+      name: cityName,
+      names: normalizeDeliveryNames(undefined, cityName),
+      slug: slugify(cityName),
       pricing: { type: 'fixed', price: Math.max(0, location.price || 0) },
       extraFields: [],
     };
@@ -103,6 +113,7 @@ function migrateLegacyLocations(locations: LegacyLocation[]): DeliverySettings {
     countriesMap.set(countryName.toLowerCase(), {
       id: createId('country'),
       name: countryName,
+      names: normalizeDeliveryNames(undefined, countryName),
       zones: [zone],
     });
   });
@@ -139,9 +150,11 @@ export function toPublicDeliverySettings(settings: DeliverySettings) {
     countries: settings.countries.map((country) => ({
       id: country.id,
       name: country.name,
+      names: country.names,
       zones: country.zones.map((zone) => ({
         id: zone.id,
         name: zone.name,
+        names: zone.names,
         slug: zone.slug,
         pricing: zone.pricing,
         carrier: zone.carrier,
@@ -159,6 +172,7 @@ export function createEmptyCountry(): DeliveryCountry {
   return {
     id: createId('country'),
     name: '',
+    names: [],
     zones: [createEmptyZone()],
   };
 }
@@ -167,6 +181,7 @@ export function createEmptyZone(): DeliveryZone {
   return {
     id: createId('zone'),
     name: '',
+    names: [],
     slug: '',
     pricing: {
       type: 'tiered',

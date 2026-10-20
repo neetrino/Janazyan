@@ -1,3 +1,7 @@
+import type { CheckoutShippingMethod } from '@/lib/orders/shipping-method';
+
+export type { CheckoutShippingMethod };
+
 export type CheckoutFormData = {
   firstName: string;
   lastName: string;
@@ -5,8 +9,7 @@ export type CheckoutFormData = {
   phone: string;
   /** Optional second number if the first is not answered. */
   alternatePhone?: string;
-  shippingMethod: 'pickup' | 'delivery';
-  pickupStoreId?: string;
+  shippingMethod: CheckoutShippingMethod;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingCountry?: string;
   shippingCity?: string;

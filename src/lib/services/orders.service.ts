@@ -1,6 +1,7 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
 import type { CheckoutData } from "../types/checkout";
+import type { PickupStoreAddress } from "../types/pickup-store";
 import {
   FIRST_PUBLIC_ORDER_NUMBER,
   ORDER_NUMBER_ALLOCATION_LOCK_KEY,
@@ -11,8 +12,7 @@ import { extractMediaUrl } from "../utils/extractMediaUrl";
 import { invalidateAdminDashboardCache } from "@/lib/cache/load-admin-dashboard-cached";
 import { resolveCheckoutPromo } from "@/lib/promo-codes/resolve-checkout-promo";
 import { convertPrice } from "@/lib/currency";
-import { getPublishedPartnerStoreById } from "./partner-stores.service";
-import type { PickupStoreAddress } from "@/lib/types/pickup-store";
+import { isCheckoutShippingMethod } from "@/lib/orders/shipping-method";
 import { buildCheckoutBillingAddress } from "@/lib/orders/customer-contact";
 import { parseOptionalCheckoutPhone } from "@/lib/orders/checkout-phone";
 import { registerArcaPayment } from "@/lib/orders/register-arca-payment";
@@ -331,8 +331,7 @@ class OrdersService {
         email,
         phone,
         alternatePhone: rawAlternatePhone,
-        shippingMethod = 'pickup',
-        pickupStoreId,
+        shippingMethod = 'delivery',
         shippingAddress,
         paymentMethod = 'idram',
         promoCode,
@@ -581,36 +580,18 @@ class OrdersService {
       const discountAmount = convertPrice(discountAmountAmd, 'AMD', 'USD');
       // Shipping: computed server-side only (never trust client-provided amount)
       let shippingAmount = 0;
-      let resolvedShippingAddress: CheckoutData['shippingAddress'] | PickupStoreAddress | undefined =
-        shippingAddress;
+      const resolvedShippingAddress = shippingAddress;
 
-      if (shippingMethod === 'pickup') {
-        const normalizedPickupStoreId = pickupStoreId?.trim();
-        if (!normalizedPickupStoreId) {
-          throw {
-            status: 400,
-            type: "https://api.shop.am/problems/validation-error",
-            title: "Validation Error",
-            detail: "Pickup store is required for store pickup orders",
-          };
-        }
-
-        const pickupStore = await getPublishedPartnerStoreById(normalizedPickupStoreId, 'en');
-        if (!pickupStore) {
-          throw {
-            status: 400,
-            type: "https://api.shop.am/problems/validation-error",
-            title: "Validation Error",
-            detail: "Selected pickup store is unavailable",
-          };
-        }
-
-        resolvedShippingAddress = {
-          pickupStoreId: pickupStore.id,
-          storeName: pickupStore.name,
-          address: pickupStore.address,
+      if (!isCheckoutShippingMethod(shippingMethod)) {
+        throw {
+          status: 400,
+          type: "https://api.shop.am/problems/validation-error",
+          title: "Validation Error",
+          detail: "Shipping method is not available",
         };
-      } else if (shippingMethod === 'delivery' && shippingAddress?.city?.trim()) {
+      }
+
+      if (shippingAddress?.city?.trim()) {
         const country = (shippingAddress.countryCode ?? 'Armenia').toString();
         shippingAmount = await adminDeliveryService.getDeliveryPrice(
           shippingAddress.city.trim(),
@@ -948,7 +929,7 @@ class OrdersService {
         phone: order.customerPhone || undefined,
       },
       shippingAddress: shippingAddress,
-      shippingMethod: order.shippingMethod || 'pickup',
+      shippingMethod: order.shippingMethod || 'delivery',
       trackingNumber: order.trackingNumber || undefined,
       createdAt: order.createdAt.toISOString(),
       updatedAt: order.updatedAt.toISOString(),

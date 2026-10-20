@@ -14,10 +14,12 @@ import { useTranslation } from '@/lib/i18n-client';
 import { logger } from '@/lib/utils/logger';
 import { useAdminDialogs } from '../../context/AdminDialogsContext';
 import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
+import { DeliveryLocaleNames } from './DeliveryLocaleNames';
 import { DeliveryLocationDrawer } from './DeliveryLocationDrawer';
 import {
   createEmptyDeliveryLocationForm,
   deleteDeliveryLocation,
+  deliveryLocationHasNames,
   flattenDeliveryLocations,
   formDataFromLocation,
   formatDeliveryPricingSummary,
@@ -96,7 +98,7 @@ export function DeliveryLocationsSection() {
   };
 
   const handleSubmit = async () => {
-    if (!formData.countryName.trim() || !formData.cityName.trim()) {
+    if (!deliveryLocationHasNames(formData)) {
       alert(t('admin.delivery.validationRequired'));
       return;
     }
@@ -189,8 +191,12 @@ export function DeliveryLocationsSection() {
                     className="cursor-pointer hover:bg-gray-50"
                     onClick={() => handleOpenEdit(row)}
                   >
-                    <td className="px-4 py-4 text-sm font-medium text-gray-900">{row.countryName}</td>
-                    <td className="px-4 py-4 text-sm text-gray-700">{row.cityName}</td>
+                    <td className="px-4 py-4 text-sm font-medium text-gray-900">
+                      <DeliveryLocaleNames names={row.countryNames} />
+                    </td>
+                    <td className="px-4 py-4 text-sm text-gray-700">
+                      <DeliveryLocaleNames names={row.cityNames} />
+                    </td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       {formatDeliveryPricingSummary(row.pricing, pricingSummaryLabels)}
                     </td>
@@ -217,6 +223,7 @@ export function DeliveryLocationsSection() {
       <DeliveryLocationDrawer
         open={showDrawer}
         isEditing={Boolean(editingLocation)}
+        syncKey={editingLocation ? `${editingLocation.countryId}-${editingLocation.zoneId}` : 'new'}
         formData={formData}
         submitting={saving}
         onClose={handleCloseDrawer}

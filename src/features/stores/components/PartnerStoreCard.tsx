@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Map, MapPin } from 'lucide-react';
+import { isCustomPartnerStoreImage } from '../constants';
 import {
   PARTNER_STORE_CARD_COMPACT_CLASS,
   PARTNER_STORE_CARD_FULL_CLASS,
@@ -57,6 +58,12 @@ type StoreCardBodyProps = {
   compact: boolean;
 };
 
+function storeLogoClassName(logo: string): string {
+  return isCustomPartnerStoreImage(logo)
+    ? 'partner-store-card__logo-img partner-store-card__logo-img--photo'
+    : 'partner-store-card__logo-img';
+}
+
 function StoreCardBody({ store, compact }: StoreCardBodyProps) {
   if (compact) {
     return (
@@ -65,9 +72,10 @@ function StoreCardBody({ store, compact }: StoreCardBodyProps) {
           <Image
             src={store.logo}
             alt={store.logoAlt}
-            width={112}
-            height={48}
-            className="partner-store-card__logo-img"
+            fill
+            unoptimized
+            sizes="76px"
+            className={storeLogoClassName(store.logo)}
           />
         </div>
         <h3 className="partner-store-card__title">{store.name}</h3>
@@ -85,9 +93,10 @@ function StoreCardBody({ store, compact }: StoreCardBodyProps) {
         <Image
           src={store.logo}
           alt={store.logoAlt}
-          width={112}
-          height={48}
-          className="partner-store-card__logo-img partner-store-card__logo-img--full"
+          fill
+          unoptimized
+          sizes="148px"
+          className={storeLogoClassName(store.logo)}
         />
       </div>
       <div className="partner-store-card__content">

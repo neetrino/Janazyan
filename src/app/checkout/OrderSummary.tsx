@@ -9,7 +9,7 @@ import { CheckoutOrderSummaryBreakdown } from './components/CheckoutOrderSummary
 import { CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS } from './checkout-layout.constants';
 import { CHECKOUT_GLASS_ERROR_CLASS } from './checkout-glass-styles';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
-import type { Cart } from './types';
+import type { Cart, CheckoutShippingMethod } from './types';
 
 interface OrderSummaryProps {
   cart: Cart | null;
@@ -20,7 +20,7 @@ interface OrderSummaryProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: CheckoutShippingMethod;
   shippingCountry?: string;
   shippingCity?: string;
   deliveryOptions: DeliveryOptionsPublic | null;

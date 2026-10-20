@@ -291,12 +291,13 @@ export function OrderDetailsModal({
                       <div>
                         <span className="font-medium">{t('profile.orderDetails.method')}: </span>
                         <span className="capitalize">
-                          {selectedOrder.shippingMethod === 'delivery' ? t('profile.orderDetails.delivery') : 
-                           selectedOrder.shippingMethod === 'pickup' ? t('profile.orderDetails.pickup') : 
+                          {selectedOrder.shippingMethod === 'delivery' ? t('profile.orderDetails.delivery') :
+                           selectedOrder.shippingMethod === 'pochta' ? t('profile.orderDetails.pochta') :
+                           selectedOrder.shippingMethod === 'pickup' ? t('profile.orderDetails.pickup') :
                            selectedOrder.shippingMethod || t('profile.orderDetails.notSpecified')}
                         </span>
                       </div>
-                      {selectedOrder.shippingMethod === 'delivery' && selectedOrder.shippingAddress && (
+                      {(selectedOrder.shippingMethod === 'delivery' || selectedOrder.shippingMethod === 'pochta') && selectedOrder.shippingAddress && (
                         <div className="mt-3 pt-3 border-t border-sky-mist/50">
                           <p className="font-medium text-ink-800 mb-2">{t('profile.orderDetails.deliveryAddress')}:</p>
                           <div className="text-ink-600">

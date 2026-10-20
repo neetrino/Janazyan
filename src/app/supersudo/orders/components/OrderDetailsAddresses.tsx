@@ -37,11 +37,13 @@ export function OrderDetailsAddresses({ orderDetails, formatCurrency }: OrderDet
               </div>
             ) : null}
           </div>
-        ) : orderDetails.shippingMethod === 'delivery' && orderDetails.shippingAddress ? (
+        ) : (orderDetails.shippingMethod === 'delivery' || orderDetails.shippingMethod === 'pochta') && orderDetails.shippingAddress ? (
           <div className="text-sm text-gray-700 space-y-1">
             <div className="mb-2">
               <span className="font-medium">{t('admin.orders.orderDetails.shippingMethod')}</span>{' '}
-              {t('checkout.shipping.delivery')}
+              {orderDetails.shippingMethod === 'pochta'
+                ? t('admin.orders.orderDetails.pochta')
+                : t('checkout.shipping.delivery')}
             </div>
             {(orderDetails.shippingAddress.address || orderDetails.shippingAddress.addressLine1) && (
               <div>
@@ -75,6 +77,8 @@ export function OrderDetailsAddresses({ orderDetails, formatCurrency }: OrderDet
                 {t('admin.orders.orderDetails.shippingMethod')}{' '}
                 {orderDetails.shippingMethod === 'pickup'
                   ? t('admin.orders.orderDetails.pickup')
+                  : orderDetails.shippingMethod === 'pochta'
+                  ? t('admin.orders.orderDetails.pochta')
                   : orderDetails.shippingMethod === 'delivery'
                   ? t('checkout.shipping.delivery')
                   : orderDetails.shippingMethod}

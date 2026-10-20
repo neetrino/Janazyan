@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { fetchDeliveryPriceCached } from '@/lib/delivery/fetch-delivery-price-cached';
+import { isCheckoutShippingMethod } from '@/lib/orders/shipping-method';
+import type { CheckoutShippingMethod } from '@/lib/orders/shipping-method';
 
 export function useDeliveryPrice(
-  shippingMethod: 'pickup' | 'delivery',
+  shippingMethod: CheckoutShippingMethod,
   shippingZone: string | undefined,
   shippingCountry: string | undefined,
   orderSubtotalAmd: number,
@@ -13,7 +15,7 @@ export function useDeliveryPrice(
   useEffect(() => {
     const fetchDeliveryPrice = async () => {
       if (
-        shippingMethod === 'delivery' &&
+        isCheckoutShippingMethod(shippingMethod) &&
         shippingZone &&
         shippingZone.trim().length > 0 &&
         shippingCountry &&

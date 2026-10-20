@@ -53,6 +53,8 @@
     "storePickupDescription": "Վերցրեք ձեր պատվերը մեր խանութից (Անվճար)",
     "delivery": "Առաքում",
     "deliveryDescription": "Մենք կառաքենք ձեր պատվերը ձեր հասցեին",
+    "pochta": "Փոստ",
+    "pochtaDescription": "Պատվերը կուղարկենք փոստով",
     "freePickup": "Անվճար (Խանութից)",
     "selectPickupStore": "Ընտրեք խանութ",
     "selectPickupStoreDescription": "Ընտրեք այն խանութը, որտեղից ցանկանում եք վերցնել պատվերը",

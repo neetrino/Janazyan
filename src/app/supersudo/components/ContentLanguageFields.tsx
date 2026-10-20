@@ -18,6 +18,7 @@ interface ContentLanguageFieldsProps {
   texts: LocalizedText[];
   slug: string;
   slugReadOnly?: boolean;
+  showSlug?: boolean;
   onChange: (locale: LanguageCode, patch: { text?: string; slug?: string }) => void;
 }
 
@@ -29,6 +30,7 @@ export function ContentLanguageFields({
   texts,
   slug,
   slugReadOnly = false,
+  showSlug = true,
   onChange,
 }: ContentLanguageFieldsProps) {
   const { t } = useTranslation();
@@ -89,16 +91,18 @@ export function ContentLanguageFields({
           onChange={(event) => onChange(active.locale, { text: event.target.value })}
         />
       </div>
-      <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">{slugLabel}</label>
-        <Input
-          type="text"
-          value={slug}
-          readOnly={slugReadOnly}
-          onChange={(event) => onChange(active.locale, { slug: event.target.value })}
-        />
-        <p className="mt-1 text-xs text-gray-500">{slugHint}</p>
-      </div>
+      {showSlug ? (
+        <div>
+          <label className="mb-1 block text-sm font-medium text-gray-700">{slugLabel}</label>
+          <Input
+            type="text"
+            value={slug}
+            readOnly={slugReadOnly}
+            onChange={(event) => onChange(active.locale, { slug: event.target.value })}
+          />
+          <p className="mt-1 text-xs text-gray-500">{slugHint}</p>
+        </div>
+      ) : null}
     </div>
   );
 }

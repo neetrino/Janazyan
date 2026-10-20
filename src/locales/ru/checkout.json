@@ -53,6 +53,8 @@
     "storePickupDescription": "Заберите ваш заказ из нашего магазина (Бесплатно)",
     "delivery": "Доставка",
     "deliveryDescription": "Мы доставим ваш заказ по вашему адресу",
+    "pochta": "Почта",
+    "pochtaDescription": "Мы отправим заказ почтой",
     "freePickup": "Бесплатно (Самовывоз)",
     "selectPickupStore": "Выберите магазин",
     "selectPickupStoreDescription": "Выберите магазин, из которого хотите забрать заказ",

@@ -103,8 +103,7 @@ export function useOrderSubmission({
         cartId = 'guest-cart';
       }
 
-      const shippingAddress = data.shippingMethod === 'delivery' &&
-        data.shippingAddress &&
+      const shippingAddress = data.shippingAddress &&
         data.shippingCity &&
         data.shippingCountry
         ? {
@@ -126,7 +125,7 @@ export function useOrderSubmission({
           }
         : undefined;
 
-      const shippingAmount = data.shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
+      const shippingAmount = deliveryPrice !== null ? deliveryPrice : 0;
 
       const response = await apiClient.post<{
         order: {
@@ -154,9 +153,6 @@ export function useOrderSubmission({
           ? { alternatePhone: data.alternatePhone.trim() }
           : {}),
         shippingMethod: data.shippingMethod,
-        ...(data.shippingMethod === 'pickup' && data.pickupStoreId?.trim()
-          ? { pickupStoreId: data.pickupStoreId.trim() }
-          : {}),
         ...(shippingAddress ? { shippingAddress } : {}),
         shippingAmount: shippingAmount,
         paymentMethod: data.paymentMethod,

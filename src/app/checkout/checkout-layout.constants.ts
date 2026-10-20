@@ -31,6 +31,3 @@ export const CHECKOUT_SUMMARY_ROW_CLASS = 'flex items-center justify-between gap
 export const CHECKOUT_SUMMARY_LABEL_CLASS = 'shrink-0 text-gray-600';
 
 export const CHECKOUT_SUMMARY_VALUE_CLASS = 'shrink-0 text-right whitespace-nowrap';
-
-/** Scrollable pickup store list shell class (compact height vs /stores page). */
-export const CHECKOUT_PICKUP_STORE_LIST_SHELL_CLASS = 'checkout-pickup-stores-directory';

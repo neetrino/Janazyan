@@ -169,6 +169,7 @@
     "shippingMethod": "Способ доставки",
     "method": "Способ",
     "delivery": "Доставка",
+    "pochta": "Почта",
     "pickup": "Самовывоз",
     "pickupStore": "Магазин самовывоза",
     "notSpecified": "Не указано",

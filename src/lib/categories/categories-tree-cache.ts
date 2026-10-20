@@ -13,6 +13,6 @@ export const getCategoriesTreeCached = unstable_cache(
     const result = await categoriesService.getTree(lang);
     return { data: (result?.data ?? []) as CategoryTreeNode[] };
   },
-  ['storefront-categories-tree-v1'],
-  { revalidate: CATEGORIES_TREE_REVALIDATE_SECONDS }
+  ['storefront-categories-tree-v3'],
+  { revalidate: CATEGORIES_TREE_REVALIDATE_SECONDS, tags: ['categories'] },
 );

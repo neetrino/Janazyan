@@ -7,12 +7,14 @@ import type {
   DivIcon,
   Map as LeafletMap,
   Marker as LeafletMarker,
+  TileLayer,
 } from 'leaflet';
 import {
   MAP_DEFAULT_CENTER,
   MAP_TILE_MAX_ZOOM,
-  MAP_TILE_URL,
+  buildYandexMapTileUrl,
 } from '@/features/stores/constants';
+import { useTranslation } from '../../../lib/i18n-client';
 import {
   ARMENIA_MAP_BOUNDS,
   LOCATION_PICKER_COUNTRY_ZOOM,
@@ -40,7 +42,7 @@ function createPickerMarkerIcon(L: LeafletModule): DivIcon {
 }
 
 /**
- * Clickable Armenia-focused map with a single draggable pin for admin store coordinates.
+ * Clickable Yandex map with a single draggable pin for admin store coordinates.
  */
 export function PartnerStoreLocationPickerMap({
   lat,
@@ -50,12 +52,16 @@ export function PartnerStoreLocationPickerMap({
 }: PartnerStoreLocationPickerMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const markerRef = useRef<LeafletMarker | null>(null);
   const leafletRef = useRef<LeafletModule | null>(null);
   const onChangeRef = useRef(onChange);
   const [mapReady, setMapReady] = useState(false);
+  const { lang } = useTranslation();
+  const langRef = useRef(lang);
 
   onChangeRef.current = onChange;
+  langRef.current = lang;
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -89,10 +95,11 @@ export function PartnerStoreLocationPickerMap({
         attributionControl: false,
       });
 
-      L.tileLayer(MAP_TILE_URL, {
-        attribution: '',
+      const tiles = L.tileLayer(buildYandexMapTileUrl(langRef.current), {
         maxZoom: MAP_TILE_MAX_ZOOM,
-      }).addTo(map);
+      });
+      tiles.addTo(map);
+      tileLayerRef.current = tiles;
 
       map.on('click', (event) => {
         onChangeRef.current({ lat: event.latlng.lat, lng: event.latlng.lng });
@@ -113,6 +120,7 @@ export function PartnerStoreLocationPickerMap({
       cancelled = true;
       markerRef.current?.remove();
       markerRef.current = null;
+      tileLayerRef.current = null;
       mapRef.current?.remove();
       mapRef.current = null;
       leafletRef.current = null;
@@ -120,6 +128,10 @@ export function PartnerStoreLocationPickerMap({
     };
     // Initial center/zoom only — pin sync happens in the effect below.
   }, []);
+
+  useEffect(() => {
+    tileLayerRef.current?.setUrl(buildYandexMapTileUrl(lang));
+  }, [lang, mapReady]);
 
   useEffect(() => {
     if (!mapReady) {

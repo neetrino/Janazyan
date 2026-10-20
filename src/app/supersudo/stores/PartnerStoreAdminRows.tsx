@@ -122,6 +122,13 @@ export function PartnerStoreAdminRows({
                   onDragEnd={onDragEnd}
                 />
               ) : null}
+              {store.logoUrl ? (
+                <img
+                  src={store.logoUrl}
+                  alt=""
+                  className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                />
+              ) : null}
               <div className="min-w-0">
                 <PartnerLocaleNames item={store} />
               </div>

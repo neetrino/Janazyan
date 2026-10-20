@@ -176,31 +176,71 @@ export function PartnerStoreDrawer({
                   onChange={(e) => updateActiveTranslation('address', e.target.value)}
                 />
               </div>
-
-              <div className="space-y-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setMapPickerOpen(true)}
-                >
-                  {t('admin.partnerStores.pickOnMap')}
-                </Button>
-                {formData.lat !== null && formData.lng !== null ? (
-                  <p className="text-xs text-gray-500">
-                    {t('admin.partnerStores.latitude')}: {formData.lat.toFixed(6)},{' '}
-                    {t('admin.partnerStores.longitude')}: {formData.lng.toFixed(6)}
-                    {formData.coordinatesSource === 'map'
-                      ? ` · ${t('admin.partnerStores.locationFromMap')}`
-                      : ''}
-                  </p>
-                ) : (
-                  <p className="text-xs text-gray-500">
-                    {t('admin.partnerStores.locationAutoHint')}
-                  </p>
-                )}
-              </div>
             </>
           ) : null}
+        </section>
+
+        <section className="space-y-4">
+          <AdminFormSectionLabel>{t('admin.partnerStores.logo')}</AdminFormSectionLabel>
+
+          {formData.logoUrl ? (
+            <div className="relative inline-block">
+              <img
+                src={formData.logoUrl}
+                alt=""
+                className="h-40 w-full max-w-xs rounded-xl object-cover"
+              />
+              <button
+                type="button"
+                className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-600 text-xs text-white"
+                onClick={onRemoveLogo}
+                aria-label={t('admin.common.delete')}
+              >
+                ×
+              </button>
+            </div>
+          ) : null}
+
+          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm">
+            {imageUploading
+              ? t('admin.partnerStores.uploadingLogo')
+              : formData.logoUrl
+                ? t('admin.partnerStores.changeImage')
+                : t('admin.partnerStores.uploadLogo')}
+            <input
+              type="file"
+              accept="image/*"
+              className="hidden"
+              disabled={imageUploading}
+              onChange={onLogoUpload}
+            />
+          </label>
+          <p className="text-xs text-gray-500">{t('admin.partnerStores.imageHint')}</p>
+        </section>
+
+        <section className="space-y-4">
+          <div className="space-y-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setMapPickerOpen(true)}
+            >
+              {t('admin.partnerStores.pickOnMap')}
+            </Button>
+            {formData.lat !== null && formData.lng !== null ? (
+              <p className="text-xs text-gray-500">
+                {t('admin.partnerStores.latitude')}: {formData.lat.toFixed(6)},{' '}
+                {t('admin.partnerStores.longitude')}: {formData.lng.toFixed(6)}
+                {formData.coordinatesSource === 'map'
+                  ? ` · ${t('admin.partnerStores.locationFromMap')}`
+                  : ''}
+              </p>
+            ) : (
+              <p className="text-xs text-gray-500">
+                {t('admin.partnerStores.locationAutoHint')}
+              </p>
+            )}
+          </div>
         </section>
 
         <section className="space-y-4">
@@ -269,40 +309,6 @@ export function PartnerStoreDrawer({
               <option value="draft">{t('admin.partnerStores.draft')}</option>
             </select>
           </div>
-        </section>
-
-        <section className="space-y-4">
-          <AdminFormSectionLabel>{t('admin.partnerStores.logo')}</AdminFormSectionLabel>
-
-          {formData.logoUrl ? (
-            <div className="relative inline-block">
-              <img
-                src={formData.logoUrl}
-                alt=""
-                className="h-12 w-28 object-contain"
-              />
-              <button
-                type="button"
-                className="absolute -right-2 -top-2 rounded-full bg-red-600 px-1.5 text-xs text-white"
-                onClick={onRemoveLogo}
-              >
-                ×
-              </button>
-            </div>
-          ) : null}
-
-          <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg bg-gray-100 px-3 py-2 text-sm">
-            {imageUploading
-              ? t('admin.partnerStores.uploadingLogo')
-              : t('admin.partnerStores.uploadLogo')}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              disabled={imageUploading}
-              onChange={onLogoUpload}
-            />
-          </label>
         </section>
       </form>
 

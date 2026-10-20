@@ -81,7 +81,7 @@ function mapStoreRow(row: StoreRow, locale: string): PartnerStore | null {
     id: row.id,
     name: writeInContentLocale(nameRow.name, locale),
     address: writeInContentLocale(addressRow.address, locale),
-    logo: PARTNER_STORE_DEFAULT_LOGO,
+    logo: row.logoUrl?.trim() || PARTNER_STORE_DEFAULT_LOGO,
     logoAlt: writeInContentLocale(nameRow.logoAlt ?? nameRow.name, locale),
     lat: coordinates.lat,
     lng: coordinates.lng,

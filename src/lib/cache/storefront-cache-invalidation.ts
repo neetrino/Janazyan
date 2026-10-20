@@ -17,14 +17,13 @@ async function clearProductPageRedisPatterns(): Promise<void> {
 
 /** After category create/update/delete (admin). */
 export async function invalidateStorefrontCategoryCaches(): Promise<void> {
-  // @ts-expect-error - revalidateTag type issue in Next.js
-  revalidateTag('categories');
+  revalidateTag('categories', { expire: 0 });
   await Promise.all([
-    cacheService.deletePattern('categories:tree:*'),
-    cacheService.deletePattern('categories:navigation-previews:*'),
-    cacheService.deletePattern('categories:slug:*'),
-    cacheService.deletePattern('categories:top:*'),
-    cacheService.deletePattern('categories:nav-strip:*'),
+    deleteJsonCachePattern('categories:tree:*'),
+    deleteJsonCachePattern('categories:navigation-previews:*'),
+    deleteJsonCachePattern('categories:slug:*'),
+    deleteJsonCachePattern('categories:top:*'),
+    deleteJsonCachePattern('categories:nav-strip:*'),
   ]);
 }
 

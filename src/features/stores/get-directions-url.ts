@@ -1,4 +1,4 @@
-/** Builds a Google Maps directions URL for a store location. */
+/** Builds a Yandex Maps directions URL for a store location. */
 export function getDirectionsUrl(lat: number, lng: number): string {
-  return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  return `https://yandex.com/maps/?rtext=~${lat},${lng}&rtt=auto`;
 }

@@ -1,3 +1,5 @@
+import type { LanguageCode } from '@/lib/language';
+
 export type DeliveryPricingFixed = {
   type: 'fixed';
   price: number;
@@ -10,6 +12,11 @@ export type DeliveryPricingTiered = {
 };
 
 export type DeliveryPricing = DeliveryPricingFixed | DeliveryPricingTiered;
+
+export type DeliveryNameTranslation = {
+  locale: LanguageCode;
+  text: string;
+};
 
 export type DeliveryExtraFieldKey =
   | 'recipientFullName'
@@ -25,6 +32,7 @@ export type DeliveryExtraField = {
 export type DeliveryZone = {
   id: string;
   name: string;
+  names: DeliveryNameTranslation[];
   slug: string;
   pricing: DeliveryPricing;
   carrier?: string;
@@ -35,6 +43,7 @@ export type DeliveryZone = {
 export type DeliveryCountry = {
   id: string;
   name: string;
+  names: DeliveryNameTranslation[];
   zones: DeliveryZone[];
 };
 
@@ -56,6 +65,7 @@ export type DeliveryZonePublic = Omit<DeliveryZone, 'extraFields'> & {
 export type DeliveryCountryPublic = {
   id: string;
   name: string;
+  names: DeliveryNameTranslation[];
   zones: DeliveryZonePublic[];
 };
 

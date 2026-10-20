@@ -1,3 +1,4 @@
+import { deliveryLabelMatches } from './delivery-names';
 import type { DeliveryCountry, DeliverySettings, DeliveryZone } from './delivery-settings.types';
 
 function normalize(value: string): string {
@@ -12,8 +13,8 @@ export function findDeliveryCountry(
 
   return settings.countries.find(
     (entry) =>
-      normalize(entry.name) === normalizedCountry ||
-      normalize(entry.id) === normalizedCountry,
+      normalize(entry.id) === normalizedCountry ||
+      deliveryLabelMatches(country, entry.name, entry.names),
   );
 }
 
@@ -26,6 +27,6 @@ export function findDeliveryZone(
   return country.zones.find(
     (zone) =>
       normalize(zone.slug) === normalized ||
-      normalize(zone.name) === normalized,
+      deliveryLabelMatches(zoneSlugOrName, zone.name, zone.names),
   );
 }

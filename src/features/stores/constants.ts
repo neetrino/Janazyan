@@ -1,5 +1,10 @@
-/** Shared storefront logo for all partner store list/card surfaces. */
+/** Shared storefront logo when a partner store has no uploaded photo. */
 export const PARTNER_STORE_DEFAULT_LOGO = '/mage_shop.svg';
+
+/** True when the storefront image is an uploaded photo, not the default mark. */
+export function isCustomPartnerStoreImage(logo: string): boolean {
+  return logo.length > 0 && logo !== PARTNER_STORE_DEFAULT_LOGO;
+}
 
 /** Default map center — Yerevan. */
 export const MAP_DEFAULT_CENTER = {
@@ -19,8 +24,21 @@ export const MAP_MODAL_MAP_MIN_HEIGHT_PX = 560;
 export const MAP_MODAL_MAP_MIN_HEIGHT_MOBILE_PX = 420;
 export const MAP_MODAL_Z_INDEX = 9999;
 
-/** OpenStreetMap raster tiles — attribution shown via page chrome, not Leaflet bar. */
-export const MAP_TILE_URL = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const YANDEX_MAP_TILE_LANG: Record<string, string> = {
+  hy: 'hy_AM',
+  ru: 'ru_RU',
+  en: 'en_US',
+};
+
+/**
+ * Yandex roadmap tiles in Web Mercator so they align with Leaflet.
+ * `{x}`, `{y}`, and `{z}` are filled by Leaflet.
+ */
+export function buildYandexMapTileUrl(locale: string): string {
+  const lang = YANDEX_MAP_TILE_LANG[locale] ?? YANDEX_MAP_TILE_LANG.hy;
+  return `https://core-renderer-tiles.maps.yandex.net/tiles?l=map&x={x}&y={y}&z={z}&scale=1&lang=${lang}&projection=web_mercator`;
+}
+
 export const MAP_TILE_MAX_ZOOM = 19;
 
 /** Below this width the store list stacks above the map (Tailwind `lg`). */

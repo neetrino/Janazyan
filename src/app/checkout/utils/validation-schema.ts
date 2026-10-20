@@ -3,6 +3,7 @@ import type { FieldErrors } from 'react-hook-form';
 import { z } from 'zod';
 import { useTranslation } from '../../../lib/i18n-client';
 import { CHECKOUT_PHONE_PATTERN } from '@/lib/orders/checkout-phone';
+import { CHECKOUT_SHIPPING_METHODS } from '@/lib/orders/shipping-method';
 import type { CheckoutFormData } from '../types';
 
 /** Map Zod issues to RHF field errors (first issue per field). */
@@ -41,10 +42,9 @@ export function useCheckoutSchema() {
         (value) => !value?.trim() || CHECKOUT_PHONE_PATTERN.test(value.trim()),
         { message: t('checkout.errors.invalidPhone') },
       ),
-    shippingMethod: z.enum(['pickup', 'delivery'], {
+    shippingMethod: z.enum(CHECKOUT_SHIPPING_METHODS, {
       message: t('checkout.errors.selectShippingMethod'),
     }),
-    pickupStoreId: z.string().optional(),
     paymentMethod: z.enum(['idram', 'arca', 'cash_on_delivery'], {
       message: t('checkout.errors.selectPaymentMethod'),
     }),
@@ -58,36 +58,13 @@ export function useCheckoutSchema() {
     cardExpiry: z.string().optional(),
     cardCvv: z.string().optional(),
     cardHolderName: z.string().optional(),
-  }).refine((data) => {
-    if (data.shippingMethod === 'pickup') {
-      return Boolean(data.pickupStoreId?.trim());
-    }
-    return true;
-  }, {
-    message: t('checkout.errors.pickupStoreRequired'),
-    path: ['pickupStoreId'],
-  }).refine((data) => {
-    if (data.shippingMethod === 'delivery') {
-      return data.shippingAddress && data.shippingAddress.trim().length > 0;
-    }
-    return true;
-  }, {
+  }).refine((data) => Boolean(data.shippingAddress?.trim()), {
     message: t('checkout.errors.addressRequired'),
     path: ['shippingAddress'],
-  }).refine((data) => {
-    if (data.shippingMethod === 'delivery') {
-      return data.shippingCountry && data.shippingCountry.trim().length > 0;
-    }
-    return true;
-  }, {
+  }).refine((data) => Boolean(data.shippingCountry?.trim()), {
     message: t('checkout.errors.countryRequired'),
     path: ['shippingCountry'],
-  }).refine((data) => {
-    if (data.shippingMethod === 'delivery') {
-      return data.shippingCity && data.shippingCity.trim().length > 0;
-    }
-    return true;
-  }, {
+  }).refine((data) => Boolean(data.shippingCity?.trim()), {
     message: t('checkout.errors.zoneRequired'),
     path: ['shippingCity'],
   }), [t]);

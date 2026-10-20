@@ -169,6 +169,7 @@
     "shippingMethod": "Shipping Method",
     "method": "Method",
     "delivery": "Delivery",
+    "pochta": "Post",
     "pickup": "Pickup",
     "pickupStore": "Pickup store",
     "notSpecified": "Not Specified",

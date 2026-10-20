@@ -4,7 +4,6 @@ import type { Cart } from '../types';
 
 interface UseOrderSummaryProps {
   cart: Cart | null;
-  shippingMethod: 'pickup' | 'delivery';
   deliveryPrice: number | null;
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
   appliedDiscountAmd?: number;
@@ -12,7 +11,6 @@ interface UseOrderSummaryProps {
 
 export function useOrderSummary({
   cart,
-  shippingMethod,
   deliveryPrice,
   currency,
   appliedDiscountAmd = 0,
@@ -32,7 +30,7 @@ export function useOrderSummary({
     }
 
     const subtotalAMD = convertPrice(cart.totals.subtotal, 'USD', 'AMD');
-    const shippingAMD = shippingMethod === 'delivery' && deliveryPrice !== null ? deliveryPrice : 0;
+    const shippingAMD = deliveryPrice !== null ? deliveryPrice : 0;
     const discountAMD = Math.max(0, Math.min(appliedDiscountAmd, subtotalAMD));
     const totalAMD = subtotalAMD + shippingAMD - discountAMD;
     
@@ -51,7 +49,7 @@ export function useOrderSummary({
       discountDisplay,
       totalDisplay,
     };
-  }, [appliedDiscountAmd, cart, shippingMethod, deliveryPrice, currency]);
+  }, [appliedDiscountAmd, cart, deliveryPrice, currency]);
 
   return { orderSummary };
 }

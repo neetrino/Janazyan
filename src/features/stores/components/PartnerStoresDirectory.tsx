@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { ChevronDown, MapPin, Store } from 'lucide-react';
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { isCustomPartnerStoreImage } from '../constants';
 import { groupPartnerStoresByHierarchy } from '../group-partner-stores';
 import type { PartnerStore, StoreSelectHandler } from '../types';
 
@@ -54,9 +55,14 @@ function PartnerStoreDirectoryItem({
           <Image
             src={store.logo}
             alt=""
-            width={40}
-            height={40}
-            className="partner-stores-directory__logo-img"
+            fill
+            unoptimized
+            sizes="40px"
+            className={
+              isCustomPartnerStoreImage(store.logo)
+                ? 'partner-stores-directory__logo-img partner-stores-directory__logo-img--photo'
+                : 'partner-stores-directory__logo-img'
+            }
           />
         </span>
         <span className="partner-stores-directory__content">
