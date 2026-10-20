@@ -8,7 +8,9 @@ import type {
   DivIcon,
   Map as LeafletMap,
   Marker as LeafletMarker,
+  TileLayer,
 } from 'leaflet';
+import { useTranslation } from '../../../lib/i18n-client';
 import {
   MAP_DEFAULT_CENTER,
   MAP_DEFAULT_ZOOM,
@@ -22,7 +24,7 @@ import {
   MAP_SELECTED_ZOOM,
   MAP_SELECTED_ZOOM_MOBILE,
   MAP_TILE_MAX_ZOOM,
-  MAP_TILE_URL,
+  buildYandexMapTileUrl,
 } from '../constants';
 import { resolvePartnerStoreMapPositions } from '../map-marker-positions';
 import type { PartnerStore, StoreSelectHandler } from '../types';
@@ -96,7 +98,7 @@ function createMarkerIcon(
 }
 
 /**
- * Interactive OpenStreetMap view with partner store markers.
+ * Interactive Yandex map with partner store markers.
  */
 export function PartnerStoresMap({
   stores,
@@ -110,9 +112,12 @@ export function PartnerStoresMap({
 }: PartnerStoresMapProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
+  const tileLayerRef = useRef<TileLayer | null>(null);
   const markersRef = useRef<Map<string, LeafletMarker>>(new Map());
   const leafletRef = useRef<LeafletModule | null>(null);
   const [mapReady, setMapReady] = useState(false);
+  const { lang } = useTranslation();
+  const langRef = useRef(lang);
   const isMobile = useStoresMobileViewport();
   const selectedZoom = isMobile ? MAP_SELECTED_ZOOM_MOBILE : MAP_SELECTED_ZOOM;
   const resolvedMinHeightPx =
@@ -123,6 +128,7 @@ export function PartnerStoresMap({
 
   const onStoreSelectRef = useRef(onStoreSelect);
   onStoreSelectRef.current = onStoreSelect;
+  langRef.current = lang;
 
   useEffect(() => {
     mapRef.current?.invalidateSize();
@@ -156,10 +162,11 @@ export function PartnerStoresMap({
         attributionControl: false,
       });
 
-      L.tileLayer(MAP_TILE_URL, {
-        attribution: '',
+      const tiles = L.tileLayer(buildYandexMapTileUrl(langRef.current), {
         maxZoom: MAP_TILE_MAX_ZOOM,
-      }).addTo(map);
+      });
+      tiles.addTo(map);
+      tileLayerRef.current = tiles;
 
       mapRef.current = map;
       map.invalidateSize();
@@ -175,12 +182,17 @@ export function PartnerStoresMap({
     return () => {
       cancelled = true;
       markersRef.current.clear();
+      tileLayerRef.current = null;
       mapRef.current?.remove();
       mapRef.current = null;
       leafletRef.current = null;
       setMapReady(false);
     };
   }, []);
+
+  useEffect(() => {
+    tileLayerRef.current?.setUrl(buildYandexMapTileUrl(lang));
+  }, [lang, mapReady]);
 
   useEffect(() => {
     if (!mapReady) {

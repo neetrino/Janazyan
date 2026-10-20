@@ -653,9 +653,11 @@ body {
 }
 
 .partner-stores-directory__logo {
+  position: relative;
   display: flex;
   width: 2.5rem;
   height: 2.5rem;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -665,9 +667,13 @@ body {
 }
 
 .partner-stores-directory__logo-img {
-  width: 1.875rem;
-  height: 1.875rem;
   object-fit: contain;
+  padding: 0.2rem;
+}
+
+.partner-stores-directory__logo-img--photo {
+  object-fit: cover;
+  padding: 0;
 }
 
 .partner-stores-directory__content {
@@ -1056,10 +1062,8 @@ body {
   --partner-store-accent-soft: rgb(147 182 227 / 0.16);
   --partner-store-logo-width: 4.75rem;
   --partner-store-logo-height: 4rem;
-  --partner-store-logo-image-height: 2.125rem;
   --partner-store-logo-width-full: 9.25rem;
   --partner-store-logo-height-full: 5.5rem;
-  --partner-store-logo-image-height-full: 3.375rem;
   position: relative;
   overflow: hidden;
   border-radius: 1rem;
@@ -1132,9 +1136,11 @@ body {
 }
 
 .partner-store-card__logo-wrap {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
   width: var(--partner-store-logo-width);
   height: var(--partner-store-logo-height);
   border-radius: 0.75rem;
@@ -1153,14 +1159,13 @@ body {
 }
 
 .partner-store-card__logo-img {
-  height: var(--partner-store-logo-image-height);
-  width: auto;
-  max-width: 100%;
   object-fit: contain;
+  padding: 0.35rem;
 }
 
-.partner-store-card__logo-img--full {
-  height: var(--partner-store-logo-image-height-full);
+.partner-store-card__logo-img--photo {
+  object-fit: cover;
+  padding: 0;
 }
 
 .partner-store-card__title {
@@ -1744,7 +1749,6 @@ body {
 .partner-stores-carousel--mobile .partner-store-card {
   --partner-store-logo-width: 4rem;
   --partner-store-logo-height: 3rem;
-  --partner-store-logo-image-height: 1.6875rem;
 }
 
 .partner-stores-carousel--mobile .partner-store-card--compact {

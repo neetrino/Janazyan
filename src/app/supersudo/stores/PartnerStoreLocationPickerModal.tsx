@@ -28,7 +28,7 @@ type PartnerStoreLocationPickerModalProps = {
 };
 
 /**
- * Admin modal to place a store pin on an Armenia-focused OpenStreetMap view.
+ * Admin modal to place a store pin on an Armenia-focused Yandex map.
  */
 export function PartnerStoreLocationPickerModal({
   isOpen,
