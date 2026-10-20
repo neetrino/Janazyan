@@ -107,7 +107,6 @@ export function RichTextEditor({
       form.removeEventListener('submit', handleFormSubmit, true);
     };
     // Re-bind when the editor mounts into a form; emitChange reads refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only listener
   }, []);
 
   const runCommand = (command: RichTextCommand, commandValue?: string): void => {

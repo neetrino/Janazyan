@@ -48,6 +48,24 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+function groupSortedByRegion<T extends { regionId: string; position: number; name: string }>(
+  items: readonly T[],
+): Map<string, T[]> {
+  const map = new Map<string, T[]>();
+  for (const item of items) {
+    const list = map.get(item.regionId) ?? [];
+    list.push(item);
+    map.set(item.regionId, list);
+  }
+  for (const [regionId, list] of map) {
+    map.set(
+      regionId,
+      [...list].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
+    );
+  }
+  return map;
+}
+
 export function PartnerStoresSection() {
   const { t } = useTranslation();
   const { confirm: confirmDialog } = useAdminDialogs();
@@ -124,37 +142,11 @@ export function PartnerStoresSection() {
     });
   }, [stores, searchQuery, regionNameById, areaNameById]);
 
-  const storesByRegion = useMemo(() => {
-    const map = new Map<string, AdminPartnerStore[]>();
-    for (const store of filteredStores) {
-      const list = map.get(store.regionId) ?? [];
-      list.push(store);
-      map.set(store.regionId, list);
-    }
-    for (const [regionId, list] of map) {
-      map.set(
-        regionId,
-        [...list].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
-      );
-    }
-    return map;
-  }, [filteredStores]);
-
-  const areasByRegion = useMemo(() => {
-    const map = new Map<string, AdminPartnerStoreArea[]>();
-    for (const area of areas) {
-      const list = map.get(area.regionId) ?? [];
-      list.push(area);
-      map.set(area.regionId, list);
-    }
-    for (const [regionId, list] of map) {
-      map.set(
-        regionId,
-        [...list].sort((a, b) => a.position - b.position || a.name.localeCompare(b.name)),
-      );
-    }
-    return map;
-  }, [areas]);
+  const storesByRegion = useMemo(
+    () => groupSortedByRegion(filteredStores),
+    [filteredStores],
+  );
+  const areasByRegion = useMemo(() => groupSortedByRegion(areas), [areas]);
 
   const reorderEnabled = searchQuery.trim().length === 0 && !reordering;
 
