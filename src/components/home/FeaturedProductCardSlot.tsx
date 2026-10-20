@@ -44,6 +44,8 @@ type FeaturedProductCardSlotProps = {
   scale?: FeaturedProductCardScale;
   /** Eagerly load the product image (above-the-fold cards only). */
   priority?: boolean;
+  /** Related-products carousel keeps the card surface flat. */
+  hideSurfaceShadow?: boolean;
 };
 
 /**
@@ -53,14 +55,22 @@ export function FeaturedProductCardSlot({
   product,
   scale = 'catalog',
   priority = true,
+  hideSurfaceShadow = false,
 }: FeaturedProductCardSlotProps) {
+  const card = (
+    <FeaturedProductCard
+      product={product}
+      priority={priority}
+      hideSurfaceShadow={hideSurfaceShadow}
+    />
+  );
   if (scale === 'responsive-catalog') {
     return (
       <div className={`relative shrink-0 overflow-visible ${RESPONSIVE_CATALOG_SLOT_SIZE}`}>
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${RESPONSIVE_CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS['responsive-catalog']}`}
         >
-          <FeaturedProductCard product={product} priority={priority} />
+          {card}
         </div>
       </div>
     );
@@ -72,7 +82,7 @@ export function FeaturedProductCardSlot({
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${CATALOG_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.catalog}`}
         >
-          <FeaturedProductCard product={product} priority={priority} />
+          {card}
         </div>
       </div>
     );
@@ -84,7 +94,7 @@ export function FeaturedProductCardSlot({
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${MOBILE_GRID_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS['mobile-grid']}`}
         >
-          <FeaturedProductCard product={product} priority={priority} />
+          {card}
         </div>
       </div>
     );
@@ -96,7 +106,7 @@ export function FeaturedProductCardSlot({
         <div
           className={`absolute left-1/2 -translate-x-1/2 origin-top ${CAROUSEL_SLOT_CARD_TOP_CLASS} ${SCALE_CLASS.carousel}`}
         >
-          <FeaturedProductCard product={product} priority={priority} />
+          {card}
         </div>
       </div>
     );
@@ -105,7 +115,7 @@ export function FeaturedProductCardSlot({
   return (
     <div className="flex shrink-0 justify-center overflow-visible">
       <div className={`origin-top ${SCALE_CLASS[scale]}`}>
-        <FeaturedProductCard product={product} priority={priority} />
+        {card}
       </div>
     </div>
   );

@@ -22,9 +22,10 @@ import {
   ABOUT_HEADING_LEFT_PX,
   ABOUT_HEADING_TOP_PX,
   ABOUT_HEADING_WIDTH_PX,
-  ABOUT_SHAMPOO_HEIGHT_PX,
+  ABOUT_SHAMPOO_IMAGE_HEIGHT_PX,
   ABOUT_SHAMPOO_IMAGE_SRC,
-  ABOUT_SHAMPOO_LEFT_PX,
+  ABOUT_SHAMPOO_IMAGE_WIDTH_PX,
+  ABOUT_SHAMPOO_RIGHT_INSET_PX,
   ABOUT_SHAMPOO_TOP_PX,
   ABOUT_SHAMPOO_WIDTH_PX,
 } from '../about-page.constants';
@@ -45,13 +46,33 @@ export function AboutDesktopLayout({
   bodyLeft,
   bodyRight,
 }: AboutDesktopLayoutProps) {
-  const scaleExpression = `calc(100cqw / ${ABOUT_ARTBOARD_WIDTH_PX}px)`;
+  const scaleExpression = `min(1, calc(100cqw / ${ABOUT_ARTBOARD_WIDTH_PX}px))`;
   const artboardTotalHeightPx = ABOUT_ARTBOARD_HEIGHT_PX + ABOUT_ARTBOARD_FOOTER_GAP_PX;
 
   return (
-    <div className="@container relative w-full">
+    <div className="about-page-scale-host relative w-full">
+      <div className="relative mx-auto w-full" style={{ maxWidth: ABOUT_ARTBOARD_WIDTH_PX }}>
       <div
-        className="relative w-full overflow-x-clip"
+        className="pointer-events-none absolute z-[1] origin-top-right"
+        style={{
+          right: ABOUT_SHAMPOO_RIGHT_INSET_PX,
+          top: ABOUT_SHAMPOO_TOP_PX,
+          width: ABOUT_SHAMPOO_WIDTH_PX,
+          transform: `scale(${scaleExpression})`,
+        }}
+      >
+        <Image
+          src={ABOUT_SHAMPOO_IMAGE_SRC}
+          alt=""
+          width={ABOUT_SHAMPOO_IMAGE_WIDTH_PX}
+          height={ABOUT_SHAMPOO_IMAGE_HEIGHT_PX}
+          sizes={`${ABOUT_SHAMPOO_WIDTH_PX}px`}
+          className="h-auto w-full"
+          priority
+        />
+      </div>
+      <div
+        className="relative w-full"
         style={{
           height: `calc(${artboardTotalHeightPx}px * ${scaleExpression})`,
         }}
@@ -66,26 +87,6 @@ export function AboutDesktopLayout({
             } as CSSProperties
           }
         >
-          <div
-            className="pointer-events-none absolute z-[1] overflow-hidden"
-            style={{
-              left: ABOUT_SHAMPOO_LEFT_PX,
-              top: ABOUT_SHAMPOO_TOP_PX,
-              width: ABOUT_SHAMPOO_WIDTH_PX,
-              height: ABOUT_SHAMPOO_HEIGHT_PX,
-            }}
-          >
-            {/* Figma crop: image scaled ~107% and nudged up within the frame */}
-            <Image
-              src={ABOUT_SHAMPOO_IMAGE_SRC}
-              alt=""
-              fill
-              sizes={`${ABOUT_SHAMPOO_WIDTH_PX}px`}
-              className="object-cover object-[center_8%]"
-              priority
-            />
-          </div>
-
           <div
             className="pointer-events-none absolute z-[1]"
             style={{
@@ -149,6 +150,7 @@ export function AboutDesktopLayout({
             ))}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

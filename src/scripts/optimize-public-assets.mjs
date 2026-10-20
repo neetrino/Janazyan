@@ -29,7 +29,7 @@ const FIGMA_MAX_WIDTHS = {
   'footer-logo': 512,
   'header-logo': 512,
   'hero-body-wash': 1280,
-  'hero-jellyfish': 1280,
+  'hero-octopus': 1280,
   'login-hero-decoration': 900,
   'promo-cosmetic': 900,
   'promo-poster-photo': 1280,

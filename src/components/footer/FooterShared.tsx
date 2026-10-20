@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type { FooterContactItem } from './constants';
+import { handleHomeLogoClick } from '../../lib/navigation/scroll-home-to-top';
 import {
   FOOTER_COPYRIGHT_COMPANY,
   FOOTER_COPYRIGHT_URL,
@@ -128,7 +129,7 @@ export function FooterCopyright({ className = '' }: { className?: string }) {
     <p
       className={`text-left text-[14px] leading-[20px] tracking-[-0.15px] ${FOOTER_TEXT} ${className}`}
     >
-      Copyright © {FOOTER_COPYRIGHT_YEAR} | All Rights Reserved, Created by{' '}
+      © {FOOTER_COPYRIGHT_YEAR} | All Rights Reserved | Created by{' '}
       <a
         href={FOOTER_COPYRIGHT_URL}
         target="_blank"
@@ -146,6 +147,7 @@ export function FooterBrandLogo({ className = '' }: { className?: string }) {
     <Link
       href="/"
       className={`relative block h-[66px] w-[79px] overflow-hidden ${className}`}
+      onClick={handleHomeLogoClick}
     >
       <img
         src={FOOTER_LOGO}

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { HomeFeaturedProduct } from '../../lib/home/featured-products-data';
 import { FeaturedProductCard } from './FeaturedProductCard';
-import { HeroArrowButtonIcon } from './HeroArrowIcon';
+import { HeroCtaArrow } from './HeroArrowIcon';
 import { MIRAGE_SECTION_HEADING_CLASS } from './mirage-heading-styles';
 import { useTranslation } from '../../lib/i18n-client';
 import { SECTION_CARD_ROW_INSET_CLASS } from '../../lib/layout/storefront-layout.constants';
@@ -76,10 +76,10 @@ export function FeaturedProducts({ products }: FeaturedProductsProps) {
         <div className="absolute left-1/2 top-[608px] -translate-x-1/2">
           <Link
             href="/products?filter=featured"
-            className="inline-flex h-[56px] items-center gap-1 rounded-[72px] bg-white px-6 text-[18px] font-bold leading-6 text-sky-deep transition-transform duration-700 ease-in-out hover:-translate-y-0.5"
+            className="inline-flex items-center gap-1 rounded-[72px] bg-white px-6 py-4 text-[18px] font-bold leading-6 text-sky-deep transition-transform duration-700 ease-in-out hover:-translate-y-0.5"
           >
             {t('home.featured.cta')}
-            <HeroArrowButtonIcon />
+            <HeroCtaArrow tone="sky" />
           </Link>
         </div>
       </div>

@@ -101,7 +101,7 @@ export const PRODUCTS_PAGE_HEADER_ACTIONS_TOP_PX = 73;
 export const PRODUCTS_PAGE_HEADER_ACTIONS_RIGHT_PX = 53;
 
 /** Shared toolbar pill radius — Figma category filters (node 269:894). */
-export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-[20px]';
+export const PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS = 'rounded-full';
 
 /** Shared toolbar control pill height — aligned with category pills. */
 export const PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS = 'h-10 desktop:h-12';
@@ -118,7 +118,7 @@ export const PRODUCTS_PAGE_TOOLBAR_ROW_CLASS =
   `flex flex-row items-center ${PRODUCTS_PAGE_TOOLBAR_ROW_GAP_CLASS}`;
 
 /** Outer shop toolbar wrapper — desktop offset comes from the hero shell, not here. */
-export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1';
+export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-3';
 
 /**
  * Mobile shop — category pills sit inside the white catalog card (no extra gap above the curve).
@@ -126,7 +126,7 @@ export const PRODUCTS_PAGE_TOOLBAR_WRAPPER_CLASS = 'pb-1';
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS = 'mb-4';
 
 export const PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS =
-  `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} ${STOREFRONT_SIDE_PADDING_NEG_CLASS} w-auto max-w-none`;
+  `${PRODUCTS_PAGE_MOBILE_TOOLBAR_GAP_CLASS} w-full max-w-none`;
 
 /** Gap between search row and the white catalog card on mobile shop. */
 export const PRODUCTS_PAGE_MOBILE_CATALOG_TOP_MARGIN_CLASS = 'mt-8';
@@ -170,8 +170,8 @@ export const PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS =
 /** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
 export const PRODUCTS_PAGE_TOOLBAR_VIEW_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
 
-/** @deprecated Use {@link PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}. */
-export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS;
+/** Sort control and its menu — kept at 20px after category pills went fully round. */
+export const PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS = 'rounded-[20px]';
 
 /** Gradient continuation for the catalog zone — starts at sky-mist to meet the hero band. */
 export const PRODUCTS_PAGE_CATALOG_SURFACE_CLASS = 'bg-products-catalog';
@@ -214,6 +214,9 @@ export const PRODUCTS_PAGE_CATALOG_BOTTOM_PADDING_CLASS =
 /** Content-only hero pages — tighter gap before the overlapping footer decoration. */
 export const PRODUCTS_PAGE_CONTENT_ONLY_CATALOG_BOTTOM_PADDING_CLASS =
   'pb-24 md:pb-32 desktop:pb-28';
+
+/** Product-page blue shape ends this far below the related-products block. */
+export const PDP_CATALOG_BACKGROUND_BELOW_RELATED_PX = 48;
 
 /** Single product page — keep reviews above the footer with a small visual gap. */
 export const PRODUCTS_PAGE_PDP_CATALOG_BOTTOM_PADDING_CLASS =

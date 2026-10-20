@@ -75,7 +75,7 @@ export function CheckoutPageClient() {
     return (
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
-        compactHero
+        catalogBackgroundCoversShell
         {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={<CheckoutPageSkeleton />}
       />
@@ -86,7 +86,7 @@ export function CheckoutPageClient() {
     return (
       <ProductsHeroShell
         sectionAriaLabel="Checkout"
-        compactHero
+        catalogBackgroundCoversShell
         {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={
           <div className={ACCOUNT_PAGE_INNER_CLASS}>
@@ -112,7 +112,7 @@ export function CheckoutPageClient() {
   return (
     <ProductsHeroShell
       sectionAriaLabel="Checkout"
-      compactHero
+      catalogBackgroundCoversShell
       {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
         <div className={ACCOUNT_PAGE_INNER_CLASS}>

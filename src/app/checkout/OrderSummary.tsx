@@ -1,10 +1,9 @@
 'use client';
 
+import Image from 'next/image';
 import { useTranslation } from '../../lib/i18n-client';
-import {
-  STOREFRONT_SKY_ACTION_BUTTON_CLASS,
-  STOREFRONT_SKY_SUBMIT_BUTTON_CLASS,
-} from '../products/[slug]/product-action-bar.constants';
+import { formatPriceInCurrency } from '@/lib/currency';
+import { STOREFRONT_SKY_ACTION_BUTTON_CLASS } from '../products/[slug]/product-action-bar.constants';
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CheckoutOrderSummaryBreakdown } from './components/CheckoutOrderSummaryBreakdown';
 import { CHECKOUT_ORDER_SUMMARY_COLUMN_CLASS } from './checkout-layout.constants';
@@ -115,10 +114,24 @@ export function OrderSummary({
 
         <button
           type="submit"
-          className={STOREFRONT_SKY_SUBMIT_BUTTON_CLASS}
+          className="inline-flex h-[50px] w-full items-center justify-center gap-3 rounded-full bg-[#1e2939] px-6 text-xs font-medium uppercase leading-[18px] tracking-[1.92px] text-white disabled:cursor-not-allowed disabled:opacity-50"
           disabled={isSubmitting}
         >
-          {isSubmitting ? t('checkout.buttons.processing') : t('checkout.buttons.placeOrder')}
+          {isSubmitting ? (
+            t('checkout.buttons.processing')
+          ) : (
+            <>
+              <span>
+                {`${t('checkout.buttons.placeOrder')} — ${formatPriceInCurrency(orderSummary.totalDisplay, currency)}`}
+              </span>
+              <Image
+                src="/figma/checkout-order-cta-arrow.svg"
+                alt=""
+                width={14}
+                height={14}
+              />
+            </>
+          )}
         </button>
       </CheckoutGlassCard>
     </div>

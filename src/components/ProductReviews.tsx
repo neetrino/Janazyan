@@ -97,7 +97,7 @@ export function ProductReviews({
             <button
               type="button"
               onClick={handleShowForm}
-              className={`mb-8 ${PDP_WRITE_REVIEW_BUTTON_CLASS}`}
+              className={`mb-4 ${PDP_WRITE_REVIEW_BUTTON_CLASS}`}
             >
               {t('common.reviews.writeReview')}
             </button>

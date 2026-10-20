@@ -6,7 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS,
-  PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS,
+  PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS,
   PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS,
   PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS,
 } from '../../app/products/products-page-layout.constants';
@@ -150,7 +150,7 @@ export function ProductsToolbarControls() {
         ref={sortPanelRef}
         role="listbox"
         aria-label={t('products.header.sortBy')}
-        className={`fixed w-56 overflow-hidden border border-gray-200 bg-white shadow-lg ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS}`}
+        className={`fixed w-56 overflow-hidden border border-gray-200 bg-white shadow-lg ${PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS}`}
         style={{
           top: dropdownPosition.top,
           right: dropdownPosition.right,
@@ -186,7 +186,7 @@ export function ProductsToolbarControls() {
           aria-expanded={showSortDropdown}
           aria-haspopup="listbox"
           aria-label={t('products.header.sortBy')}
-          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1.5 desktop:gap-2 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} ${PRODUCTS_PAGE_TOOLBAR_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
+          className={`inline-flex ${PRODUCTS_PAGE_TOOLBAR_CONTROL_HEIGHT_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_WIDTH_CLASS} items-center justify-center gap-1.5 desktop:gap-2 ${PRODUCTS_PAGE_TOOLBAR_SORT_BUTTON_CLASS} ${PRODUCTS_PAGE_TOOLBAR_SORT_PILL_RADIUS_CLASS} ${STOREFRONT_PILL_INTERACTIVE_CLASS}`}
         >
           <Image
             src={PRODUCTS_TOOLBAR_SORT_ALT_ICON.src}

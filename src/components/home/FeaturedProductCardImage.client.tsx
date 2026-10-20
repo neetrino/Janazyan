@@ -32,8 +32,8 @@ export function FeaturedProductCardImage({
       src={src}
       alt={alt}
       fill
-      sizes="96px"
-      className="object-contain object-bottom"
+      sizes="93px"
+      className="object-cover"
       priority={priority}
       loading={priority ? undefined : 'lazy'}
       onError={() => setFailed(true)}

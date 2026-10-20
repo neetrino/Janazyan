@@ -9,13 +9,8 @@ import { useAddToCart } from '../hooks/useAddToCart';
 import { useWishlist } from '../hooks/useWishlist';
 import { STOREFRONT_ICON_ACTION_BUTTON_CLASS } from '../../lib/ui/storefront-interactive-button-classes';
 
-const FEATURED_CART_ICON_LEFT_RATIO = 0.7951;
-const FEATURED_CART_ICON_RIGHT_RATIO = 0.0691;
-const FEATURED_CART_ICON_TOP_PX = 289;
-const CARD_WIDTH_PX = 283;
-const FEATURED_CART_ICON_SIZE_PX = Math.round(
-  CARD_WIDTH_PX * (1 - FEATURED_CART_ICON_LEFT_RATIO - FEATURED_CART_ICON_RIGHT_RATIO),
-);
+const FEATURED_CART_ICON_TOP_IN_BODY_PX = 241.77;
+const FEATURED_CART_ICON_SIZE_PX = 38.4;
 const FEATURED_CART_ICON = '/figma/featured-cart.svg';
 const FEATURED_HEART_STROKE_WIDTH = 1.667;
 const FEATURED_HEART_PATH =
@@ -115,10 +110,9 @@ export function FeaturedProductCardActions({ product }: FeaturedProductCardActio
         aria-label={t('common.ariaLabels.addToCart')}
         disabled={!product.inStock}
         onClick={handleAddToCart}
-        className={`absolute z-20 grid place-items-center ${STOREFRONT_ICON_ACTION_BUTTON_CLASS} disabled:opacity-50`}
+        className={`absolute left-[79.51%] z-20 grid place-items-center ${STOREFRONT_ICON_ACTION_BUTTON_CLASS} disabled:opacity-50`}
         style={{
-          left: `${FEATURED_CART_ICON_LEFT_RATIO * 100}%`,
-          top: FEATURED_CART_ICON_TOP_PX,
+          top: `calc(13.6% + ${FEATURED_CART_ICON_TOP_IN_BODY_PX}px)`,
           width: FEATURED_CART_ICON_SIZE_PX,
           height: FEATURED_CART_ICON_SIZE_PX,
         }}

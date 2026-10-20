@@ -70,7 +70,6 @@ export function ContactHeroVisual() {
           iconClassName={CONTACT_PILL_LOCATION_ICON_CLASS}
           className={CONTACT_PILL_LOCATION_POSITION_CLASS}
           textClassName={CONTACT_PILL_LOCATION_TEXT_CLASS}
-          arrowTail="right"
         >
           {t('contact.address')}
         </ContactInfoPill>

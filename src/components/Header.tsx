@@ -4,25 +4,20 @@ import type { CSSProperties, ReactNode } from 'react';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { HeaderBrandCluster } from './header/HeaderBrandCluster';
 import { HeaderStorefrontActions } from './header/HeaderStorefrontActions';
+import { useHeaderScrollPill } from './hooks/useHeaderScrollPill';
 import {
   HEADER_EMBEDDED_MOBILE_BRAND_TOP_PX,
-  HEADER_HOME_EMBEDDED_ROW_TOP_PX,
   HEADER_HOME_HORIZONTAL_INSET_LEFT_PX,
   HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX,
   HEADER_SHELL_HORIZONTAL_INSET_PX,
   HEADER_SHELL_STICKY_Z_INDEX,
+  resolveEmbeddedHeaderRowTopPx,
   resolveHeaderBandHeightPx,
   resolveHeaderRowVerticalInsetPx,
   resolveHeaderStickyOverlapPx,
   HEADER_COMPACT_DESKTOP_CLUSTER_GAP_CLASS,
   HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS,
-  HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS,
 } from './header/header-shell-shape.constants';
-import {
-  PRODUCTS_PAGE_CONTENT_INSET_CLASS,
-  PRODUCTS_PAGE_MAX_WIDTH_CLASS,
-  PRODUCTS_PAGE_SIDE_PADDING_CLASS,
-} from '../app/products/products-page-layout.constants';
 import {
   STOREFRONT_CONTENT_MAX_WIDTH_CLASS,
   STOREFRONT_DESKTOP_ONLY_CLASS,
@@ -67,21 +62,12 @@ function resolveHeaderContainerLayout(
 ): HeaderContainerLayout {
   const isHomePage = pathname === '/';
 
-  if (isHomePage) {
+  if (isHomePage || usesEmbeddedHeroHeaderLayout(pathname, embedded)) {
     return {
-      containerClassName: `mx-auto w-full ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS}`,
+      containerClassName: `mx-auto w-full ${STOREFRONT_CONTENT_MAX_WIDTH_CLASS} ${STOREFRONT_HORIZONTAL_GUTTER_CLASS}`,
       insetClassName: '',
       horizontalInsetLeftPx: HEADER_HOME_HORIZONTAL_INSET_LEFT_PX,
       horizontalInsetRightPx: HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX,
-    };
-  }
-
-  if (usesEmbeddedHeroHeaderLayout(pathname, embedded)) {
-    return {
-      containerClassName: `mx-auto w-full ${PRODUCTS_PAGE_MAX_WIDTH_CLASS} ${PRODUCTS_PAGE_SIDE_PADDING_CLASS}`,
-      insetClassName: PRODUCTS_PAGE_CONTENT_INSET_CLASS,
-      horizontalInsetLeftPx: 0,
-      horizontalInsetRightPx: 0,
     };
   }
 
@@ -99,18 +85,20 @@ function HeaderContentRow({
   embedded = false,
   horizontalInsetLeftPx = HEADER_SHELL_HORIZONTAL_INSET_PX,
   horizontalInsetRightPx = HEADER_SHELL_HORIZONTAL_INSET_PX,
+  navPill = true,
 }: {
   pathname: string;
   searchParams: URLSearchParams;
   embedded?: boolean;
   horizontalInsetLeftPx?: number;
   horizontalInsetRightPx?: number;
+  navPill?: boolean;
 }) {
   const isHomePage = pathname === '/';
   const usesHomeLikeEmbeddedHeader = usesEmbeddedHeroHeaderLayout(pathname, embedded);
   const bandHeightPx = resolveHeaderBandHeightPx(isHomePage, embedded);
   const rowTopPx = usesHomeLikeEmbeddedHeader
-    ? HEADER_HOME_EMBEDDED_ROW_TOP_PX
+    ? resolveEmbeddedHeaderRowTopPx(isHomePage)
     : resolveHeaderRowVerticalInsetPx(bandHeightPx);
   const rowBottomPx = usesHomeLikeEmbeddedHeader ? 0 : resolveHeaderRowVerticalInsetPx(bandHeightPx);
   const shellHeightPx = resolveHeaderStickyOverlapPx(bandHeightPx);
@@ -144,7 +132,12 @@ function HeaderContentRow({
         } as CSSProperties
       }
     >
-      <HeaderBrandCluster pathname={pathname} searchParams={searchParams} isHomePage={isHomePage} />
+      <HeaderBrandCluster
+        pathname={pathname}
+        searchParams={searchParams}
+        isHomePage={isHomePage}
+        pill={navPill}
+      />
       <HeaderStorefrontActions isHomePage={isHomePage} />
     </div>
   );
@@ -153,16 +146,15 @@ function HeaderContentRow({
 function HeaderOverlayBar({
   pathname,
   searchParams,
+  navPill,
 }: {
   pathname: string;
   searchParams: URLSearchParams;
+  navPill: boolean;
 }) {
   const { containerClassName, insetClassName, horizontalInsetLeftPx, horizontalInsetRightPx } =
     resolveHeaderContainerLayout(pathname, true);
-  const compactScreenOffsetClass =
-    pathname === '/'
-      ? HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS
-      : HEADER_NON_HOME_COMPACT_DESKTOP_OFFSET_CLASS;
+  const compactScreenOffsetClass = HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS;
 
   return (
     <header
@@ -177,6 +169,7 @@ function HeaderOverlayBar({
             searchParams={searchParams}
             horizontalInsetLeftPx={horizontalInsetLeftPx}
             horizontalInsetRightPx={horizontalInsetRightPx}
+            navPill={navPill}
           />
         </div>
       </div>
@@ -217,11 +210,15 @@ function HeaderShell({
 export function Header({ embedded = false }: HeaderProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const scrolled = useHeaderScrollPill();
+  const navPill = !embedded || scrolled;
   const plainWhite = isProductsListingPage(pathname);
   const storefrontTone = isStorefrontPage(pathname) && !plainWhite;
 
   if (embedded) {
-    return <HeaderOverlayBar pathname={pathname} searchParams={searchParams} />;
+    return (
+      <HeaderOverlayBar pathname={pathname} searchParams={searchParams} navPill={navPill} />
+    );
   }
 
   return (

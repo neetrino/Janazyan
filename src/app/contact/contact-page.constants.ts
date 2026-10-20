@@ -53,9 +53,15 @@ export const CONTACT_SECTION_DESKTOP_BLEED_PX = 100;
 export const CONTACT_SECTION_DESKTOP_BLEED_CLASS =
   `desktop:relative desktop:-mt-[100px] min-[1548px]:-mt-[70px] min-[1800px]:-mt-[50px] ${CONTACT_HERO_FOOTER_BLEED_CLASS} desktop:pt-6 desktop:pb-0 desktop:overflow-visible desktop:rounded-tl-[36px]`;
 
-/** Responsive grid — laptop keeps hero beside the form; desktop matches Figma spacing. */
+/**
+ * Desktop form track starts at the address pill's right edge (measured from the
+ * section content box). The form then centers in the space left before the right edge.
+ */
+export const CONTACT_FORM_AFTER_ADDRESS_PILL_PX = 656;
+
+/** Responsive grid — laptop keeps hero beside the form; desktop centers the form after the address pill. */
 export const CONTACT_PAGE_GRID_CLASS =
-  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[484px_633px] desktop:items-start desktop:justify-start desktop:gap-[280px]';
+  'grid grid-cols-1 items-start gap-8 min-[900px]:grid-cols-[minmax(340px,484px)_minmax(0,633px)] min-[900px]:justify-center desktop:min-h-[796px] desktop:grid-cols-[656px_minmax(0,1fr)] desktop:items-start desktop:justify-stretch desktop:gap-0';
 
 /** Left column — stretch target; height spans background top through footer overlap. */
 export const CONTACT_HERO_COLUMN_CLASS =
@@ -73,14 +79,14 @@ export const CONTACT_FORM_COLUMN_TOP_OFFSET_PX = 48;
 
 /** Form column — Figma heading/card gap 16px (345 − 329). */
 export const CONTACT_FORM_COLUMN_CLASS =
-  `flex w-full max-w-[633px] flex-col gap-4 self-start min-[900px]:mt-8 desktop:mt-[48px] min-[1548px]:mt-[64px] min-[1800px]:mt-[80px]`;
+  'mx-auto flex w-full max-w-[633px] flex-col gap-4 self-start min-[900px]:mt-8 desktop:mt-[48px] min-[1548px]:mt-[64px] min-[1800px]:mt-[80px]';
 
 /** Figma node 505:576 — 8px horizontal inset, 10px title/description gap. */
 export const CONTACT_FORM_HEADING_CLASS = 'space-y-2.5 px-1 desktop:px-2';
 
 /** Pull hero image flush to clip wrapper — adjusted on wide screens to stay inside shell. */
 export const CONTACT_HERO_DESKTOP_DROP_CLASS =
-  'desktop:top-[60px] min-[1548px]:top-[80px] min-[1800px]:top-[100px]';
+  'desktop:top-[12px] min-[1548px]:top-[28px] min-[1800px]:top-[44px]';
 export const CONTACT_HERO_DESKTOP_SCALE_CLASS = 'desktop:origin-top-left desktop:scale-[0.96]';
 
 export const CONTACT_HERO_WALL_BLEED_CLASS =
@@ -106,34 +112,29 @@ export const CONTACT_SEND_ICON_SRC = '/figma/contact-send-icon.svg';
 export const CONTACT_PILL_SHELL_CLASS =
   'inline-flex min-h-[56px] items-center gap-2 rounded-[70px] bg-white py-1.5 pl-2 pr-3 shadow-[0_4px_20px_rgba(147,182,227,0.12)] desktop:min-h-[64px] desktop:gap-3 desktop:py-2 desktop:pl-[11px] desktop:pr-5';
 
-/** Location pill — flat right edge before the outward arrow tail. */
-export const CONTACT_PILL_ARROW_BODY_CLASS =
-  'rounded-[70px] rounded-r-[26px] pr-4 shadow-none desktop:pr-5';
-
-/** Wrapper — drop-shadow follows the pill body and arrow tail. */
-export const CONTACT_PILL_ARROW_HOST_CLASS = 'contact-pill-with-arrow-right';
-
 export const CONTACT_PILL_TEXT_CLASS =
   'text-[12px] font-medium leading-4 tracking-[-0.31px] text-black desktop:text-base desktop:leading-[22px]';
 
 /** Desktop pill anchors — measured from the visible 484px Figma hero frame. */
 export const CONTACT_PILL_PHONE_POSITION_CLASS =
-  'absolute left-[24%] top-[4%] desktop:left-[180px] desktop:top-[28px] desktop:mt-0';
+  'absolute left-[28%] top-[7%] desktop:left-[204px] desktop:top-[52px] desktop:mt-0';
 
 export const CONTACT_PILL_EMAIL_POSITION_CLASS =
-  'absolute left-[7%] top-[22%] desktop:left-[276px] desktop:top-[152px] desktop:mt-0';
+  'absolute left-[11%] top-[25%] desktop:left-[300px] desktop:top-[176px] desktop:mt-0';
 
+/** Figma node 496:550 — same rounded shell as the other contact pills. */
 export const CONTACT_PILL_LOCATION_POSITION_CLASS =
-  'absolute left-[22%] top-[48%] max-desktop:max-w-[250px] desktop:left-[376px] desktop:top-[333px] desktop:mt-0 desktop:w-fit desktop:max-w-[318px]';
+  'absolute left-[26%] top-[51%] desktop:left-[400px] desktop:top-[357px] desktop:mt-0 desktop:w-fit';
 
 export const CONTACT_PILL_LOCATION_ICON_CLASS =
   'relative z-10 size-[35px] object-contain';
 
+/** Figma node 496:556 — 200px text box, 22px line height. */
 export const CONTACT_PILL_LOCATION_TEXT_CLASS =
-  `${CONTACT_PILL_TEXT_CLASS} max-w-[200px] whitespace-pre-line leading-[22px] tracking-[-0.3125px]`;
+  `${CONTACT_PILL_TEXT_CLASS} w-[200px] whitespace-pre-line leading-[22px] tracking-[-0.3125px]`;
 
 export const CONTACT_PILL_TIME_POSITION_CLASS =
-  'absolute left-[4%] top-[70%] max-desktop:max-w-[320px] desktop:left-[188px] desktop:top-[500px] desktop:mt-0';
+  'absolute left-[8%] top-[73%] max-desktop:max-w-[320px] desktop:left-[212px] desktop:top-[524px] desktop:mt-0';
 
 export const CONTACT_PILL_TIME_TEXT_CLASS =
   `${CONTACT_PILL_TEXT_CLASS} flex flex-col gap-0 leading-[18px]`;

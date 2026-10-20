@@ -1,17 +1,15 @@
 'use client';
 
-import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronDown, Globe } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
 import { HeaderProductSearch } from './HeaderProductSearch';
 import {
   HEADER_ACTION_PROFILE_GAP_PX,
+  HEADER_ACTIONS_PILL_HEIGHT_PX,
   HEADER_ACTIONS_PILL_PADDING_X_PX,
   HEADER_ACTIONS_PILL_PADDING_Y_PX,
   HEADER_PILL_BORDER_RADIUS_PX,
-  HEADER_PILL_HEIGHT_PX,
 } from './header-shell-shape.constants';
 import { openCartDrawer } from '../../lib/cart-drawer-events';
 import { CURRENCIES, getStoredCurrency, setStoredCurrency, type CurrencyCode } from '../../lib/currency';
@@ -24,24 +22,15 @@ import {
 import { formatCartBadgeCount, useCartItemCount } from '../hooks/useCartItemCount';
 import { formatWishlistBadgeCount, useWishlistItemCount } from '../hooks/useWishlistItemCount';
 
-const HEADER_ACTION_BUTTON_SIZE_PX = 40;
-const HEADER_ACTION_ICON_SIZE_PX = 22;
-const HEADER_CART_BADGE_COLOR = '#93B6E3';
 const HEADER_SELECTABLE_CURRENCIES: readonly CurrencyCode[] = ['AMD', 'USD', 'RUB'];
 
-const HEADER_HEART_ICON = '/figma/header-search-icon.svg';
-const HEADER_CART_ICON = '/figma/header-cart-icon.svg';
+const HEADER_HEART_ICON = '/figma/header-actions-heart.svg';
+const HEADER_CART_ICON = '/figma/header-actions-cart.svg';
+const HEADER_LANGUAGE_ICON = '/figma/header-actions-language.svg';
+const HEADER_CURRENCY_CHEVRON_ICON = '/figma/header-actions-chevron.svg';
 
-function HeaderActionIcon({ src, alt }: { src: string; alt: string }) {
-  return (
-    <Image
-      src={src}
-      alt={alt}
-      width={HEADER_ACTION_ICON_SIZE_PX}
-      height={HEADER_ACTION_ICON_SIZE_PX}
-      className="h-[22px] w-[22px]"
-    />
-  );
+function HeaderActionIcon({ src }: { src: string }) {
+  return <img src={src} alt="" />;
 }
 
 function HeaderLanguageControl() {
@@ -88,12 +77,8 @@ function HeaderLanguageControl() {
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((open) => !open)}
         className="grid place-items-center rounded-full transition-opacity hover:opacity-80"
-        style={{
-          width: HEADER_ACTION_BUTTON_SIZE_PX,
-          height: HEADER_ACTION_BUTTON_SIZE_PX,
-        }}
       >
-        <Globe className="h-[22px] w-[22px] text-ink-800" strokeWidth={2.2} />
+        <img src={HEADER_LANGUAGE_ICON} alt="" />
       </button>
       {menuOpen ? (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl bg-white shadow-card">
@@ -172,10 +157,10 @@ function HeaderCurrencyControl() {
         aria-label="Currency"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((open) => !open)}
-        className="inline-flex items-center gap-1 text-[17px] font-medium leading-[26px] tracking-[-0.31px] text-ink-500 transition-opacity hover:opacity-80"
+        className="inline-flex items-center gap-2.5 text-[16px] font-medium leading-6 tracking-[-0.3125px] text-ink-500 transition-opacity hover:opacity-80"
       >
         {currency}
-        <ChevronDown className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
+        <img src={HEADER_CURRENCY_CHEVRON_ICON} alt="" />
       </button>
       {menuOpen ? (
         <div className="absolute right-0 top-full z-50 mt-2 min-w-[9rem] overflow-hidden rounded-xl bg-white shadow-card">
@@ -204,22 +189,28 @@ function HeaderCurrencyControl() {
   );
 }
 
-export function HeaderStorefrontActions({ isHomePage }: { isHomePage: boolean }) {
+export function HeaderStorefrontActions({
+  pill = true,
+}: {
+  isHomePage: boolean;
+  pill?: boolean;
+}) {
   const wishlistCount = useWishlistItemCount();
   const wishlistBadgeLabel = formatWishlistBadgeCount(wishlistCount);
   const cartCount = useCartItemCount();
   const cartBadgeLabel = formatCartBadgeCount(cartCount);
-  const shadowClassName = isHomePage
-    ? 'shadow-soft'
-    : 'shadow-[0_10px_26px_rgba(15,23,42,0.06)]';
+  const shadowClassName = 'shadow-soft';
+  const surfaceClassName = pill
+    ? `bg-white ${shadowClassName}`
+    : 'bg-transparent shadow-none';
 
   return (
     <div
-      className={`flex shrink-0 items-center bg-white ${shadowClassName}`}
+      className={`flex shrink-0 items-center transition-[background-color,box-shadow,border-radius] duration-300 ease-out ${surfaceClassName}`}
       style={{
         gap: HEADER_ACTION_PROFILE_GAP_PX,
-        height: HEADER_PILL_HEIGHT_PX,
-        borderRadius: HEADER_PILL_BORDER_RADIUS_PX,
+        height: HEADER_ACTIONS_PILL_HEIGHT_PX,
+        borderRadius: pill ? HEADER_PILL_BORDER_RADIUS_PX : 0,
         paddingLeft: HEADER_ACTIONS_PILL_PADDING_X_PX,
         paddingRight: HEADER_ACTIONS_PILL_PADDING_X_PX,
         paddingTop: HEADER_ACTIONS_PILL_PADDING_Y_PX,
@@ -236,17 +227,12 @@ export function HeaderStorefrontActions({ isHomePage }: { isHomePage: boolean })
               ? 'Wishlist'
               : `Wishlist, ${wishlistCount} ${wishlistCount === 1 ? 'item' : 'items'}`
           }
-          className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
-          style={{
-            width: HEADER_ACTION_BUTTON_SIZE_PX,
-            height: HEADER_ACTION_BUTTON_SIZE_PX,
-          }}
+          className="relative grid size-9 place-items-center rounded-full transition-opacity hover:opacity-80"
         >
-          <HeaderActionIcon src={HEADER_HEART_ICON} alt="" />
+          <HeaderActionIcon src={HEADER_HEART_ICON} />
           {wishlistCount > 0 ? (
             <span
-              className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
-              style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
+              className="absolute left-5 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-sky-deep px-0.5 text-[12px] font-medium leading-4 text-white"
               aria-hidden
             >
               {wishlistBadgeLabel}
@@ -261,16 +247,11 @@ export function HeaderStorefrontActions({ isHomePage }: { isHomePage: boolean })
           aria-label={
             cartCount === 0 ? 'Cart' : `Cart, ${cartCount} ${cartCount === 1 ? 'item' : 'items'}`
           }
-          className="relative grid place-items-center rounded-full transition-opacity hover:opacity-80"
-          style={{
-            width: HEADER_ACTION_BUTTON_SIZE_PX,
-            height: HEADER_ACTION_BUTTON_SIZE_PX,
-          }}
+          className="relative grid size-9 place-items-center rounded-full transition-opacity hover:opacity-80"
         >
-          <HeaderActionIcon src={HEADER_CART_ICON} alt="" />
+          <HeaderActionIcon src={HEADER_CART_ICON} />
           <span
-            className="absolute left-5 top-0 grid min-w-4 place-items-center rounded-full px-0.5 text-[12px] font-medium leading-4 text-white"
-            style={{ backgroundColor: HEADER_CART_BADGE_COLOR, height: 16 }}
+            className="absolute left-5 top-0 grid h-4 min-w-4 place-items-center rounded-full bg-sky-deep px-0.5 text-[12px] font-medium leading-4 text-white"
             aria-hidden
           >
             {cartBadgeLabel}

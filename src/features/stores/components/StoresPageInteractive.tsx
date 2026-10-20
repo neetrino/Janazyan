@@ -66,11 +66,23 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
   const [mapFocusRequest, setMapFocusRequest] = useState(0);
   const [mapModalOpen, setMapModalOpen] = useState(false);
   const mapSectionRef = useRef<HTMLDivElement>(null);
+  const directoryShellRef = useRef<HTMLDivElement>(null);
+  const [directoryHeightPx, setDirectoryHeightPx] = useState<number | null>(null);
 
   const filteredStores = useMemo(
     () => filterPartnerStores(stores, searchQuery),
     [searchQuery, stores],
   );
+
+  useEffect(() => {
+    if (directoryHeightPx !== null || filteredStores.length === 0) {
+      return;
+    }
+    const height = directoryShellRef.current?.offsetHeight ?? 0;
+    if (height > 0) {
+      setDirectoryHeightPx(height);
+    }
+  }, [directoryHeightPx, filteredStores.length]);
 
   const handleStoreSelect = useCallback<StoreSelectHandler>((storeId, options) => {
     setSelectedStoreId(storeId);
@@ -104,7 +116,7 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(320px,0.42fr)_minmax(0,1fr)] lg:gap-8">
           <div className="relative z-10">
-            <div className="partner-stores-directory-shell lg:sticky lg:top-28">
+            <div ref={directoryShellRef} className="partner-stores-directory-shell lg:sticky lg:top-28">
               <div className="partner-stores-directory-shell__header flex items-center justify-end">
                 <label className={STORES_PAGE_SEARCH_WRAPPER_CLASS}>
                   <Search className={STORES_PAGE_SEARCH_ICON_CLASS} aria-hidden="true" />
@@ -147,7 +159,8 @@ export function StoresPageInteractive({ copy, stores: initialStores }: StoresPag
                   onStoreSelect={handleStoreSelect}
                   ariaLabel={copy.map.ariaLabel}
                   getDirectionsLabel={copy.getDirections}
-                  minHeightPx={STORES_PAGE_MAP_HEIGHT_PX}
+                  minHeightPx={directoryHeightPx ?? STORES_PAGE_MAP_HEIGHT_PX}
+                  lockHeight={directoryHeightPx !== null}
                 />
               </div>
             </div>

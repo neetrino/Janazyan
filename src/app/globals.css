@@ -110,7 +110,7 @@ body {
 
   .animate-hero-body-wash-showcase {
     animation: hero-body-wash-showcase 5.5s ease-in-out infinite;
-    transform-origin: center bottom;
+    transform-origin: right center;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -162,12 +162,36 @@ body {
    * ProductsHeroShell puts SIDE_PADDING + CONTENT_INSET on one node; at sm+
    * `sm:px-8` (32px) wins, so bleeding gutter+32 overshoots and causes X scroll.
    */
+  .about-page-scale-host {
+    container-type: inline-size;
+  }
+
   @media (min-width: 1300px) {
     .about-page-shell-bleed {
-      margin-left: -2rem;
-      margin-right: -2rem;
-      width: calc(100% + 4rem);
+      --about-shell-max-width: 1510px;
+      --about-edge-bleed: calc(max((100vw - var(--about-shell-max-width)) / 2, 0px) + 2rem);
+      margin-left: calc(-1 * var(--about-edge-bleed));
+      margin-right: calc(-1 * var(--about-edge-bleed));
+      width: calc(100% + var(--about-edge-bleed) * 2);
       overflow-x: clip;
+    }
+  }
+
+  @media (min-width: 1548px) {
+    .about-page-shell-bleed {
+      --about-shell-max-width: 1710px;
+    }
+  }
+
+  @media (min-width: 1800px) {
+    .about-page-shell-bleed {
+      --about-shell-max-width: 1840px;
+    }
+  }
+
+  @media (min-width: 2200px) {
+    .about-page-shell-bleed {
+      --about-shell-max-width: 1940px;
     }
   }
 
@@ -287,23 +311,6 @@ body {
     }
   }
 
-  .contact-pill-with-arrow-right {
-    filter: drop-shadow(0 4px 20px rgba(147, 182, 227, 0.12));
-  }
-
-  .contact-pill-with-arrow-right::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    right: -14px;
-    width: 14px;
-    height: 28px;
-    transform: translateY(-50%);
-    background-color: #ffffff;
-    clip-path: polygon(0 12%, 100% 50%, 0 88%);
-    pointer-events: none;
-  }
-
   /*
    * Catalog desktop backdrop — Safari-safe edge pinning.
    *
@@ -322,6 +329,19 @@ body {
     top: var(--products-catalog-background-top-offset, 24px);
     bottom: calc(-1 * var(--products-catalog-background-footer-bleed, 191px));
     overflow: hidden;
+  }
+
+  .pdp-catalog-background.products-catalog-desktop-background {
+    bottom: auto;
+    height: var(--pdp-catalog-background-height, 100%);
+    border-bottom-left-radius: 44px;
+    border-bottom-right-radius: 44px;
+  }
+
+  .products-catalog-background-cover.products-catalog-desktop-background > svg {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
   }
 
   .products-catalog-desktop-background > svg {

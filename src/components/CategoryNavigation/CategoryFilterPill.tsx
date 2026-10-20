@@ -43,8 +43,10 @@ export function CategoryFilterPill({
       prefetch
       aria-current={isActive ? 'page' : undefined}
       data-category-filter-slug={category.id}
+      draggable={false}
       onMouseEnter={onPrefetch}
       onFocus={onPrefetch}
+      onDragStart={(event) => event.preventDefault()}
       className={`group ${PRODUCTS_PAGE_CATEGORY_PILL_CLASS} ${getCategoryPillLayoutClass(category.slug)} ${getCategoryPillStateClass(isActive)}`}
     >
       <CategoryPillIcon title={category.title} slug={category.slug} isActive={isActive} />

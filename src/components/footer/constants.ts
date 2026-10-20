@@ -96,8 +96,8 @@ export const FOOTER_PAYMENTS: ReadonlyArray<FooterPayment> = [
     label: 'Visa',
     icon: '/figma/footer-pay-visa.png',
     containerWidth: 73,
-    iconWidth: 40,
-    iconHeight: 14,
+    iconWidth: 62,
+    iconHeight: 22,
     iconPosition: { type: 'center' },
     imageClassName: 'size-full object-contain',
   },
@@ -132,5 +132,5 @@ export const FOOTER_SOCIAL: ReadonlyArray<FooterSocialLink> = [
 ];
 
 export const FOOTER_COPYRIGHT_YEAR = 2026;
-export const FOOTER_COPYRIGHT_COMPANY = 'Neetrino IT Company';
+export const FOOTER_COPYRIGHT_COMPANY = 'Neetrino';
 export const FOOTER_COPYRIGHT_URL = 'https://www.neetrino.com/';

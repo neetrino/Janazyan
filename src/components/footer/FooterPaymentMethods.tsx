@@ -33,7 +33,7 @@ function ArcaLogo() {
 
 function VisaLogo() {
   return (
-    <span className="font-sans text-[15px] font-black italic tracking-[0.5px] text-[#1a1f71]">
+    <span className="font-sans text-[25px] font-black italic tracking-[0.5px] text-[#1a1f71]">
       VISA
     </span>
   );

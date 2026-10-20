@@ -15,6 +15,8 @@ interface CategoryNavigationServerProps {
   language: LanguageCode;
   activeCategorySlug?: string;
   variant?: CategoryNavigationVariant;
+  /** Shop catalog only — first pill shares the first product card's left edge. */
+  alignWithCatalog?: boolean;
 }
 
 function CategoryPlaceholderIcon({ isActive }: { isActive: boolean }) {
@@ -72,6 +74,7 @@ export async function CategoryNavigationServer({
   language,
   activeCategorySlug,
   variant = 'strip',
+  alignWithCatalog = false,
 }: CategoryNavigationServerProps) {
   if (variant === 'pills') {
     const categories = await getShopCategoryToolbarStrip(language);
@@ -81,6 +84,7 @@ export async function CategoryNavigationServer({
         categories={categories}
         activeCategorySlug={activeCategorySlug}
         language={language}
+        alignWithCatalog={alignWithCatalog}
       />
     );
   }

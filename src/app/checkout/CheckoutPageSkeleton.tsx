@@ -11,7 +11,7 @@ export function CheckoutPageSkeleton() {
             <div className={`h-52 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
             <div className={`h-44 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
           </div>
-          <div className={`h-64 lg:sticky lg:top-8 ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
+          <div className={`h-64 lg:sticky lg:top-[144px] ${CHECKOUT_GLASS_CARD_CLASS} bg-white/30`} />
         </div>
       </div>
     </div>

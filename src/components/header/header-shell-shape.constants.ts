@@ -4,19 +4,22 @@ export const HEADER_HOME_BAND_HEIGHT_PX = 120;
 /** Sticky header band height — hero-shell embedded pages; matches {@link HEADER_HOME_BAND_HEIGHT_PX}. */
 export const HEADER_HERO_SHELL_BAND_HEIGHT_PX = HEADER_HOME_BAND_HEIGHT_PX;
 
-/** Figma header / Frame 472 pill height. */
+/** Figma header brand pill height. */
 export const HEADER_PILL_HEIGHT_PX = 72;
 
-/** Home embedded header — Figma row offset from hero top (top-only inset). */
-export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 64;
+/** Figma Frame 472 (node 570:602) — actions pill. */
+export const HEADER_ACTIONS_PILL_HEIGHT_PX = 64;
 
-/** Hero-shell embedded header — same top inset as home hero. */
-export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = HEADER_HOME_EMBEDDED_ROW_TOP_PX;
+/** Home embedded header — pills sit on the top edge of the hero card. */
+export const HEADER_HOME_EMBEDDED_ROW_TOP_PX = 8;
+
+/** Hero-shell embedded header — keeps the previous inset on catalog pages. */
+export const HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX = 64;
 
 /** Vertical inset — centers pills in {@link HEADER_HOME_BAND_HEIGHT_PX} (non-home). */
 export const HEADER_SHELL_ROW_INSET_PX = (HEADER_HOME_BAND_HEIGHT_PX - HEADER_PILL_HEIGHT_PX) / 2;
 
-/** Home horizontal inset — brand flush left, actions inset right. */
+/** Home horizontal inset — brand flush with the hero card, actions inset right. */
 export const HEADER_HOME_HORIZONTAL_INSET_LEFT_PX = 0;
 export const HEADER_HOME_HORIZONTAL_INSET_RIGHT_PX = 25;
 
@@ -45,6 +48,12 @@ export const HEADER_PILL_BORDER_RADIUS_PX = 70;
 /** Logo left inset inside the nav pill (Figma header x=30). */
 export const HEADER_NAV_PILL_PADDING_LEFT_PX = 30;
 
+/**
+ * Pulls the brand-pill left edge inward without shifting logo or nav links.
+ * Applied as margin and subtracted from {@link HEADER_NAV_PILL_PADDING_LEFT_PX}.
+ */
+export const HEADER_NAV_PILL_LEFT_TRIM_PX = 25;
+
 /** Trailing inset inside the nav pill. */
 export const HEADER_NAV_PILL_PADDING_RIGHT_PX = 24;
 
@@ -66,9 +75,8 @@ export const HEADER_COMPACT_DESKTOP_NAV_LINK_GAP_PX = 18;
 /** Narrowest desktop band — extra header lift between desktop min (1300) and this width. */
 export const HEADER_NARROW_DESKTOP_MAX_WIDTH_PX = 1400;
 
-/** Embedded home/hero-shell — nudge header up on compact desktop so pills stay in the S-notch. */
-export const HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS =
-  'desktop:max-[1649px]:min-[1401px]:-translate-y-4 desktop:max-[1400px]:-translate-y-6';
+/** Embedded home — sit the bar a little higher on the hero picture. */
+export const HEADER_EMBEDDED_COMPACT_DESKTOP_OFFSET_CLASS = 'desktop:translate-y-1';
 
 /** Non-home compact desktop ramp — lift (px) at 1600 / 1500 / 1400 / 1300 viewport widths. */
 export const HEADER_NON_HOME_COMPACT_RAMP_TOP_WIDTH_PX = 1600;
@@ -147,9 +155,9 @@ export function resolveHeaderRowVerticalInsetPx(bandHeightPx: number): number {
   return (bandHeightPx - HEADER_PILL_HEIGHT_PX) / 2;
 }
 
-/** Embedded header row top — home keeps Figma offset; hero-shell nudged down on desktop. */
-export function resolveEmbeddedHeaderRowTopPx(isHomePage: boolean): number {
-  return isHomePage ? HEADER_HOME_EMBEDDED_ROW_TOP_PX : HEADER_HERO_SHELL_EMBEDDED_ROW_TOP_PX;
+/** Embedded header row top — same offset as home on every page. */
+export function resolveEmbeddedHeaderRowTopPx(_isHomePage: boolean): number {
+  return HEADER_HOME_EMBEDDED_ROW_TOP_PX;
 }
 
 /** Embedded header row bottom — no trailing band inset on embedded layouts. */
@@ -165,6 +173,10 @@ export function resolveHeaderStickyOverlapPx(bandHeightPx: number): number {
 /** Figma logo frame inside the header cluster (node 368:626). */
 export const HEADER_LOGO_WIDTH_PX = 85;
 export const HEADER_LOGO_HEIGHT_PX = HEADER_PILL_HEIGHT_PX;
+
+/** Home logo — larger than the pill so the mark reads clearly. */
+export const HEADER_LOGO_HOME_WIDTH_PX = 120;
+export const HEADER_LOGO_HOME_HEIGHT_PX = 104;
 
 /** Compact logo — fits nav pill vertical padding on hero-shell pages. */
 export const HEADER_LOGO_COMPACT_HEIGHT_PX = HEADER_PILL_HEIGHT_PX - HEADER_NAV_PILL_PADDING_Y_PX * 2;

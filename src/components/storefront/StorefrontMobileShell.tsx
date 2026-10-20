@@ -32,6 +32,8 @@ type StorefrontMobileShellProps = {
    */
   fillViewport?: boolean;
   sectionAriaLabel?: string;
+  /** Painted behind page content, e.g. the product-page blue shape. */
+  leadingBackground?: ReactNode;
 };
 
 const STOREFRONT_MOBILE_PLAIN_SHELL_CLASS = 'bg-white';
@@ -53,6 +55,7 @@ export function StorefrontMobileShell({
   compactMobileTop = false,
   fillViewport = true,
   sectionAriaLabel = 'Page content',
+  leadingBackground,
 }: StorefrontMobileShellProps) {
   const showTopBar = !hideTopBar;
   const toolbarSlotClassName =
@@ -83,6 +86,7 @@ export function StorefrontMobileShell({
         </div>
       ) : null}
       <div className={`${surfaceLayoutClass} ${contentSurfaceClassName} ${contentInsetClassName}`.trim()}>
+        {leadingBackground}
         {toolbar ? <div className={toolbarSlotClassName}>{toolbar}</div> : null}
         {children}
       </div>

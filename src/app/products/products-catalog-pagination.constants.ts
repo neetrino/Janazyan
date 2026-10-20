@@ -16,7 +16,7 @@ export const PRODUCTS_CATALOG_PAGINATION_NEXT_ICON_SRC = '/figma/pagination-icon
 export const PRODUCTS_CATALOG_PAGINATION_LAST_ICON_SRC = '/figma/pagination-icon-last.svg';
 
 export const PRODUCTS_CATALOG_PAGINATION_NAV_CLASS =
-  'mt-10 flex items-start justify-center gap-[5px]';
+  'mt-16 desktop:mt-20 flex items-start justify-center gap-[5px]';
 
 export const PRODUCTS_CATALOG_PAGINATION_CONTROL_CLASS =
   `flex size-10 shrink-0 items-center justify-center rounded-4xl bg-white p-2.5 ${STOREFRONT_PILL_INTERACTIVE_CLASS}`;

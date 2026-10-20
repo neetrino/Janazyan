@@ -54,6 +54,12 @@ type ProductsHeroShellProps = {
   compactContentSpacing?: boolean;
   /** Override catalog bottom spacing for route-specific footer handoff. */
   catalogBottomPaddingClassName?: string;
+  /** Extra class on the desktop catalog gradient, e.g. a shorter product-page shape. */
+  catalogBackgroundClassName?: string;
+  /** Stretch the catalog gradient to the full shell height (checkout). */
+  catalogBackgroundCoversShell?: boolean;
+  /** Extra class on the desktop catalog background only — not painted on mobile. */
+  desktopBackgroundClassName?: string;
   /**
    * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
    * like login/register so content does not leave a large empty band above the nav.
@@ -130,6 +136,9 @@ function ProductsHeroShellInner({
   compactHero = false,
   compactContentSpacing = true,
   catalogBottomPaddingClassName,
+  catalogBackgroundClassName,
+  catalogBackgroundCoversShell = false,
+  desktopBackgroundClassName,
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -152,10 +161,13 @@ function ProductsHeroShellInner({
         } as CSSProperties
       }
     >
-      <ProductsCatalogDesktopBackground />
+      <ProductsCatalogDesktopBackground
+        className={[catalogBackgroundClassName, desktopBackgroundClassName].filter(Boolean).join(' ')}
+        coversShell={catalogBackgroundCoversShell}
+      />
       <Header embedded />
       <div
-        className="relative z-10 shrink-0 overflow-hidden desktop:-mt-[var(--header-sticky-overlap)]"
+        className="relative z-10 shrink-0 overflow-visible desktop:-mt-[var(--header-sticky-overlap)]"
         style={{ '--header-sticky-overlap': `${HEADER_HERO_SHELL_STICKY_OVERLAP_PX}px` } as CSSProperties}
       >
         <div
@@ -187,13 +199,19 @@ function ProductsHeroShellInner({
   );
 }
 
-function ProductsCatalogDesktopBackground() {
+function ProductsCatalogDesktopBackground({
+  className = '',
+  coversShell = false,
+}: {
+  className?: string;
+  coversShell?: boolean;
+}) {
   const gradientId = useId();
 
   return (
     <div
       aria-hidden
-      className="products-catalog-desktop-background pointer-events-none absolute z-0"
+      className={`products-catalog-desktop-background pointer-events-none absolute z-0 ${coversShell ? 'products-catalog-background-cover' : ''} ${className}`}
       style={
         {
           '--products-catalog-background-aspect-width': PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH,
@@ -203,7 +221,7 @@ function ProductsCatalogDesktopBackground() {
     >
       <svg
         viewBox={`0 0 ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_WIDTH} ${PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT}`}
-        preserveAspectRatio="xMidYMin meet"
+        preserveAspectRatio={coversShell ? 'none' : 'xMidYMin meet'}
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -238,6 +256,9 @@ export function ProductsHeroShell({
   compactMobileTop,
   compactContentSpacing,
   catalogBottomPaddingClassName,
+  catalogBackgroundClassName,
+  catalogBackgroundCoversShell = false,
+  desktopBackgroundClassName,
   mobileFillViewport = true,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
@@ -261,6 +282,14 @@ export function ProductsHeroShell({
         compactMobileTop={resolvedCompactMobileTop}
         fillViewport={mobileFillViewport}
         sectionAriaLabel={sectionAriaLabel}
+        leadingBackground={
+          catalogBackgroundClassName ? (
+            <ProductsCatalogDesktopBackground
+              className={catalogBackgroundClassName}
+              coversShell={catalogBackgroundCoversShell}
+            />
+          ) : undefined
+        }
       >
         {catalog}
       </StorefrontMobileShell>
@@ -276,6 +305,9 @@ export function ProductsHeroShell({
             compactHero={compactHero}
             compactContentSpacing={resolvedCompactContentSpacing}
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
+            catalogBackgroundClassName={catalogBackgroundClassName}
+            desktopBackgroundClassName={desktopBackgroundClassName}
+            catalogBackgroundCoversShell={catalogBackgroundCoversShell}
           />
         </section>
       </div>
