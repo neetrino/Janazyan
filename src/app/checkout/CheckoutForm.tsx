@@ -7,7 +7,6 @@ import { CheckoutAlternatePhoneField } from './components/CheckoutAlternatePhone
 import { CheckoutGlassCard } from './components/CheckoutGlassCard';
 import { CheckoutProductsInOrder } from './components/CheckoutProductsInOrder';
 import { DeliveryAddressFields } from './components/DeliveryAddressFields';
-import { CheckoutPickupStorePicker } from './components/CheckoutPickupStorePicker';
 import {
   CHECKOUT_GLASS_ERROR_CLASS,
   CHECKOUT_GLASS_OPTION_BASE,
@@ -18,9 +17,8 @@ import { CheckoutPaymentMethodOptions } from './components/CheckoutPaymentMethod
 import {
   CHECKOUT_FIELD_SCROLL_MARGIN_CLASS,
 } from './checkout-layout.constants';
-import type { Cart, CheckoutFormData } from './types';
+import type { Cart, CheckoutFormData, CheckoutShippingMethod } from './types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
-import type { PartnerStore } from '@/features/stores/types';
 
 const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
 
@@ -32,13 +30,10 @@ interface CheckoutFormProps {
   setValue: UseFormSetValue<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
-  shippingMethod: 'pickup' | 'delivery';
-  pickupStoreId?: string;
+  shippingMethod: CheckoutShippingMethod;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   shippingCountry?: string;
   shippingCity?: string;
-  pickupStores: PartnerStore[];
-  pickupStoresLoading: boolean;
   deliveryOptions: DeliveryOptionsPublic | null;
   deliveryOptionsLoading: boolean;
   paymentMethods: Array<{
@@ -68,12 +63,9 @@ export function CheckoutForm({
   errors,
   isSubmitting,
   shippingMethod,
-  pickupStoreId,
   paymentMethod,
   shippingCountry,
   shippingCity,
-  pickupStores,
-  pickupStoresLoading,
   deliveryOptions,
   deliveryOptionsLoading,
   paymentMethods,
@@ -165,28 +157,13 @@ export function CheckoutForm({
           </div>
         )}
         <div className="space-y-3">
-          <label className={optionClass(shippingMethod === 'pickup')}>
-            <input
-              type="radio"
-              {...register('shippingMethod')}
-              value="pickup"
-              checked={shippingMethod === 'pickup'}
-              onChange={(e) => setValue('shippingMethod', e.target.value as 'pickup' | 'delivery')}
-              className="mr-4"
-              disabled={isSubmitting}
-            />
-            <div className="flex-1">
-              <div className="font-medium text-gray-900">{t('checkout.shipping.storePickup')}</div>
-              <div className="text-sm text-gray-600">{t('checkout.shipping.storePickupDescription')}</div>
-            </div>
-          </label>
           <label className={optionClass(shippingMethod === 'delivery')}>
             <input
               type="radio"
               {...register('shippingMethod')}
               value="delivery"
               checked={shippingMethod === 'delivery'}
-              onChange={(e) => setValue('shippingMethod', e.target.value as 'pickup' | 'delivery')}
+              onChange={() => setValue('shippingMethod', 'delivery')}
               className="mr-4"
               disabled={isSubmitting}
             />
@@ -195,27 +172,28 @@ export function CheckoutForm({
               <div className="text-sm text-gray-600">{t('checkout.shipping.deliveryDescription')}</div>
             </div>
           </label>
+          <label className={optionClass(shippingMethod === 'pochta')}>
+            <input
+              type="radio"
+              {...register('shippingMethod')}
+              value="pochta"
+              checked={shippingMethod === 'pochta'}
+              onChange={() => setValue('shippingMethod', 'pochta')}
+              className="mr-4"
+              disabled={isSubmitting}
+            />
+            <div className="flex-1">
+              <div className="font-medium text-gray-900">{t('checkout.shipping.pochta')}</div>
+              <div className="text-sm text-gray-600">{t('checkout.shipping.pochtaDescription')}</div>
+            </div>
+          </label>
         </div>
       </CheckoutGlassCard>
 
-      {shippingMethod === 'pickup' && (
-        <CheckoutGlassCard className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}>
-          <input type="hidden" {...register('pickupStoreId')} />
-          <CheckoutPickupStorePicker
-            stores={pickupStores}
-            loading={pickupStoresLoading}
-            selectedStoreId={pickupStoreId?.trim() ? pickupStoreId : null}
-            onSelect={(storeId) => setValue('pickupStoreId', storeId, { shouldValidate: true })}
-            errorMessage={errors.pickupStoreId?.message}
-          />
-        </CheckoutGlassCard>
-      )}
-
-      {shippingMethod === 'delivery' && (
-        <CheckoutGlassCard
-          className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
-          data-shipping-section
-        >
+      <CheckoutGlassCard
+        className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}
+        data-shipping-section
+      >
           <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
           {(error && error.includes('shipping address')) ||
           errors.shippingAddress ||
@@ -254,8 +232,7 @@ export function CheckoutForm({
               }
             }}
           />
-        </CheckoutGlassCard>
-      )}
+      </CheckoutGlassCard>
 
       <CheckoutGlassCard
         className={CHECKOUT_FIELD_SCROLL_MARGIN_CLASS}

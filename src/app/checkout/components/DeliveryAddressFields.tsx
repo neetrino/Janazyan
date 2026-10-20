@@ -4,6 +4,7 @@ import { type ReactNode, useMemo } from 'react';
 import { Input } from '@shop/ui';
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { useTranslation } from '@/lib/i18n-client';
+import { deliveryLabelMatches, deliveryNameForLocale } from '@/lib/delivery/delivery-names';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from '../checkout-layout.constants';
 import type { CheckoutFormData } from '../types';
@@ -69,25 +70,27 @@ export function DeliveryAddressFields({
   optionsLoading,
   onClearError,
 }: DeliveryAddressFieldsProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const selectedCountry = useMemo(
-    () => options?.countries.find((country) => country.name === shippingCountry),
+    () =>
+      options?.countries.find((country) =>
+        deliveryLabelMatches(shippingCountry ?? '', country.name, country.names),
+      ),
     [options, shippingCountry],
   );
 
   const selectedZone = useMemo(
     () =>
       selectedCountry?.zones.find(
-        (zone) => zone.slug === shippingCity || zone.name === shippingCity,
+        (zone) =>
+          zone.slug === shippingCity ||
+          deliveryLabelMatches(shippingCity ?? '', zone.name, zone.names),
       ),
     [selectedCountry, shippingCity],
   );
 
-  const selectedZoneSlug =
-    selectedCountry?.zones.find(
-      (zone) => zone.slug === shippingCity || zone.name === shippingCity,
-    )?.slug ?? '';
+  const selectedZoneSlug = selectedZone?.slug ?? '';
 
   const handleCountryChange = (countryName: string) => {
     setValue('shippingCountry', countryName, { shouldValidate: true });
@@ -114,7 +117,7 @@ export function DeliveryAddressFields({
           <option value="">{t('checkout.placeholders.selectCountry')}</option>
           {options?.countries.map((country) => (
             <option key={country.id} value={country.name}>
-              {country.name}
+              {deliveryNameForLocale(country.names, country.name, lang)}
             </option>
           ))}
         </CheckoutSelectField>
@@ -130,7 +133,7 @@ export function DeliveryAddressFields({
           <option value="">{t('checkout.placeholders.selectRegion')}</option>
           {selectedCountry?.zones.map((zone) => (
             <option key={zone.id} value={zone.slug}>
-              {zone.name}
+              {deliveryNameForLocale(zone.names, zone.name, lang)}
             </option>
           ))}
         </CheckoutSelectField>

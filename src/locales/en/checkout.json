@@ -53,6 +53,8 @@
     "storePickupDescription": "Pick up your order from our store (Free)",
     "delivery": "Delivery",
     "deliveryDescription": "We will deliver your order to your address",
+    "pochta": "Post",
+    "pochtaDescription": "We will send your order by post",
     "freePickup": "Free (Store Pickup)",
     "selectPickupStore": "Select a store",
     "selectPickupStoreDescription": "Choose the store where you want to pick up your order",

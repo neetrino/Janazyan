@@ -1,17 +1,19 @@
 'use client';
 
 import { type ReactNode } from 'react';
-import { Button, Input } from '@shop/ui';
+import { Button } from '@shop/ui';
 import { useTranslation } from '@/lib/i18n-client';
 import {
   AdminFormSectionLabel,
   AdminSideDrawer,
 } from '../../components/AdminSideDrawer';
 import type { DeliveryLocationFormData } from '../delivery-location.utils';
+import { DeliveryLocationNamesFields } from './DeliveryLocationNamesFields';
 
 type DeliveryLocationDrawerProps = {
   open: boolean;
   isEditing: boolean;
+  syncKey: string;
   formData: DeliveryLocationFormData;
   submitting: boolean;
   onClose: () => void;
@@ -64,6 +66,7 @@ function PricingRuleCard({
 export function DeliveryLocationDrawer({
   open,
   isEditing,
+  syncKey,
   formData,
   submitting,
   onClose,
@@ -112,28 +115,7 @@ export function DeliveryLocationDrawer({
       <div className="space-y-6">
         <section className="space-y-4">
           <AdminFormSectionLabel>{t('admin.delivery.locationSection')}</AdminFormSectionLabel>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                {t('admin.delivery.country')}
-              </label>
-              <Input
-                value={formData.countryName}
-                onChange={(event) => updateForm({ countryName: event.target.value })}
-                placeholder={t('admin.delivery.countryPlaceholder')}
-              />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">
-                {t('admin.delivery.city')}
-              </label>
-              <Input
-                value={formData.cityName}
-                onChange={(event) => updateForm({ cityName: event.target.value })}
-                placeholder={t('admin.delivery.cityPlaceholder')}
-              />
-            </div>
-          </div>
+          <DeliveryLocationNamesFields formData={formData} syncKey={syncKey} onChange={onChange} />
         </section>
 
         <section className="space-y-3">

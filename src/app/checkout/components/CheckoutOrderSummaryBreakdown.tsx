@@ -11,7 +11,7 @@ import {
   CHECKOUT_SUMMARY_VALUE_CLASS,
 } from '../checkout-layout.constants';
 import { formatCheckoutShippingLine } from '../utils/format-checkout-shipping-line';
-import type { Cart } from '../types';
+import type { Cart, CheckoutShippingMethod } from '../types';
 
 type CheckoutOrderSummaryBreakdownProps = {
   cart: Cart;
@@ -22,7 +22,7 @@ type CheckoutOrderSummaryBreakdownProps = {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: CheckoutShippingMethod;
   shippingCountry?: string;
   shippingCity?: string;
   deliveryOptions: DeliveryOptionsPublic | null;
@@ -43,15 +43,14 @@ export function CheckoutOrderSummaryBreakdown({
   deliveryPrice,
   compact = false,
 }: CheckoutOrderSummaryBreakdownProps) {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
 
   const regionLabel = useMemo(
-    () => resolveDeliveryZoneLabel(deliveryOptions, shippingCountry, shippingCity),
-    [deliveryOptions, shippingCountry, shippingCity],
+    () => resolveDeliveryZoneLabel(deliveryOptions, shippingCountry, shippingCity, lang),
+    [deliveryOptions, shippingCountry, shippingCity, lang],
   );
 
   const shippingLine = formatCheckoutShippingLine({
-    shippingMethod,
     loadingDeliveryPrice,
     deliveryPrice,
     shippingDisplayAmount: orderSummary.shippingDisplay,
@@ -59,11 +58,9 @@ export function CheckoutOrderSummaryBreakdown({
     regionLabel,
     formatPrice: formatPriceInCurrency,
     labels: {
-      freePickup: t('checkout.shipping.freePickup'),
       loading: t('checkout.shipping.loading'),
       selectRegion: t('checkout.shipping.selectRegion'),
       freeDelivery: t('checkout.shipping.freeDelivery'),
-      delivery: t('checkout.shipping.delivery'),
     },
   });
 
@@ -86,7 +83,11 @@ export function CheckoutOrderSummaryBreakdown({
         </span>
       </div>
       <div className={rowClass}>
-        <span className={labelClass}>{t('checkout.summary.shipping')}</span>
+        <span className={labelClass}>
+          {shippingMethod === 'pochta'
+            ? t('checkout.shipping.pochta')
+            : t('checkout.summary.shipping')}
+        </span>
         <span className={valueClass}>{shippingLine}</span>
       </div>
       {orderSummary.discountDisplay > 0 ? (

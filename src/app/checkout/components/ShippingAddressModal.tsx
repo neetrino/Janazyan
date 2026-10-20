@@ -10,7 +10,7 @@ import { ContactInformation } from './ContactInformation';
 import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
 import { DeliveryAddressFields } from './DeliveryAddressFields';
-import { CheckoutFormData, Cart } from '../types';
+import { CheckoutFormData, Cart, type CheckoutShippingMethod } from '../types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 import { scrollToFirstCheckoutError } from '../utils/scroll-to-checkout-error';
 
@@ -22,7 +22,7 @@ interface ShippingAddressModalProps {
   handleSubmit: UseFormHandleSubmit<CheckoutFormData>;
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: CheckoutShippingMethod;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
   cart: Cart | null;
   orderSummary: {
@@ -80,13 +80,10 @@ export function ShippingAddressModal({
       <div 
         className="bg-white rounded-xl shadow-2xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
-        style={{ zIndex: 10000 }}
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
-            {shippingMethod === 'delivery' 
-              ? t('checkout.modals.completeOrder') 
-              : t('checkout.modals.confirmOrder')}
+            {t('checkout.modals.completeOrder')}
           </h2>
           <button
             onClick={onClose}
@@ -105,9 +102,7 @@ export function ShippingAddressModal({
           isSubmitting={isSubmitting}
         />
 
-        {shippingMethod === 'delivery' ? (
-          <>
-            <div className="mb-6">
+        <div className="mb-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('checkout.shippingAddress')}</h3>
               <DeliveryAddressFields
                 register={register}
@@ -155,51 +150,6 @@ export function ShippingAddressModal({
               loadingDeliveryPrice={loadingDeliveryPrice}
               deliveryPrice={deliveryPrice}
             />
-          </>
-        ) : (
-          <div className="mb-6">
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-              <p className="text-sm text-blue-800">
-                <strong>{t('checkout.shipping.storePickup')}:</strong> {t('checkout.messages.storePickupInfo')}
-              </p>
-            </div>
-
-            {(paymentMethod === 'arca' || paymentMethod === 'idram') && (
-              <div className="space-y-4 mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {t('checkout.payment.paymentDetails')} (
-                  {paymentMethod === 'idram' ? t('checkout.payment.idram') : t('checkout.payment.arca')})
-                </h3>
-                <CardInputFields
-                  register={register}
-                  setValue={setValue}
-                  errors={errors}
-                  isSubmitting={isSubmitting}
-                />
-              </div>
-            )}
-
-            {paymentMethod === 'cash_on_delivery' && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                <p className="text-sm text-green-800">
-                  <strong>{t('checkout.payment.cashOnDelivery')}:</strong> {t('checkout.messages.cashOnDeliveryPickup')}
-                </p>
-              </div>
-            )}
-
-            <OrderSummaryModal
-              cart={cart}
-              orderSummary={orderSummary}
-              currency={currency}
-              shippingMethod={shippingMethod}
-              shippingCountry={shippingCountry}
-              shippingCity={shippingCity}
-              deliveryOptions={deliveryOptions}
-              loadingDeliveryPrice={loadingDeliveryPrice}
-              deliveryPrice={deliveryPrice}
-            />
-          </div>
-        )}
 
         <div className="flex gap-3">
           <button

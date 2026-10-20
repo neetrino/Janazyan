@@ -169,6 +169,7 @@
     "shippingMethod": "Առաքման եղանակ",
     "method": "Եղանակ",
     "delivery": "Առաքում",
+    "pochta": "Փոստ",
     "pickup": "Վերցնել խանութից",
     "pickupStore": "խանութի հասցե",
     "notSpecified": "Նշված չէ",

@@ -597,10 +597,6 @@ body {
   transform: rotate(0deg);
 }
 
-.checkout-pickup-stores-directory .partner-stores-directory__list {
-  max-height: 320px;
-}
-
 .partner-stores-directory__item {
   position: relative;
   display: grid;
@@ -939,10 +935,6 @@ body {
 
   .partner-stores-directory__list {
     max-height: 420px;
-  }
-
-  .checkout-pickup-stores-directory .partner-stores-directory__list {
-    max-height: 280px;
   }
 
   .partner-stores-map-section {

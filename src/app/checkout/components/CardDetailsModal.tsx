@@ -9,7 +9,7 @@ import { useTranslation } from '../../../lib/i18n-client';
 import { PaymentMethodLogo } from './PaymentMethodLogo';
 import { CardInputFields } from './CardInputFields';
 import { OrderSummaryModal } from './OrderSummaryModal';
-import { CheckoutFormData, Cart } from '../types';
+import { CheckoutFormData, Cart, type CheckoutShippingMethod } from '../types';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
 import { scrollToFirstCheckoutError } from '../utils/scroll-to-checkout-error';
 
@@ -22,7 +22,7 @@ interface CardDetailsModalProps {
   errors: FieldErrors<CheckoutFormData>;
   isSubmitting: boolean;
   paymentMethod: 'idram' | 'arca' | 'cash_on_delivery';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: CheckoutShippingMethod;
   shippingCountry?: string;
   shippingCity?: string;
   deliveryOptions: DeliveryOptionsPublic | null;

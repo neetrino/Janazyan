@@ -1,7 +1,6 @@
 import type { CurrencyCode } from '@/lib/currency';
 
 type FormatCheckoutShippingLineParams = {
-  shippingMethod: 'pickup' | 'delivery';
   loadingDeliveryPrice: boolean;
   deliveryPrice: number | null;
   shippingDisplayAmount: number;
@@ -9,16 +8,13 @@ type FormatCheckoutShippingLineParams = {
   regionLabel?: string;
   formatPrice: (amount: number, currency: CurrencyCode) => string;
   labels: {
-    freePickup: string;
     loading: string;
     selectRegion: string;
     freeDelivery: string;
-    delivery: string;
   };
 };
 
 export function formatCheckoutShippingLine({
-  shippingMethod,
   loadingDeliveryPrice,
   deliveryPrice,
   shippingDisplayAmount,
@@ -27,10 +23,6 @@ export function formatCheckoutShippingLine({
   formatPrice,
   labels,
 }: FormatCheckoutShippingLineParams): string {
-  if (shippingMethod === 'pickup') {
-    return labels.freePickup;
-  }
-
   if (!regionLabel) {
     return labels.selectRegion;
   }

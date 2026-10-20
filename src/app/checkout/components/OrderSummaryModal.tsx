@@ -2,7 +2,7 @@
 
 import { CheckoutOrderSummaryBreakdown } from './CheckoutOrderSummaryBreakdown';
 import type { DeliveryOptionsPublic } from '@/lib/delivery/delivery-settings.types';
-import { Cart } from '../types';
+import { Cart, type CheckoutShippingMethod } from '../types';
 
 interface OrderSummaryModalProps {
   cart: Cart | null;
@@ -13,7 +13,7 @@ interface OrderSummaryModalProps {
     totalDisplay: number;
   };
   currency: 'USD' | 'AMD' | 'EUR' | 'RUB' | 'GEL';
-  shippingMethod: 'pickup' | 'delivery';
+  shippingMethod: CheckoutShippingMethod;
   shippingCountry?: string;
   shippingCity?: string;
   deliveryOptions: DeliveryOptionsPublic | null;

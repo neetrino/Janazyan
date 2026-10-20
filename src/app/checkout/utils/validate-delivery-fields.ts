@@ -17,10 +17,6 @@ export function validateDeliveryExtraFields(
     additionalNotesRequired: string;
   },
 ): DeliveryValidationError[] {
-  if (data.shippingMethod !== 'delivery') {
-    return [];
-  }
-
   const errors: DeliveryValidationError[] = [];
 
   if (!data.shippingCountry?.trim()) {
