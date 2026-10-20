@@ -1,6 +1,7 @@
 import { db } from "@white-shop/db";
 import { Prisma } from "@white-shop/db";
 import type { CheckoutData } from "../types/checkout";
+import type { PickupStoreAddress } from "../types/pickup-store";
 import {
   FIRST_PUBLIC_ORDER_NUMBER,
   ORDER_NUMBER_ALLOCATION_LOCK_KEY,

@@ -10,7 +10,8 @@ function readNameRow(item: unknown): DeliveryNameTranslation | null {
   }
 
   const row = item as { locale?: unknown; text?: unknown };
-  if (!isContentLocale(typeof row.locale === 'string' ? row.locale : undefined)) {
+  const locale = typeof row.locale === 'string' ? row.locale : undefined;
+  if (!isContentLocale(locale)) {
     return null;
   }
 
@@ -18,7 +19,7 @@ function readNameRow(item: unknown): DeliveryNameTranslation | null {
     return null;
   }
 
-  return { locale: row.locale, text: row.text.trim() };
+  return { locale, text: row.text.trim() };
 }
 
 function parseNameRows(raw: unknown): DeliveryNameTranslation[] {
