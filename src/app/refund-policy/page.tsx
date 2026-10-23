@@ -18,7 +18,7 @@ export default function RefundPolicyPage() {
         </p>
 
         <div className="mt-8 space-y-6">
-          <Card className="p-6">
+          <Card className="bg-white p-6 !shadow-card">
             <h2 className="text-2xl font-semibold text-gray-900">{t('refund-policy.overview.title')}</h2>
             <p className="text-gray-600">
               {t('refund-policy.overview.description')}

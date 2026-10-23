@@ -29,6 +29,7 @@ import {
   PRODUCTS_PAGE_SIDE_PADDING_CLASS,
   PRODUCTS_PAGE_COMPACT_HERO_TOOLBAR_OFFSET_CLASS,
   PRODUCTS_PAGE_MOBILE_TOOLBAR_SLOT_CLASS,
+  POLICY_CATALOG_BACKGROUND_GRADIENT_STOPS,
   PRODUCTS_PAGE_TOOLBAR_TOP_OFFSET_PX,
 } from '../../app/products/products-page-layout.constants';
 import { Header } from '../Header';
@@ -60,6 +61,8 @@ type ProductsHeroShellProps = {
   catalogBackgroundCoversShell?: boolean;
   /** Extra class on the desktop catalog background only — not painted on mobile. */
   desktopBackgroundClassName?: string;
+  /** Vertical blue-to-white fade. Avoids the shop cream tail behind the header. */
+  softCatalogFade?: boolean;
   /**
    * Mobile shell fills the viewport (min-h 100dvh + grow). Set false on short pages
    * like login/register so content does not leave a large empty band above the nav.
@@ -139,6 +142,7 @@ function ProductsHeroShellInner({
   catalogBackgroundClassName,
   catalogBackgroundCoversShell = false,
   desktopBackgroundClassName,
+  softCatalogFade = false,
 }: ProductsHeroShellProps) {
   const heroToolbarOffsetClass = resolveHeroToolbarOffsetClass(
     toolbar,
@@ -164,6 +168,7 @@ function ProductsHeroShellInner({
       <ProductsCatalogDesktopBackground
         className={[catalogBackgroundClassName, desktopBackgroundClassName].filter(Boolean).join(' ')}
         coversShell={catalogBackgroundCoversShell}
+        softFade={softCatalogFade}
       />
       <Header embedded />
       <div
@@ -202,11 +207,19 @@ function ProductsHeroShellInner({
 function ProductsCatalogDesktopBackground({
   className = '',
   coversShell = false,
+  softFade = false,
 }: {
   className?: string;
   coversShell?: boolean;
+  softFade?: boolean;
 }) {
   const gradientId = useId();
+  const gradientX1 = softFade ? 0 : PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1;
+  const gradientY1 = softFade ? 0 : PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1;
+  const gradientX2 = softFade ? 0 : PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2;
+  const gradientY2 = softFade
+    ? PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT
+    : PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2;
 
   return (
     <div
@@ -227,14 +240,22 @@ function ProductsCatalogDesktopBackground({
         <defs>
           <linearGradient
             id={gradientId}
-            x1={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1}
-            y1={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1}
-            x2={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X2}
-            y2={PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y2}
+            x1={gradientX1}
+            y1={gradientY1}
+            x2={gradientX2}
+            y2={gradientY2}
             gradientUnits="userSpaceOnUse"
           >
-            <stop stopColor="#93B6E3" />
-            <stop offset="1" stopColor={PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR} />
+            {softFade ? (
+              POLICY_CATALOG_BACKGROUND_GRADIENT_STOPS.map((stop) => (
+                <stop key={stop.offset} offset={stop.offset} stopColor={stop.color} />
+              ))
+            ) : (
+              <>
+                <stop stopColor="#93B6E3" />
+                <stop offset="1" stopColor={PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR} />
+              </>
+            )}
           </linearGradient>
         </defs>
         <path d={PRODUCTS_CATALOG_BACKGROUND_PATH} fill={`url(#${gradientId})`} />
@@ -259,6 +280,7 @@ export function ProductsHeroShell({
   catalogBackgroundClassName,
   catalogBackgroundCoversShell = false,
   desktopBackgroundClassName,
+  softCatalogFade = false,
   mobileFillViewport = true,
   sectionAriaLabel = 'Shop',
 }: ProductsHeroShellProps) {
@@ -287,6 +309,7 @@ export function ProductsHeroShell({
             <ProductsCatalogDesktopBackground
               className={catalogBackgroundClassName}
               coversShell={catalogBackgroundCoversShell}
+              softFade={softCatalogFade}
             />
           ) : undefined
         }
@@ -307,6 +330,7 @@ export function ProductsHeroShell({
             catalogBottomPaddingClassName={catalogBottomPaddingClassName}
             catalogBackgroundClassName={catalogBackgroundClassName}
             desktopBackgroundClassName={desktopBackgroundClassName}
+            softCatalogFade={softCatalogFade}
             catalogBackgroundCoversShell={catalogBackgroundCoversShell}
           />
         </section>

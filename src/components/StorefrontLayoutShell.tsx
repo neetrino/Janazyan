@@ -11,6 +11,7 @@ import {
   isProductDetailPage,
   isProfilePage,
   isStorefrontPage,
+  isPolicyPage,
   usesStorefrontHeroShell,
 } from '../lib/nav/is-storefront-page';
 import { ProductsHeroShell } from './products/ProductsHeroShell';
@@ -57,6 +58,7 @@ export function StorefrontMain({ children }: { children: ReactNode }) {
                   mobileContentSurfaceClassName: PDP_MOBILE_CONTENT_SURFACE_CLASS,
                 }
               : {})}
+            {...(isPolicyPage(pathname) ? { softCatalogFade: true } : {})}
             sectionAriaLabel={
               isProfilePage(pathname)
                 ? 'Profile'

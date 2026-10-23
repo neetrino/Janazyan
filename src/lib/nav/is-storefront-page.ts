@@ -42,6 +42,21 @@ export function isProfilePage(pathname: string): boolean {
   return pathname === '/profile' || pathname.startsWith('/profile/');
 }
 
+const POLICY_PAGE_PATHS = [
+  '/privacy',
+  '/terms',
+  '/returns',
+  '/refund-policy',
+  '/delivery',
+  '/delivery-terms',
+] as const;
+
+/** Legal pages that share the shop catalog backdrop. */
+export function isPolicyPage(pathname: string): boolean {
+  const normalizedPathname = normalizePathname(pathname);
+  return POLICY_PAGE_PATHS.some((path) => normalizedPathname === path);
+}
+
 const STOREFRONT_HERO_SHELL_EXACT_PATHS = [
   '/products',
   '/about',

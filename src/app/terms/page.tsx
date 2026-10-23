@@ -22,7 +22,7 @@ export default function TermsPage() {
         </p>
 
         <div className="mt-8 space-y-6">
-          <Card className="p-6">
+          <Card className="bg-white p-6 !shadow-card">
             <h2 className="text-2xl font-semibold text-gray-900">{t('terms.general.title')}</h2>
             <p className="text-gray-600">{t('terms.general.p1')}</p>
             <p className="text-gray-600">{t('terms.general.p2')}</p>

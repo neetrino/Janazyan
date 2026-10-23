@@ -22,7 +22,7 @@ export default function DeliveryTermsPage() {
         </p>
 
         <div className="mt-8 space-y-6">
-          <Card className="p-6">
+          <Card className="bg-white p-6 !shadow-card">
             <p className="text-gray-600">{t('delivery-terms.intro.p1')}</p>
             <p className="text-gray-600">{t('delivery-terms.intro.p2')}</p>
 

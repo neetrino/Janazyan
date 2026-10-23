@@ -38,6 +38,14 @@ export const PRODUCTS_CATALOG_BACKGROUND_VIEWBOX_HEIGHT = 1840;
 /** Bottom stop of the catalog desktop gradient — fills tall shells below the fixed shape. */
 export const PRODUCTS_CATALOG_BACKGROUND_TAIL_COLOR = '#FCF8EC';
 
+/** Policy pages — vertical fade so the header cutout stays clear of the cream tail. */
+export const POLICY_CATALOG_BACKGROUND_GRADIENT_STOPS = [
+  { offset: '0%', color: '#93B6E3' },
+  { offset: '28%', color: '#C6DDF3' },
+  { offset: '58%', color: '#E8F2FA' },
+  { offset: '100%', color: '#FFFFFF' },
+] as const;
+
 /** Default desktop catalog gradient vector — matches the original /products artwork. */
 export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_X1 = 205.703;
 export const PRODUCTS_CATALOG_BACKGROUND_GRADIENT_Y1 = 137.062;
