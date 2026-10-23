@@ -2,23 +2,20 @@
 
 import { Card } from '@shop/ui';
 import { useTranslation } from '../../lib/i18n-client';
+import { formatStorefrontDate } from '../../lib/language';
 
 /**
  * Returns page - displays return and exchange policy information
  */
 export default function ReturnsPage() {
-  const { t } = useTranslation();
+  const { t, lang } = useTranslation();
   return (
     <div className="policy-page">
       <div className="policy-page-inner">
         <h1 className="text-4xl font-bold text-gray-900">{t('returns.title')}</h1>
         <p className="text-gray-600">
           {t('returns.lastUpdated')}{' '}
-          {new Date().toLocaleDateString(undefined, {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-          })}
+          {formatStorefrontDate(new Date(), lang)}
         </p>
 
         <div className="mt-8 space-y-6">

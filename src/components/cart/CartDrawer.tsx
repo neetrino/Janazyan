@@ -1,5 +1,6 @@
 'use client';
 
+import { ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -300,9 +301,10 @@ export function CartDrawer() {
           </button>
         </header>
 
-        <div className="flex-1 overflow-y-auto px-5">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5">
           {!hasItems ? (
-            <div className="flex flex-col items-center py-16 text-center">
+            <div className="flex flex-1 flex-col items-center justify-center py-16 text-center">
+              <ShoppingBag className="mb-4 h-12 w-12 text-sky-deep" strokeWidth={1.5} aria-hidden />
               <p className="text-base font-medium text-gray-700">{t('common.cart.empty')}</p>
               <Link
                 href="/products"

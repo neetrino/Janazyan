@@ -1,12 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
-import { buildCartShippingAndTotalLabels } from '../../app/cart/cart-summary-labels';
+import { useEffect } from 'react';
 import { STOREFRONT_SKY_SUBMIT_BUTTON_CLASS } from '../../app/products/[slug]/product-action-bar.constants';
 import type { Cart } from '../../app/cart/types';
-import { useCartDeliveryEstimate } from '../../app/cart/use-cart-delivery-estimate';
-import type { CurrencyCode } from '../../lib/currency';
+import { formatPrice, type CurrencyCode } from '../../lib/currency';
 import { closeCartDrawer } from '../../lib/cart-drawer-events';
 
 interface CartDrawerFooterProps {
@@ -20,28 +18,16 @@ interface CartDrawerFooterProps {
  */
 export function CartDrawerFooter({ cart, currency, t }: CartDrawerFooterProps) {
   const router = useRouter();
-  const { deliveryPriceAMD, loadingDelivery } = useCartDeliveryEstimate();
 
   useEffect(() => {
     router.prefetch('/checkout');
   }, [router]);
 
-  const summaryLabels = useMemo(
-    () =>
-      buildCartShippingAndTotalLabels({
-        cart,
-        currencyCode: currency,
-        deliveryPriceAMD,
-        loadingDelivery,
-      }),
-    [cart, currency, deliveryPriceAMD, loadingDelivery],
-  );
-
   return (
     <footer className="shrink-0 border-t border-gray-200 bg-white px-5 pt-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,0px)+2.25rem)] md:py-5">
       <div className="flex justify-between gap-3 text-base font-bold text-ink-800">
         <span>{t('common.cart.total')}</span>
-        <span>{summaryLabels.totalLabel}</span>
+        <span>{formatPrice(cart.totals.total, currency)}</span>
       </div>
 
       <div className="mt-5 space-y-3">

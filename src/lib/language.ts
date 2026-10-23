@@ -12,6 +12,23 @@ export const DEFAULT_LANGUAGE: LanguageCode = 'hy';
 
 export const LANGUAGE_STORAGE_KEY = 'shop_language';
 
+const LANGUAGE_INTL_LOCALE: Record<LanguageCode, string> = {
+  hy: 'hy-AM',
+  en: 'en-US',
+  ru: 'ru-RU',
+};
+
+const STOREFRONT_UPDATED_DATE_FORMAT: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
+
+/** Long date in the storefront language — same string on server and client. */
+export function formatStorefrontDate(date: Date, lang: LanguageCode): string {
+  return date.toLocaleDateString(LANGUAGE_INTL_LOCALE[lang], STOREFRONT_UPDATED_DATE_FORMAT);
+}
+
 function parseLanguageCode(value: string | null | undefined): LanguageCode | null {
   if (value && value in LANGUAGES) {
     return value as LanguageCode;
