@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@shop/ui';
 import type { FormEvent } from 'react';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category } from '../types';
@@ -133,18 +134,18 @@ export function ProductFilters({
           <label className="block text-sm font-medium text-gray-700 mb-1.5">
             {t('admin.products.filterByStock')}
           </label>
-          <select
+          <Select
             value={stockFilter}
-            onChange={(e) => {
-              setStockFilter(e.target.value as 'all' | 'inStock' | 'outOfStock');
+            onChange={(next) => {
+              setStockFilter(next as 'all' | 'inStock' | 'outOfStock');
               setPage(1);
             }}
-            className="w-full px-4 py-2.5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white text-sm"
-          >
-            <option value="all">{t('admin.products.allProducts')}</option>
-            <option value="inStock">{t('admin.products.inStock')}</option>
-            <option value="outOfStock">{t('admin.products.outOfStock')}</option>
-          </select>
+            options={[
+              { value: 'all', label: t('admin.products.allProducts') },
+              { value: 'inStock', label: t('admin.products.inStock') },
+              { value: 'outOfStock', label: t('admin.products.outOfStock') },
+            ]}
+          />
         </div>
       </div>
     </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Button, Input } from '@shop/ui';
+import { Button, Input, Select } from '@shop/ui';
 import { BLOG_LOCALES } from '../../../features/blog/blog-locales';
 import { LANGUAGES } from '../../../lib/language';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -160,19 +160,19 @@ export function BlogPostDrawer({
               <label className="mb-1 block text-sm font-medium text-gray-700">
                 {t('admin.blog.status')}
               </label>
-              <select
+              <Select
                 value={formData.published}
-                onChange={(e) =>
+                onChange={(next) =>
                   onFormChange({
                     ...formData,
-                    published: e.target.value as BlogPostFormData['published'],
+                    published: next as BlogPostFormData['published'],
                   })
                 }
-                className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
-              >
-                <option value="published">{t('admin.blog.published')}</option>
-                <option value="draft">{t('admin.blog.draft')}</option>
-              </select>
+                options={[
+                  { value: 'published', label: t('admin.blog.published') },
+                  { value: 'draft', label: t('admin.blog.draft') },
+                ]}
+              />
             </div>
           </div>
         </section>

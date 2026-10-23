@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type FormEvent } from 'react';
-import { Button, Input } from '@shop/ui';
+import { Button, Input, Select } from '@shop/ui';
 import { FAQ_LOCALES } from '../../../features/faq/faq-locales';
 import { LANGUAGES } from '../../../lib/language';
 import { useTranslation } from '../../../lib/i18n-client';
@@ -92,19 +92,19 @@ export function FaqItemDrawer({
               <label className="mb-1 block text-sm font-medium text-gray-700">
                 {t('admin.faq.status')}
               </label>
-              <select
+              <Select
                 value={formData.published}
-                onChange={(e) =>
+                onChange={(next) =>
                   onFormChange({
                     ...formData,
-                    published: e.target.value as FaqItemFormData['published'],
+                    published: next as FaqItemFormData['published'],
                   })
                 }
-                className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
-              >
-                <option value="published">{t('admin.faq.published')}</option>
-                <option value="draft">{t('admin.faq.draft')}</option>
-              </select>
+                options={[
+                  { value: 'published', label: t('admin.faq.published') },
+                  { value: 'draft', label: t('admin.faq.draft') },
+                ]}
+              />
             </div>
           </div>
         </section>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Button, Input } from '@shop/ui';
+import { Button, Input, Select } from '@shop/ui';
 import { apiClient } from '../../../lib/api-client';
 import { PARTNER_STORE_LOCALES } from '../../../features/stores/partner-store-locales';
 import { LANGUAGES } from '../../../lib/language';
@@ -250,44 +250,41 @@ export function PartnerStoreDrawer({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('admin.partnerStores.region')} *
             </label>
-            <select
+            <Select
               value={formData.regionId}
-              onChange={(e) =>
+              onChange={(next) =>
                 onFormChange({
                   ...formData,
-                  regionId: e.target.value,
+                  regionId: next,
                   areaId: '',
                 })
               }
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
-              required
-            >
-              <option value="">{t('admin.partnerStores.selectRegion')}</option>
-              {regions.map((region) => (
-                <option key={region.id} value={region.id}>
-                  {partnerNamesLabel(region)}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: t('admin.partnerStores.selectRegion') },
+                ...regions.map((region) => ({
+                  value: region.id,
+                  label: partnerNamesLabel(region),
+                })),
+              ]}
+            />
           </div>
 
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('admin.partnerStores.areaOptional')}
             </label>
-            <select
+            <Select
               value={formData.areaId}
-              onChange={(e) => onFormChange({ ...formData, areaId: e.target.value })}
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
+              onChange={(next) => onFormChange({ ...formData, areaId: next })}
               disabled={!formData.regionId}
-            >
-              <option value="">{t('admin.partnerStores.noAreaTwoLevel')}</option>
-              {areasForRegion.map((area) => (
-                <option key={area.id} value={area.id}>
-                  {partnerNamesLabel(area)}
-                </option>
-              ))}
-            </select>
+              options={[
+                { value: '', label: t('admin.partnerStores.noAreaTwoLevel') },
+                ...areasForRegion.map((area) => ({
+                  value: area.id,
+                  label: partnerNamesLabel(area),
+                })),
+              ]}
+            />
             <p className="mt-1 text-xs text-gray-500">{t('admin.partnerStores.areaHint')}</p>
           </div>
 
@@ -295,19 +292,19 @@ export function PartnerStoreDrawer({
             <label className="mb-1 block text-sm font-medium text-gray-700">
               {t('admin.partnerStores.status')}
             </label>
-            <select
+            <Select
               value={formData.published}
-              onChange={(e) =>
+              onChange={(next) =>
                 onFormChange({
                   ...formData,
-                  published: e.target.value as PartnerStoreFormData['published'],
+                  published: next as PartnerStoreFormData['published'],
                 })
               }
-              className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm"
-            >
-              <option value="published">{t('admin.partnerStores.published')}</option>
-              <option value="draft">{t('admin.partnerStores.draft')}</option>
-            </select>
+              options={[
+                { value: 'published', label: t('admin.partnerStores.published') },
+                { value: 'draft', label: t('admin.partnerStores.draft') },
+              ]}
+            />
           </div>
         </section>
       </form>

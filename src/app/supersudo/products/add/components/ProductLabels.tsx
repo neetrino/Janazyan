@@ -1,6 +1,6 @@
 'use client';
 
-import { Button, Input } from '@shop/ui';
+import { Button, Input, Select } from '@shop/ui';
 import { useTranslation } from '../../../../../lib/i18n-client';
 import type { ProductLabel } from '../types';
 
@@ -52,15 +52,14 @@ export function ProductLabels({ labels, onAddLabel, onRemoveLabel, onUpdateLabel
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('admin.products.add.type')} *
                   </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <Select
                     value={label.type}
-                    onChange={(e) => onUpdateLabel(index, 'type', e.target.value as 'text' | 'percentage')}
-                    required
-                  >
-                    <option value="text">{t('admin.products.add.textType')}</option>
-                    <option value="percentage">{t('admin.products.add.percentageType')}</option>
-                  </select>
+                    onChange={(next) => onUpdateLabel(index, 'type', next as 'text' | 'percentage')}
+                    options={[
+                      { value: 'text', label: t('admin.products.add.textType') },
+                      { value: 'percentage', label: t('admin.products.add.percentageType') },
+                    ]}
+                  />
                 </div>
 
                 {/* Label Value */}
@@ -88,17 +87,16 @@ export function ProductLabels({ labels, onAddLabel, onRemoveLabel, onUpdateLabel
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('admin.products.add.position')} *
                   </label>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  <Select
                     value={label.position}
-                    onChange={(e) => onUpdateLabel(index, 'position', e.target.value)}
-                    required
-                  >
-                    <option value="top-left">{t('admin.products.add.topLeft')}</option>
-                    <option value="top-right">{t('admin.products.add.topRight')}</option>
-                    <option value="bottom-left">{t('admin.products.add.bottomLeft')}</option>
-                    <option value="bottom-right">{t('admin.products.add.bottomRight')}</option>
-                  </select>
+                    onChange={(next) => onUpdateLabel(index, 'position', next)}
+                    options={[
+                      { value: 'top-left', label: t('admin.products.add.topLeft') },
+                      { value: 'top-right', label: t('admin.products.add.topRight') },
+                      { value: 'bottom-left', label: t('admin.products.add.bottomLeft') },
+                      { value: 'bottom-right', label: t('admin.products.add.bottomRight') },
+                    ]}
+                  />
                 </div>
 
                 {/* Label Color (Optional) */}

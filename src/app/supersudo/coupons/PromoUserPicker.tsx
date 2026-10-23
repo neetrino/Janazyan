@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Select } from '@shop/ui';
 import { apiClient } from '@/lib/api-client';
 import { logger } from '@/lib/utils/logger';
 
@@ -158,18 +159,16 @@ export function PromoUserPicker({
               onChange={(event) => setSearch(event.target.value)}
               disabled={disabled}
             />
-            <select
-              className={INPUT_CLASS}
+            <Select
               value={roleFilter}
-              onChange={(event) =>
-                setRoleFilter(event.target.value as UserRoleFilter)
-              }
+              onChange={(next) => setRoleFilter(next as UserRoleFilter)}
               disabled={disabled}
-            >
-              <option value="">{labels.roleAll}</option>
-              <option value="customer">{labels.roleCustomer}</option>
-              <option value="admin">{labels.roleAdmin}</option>
-            </select>
+              options={[
+                { value: '', label: labels.roleAll },
+                { value: 'customer', label: labels.roleCustomer },
+                { value: 'admin', label: labels.roleAdmin },
+              ]}
+            />
           </div>
 
           {loading ? (

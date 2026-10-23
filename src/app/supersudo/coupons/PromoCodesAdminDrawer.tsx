@@ -1,7 +1,7 @@
 'use client';
 
 import type { Dispatch, SetStateAction } from 'react';
-import { Button } from '@shop/ui';
+import { Button, Select } from '@shop/ui';
 import { AdminSideDrawer } from '../components/AdminSideDrawer';
 import type { PromoFormFields } from './coupons-admin-types';
 import { PromoUserPicker } from './PromoUserPicker';
@@ -91,20 +91,20 @@ export function PromoCodesAdminDrawer({
         <div className="grid grid-cols-2 gap-4">
           <div>
             <FieldLabel htmlFor="pc-type">{labels.formDiscountType}</FieldLabel>
-            <select
+            <Select
               id="pc-type"
-              className={INPUT_CLASS}
               value={form.discountType}
-              onChange={(e) =>
-                setForm((f) => ({
-                  ...f,
-                  discountType: e.target.value === 'fixed' ? 'fixed' : 'percent',
+              onChange={(next) =>
+                setForm((current) => ({
+                  ...current,
+                  discountType: next === 'fixed' ? 'fixed' : 'percent',
                 }))
               }
-            >
-              <option value="percent">{labels.typePercent}</option>
-              <option value="fixed">{labels.typeFixed}</option>
-            </select>
+              options={[
+                { value: 'percent', label: labels.typePercent },
+                { value: 'fixed', label: labels.typeFixed },
+              ]}
+            />
           </div>
           <div>
             <FieldLabel htmlFor="pc-val">{labels.formDiscountValue}</FieldLabel>

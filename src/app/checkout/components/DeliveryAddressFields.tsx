@@ -1,7 +1,7 @@
 'use client';
 
-import { type ReactNode, useMemo } from 'react';
-import { Input } from '@shop/ui';
+import { useMemo } from 'react';
+import { Input, Select, type SelectOption } from '@shop/ui';
 import type { FieldErrors, UseFormRegister, UseFormSetValue } from 'react-hook-form';
 import { useTranslation } from '@/lib/i18n-client';
 import { deliveryLabelMatches, deliveryNameForLocale } from '@/lib/delivery/delivery-names';
@@ -10,9 +10,6 @@ import { CHECKOUT_FIELD_SCROLL_MARGIN_CLASS } from '../checkout-layout.constants
 import type { CheckoutFormData } from '../types';
 
 const CHECKOUT_FIELD_WRAPPER_CLASS = CHECKOUT_FIELD_SCROLL_MARGIN_CLASS;
-
-const CHECKOUT_SELECT_CLASS =
-  'w-full rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400';
 
 type DeliveryAddressFieldsProps = {
   register: UseFormRegister<CheckoutFormData>;
@@ -32,7 +29,7 @@ function CheckoutSelectField({
   disabled,
   error,
   onChange,
-  children,
+  options,
   fieldName,
 }: {
   label: string;
@@ -40,20 +37,13 @@ function CheckoutSelectField({
   disabled?: boolean;
   error?: string;
   onChange: (value: string) => void;
-  children: ReactNode;
+  options: SelectOption[];
   fieldName: string;
 }) {
   return (
     <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field={fieldName}>
       <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
-      <select
-        disabled={disabled}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className={CHECKOUT_SELECT_CLASS}
-      >
-        {children}
-      </select>
+      <Select value={value} onChange={onChange} options={options} disabled={disabled} />
       {error ? <p className="mt-1 text-sm text-red-600">{error}</p> : null}
     </div>
   );
@@ -113,14 +103,14 @@ export function DeliveryAddressFields({
           error={errors.shippingCountry?.message}
           onChange={handleCountryChange}
           fieldName="shippingCountry"
-        >
-          <option value="">{t('checkout.placeholders.selectCountry')}</option>
-          {options?.countries.map((country) => (
-            <option key={country.id} value={country.name}>
-              {deliveryNameForLocale(country.names, country.name, lang)}
-            </option>
-          ))}
-        </CheckoutSelectField>
+          options={[
+            { value: '', label: t('checkout.placeholders.selectCountry') },
+            ...(options?.countries.map((country) => ({
+              value: country.name,
+              label: deliveryNameForLocale(country.names, country.name, lang),
+            })) ?? []),
+          ]}
+        />
 
         <CheckoutSelectField
           label={t('checkout.form.region')}
@@ -129,14 +119,14 @@ export function DeliveryAddressFields({
           error={errors.shippingCity?.message}
           onChange={handleRegionChange}
           fieldName="shippingCity"
-        >
-          <option value="">{t('checkout.placeholders.selectRegion')}</option>
-          {selectedCountry?.zones.map((zone) => (
-            <option key={zone.id} value={zone.slug}>
-              {deliveryNameForLocale(zone.names, zone.name, lang)}
-            </option>
-          ))}
-        </CheckoutSelectField>
+          options={[
+            { value: '', label: t('checkout.placeholders.selectRegion') },
+            ...(selectedCountry?.zones.map((zone) => ({
+              value: zone.slug,
+              label: deliveryNameForLocale(zone.names, zone.name, lang),
+            })) ?? []),
+          ]}
+        />
       </div>
 
       <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingAddress">

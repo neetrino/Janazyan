@@ -1,5 +1,6 @@
 'use client';
 
+import { Select } from '@shop/ui';
 import { ADMIN_TABLE_CHECKBOX, ADMIN_TABLE_TD_CHECK } from '../../constants/admin-table-classes';
 import { useTranslation } from '../../../../lib/i18n-client';
 import { convertPrice, CurrencyCode } from '../../../../lib/currency';
@@ -139,16 +140,17 @@ export function OrderRow({
           </div>
         ) : (
           <div className="inline-block min-w-0 max-w-full">
-            <select
+            <Select
               value={order.status}
-              onChange={(e) => onStatusChange(e.target.value)}
+              onChange={onStatusChange}
               className={`${selectClass} ${getStatusColor(order.status)}`}
-            >
-              <option value="pending">{t('admin.orders.pending')}</option>
-              <option value="processing">{t('admin.orders.processing')}</option>
-              <option value="completed">{t('admin.orders.completed')}</option>
-              <option value="cancelled">{t('admin.orders.cancelled')}</option>
-            </select>
+              options={[
+                { value: 'pending', label: t('admin.orders.pending') },
+                { value: 'processing', label: t('admin.orders.processing') },
+                { value: 'completed', label: t('admin.orders.completed') },
+                { value: 'cancelled', label: t('admin.orders.cancelled') },
+              ]}
+            />
           </div>
         )}
       </td>
@@ -168,15 +170,16 @@ export function OrderRow({
           </div>
         ) : (
           <div className="inline-block min-w-0 max-w-full">
-            <select
+            <Select
               value={order.paymentStatus}
-              onChange={(e) => onPaymentStatusChange(e.target.value)}
+              onChange={onPaymentStatusChange}
               className={`${selectClass} ${getPaymentStatusColor(order.paymentStatus)}`}
-            >
-              <option value="paid">{t('admin.orders.paid')}</option>
-              <option value="pending">{t('admin.orders.pendingPayment')}</option>
-              <option value="failed">{t('admin.orders.failed')}</option>
-            </select>
+              options={[
+                { value: 'paid', label: t('admin.orders.paid') },
+                { value: 'pending', label: t('admin.orders.pendingPayment') },
+                { value: 'failed', label: t('admin.orders.failed') },
+              ]}
+            />
           </div>
         )}
       </td>

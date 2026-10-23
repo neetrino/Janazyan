@@ -1,6 +1,6 @@
 'use client';
 
-import { Button } from '@shop/ui';
+import { Button, Select } from '@shop/ui';
 import { type ChangeEvent } from 'react';
 import { useTranslation } from '../../../../lib/i18n-client';
 import type { Category, CategoryFormData } from '../types';
@@ -81,38 +81,34 @@ export function AddCategoryModal({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('admin.categories.parentCategory')}
             </label>
-            <select
+            <Select
               value={formData.parentId}
-              onChange={(e) => onFormDataChange({ ...formData, parentId: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">{t('admin.categories.rootCategory')}</option>
-              {categories
-                .filter((cat) => !cat.parentId)
-                .map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {categoryTitlesLabel(cat)}
-                  </option>
-                ))}
-            </select>
+              onChange={(next) => onFormDataChange({ ...formData, parentId: next })}
+              options={[
+                { value: '', label: t('admin.categories.rootCategory') },
+                ...categories
+                  .filter((cat) => !cat.parentId)
+                  .map((cat) => ({ value: cat.id, label: categoryTitlesLabel(cat) })),
+              ]}
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               {t('admin.categories.status')}
             </label>
-            <select
+            <Select
               value={formData.published}
-              onChange={(e) =>
+              onChange={(next) =>
                 onFormDataChange({
                   ...formData,
-                  published: e.target.value as CategoryFormData['published'],
+                  published: next as CategoryFormData['published'],
                 })
               }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="published">{t('admin.categories.published')}</option>
-              <option value="draft">{t('admin.categories.draft')}</option>
-            </select>
+              options={[
+                { value: 'published', label: t('admin.categories.published') },
+                { value: 'draft', label: t('admin.categories.draft') },
+              ]}
+            />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
