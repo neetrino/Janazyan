@@ -59,7 +59,7 @@ export function FeaturedProductCard({
       <Link
         href={productHref}
         aria-label={product.title}
-        className="absolute inset-0 z-[15] rounded-[26px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
+        className="absolute inset-0 z-10 rounded-[26px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
         onClick={handleProductNavigate}
       />
 
