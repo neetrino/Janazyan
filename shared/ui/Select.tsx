@@ -17,6 +17,8 @@ type SelectProps = {
   className?: string;
   id?: string;
   ariaLabel?: string;
+  /** Trigger width follows the selected label instead of stretching. */
+  fitContent?: boolean;
 };
 
 type MenuBox = {
@@ -100,6 +102,7 @@ function SelectMenu({
   options,
   value,
   onChoose,
+  fitContent,
 }: {
   listId: string;
   box: MenuBox;
@@ -107,6 +110,7 @@ function SelectMenu({
   options: SelectOption[];
   value: string;
   onChoose: (value: string) => void;
+  fitContent: boolean;
 }) {
   return createPortal(
     <ul
@@ -114,7 +118,13 @@ function SelectMenu({
       id={listId}
       role="listbox"
       className={`fixed overflow-auto rounded-xl border border-gray-200 bg-white py-1 shadow-card ${SELECT_MENU_MAX_HEIGHT_CLASS}`}
-      style={{ top: box.top, left: box.left, width: box.width, zIndex: SELECT_MENU_Z_INDEX }}
+      style={{
+        top: box.top,
+        left: box.left,
+        width: fitContent ? 'max-content' : box.width,
+        minWidth: box.width,
+        zIndex: SELECT_MENU_Z_INDEX,
+      }}
     >
       {options.map((option) => {
         const isSelected = option.value === value;
@@ -151,6 +161,7 @@ export function Select({
   className = '',
   id,
   ariaLabel,
+  fitContent = false,
 }: SelectProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -167,7 +178,7 @@ export function Select({
   };
 
   return (
-    <div ref={rootRef} className="relative w-full">
+    <div ref={rootRef} className={`relative ${fitContent ? 'w-max max-w-full' : 'w-full'}`}>
       <button
         id={id}
         type="button"
@@ -177,7 +188,7 @@ export function Select({
         aria-controls={listId}
         aria-label={ariaLabel}
         onClick={() => setOpen((current) => !current)}
-        className={`flex w-full items-center justify-between gap-2 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-left text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${className}`}
+        className={`flex items-center justify-between gap-2 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-left text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:cursor-not-allowed disabled:bg-gray-50 disabled:text-gray-400 ${fitContent ? 'w-max whitespace-nowrap' : 'w-full'} ${className}`}
       >
         <span className={selected ? '' : 'text-gray-400'}>
           {selected?.label ?? placeholder ?? ''}
@@ -194,6 +205,7 @@ export function Select({
           options={options}
           value={value}
           onChoose={choose}
+          fitContent={fitContent}
         />
       ) : null}
     </div>

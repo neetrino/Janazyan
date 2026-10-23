@@ -86,7 +86,7 @@ export function CheckoutPageClient() {
         catalogBackgroundCoversShell
         {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
         catalog={
-          <div className={ACCOUNT_PAGE_INNER_CLASS}>
+          <div className={`${ACCOUNT_PAGE_INNER_CLASS} !pt-2 md:!pt-3 lg:!pt-4`}>
             <h1 className={CHECKOUT_PAGE_TITLE_CLASS}>{t('checkout.title')}</h1>
             <CheckoutGlassCard className="text-center">
               <p className="mb-4 text-gray-600">{t('checkout.errors.cartEmpty')}</p>
@@ -112,7 +112,7 @@ export function CheckoutPageClient() {
       catalogBackgroundCoversShell
       {...CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS}
       catalog={
-        <div className={ACCOUNT_PAGE_INNER_CLASS}>
+        <div className={`${ACCOUNT_PAGE_INNER_CLASS} !pt-2 md:!pt-3 lg:!pt-4`}>
           <h1 className={CHECKOUT_PAGE_TITLE_CLASS}>{t('checkout.title')}</h1>
 
           <form id={CHECKOUT_FORM_ID} noValidate onSubmit={onCheckoutSubmit}>

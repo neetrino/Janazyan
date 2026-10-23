@@ -23,13 +23,13 @@ export function usePaymentMethods(): PaymentMethod[] {
       id: 'arca',
       name: t('checkout.payment.arca'),
       description: t('checkout.payment.arcaDescription'),
-      logo: '/assets/payments/arca.svg',
+      logo: '/assets/payments/card-arca.png',
     },
     {
       id: 'idram',
       name: t('checkout.payment.idram'),
       description: t('checkout.payment.idramDescription'),
-      logo: '/assets/payments/idram.svg',
+      logo: '/assets/payments/idram.webp',
     },
   ];
 }

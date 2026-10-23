@@ -20,8 +20,8 @@ export function PaymentMethodLogo({
   size = 'medium',
 }: PaymentMethodLogoProps) {
   const logoPath = paymentMethod === 'arca' 
-    ? '/assets/payments/arca.svg' 
-    : '/assets/payments/idram.svg';
+    ? '/assets/payments/card-arca.png' 
+    : '/assets/payments/idram.webp';
   
   const altText = paymentMethod === 'arca' ? 'ArCa' : 'Idram';
 

@@ -31,6 +31,7 @@ function CheckoutSelectField({
   onChange,
   options,
   fieldName,
+  fitContent = false,
 }: {
   label: string;
   value: string;
@@ -39,11 +40,12 @@ function CheckoutSelectField({
   onChange: (value: string) => void;
   options: SelectOption[];
   fieldName: string;
+  fitContent?: boolean;
 }) {
   return (
-    <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field={fieldName}>
+    <div className={`${CHECKOUT_FIELD_WRAPPER_CLASS} ${fitContent ? 'shrink-0' : ''}`} data-checkout-field={fieldName}>
       <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
-      <Select value={value} onChange={onChange} options={options} disabled={disabled} />
+      <Select value={value} onChange={onChange} options={options} disabled={disabled} fitContent={fitContent} />
       {error ? <p className="mt-1 text-sm text-red-600">{error}</p> : null}
     </div>
   );
@@ -95,7 +97,7 @@ export function DeliveryAddressFields({
 
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start">
         <CheckoutSelectField
           label={t('checkout.form.country')}
           value={shippingCountry ?? ''}
@@ -103,6 +105,7 @@ export function DeliveryAddressFields({
           error={errors.shippingCountry?.message}
           onChange={handleCountryChange}
           fieldName="shippingCountry"
+          fitContent
           options={[
             { value: '', label: t('checkout.placeholders.selectCountry') },
             ...(options?.countries.map((country) => ({
@@ -119,6 +122,7 @@ export function DeliveryAddressFields({
           error={errors.shippingCity?.message}
           onChange={handleRegionChange}
           fieldName="shippingCity"
+          fitContent
           options={[
             { value: '', label: t('checkout.placeholders.selectRegion') },
             ...(selectedCountry?.zones.map((zone) => ({
@@ -127,20 +131,19 @@ export function DeliveryAddressFields({
             })) ?? []),
           ]}
         />
-      </div>
-
-      <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="shippingAddress">
-        <Input
-          label={t('checkout.form.address')}
-          type="text"
-          placeholder={t('checkout.placeholders.address')}
-          className="rounded-xl"
-          {...register('shippingAddress', {
-            onChange: () => onClearError?.(),
-          })}
-          error={errors.shippingAddress?.message}
-          disabled={isSubmitting}
-        />
+        <div className={`${CHECKOUT_FIELD_WRAPPER_CLASS} min-w-0 md:flex-1`} data-checkout-field="shippingAddress">
+          <Input
+            label={t('checkout.form.address')}
+            type="text"
+            placeholder={t('checkout.placeholders.address')}
+            className="rounded-xl"
+            {...register('shippingAddress', {
+              onChange: () => onClearError?.(),
+            })}
+            error={errors.shippingAddress?.message}
+            disabled={isSubmitting}
+          />
+        </div>
       </div>
 
       {selectedZone?.extraFields.map((field) => {

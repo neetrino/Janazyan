@@ -6,7 +6,7 @@ import {
 /** Same hero shell as /about so the blue shape sits in the same place. */
 export const CHECKOUT_PAGE_HERO_SHELL_MOBILE_PROPS = {
   compactMobileTop: false,
-  compactContentSpacing: false,
+  compactContentSpacing: true,
   mobileContentInsetClassName: AUTH_PAGE_MOBILE_CONTENT_INSET_CLASS,
   mobileContentSurfaceClassName: AUTH_PAGE_MOBILE_CONTENT_SURFACE_CLASS,
 } as const;

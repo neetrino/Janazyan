@@ -8,11 +8,15 @@ import {
 } from '../checkout-glass-styles';
 import type { CheckoutFormData } from '../types';
 import type { PaymentMethod } from '../utils/payment-methods';
-import { CheckoutCashPaymentIcon } from './CheckoutCashPaymentIcon';
 import {
+  CHECKOUT_PAYMENT_CARD_LOGO_BOX_CLASS,
+  CHECKOUT_PAYMENT_CARD_LOGO_IMAGE_CLASS,
+  CHECKOUT_PAYMENT_VISA_LOGO_IMAGE_CLASS,
   CHECKOUT_PAYMENT_CARD_LOGOS,
+  CHECKOUT_PAYMENT_CASH_BOX_CLASS,
+  CHECKOUT_PAYMENT_CASH_LOGO,
   CHECKOUT_PAYMENT_CARD_LOGOS_CLASS,
-  CHECKOUT_PAYMENT_ICON_BOX_CLASS,
+  CHECKOUT_PAYMENT_IDRAM_BOX_CLASS,
   CHECKOUT_PAYMENT_IDRAM_LOGO,
   CHECKOUT_PAYMENT_OPTION_DESCRIPTION_CLASS,
   CHECKOUT_PAYMENT_OPTION_NAME_CLASS,
@@ -46,8 +50,13 @@ function PaymentMethodIcon({
 }) {
   if (methodId === 'cash_on_delivery') {
     return (
-      <div className={CHECKOUT_PAYMENT_ICON_BOX_CLASS}>
-        <CheckoutCashPaymentIcon />
+      <div className={CHECKOUT_PAYMENT_CASH_BOX_CLASS}>
+        <img
+          src={CHECKOUT_PAYMENT_CASH_LOGO}
+          alt=""
+          className="h-full w-full object-contain"
+          loading="lazy"
+        />
       </div>
     );
   }
@@ -56,8 +65,17 @@ function PaymentMethodIcon({
     return (
       <div className={CHECKOUT_PAYMENT_CARD_LOGOS_CLASS}>
         {CHECKOUT_PAYMENT_CARD_LOGOS.map((logo) => (
-          <div key={logo.alt} className={CHECKOUT_PAYMENT_ICON_BOX_CLASS}>
-            <img src={logo.src} alt={logo.alt} className="h-full w-full object-contain" loading="lazy" />
+          <div key={logo.alt} className={CHECKOUT_PAYMENT_CARD_LOGO_BOX_CLASS}>
+            <img
+              src={logo.src}
+              alt={logo.alt}
+              className={
+                logo.alt === 'Visa'
+                  ? CHECKOUT_PAYMENT_VISA_LOGO_IMAGE_CLASS
+                  : CHECKOUT_PAYMENT_CARD_LOGO_IMAGE_CLASS
+              }
+              loading="lazy"
+            />
           </div>
         ))}
       </div>
@@ -65,7 +83,7 @@ function PaymentMethodIcon({
   }
 
   return (
-    <div className={CHECKOUT_PAYMENT_ICON_BOX_CLASS}>
+    <div className={CHECKOUT_PAYMENT_IDRAM_BOX_CLASS}>
       {!logoErrors.idram ? (
         <img
           src={CHECKOUT_PAYMENT_IDRAM_LOGO}

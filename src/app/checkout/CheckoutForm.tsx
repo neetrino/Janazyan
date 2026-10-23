@@ -112,7 +112,7 @@ export function CheckoutForm({
               />
             </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)]">
             <div className={CHECKOUT_FIELD_WRAPPER_CLASS} data-checkout-field="email">
               <Input
                 label={t('checkout.form.email')}
@@ -134,7 +134,7 @@ export function CheckoutForm({
                 disabled={isSubmitting}
               />
             </div>
-            <div className={`${CHECKOUT_FIELD_WRAPPER_CLASS} md:col-start-2`}>
+            <div className={CHECKOUT_FIELD_WRAPPER_CLASS}>
               <CheckoutAlternatePhoneField
                 register={register}
                 errors={errors}
@@ -156,7 +156,7 @@ export function CheckoutForm({
             <p className="text-sm text-red-600">{errors.shippingMethod.message}</p>
           </div>
         )}
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-4">
           <label className={optionClass(shippingMethod === 'delivery')}>
             <input
               type="radio"
@@ -195,28 +195,6 @@ export function CheckoutForm({
         data-shipping-section
       >
           <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('checkout.shippingAddress')}</h2>
-          {(error && error.includes('shipping address')) ||
-          errors.shippingAddress ||
-          errors.shippingCountry ||
-          errors.shippingCity ||
-          errors.shippingRecipientName ||
-          errors.shippingPostalIndex ||
-          errors.shippingAdditionalNotes ? (
-            <div className={`mb-4 p-3 ${CHECKOUT_GLASS_ERROR_CLASS}`}>
-              <p className="text-sm text-red-600">
-                {error && error.includes('shipping address')
-                  ? error
-                  : (
-                    errors.shippingAddress?.message ||
-                    errors.shippingCountry?.message ||
-                    errors.shippingCity?.message ||
-                    errors.shippingRecipientName?.message ||
-                    errors.shippingPostalIndex?.message ||
-                    errors.shippingAdditionalNotes?.message
-                  )}
-              </p>
-            </div>
-          ) : null}
           <DeliveryAddressFields
             register={register}
             setValue={setValue}
